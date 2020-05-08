@@ -1,12 +1,12 @@
 const _ = require('lodash')
 
-const app_name = 'helowhatsapp' // remember to rename this variable with new name(without spaces), it will also act as default mongodb database name and logging file name
-const db_name = 'helowhatsapp' // change if you want to have different database name than the application name.
+const appName = 'helowhatsapp' // remember to rename this variable with new name(without spaces), it will also act as default mongodb database name and logging file name
+const dbName = 'helowhatsapp' // change if you want to have different database name than the application name.
 let all = {
   env: process.env.NODE_ENV,
-  app_name: app_name,
-  db_name: db_name,
-  api_prefix: app_name, // added to work with apache and passenger, acts as in general api prefix as well
+  app_name: appName,
+  db_name: dbName,
+  api_prefix: appName, // added to work with apache and passenger, acts as in general api prefix as well
   base_url: 'http://localhost',
   port: process.env.PORT,
   socket_io_port: 40010,
@@ -22,7 +22,7 @@ let all = {
     serverDocAccessKey: '7ae9f9a2674c42329142b63ee20fd865'
   },
   logging: {
-    log_file: '/var/log/' + app_name + '/',
+    log_file: '/var/log/' + appName + '/',
     console: true,
     only_console: false,
     level: 'silly', // [silly,debug,verbose,info,warn,error]
@@ -31,7 +31,7 @@ let all = {
     colorize: 'true',
     mongo: {
       host: 'localhost',
-      db: db_name + 'Logs',
+      db: dbName + 'Logs',
       port: 27017,
       username: '',
       password: '',
@@ -158,11 +158,11 @@ all = _.merge(all, require('./' + process.env.NODE_ENV + '.js') || {})
 all.port = process.env.HTTP_API_PORT ? parseInt(process.env.HTTP_API_PORT) : all.port
 
 all.logging.log_path = all.logging.log_file
-all.logging.log_file += app_name
+all.logging.log_file += appName
 
-all.mongo.uri = 'mongodb://' + all.mongo.host + '/' + (all.mongo.options.db_name || db_name)
+all.mongo.uri = 'mongodb://' + all.mongo.host + '/' + (all.mongo.options.db_name || dbName)
 if (all.mongo.use_auth) {
-  all.mongo.uri = 'mongodb://' + all.mongo.options.user + ':' + all.mongo.options.pass + '@' + all.mongo.host + '/' + (all.mongo.options.db_name || db_name) + '?authSource=' + all.mongo.options.authSource
+  all.mongo.uri = 'mongodb://' + all.mongo.options.user + ':' + all.mongo.options.pass + '@' + all.mongo.host + '/' + (all.mongo.options.db_name || dbName) + '?authSource=' + all.mongo.options.authSource
 }
 all.redis.uri = 'redis://' + all.redis.host + ':' + all.redis.port + '/' + all.redis.db
 if (all.redis.use_auth) {

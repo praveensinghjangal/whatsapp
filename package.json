@@ -1,5 +1,5 @@
 {
-  "name": "helo-whatsapp-api",
+  "name": "helo-whatsapp",
   "description": "This app contains whatsapp platform for vivaconnect",
   "version": "0.0.1",
   "private": true,
@@ -34,6 +34,7 @@
     "http-errors": "^1.7.3",
     "humanize-plus": "^1.8.2",
     "json2csv": "^3.11.2",
+    "jsonschema": "^1.2.6",
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.5",
     "line-by-line": "^0.1.6",

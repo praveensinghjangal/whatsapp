@@ -12,14 +12,13 @@ const basic_api = require('../app_modules/api')
 const passport = require('passport')
 const login = require('../app_modules/api/login/route')
 const user = require('../app_modules/api/user/route')
-const test = require('../app_modules/integration/messengerPeople/route') // todo remove
-const test2 = require('../app_modules/integration/route') // todo remove
 const __db = require('../lib/db')
 const user_config = require('../app_modules/api/user_config')
 const user_module = require('../app_modules/api/user_module/route')
 const template_module = require('../app_modules/api/template/route')
 const senderid_module = require('../app_modules/api/senderid/route')
 const test_numbers_module = require('../app_modules/api/test_numbers/route')
+const message = require('../app_modules/message/route')
 
 module.exports = function (app) {
   // region all api
@@ -52,8 +51,7 @@ module.exports = function (app) {
   app.use('/api/template', template_module)
   app.use('/api/senderid', senderid_module)
   app.use('/api/test_numbers', test_numbers_module)
-  app.use(apiUrlPrefix + '/test', test)// todo remove
-  app.use(apiUrlPrefix + '/test2', test2)// todo remove
+  app.use(apiUrlPrefix + '/message', message)
   // app.use(api_url_prefix + '/sms-email/', require('../app_modules/sms_email/route'));
   // endregion
   // app.all("*", function(req, res, next){

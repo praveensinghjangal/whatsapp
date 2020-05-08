@@ -2,7 +2,7 @@ const q = require('q')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const messengerPeopleIntegrationConfig = __config.integration.messengerPeople
-const authToken = require('./authenticator').authToken // todo remove
+const authToken = require('./authenticator').authToken
 
 class Message {
   constructor () {
@@ -40,7 +40,7 @@ class Message {
           return this.http.Post(inputRequest, 'body', messengerPeopleIntegrationConfig.baseUrl + messengerPeopleIntegrationConfig.endpoint.sendMessage, headers)
         }
       })
-      .then(finalRes => {
+      .then(finalRes => { // todo : handle response properly
         if (finalRes.firstAttempSuccess) finalRes = finalRes.data
         console.log('final res --->', finalRes)
         if (finalRes && finalRes.error) {
