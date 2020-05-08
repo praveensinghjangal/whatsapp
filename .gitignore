@@ -1,0 +1,10 @@
+.idea
+node_modules
+/test.js
+/npm-debug.log
+logs
+test
+apidocs
+lib/apidoc/html/*
+projectFilesBackup
+package-lock.json

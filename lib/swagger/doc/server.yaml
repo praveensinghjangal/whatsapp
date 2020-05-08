@@ -1,0 +1,462 @@
+swagger: "2.0"
+info:
+  description: "Helo server (internal) api documentation (v1.0)"
+  version: "1.0.0"
+  title: "Helo server api documentation"
+  termsOfService: ""
+  contact:
+    name: "support"
+    email: "support@vivaconnect.co"
+host: "localhost:3000"
+basePath: "/helo/api/a1"
+tags:
+- name: "Shortcode"
+  description: "api services for shortcode generation"
+- name: "Cron"
+  description: "api services for cron"
+- name: "Queue"
+  description: "api services to push data into queue"
+- name: "Webhook"
+  description: "Manage webhook flow [sms journey] for Projects"
+schemes:
+- "http"
+paths:
+  /shortcode/generate/{project_name}:
+    post:
+      tags:
+      - "Shortcode"
+      summary: "shortcode generation for short link."
+      description: ""
+      operationId: "schcodegen"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "project_name"
+        in: "path"
+        description: "name of the project for shortcode generation."
+        required: true
+        type: "string"
+      - name: "accesskey"
+        in: "header"
+        description: "accesskey for authentication."
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            camp_id:
+              type: "integer"
+              format: "int32"
+              example: 1
+            mobile_list:
+              type: "array"
+              items:
+                type: "string"
+                example: "9999999999"
+      responses:
+        200:
+          schema:
+            type: "object"
+            properties:
+              code:
+                type: "integer"
+                format: "int32"
+                example: 2000
+              msg:
+                type: "string"
+                example: "Success"
+              data:
+                type: "object"
+                properties:
+                  valid_list:
+                    type: "array"
+                    items:
+                      type: "object"
+                      properties:
+                        destination:
+                          type: "string"
+                          example: "9999999999"
+                        shortcode:
+                          type: "string"
+                          example: "abcdef"
+                  invalid_list:
+                    type: "array"
+                    items:
+                      type: "string"
+                      example: "123456"
+                  failed_list:
+                    type: "array"
+                    items:
+                      type: "string"
+                      example: "9999999912"
+          description: |
+              <p>refer following 'code' in response
+              <table>
+              <thead><tr><th>response code</th><th>description</th></tr></thead>
+              <tr><td>2000</td><td>Success (refer response example)</td></tr>
+              <tr><td>3010</td><td>Failed to process request</td></tr>
+              <tr><td>3012</td><td>camp_id not exit</td></tr>
+              </table>
+        400:
+          description: "Invalid request."
+        401:
+          description: "Unauthorized access."
+        404:
+          description: "Not Found."
+  /crontab/archive:
+    get:
+      tags:
+      - "Cron"
+      summary: "archiving helo bulk data mysql tables."
+      description: |
+          <p>following tables should be archive,</p>
+          <ul>
+          <li>short_unique_codes
+          <li>camp_mobile_list
+          <li>api_mobile_list
+          <li>code_analytics
+          </ul>
+      operationId: "cronarchive"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "accesskey"
+        in: "query"
+        description: "accesskey for authentication"
+        required: true
+        type: "string"
+      responses:
+          200:
+            description: "Success. archiving started."
+          400:
+            description: "Invalid request."
+          401:
+            description: "Unauthorized access."
+  /crontab/optimizePartitionSize:
+    get:
+      tags:
+      - "Cron"
+      summary: "optimize size of helo archive tables."
+      description: |
+          <p>following archive tables would be optimize,</p>
+          <ul>
+          <li>short_unique_codes
+          <li>camp_mobile_list
+          <li>api_mobile_list
+          <li>code_analytics
+          </ul>
+      operationId: "optimizePartitionSize"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "accesskey"
+        in: "query"
+        description: "accesskey for authentication"
+        required: true
+        type: "string"
+      responses:
+          200:
+            description: "Success. archiving started."
+          400:
+            description: "Invalid request."
+          401:
+            description: "Unauthorized access."
+  /queue/add/codeAnalytics/{queue_name}:
+    post:
+      tags:
+      - "Queue"
+      summary: "Push data related to code analytics into rmq queue"
+      description: |
+              <p><b>Following are the queue of code analytics,
+              <table>
+              <thead><tr><th>Queue Name (In request)</th><th>RMQ Queue Name</th></tr></thead>
+              <tr><td>Q_A_CODE_ANALYTICS</td><td>a-0-q_code_analytics</td></tr>
+              <tr><td>Q_A_VIDEO</td><td>a-0-q_video</td></tr>
+              <tr><td>Q_A_CA_DEVICE</td><td>a-1-q_ca_device</td></tr>
+              <tr><td>Q_A_CA_DEVICE_TRIGGER</td><td>a-1-q_ca_device_trigger</td></tr>
+              <tr><td>Q_A_CA_RESOLUTION</td><td>a-1-q_ca_resolution</td></tr>
+              <tr><td>Q_A_CA_RESOLUTION_TRIGGER</td><td>a-1-q_ca_resolution_trigger</td></tr>
+              <thead><tr><th></th><th></th></tr></thead>
+              </table>
+      operationId: "caaddqueue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "queue_name"
+        in: "path"
+        description: "name of the queue."
+        required: true
+        type: "string"
+      - name: "accesskey"
+        in: "header"
+        description: "accesskey for authentication."
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "any json object data"
+        required: true
+        schema:
+          type: "object"
+      responses:
+        200:
+          schema:
+            type: "object"
+            properties:
+              code:
+                type: "integer"
+                format: "int32"
+                example: 2000
+              msg:
+                type: "string"
+                example: "Success"
+              data:
+                type: "object"
+          description: |
+              <p>refer following 'code' in response
+              <table>
+              <thead><tr><th>response code</th><th>description</th></tr></thead>
+              <tr><td>2000</td><td>Success (refer response example)</td></tr>
+              <tr><td>3010</td><td>Failed to process request</td></tr>
+              </table>
+        400:
+          description: "Invalid request."
+        401:
+          description: "Unauthorized access."
+        404:
+          description: "Not Found."
+  /queue/add/msgStatus:
+    post:
+      tags:
+      - "Queue"
+      summary: "Push data into msg_status queue"
+      description: "Manage message status for camp_mobile_list and api_mobile_list table."
+      operationId: "msaddqueue"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "accesskey"
+        in: "header"
+        description: "accesskey for authentication."
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "any json object data"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            camp_id:
+              type: "integer"
+              format: "int32"
+              description: "camp_id of campaign (campaign identifier)"
+              example: 1
+            msg_id:
+              type: "string"
+              description: "msg_id of message (message identifier)"
+              example: "sherkhan_helo-p1znwBDZSmpXJ93al"
+            username:
+              type: "string"
+              example: "sherkhan_helo"
+            platform:
+              type: "integer"
+              format: "int32"
+              description: |
+                    <p>campaign platform</p>
+                    <table>
+                    <thead><tr><th>Platform</th><th>Description</th></thead>
+                    <tr><td>0</td><td>Helo platform. data store into camp_mobile_list table</td></tr>
+                    <tr><td>9</td><td>Helo_api platform. data store into api_mobile_list table</td></tr>
+              example: 0
+            api_request:
+              type: "boolean"
+              description: |
+                    <p>true : msg_id belong to api_mobile_list table. </p>
+                    <p>false : msg_id belong to camp_mobile_list table. </p>
+              example: false
+      responses:
+        200:
+          schema:
+            type: "object"
+            properties:
+              code:
+                type: "integer"
+                format: "int32"
+                example: 2000
+              msg:
+                type: "string"
+                example: "Success"
+              data:
+                type: "object"
+          description: |
+              <p>refer following 'code' in response
+              <table>
+              <thead><tr><th>response code</th><th>description</th></tr></thead>
+              <tr><td>2000</td><td>Success (refer response example)</td></tr>
+              <tr><td>3010</td><td>Failed to process request</td></tr>
+              </table>
+        400:
+          description: "Invalid request."
+        401:
+          description: "Unauthorized access."
+        404:
+          description: "Not Found."
+  /webhook_url>:
+    post:
+      tags:
+      - "Webhook"
+      summary: "Webhook api url to manage sms journey [For Projects]"
+      description: |
+          <p>The Webhook api should have to accept the following payload as a part of the request to manage payload.</p>
+          <table>
+          <thead>
+          <tr>
+          <th style="width: 30%">Field</th>
+          <th style="width: 10%">Type</th>
+          <th style="width: 60%">Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+          <td>msg_id</td>
+          <td>String</td>
+          <td><p>msg_id is identifier for message</p></td>
+          </tr>
+          <td>msg</td>
+          <td>String</td>
+          <td><p>SMS message</p></td>
+          </tr>
+          <tr>
+          <td>camp_id</td>
+          <td>String</td>
+          <td><p>camp_id is identifier for campaign</p></td>
+          </tr>
+          <tr>
+          <td>rule_id</td>
+          <td>String</td>
+          <td><p>rule_id is identifier for campaign webhook rules [sms journey]</p></td>
+          </tr>
+          <td>custom_data</td>
+          <td>Object</td>
+          <td><p>a json OBJECT. Initially it will be send as NULL, thereafter client custom_data[if client send in previous request] will sent</p></td>
+          </tr>
+          </tbody>
+          </table>
+      operationId: "whsent"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "apikey"
+        in: "header"
+        description: "apikey for authentication."
+        required: true
+        type: "string"
+      - name: "body"
+        in: "body"
+        description: "any json object data"
+        required: true
+        schema:
+          type: "object"
+          properties:
+            camp_id:
+              type: "integer"
+              format: "int32"
+              description: "camp_id of campaign (campaign identifier)"
+              example: 1
+            msg_id:
+              type: "string"
+              description: "msg_id of message (message identifier)"
+              example: "sherkhan_helo-p1znwBDZSmpXJ93al"
+            msg:
+              type: "string"
+              example: "helo test"
+            rule_id:
+              type: "integer"
+              format: "int32"
+              description: "rule_id of campaign webhook rules (camp_webhook_rules identifier)"
+              example: 1
+            custom_data:
+              type: "object"
+              example: null
+      responses:
+        200:
+          schema:
+            type: "object"
+            properties:
+              code:
+                type: "integer"
+                format: "int32"
+                example: 2000
+              msg:
+                type: "string"
+                example: "Success"
+              data:
+                type: "object"
+                properties:
+                  retry_after_timestamp:
+                    type: "string"
+                    example: "2018-10-20 14:07:15"
+                  stop_flow:
+                    type: "boolean"
+                    example: false
+                  custom_data:
+                    type: "object"
+                    example: null
+                  overwrite_queue_data:
+                    type: "object"
+                    properties:
+                      msg_id:
+                        type: "string"
+                      msg:
+                        type: "string"
+
+          description: |
+              <p>refer following 'code' in response
+              <table>
+              <thead><tr><th>response code</th><th>description</th></tr></thead>
+              <tr><td>2000</td><td>Success (refer response example)</td></tr>
+              <tr><td>3010</td><td>Failed to process request</td></tr>
+              </table>
+              <hr/><hr/>
+              <p>The Webhook api (response) should accept the following payload as a part of the response to manage payload.
+              <table>
+              <thead>
+              <tr>
+              <th style="width: 30%">Field</th>
+              <th style="width: 10%">Type</th>
+              <th style="width: 60%">Description</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+              <td>retry_after_timestamp</td>
+              <td>String</td>
+              <td><p>This specify when next request will be trigger</p></td>
+              </tr>
+              <td>stop_flow</td>
+              <td>Boolean</td>
+              <td><p>true: Stop webhook (sms journey) flow, false: continue webhook flow</p></td>
+              </tr>
+              <tr>
+              <td>custom_data</td>
+              <td>Object</td>
+              <td><p>a JSON obejct to manage webhook flow. this will be send in next request.</p></td>
+              </tr>
+              <tr>
+              <td>overwrite_queue_data</td>
+              <td>Object</td>
+              <td><p>This will overwrite msg_id and msg of webhook flow [optional]</p>
+              </td>
+              </tr>
+              </tbody>
+              </table>
+        400:
+          description: "Invalid request."
+        401:
+          description: "Unauthorized access."
+        404:
+          description: "Not Found."

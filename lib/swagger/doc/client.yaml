@@ -1,0 +1,348 @@
+swagger: "2.0"
+info:
+  description: "Helo client api documentation (v1.0)"
+  version: "1.0.0"
+  title: "Helo client api documentation"
+  termsOfService: ""
+  contact:
+    name: "support"
+    email: "support@vivaconnect.co"
+host: "localhost:3000"
+basePath: "/helo/api"
+tags:
+- name: "SSP"
+  description: "SMS Service Provider (SSP) API's"
+schemes:
+- "http"
+paths:
+  /client_url>:
+      post:
+        tags:
+        - "SSP"
+        summary: "SMS Service Provider url for sending sms"
+        description: |
+          <p>The service provider should accept the following payload as a part of the request to send SMS.</p>
+          <table>
+          <thead>
+          <tr>
+          <th style="width: 30%">Field</th>
+          <th style="width: 10%">Type</th>
+          <th style="width: 60%">Description</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+          <td>api_version</td>
+          <td>String</td>
+          <td><p>Indicates the payload contract. If there is any change in the payload structure in future, the version will be updated.</p></td>
+          </tr>
+          <tr>
+          <td>sms_data</td>
+          <td>Object</td>
+          <td><p>a json OBJECT.</p></td>
+          </tr>
+          <tr>
+          <td>&nbsp;&nbsp;-  destination</td>
+          <td>String</td>
+          <td><p>The recipient’s phone number along with country code as prefix.</p></td>
+          </tr>
+          <tr>
+          <td>&nbsp;&nbsp;-  message</td>
+          <td>String</td>
+          <td><p>Text message body.</p></td>
+          </tr>
+          <tr>
+          <td>&nbsp;&nbsp;-  senderid</td>
+          <td>String</td>
+          <td><p>The sender id.</p></td>
+          </tr>
+          <tr>
+          <td>&nbsp;&nbsp;-  message_id</td>
+          <td>String</td>
+          <td><p>Unique ID assigned to the message which should be used in further Delivery Status Notifications to identify a message uniquely.</p></td>
+          </tr>
+          <tr>
+          <td>&nbsp;&nbsp;-  timestamp</td>
+          <td>String</td>
+          <td><p>The time when the message was triggered from the helo system. This follows the ISO date format:  <code style="background:rgba(96,105,113,0.1);">yyyy-MM-ddTHH:mm:ss±hhmm</code>.</p></td>
+          </tr>
+          <tr>
+          <td>custom_data <span class="parameter__in">(optional)</span></td>
+          <td>Object</td>
+          <td><p>a json OBJECT.</p></td>
+          </tr>
+          </tbody>
+          </table>
+        operationId: "sspsent"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "apikey"
+          in: "header"
+          description: "an authorization header"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/SspSendJson"
+        responses:
+          200:
+            schema:
+              $ref: "#/definitions/SspSendResponseJson"
+            description: |
+              <p>Please refer following statusCode,</p>
+              <table>
+              <thead>
+              <tr>
+              <th style="width: 30%">StatusCode</th>
+              <th style="width: 70%">Description</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr>
+              <td>0</td>
+              <td><p>To be sent in case of success</p></td>
+              </tr>
+              <tr>
+              <td>3000</td>
+              <td><p>Insufficient credit balance</p></td>
+              </tr>
+              <tr>
+              <td>3001</td>
+              <td><p>The IP has not been whitelisted</p></td>
+              </tr>
+              <tr>
+              <td>3002</td>
+              <td><p>Empty message body</p></td>
+              </tr>
+              <tr>
+              <td>3003</td>
+              <td><p>Invalid mobile number</p></td>
+              </tr>
+              <tr>
+              <td>3004</td>
+              <td><p>Invalid Sender ID</p></td>
+              </tr>
+              <tr>
+              <td>3005</td>
+              <td><p>Authorization failure</p></td>
+              </tr>
+              <tr>
+              <td>3006</td>
+              <td><p>User under DND</p></td>
+              </tr>
+              <tr>
+              <td>3007</td>
+              <td><p>Maximum length of the message body has been exceeded</p></td>
+              </tr>
+              <tr>
+              <td>3008</td>
+              <td><p>The message has been expired</p></td>
+              </tr>
+              <tr>
+              <td>3009</td>
+              <td><p>The message was not delivered by the operator</p></td>
+              </tr>
+              <tr>
+              <td>3010</td>
+              <td>
+              <p>Payload version unsupported.
+              <br> In this case the supportedVersion is to be sent mandatorily, i.e., the version supported by the service provider. For example: HTTP 400 BAD REQUEST</p>
+              <pre style="background-color: #d4d4d4;color: #41444e;">{<br>     "status" : "sms_error",<br>     "statusCode" : 3010,<br>     "message" : "Version not supported, supportedVersion : 2.0.0",<br> }</pre>
+              </td>
+              </tr>
+              <tr>
+              <td>3011</td>
+              <td><p>Authentication failure</p></td>
+              </tr>
+              <tr>
+              <td>3333</td>
+              <td><p>Unknown reason</p></td>
+              </tr>
+              </tbody>
+              </table>
+  /ssp/pingback:
+      post:
+        tags:
+        - "SSP"
+        summary: "Delivery status notifications (sms pingback from SMS Service Provider)"
+        description: |
+            <p>Delivery Status Notifications are asynchronous updates to messages (for example, SMS Delivered, Bounced, Rejected etc.) that the service provider sends to helo.
+            <ol style="font-size:13px;">
+            <li>The service provider is required to POST Delivery Status Notifications (DSNs) i.e. SMS sent, SMS failed, etc. on the static endpoint.
+            </li>
+            <li style="padding-top:15px;">The service provider will be provided with a security apikey which needs to be included as a Authorization header in the POST request of DSNs. For example:  Authorization: <span style="background-color: #c7c7c7; padding: 1px 5px;">apikey</span>. This token will remain the same and should not be shared to ensure security. In case there is a need to change the token, the service provider should reach out to helo Support to get a new token.
+            </li>
+            <li style="padding-top:15px;">The POST body for DSNs should adhere to the format illustrated below.
+            <table>
+            <thead>
+            <tr>
+            <th style="width: 30%">Field</th>
+            <th style="width: 10%">Type</th>
+            <th style="width: 60%">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>api_version</td>
+            <td>String</td>
+            <td>This indicates the payload contract of the request. If there is any change in the payload structure in future, the version will be updated.</td>
+            </tr>
+            <tr>
+            <td>message_id</td>
+            <td>String</td>
+            <td>The unique ID assigned to the message which is used to identify a message uniquely. This is received by the service provider in the request body.</td>
+            </tr>
+            <tr>
+            <td>msisdn</td>
+            <td>String</td>
+            <td>The message recipient’s phone number along with country code as prefix.</td>
+            </tr>
+            <tr>
+            <td>sms_status</td>
+            <td>Number</td>
+            <td>The message status being reported by this DSN. This can be either  sms_sent or sms_failed or sms_awaited.</td>
+            </tr>
+            <tr>
+            <td>sms_code</td>
+            <td>Number</td>
+            <td>Status code.</td>
+            </tr>
+            <tr>
+            <td>sms_description</td>
+            <td>String</td>
+            <td>status code description.</td>
+            </tr>
+            </tbody>
+            </table>
+            </li>
+            <li style="padding-top:15px;"> Please refer valid <b>sms_code</b>,
+            <table>
+            <thead>
+            <tr>
+            <th style="width: 30%">sms_code</th>
+            <th style="width: 70%">Description</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+            <td>4000</td>
+            <td><b>Delivered</b></td>
+            </tr>
+            <tr>
+            <td>4001</td>
+            <td><b>Undelivered</b></td>
+            </tr>
+            <tr>
+            <td>4002</td>
+            <td><b>Expired</b></td>
+            </tr>
+            <tr>
+            <td>4003</td>
+            <td><b>Rejected</b></td>
+            </tr>
+            <tr>
+            <td>4004</td>
+            <td><b>Response awaited</b></td>
+            </tr>
+            <tr>
+            <td>4010</td>
+            <td><b>Unknown reason</b></td>
+            </tr>
+            </tbody>
+            </table>
+            </li>
+            </ol>
+            </p>
+        operationId: "ssppingback"
+        produces:
+        - "application/json"
+        parameters:
+        - name: "apikey"
+          in: "header"
+          description: "an authorization header (pingback apikey)"
+          required: true
+          type: "string"
+        - name: "body"
+          in: "body"
+          required: true
+          schema:
+            $ref: "#/definitions/SspPingbackJson"
+        responses:
+          200:
+            description: |
+                <table>
+                <thead><tr><th>response code</th><th>description</th></tr></thead>
+                <tr><td>2000</td><td>Success (pingback accepted)</td></tr>
+                <tr><td>3010</td><td>Failed to process request</td></tr>
+                </table>
+          404:
+            description: "Not found any info belong to request."
+          429:
+            description: "Too many request. request rate limited. (check 'Retry-After' header)"
+          400:
+            description: "Invalid request."
+          401:
+            description: "Unauthorized access."
+definitions:
+  SspSendJson:
+    type: "object"
+    properties:
+      api_version:
+        type: "string"
+        example: "1.0"
+      sms_data:
+        type: "object"
+        properties:
+          destination:
+            type: "string"
+            example: "9999999999"
+          message:
+            type: "string"
+            example: "test message"
+          senderid:
+            type: "string"
+            example: "SAMPLE"
+          message_id:
+            type: "string"
+            example: "xyztest-1234567890"
+          timestamp:
+            type: "string"
+            example: "2018-01-25T10:00:00+0000"
+      custom_data:
+        type: "object"
+  SspSendResponseJson:
+    type: "object"
+    properties:
+      status:
+        type: "string"
+        example: "sms_success"
+      statusCode:
+        type: "integer"
+        example: 0
+      message:
+        type: "string"
+        example: "success"
+  SspPingbackJson:
+    type: "object"
+    properties:
+      api_version:
+        type: "string"
+        example: "1.0"
+      message_id:
+        type: "integer"
+        example: "xyztest-1234567890"
+      msisdn:
+        type: "string"
+        example: "9999999999"
+      sms_status:
+        type: "string"
+        example: "sms_failed"
+      sms_code:
+        type: "string"
+        example: 4001
+      sms_description:
+        type: "string"
+        example: "Undelivered"
