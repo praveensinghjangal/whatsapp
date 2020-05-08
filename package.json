@@ -1,6 +1,7 @@
 {
-  "name": "otp-api",
-  "version": "0.0.0",
+  "name": "helo-whatsapp",
+  "description": "This app contains whatsapp platform for vivaconnect",
+  "version": "0.0.1",
   "private": true,
   "scripts": {
     "start": "node ./bin/www",
@@ -13,7 +14,7 @@
       "PORT": 3000
     },
     "watch": [
-      "app_modules/api",
+      "app_modules",
       "routes"
     ]
   },
@@ -33,6 +34,7 @@
     "http-errors": "^1.7.3",
     "humanize-plus": "^1.8.2",
     "json2csv": "^3.11.2",
+    "jsonschema": "^1.2.6",
     "jsonwebtoken": "^8.5.1",
     "jwt-simple": "^0.5.5",
     "line-by-line": "^0.1.6",
@@ -57,6 +59,7 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "standard": "^14.3.3"
   }
 }
