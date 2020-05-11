@@ -147,7 +147,6 @@ let all = {
       min_file_size: 50 * 1024 * 1024 // bytes*kbs*mbs
     }
   },
-  jwt_secret_key: '8d45631ab3d40ebcb2667ff316',
   provider_id_to_provider_name_mapping: {
     1: 'messengerPeople',
     111: 'demo'
