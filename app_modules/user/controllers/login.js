@@ -7,6 +7,7 @@ const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const jwt = require('jsonwebtoken')
 const __config = require('../../../config')
+const queryProvider = require('../queryProvider')
 
 const controller = (req, res) => {
   try {
@@ -14,11 +15,11 @@ const controller = (req, res) => {
     const validate = new ValidatonService()
     validate.userInputValidation(req.body)
       .then((data) => {
-        if (req.body.email && req.body.password && req.body.email != null && req.body.email.trim() !== '' && req.body.password != null && req.body.password.trim() != '' && typeof (req.body.email) === 'string' && typeof (req.body.password) === 'string') {
+        if (data) {
           const email = req.body.email
           const password = req.body.password
 
-          __db.postgresql.__query(`select user_id, status as user_status, hash_password as hash_password,salt_key from users where email = '${email}'`)
+          __db.postgresql.__query(queryProvider.searchUser(email))
             .then((results) => {
               // console.log('Qquery Result', results)
               if (results.rows.length === 0) {

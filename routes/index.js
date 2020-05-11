@@ -11,7 +11,6 @@ const __logger = require('../lib/logger')
 const basic_api = require('../app_modules/api')
 const passport = require('passport')
 const login = require('../app_modules/api/login/route')
-const user_old = require('../app_modules/api/user/route')
 const __db = require('../lib/db')
 const user_config = require('../app_modules/api/user_config')
 const user_module = require('../app_modules/api/user_module/route')
@@ -47,7 +46,6 @@ module.exports = function (app) {
   app.use('/api', login)
   // app.use(passport.authenticate('jwt', { session: true, failureRedirect: '/unauthorized' }));
   // app.use(user_config.get_set_user_config);
-  // app.use('/api/users', user)
   app.use('/api/user_info', user_module)
   app.use('/api/template', template_module)
   app.use('/api/senderid', senderid_module)

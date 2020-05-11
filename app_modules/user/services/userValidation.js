@@ -98,18 +98,6 @@ class validate {
           required: false
           // minLength: 1
         }
-        // payload: {
-        //   type: 'object',
-        //   required: false,
-        //   minLength: 1,
-        //   properties: {
-        //     text: {
-        //       type: 'string',
-        //       required: true,
-        //       minLength: 1
-        //     }
-        //   }
-        // }
       }
     }
     const formatedError = []

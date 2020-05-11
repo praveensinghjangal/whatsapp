@@ -6,6 +6,7 @@ const passMgmt = require('../../../lib/util/password_mgmt')
 const __define = require('../../../config/define')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
+const queryProvider = require('../queryProvider')
 
 const controller = (req, res) => {
   try {
@@ -13,7 +14,7 @@ const controller = (req, res) => {
     const validate = new ValidatonService()
     validate.userInputValidation(req.body)
       .then((data) => {
-        if (req.body.email && req.body.password && req.body.email != null && req.body.email.trim() !== '' && req.body.password != null && req.body.password.trim() !== '' && typeof (req.body.email) === 'string' && typeof (req.body.password) === 'string') {
+        if (data) {
           const userId = uuid4()
           const email = req.body.email
           const password = req.body.password
@@ -22,7 +23,7 @@ const controller = (req, res) => {
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
 
-          __db.postgresql.__query(`insert into users ( email, hash_password, user_id,status, salt_key) values ('${email}', '${hashPassword}', '${userId}', '${status}', '${passwordSalt}')`)
+          __db.postgresql.__query(queryProvider.createUser(email, hashPassword, userId, status, passwordSalt))
             .then((results) => {
               console.log('Query Result', results)
               __util.send(res, {
