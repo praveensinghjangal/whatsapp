@@ -11,6 +11,7 @@ class validate {
     const schema = {
       id: '/sendMessage',
       type: 'object',
+      required: true,
       properties: {
         senderNumber: {
           type: 'string',

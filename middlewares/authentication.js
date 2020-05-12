@@ -66,6 +66,7 @@ class Authentication {
     passport.deserializeUser((obj, done) => {
       done(null, obj)
     })
+    this.setStrategy()
   }
 
   setStrategy () {
@@ -81,7 +82,6 @@ class Authentication {
   setToken (data, expirySeconds) {
     return jwt.sign({ data }, this.opts.secretOrKey, { expiresIn: expirySeconds })
   }
-  // main authentication, our app will rely on it
 }
 
 module.exports = new Authentication()

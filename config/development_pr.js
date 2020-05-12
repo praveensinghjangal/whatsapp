@@ -114,13 +114,13 @@ module.exports = {
       allow: true,
       clientID: '559421680637-3hm6pq8ucqs0jr4jlrogg419qtlpor2k.apps.googleusercontent.com',
       clientSecret: 'ksql2F8tS2YCqRBqZBTU4Ui5',
-      callbackURL: 'http://localhost:3000/helowhatsapp/api/message/googleRedirect'
+      callbackURL: 'http://localhost:3000/helowhatsapp/api/users/googleRedirect'
     },
     facebook: {
       allow: true,
-      clientID: '2528454964073348', // '378915159425595', // process.env['FACEBOOK_CLIENT_ID'],
-      clientSecret: '49c3b90cb33922c506fef7ccd5e717b3', // '7bd791932eaf12fbb75d0166721c0e02', // process.env['FACEBOOK_CLIENT_SECRET'],
-      callbackURL: 'http://localhost:3000/helowhatsapp/api/message/facebookRedirect', // relative or absolute path
+      clientID: '2528454964073348',
+      clientSecret: '49c3b90cb33922c506fef7ccd5e717b3',
+      callbackURL: 'http://localhost:3000/helowhatsapp/api/users/facebookRedirect',
       profileFields: ['id', 'displayName', 'email', 'picture']
     },
     internal: {
