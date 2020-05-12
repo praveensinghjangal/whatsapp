@@ -1,9 +1,11 @@
-const searchUser = function (email) {
-  return `select user_id, status as user_status, hash_password as hash_password,salt_key from users where email = '${email}'`
+const getUserDetailsByEmail = function (email) {
+  return `select user_id, hash_password as hash_password,salt_key,token_expiry_in_seconds as "tokenExpireyInSeconds"  from users 
+  where email = '${email}' and is_active = true`
 }
 
-const createUser = function (email, hashPassword, userId, status, passwordSalt) {
-  return `insert into users ( email, hash_password, user_id,status, salt_key) values ('${email}', '${hashPassword}', '${userId}', '${status}', '${passwordSalt}')`
+const createUser = function (email, hashPassword, userId, passwordSalt, tokenExpireyInSeconds) {
+  return `insert into users ( email, hash_password, user_id,salt_key,token_expiry_in_seconds) values 
+  ('${email}', '${hashPassword}', '${userId}', '${passwordSalt}',${tokenExpireyInSeconds})`
 }
 
-module.exports = { searchUser, createUser }
+module.exports = { getUserDetailsByEmail, createUser }

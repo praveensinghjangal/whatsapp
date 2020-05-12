@@ -107,5 +107,29 @@ module.exports = {
         scope: 'messages:send'
       }
     }
+  },
+  authentication: {
+    jwtSecretKey: '8d45631ab3d40ebcb2667ff316',
+    google: {
+      allow: true,
+      clientID: '559421680637-3hm6pq8ucqs0jr4jlrogg419qtlpor2k.apps.googleusercontent.com',
+      clientSecret: 'ksql2F8tS2YCqRBqZBTU4Ui5',
+      callbackURL: 'http://localhost:3000/helowhatsapp/api/users/googleRedirect'
+    },
+    facebook: {
+      allow: true,
+      clientID: '2528454964073348',
+      clientSecret: '49c3b90cb33922c506fef7ccd5e717b3',
+      callbackURL: 'http://localhost:3000/helowhatsapp/api/users/facebookRedirect',
+      profileFields: ['id', 'displayName', 'email', 'picture']
+    },
+    internal: {
+      allow: true
+    },
+    strategy: {
+      google: { name: 'google', options: { scope: ['profile', 'email'] } },
+      facebook: { name: 'facebook', options: { scope: 'email' } },
+      jwt: { name: 'jwt', options: { session: false } }
+    }
   }
 }

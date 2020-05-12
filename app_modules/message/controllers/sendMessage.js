@@ -16,4 +16,4 @@ const controller = (req, res) => {
 }
 
 module.exports = controller
-// todo : store req res selected data, logs, integrate session and token based auth
+// todo : store req res selected data, logs, integrate session auth
