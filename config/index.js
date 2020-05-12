@@ -39,15 +39,24 @@ let all = {
     }
   },
   postgresql: {
-    init: false,
+    init: true,
     options: {
       host: 'localhost',
-      user: 'postgres',
-      database: 'test',
-      password: 'deepak',
       port: 5432,
-      max_connection: 10
+      database: 'whatsapp_business',
+      user: 'postgres',
+      password: 'mysecretpassword',
+      max_connection: 10,
+      idleTimeoutMillis: 30000
     }
+    // options: {
+    //   host: 'localhost',
+    //   user: 'postgres',
+    //   database: 'test',
+    //   password: 'deepak',
+    //   port: 5432,
+    //   max_connection: 10
+    // }
   },
   elasticsearch: {
     init: false,

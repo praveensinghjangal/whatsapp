@@ -62,6 +62,7 @@ class httpApiWorker {
     vm.app.set('view engine', 'pug')
     authMiddleware.initialize(vm.app)
     authMiddleware.setStrategy()
+    require('./../routes')(vm.app)
     vm.app.use(addRequestId)
     // vm.app.use(timeout(__config.default_server_response_timeout, {respond: false}));
     vm.app.use((req, res, next) => {
@@ -90,8 +91,6 @@ class httpApiWorker {
     vm.app.use(cors(
       { exposedHeaders: ['Content-disposition'] }
     ))
-
-    require('./../routes')(vm.app)
 
     vm.app.use((req, res, next) => {
       var err = new Error('Not Found')
