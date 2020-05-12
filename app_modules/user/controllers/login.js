@@ -3,7 +3,7 @@ const __util = require('../../../lib/util')
 const constants = require('../../../config/define')
 const passMgmt = require('../../../lib/util/password_mgmt')
 const __define = require('../../../config/define')
-// const __logger = require('../../../lib/logger')
+const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const authMiddleware = require('../../../middlewares/authentication')
@@ -39,7 +39,10 @@ const controller = (req, res) => {
         data: { token: token }
       })
     })
-    .catch(err => __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    .catch(err => {
+      __logger.error('error: ', err)
+      __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
 }
 
 module.exports = controller
