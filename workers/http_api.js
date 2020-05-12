@@ -127,27 +127,30 @@ class httpApiWorker {
     var jwtOptions = {}
     // jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeader();
     // jwtOptions.jwtFromRequest = ExtractJwt.fromAuthHeaderAsBearerToken();
-    jwtOptions.jwtFromRequest = ExtractJwt.fromExtractors([this.cookieExtractor, this.authExtractor])
-    jwtOptions.secretOrKey = __config.jwt_secret_key
 
-    var strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
-      var user = { user_id: jwt_payload.user_id, username: jwt_payload.username, company_id: jwt_payload.company_id }
-      if (user) {
-        next(null, user)
-      } else {
-        next(null, false)
-      }
-    })
+    /* Commenting as of now start */
+    // jwtOptions.jwtFromRequest = ExtractJwt.fromExtractors([this.cookieExtractor, this.authExtractor])
+    // jwtOptions.secretOrKey = __config.jwt_secret_key
 
-    passport.use(strategy)
-    passport.serializeUser((user, done) => {
-      done(null, user)
-    })
-    passport.deserializeUser((user, done) => {
-      done(null, user)
-    })
-    vm.app.use(passport.initialize())
-    vm.app.use(passport.session())
+    // var strategy = new JwtStrategy(jwtOptions, (jwt_payload, next) => {
+    //   var user = { user_id: jwt_payload.user_id, username: jwt_payload.username, company_id: jwt_payload.company_id }
+    //   if (user) {
+    //     next(null, user)
+    //   } else {
+    //     next(null, false)
+    //   }
+    // })
+
+    // passport.use(strategy)
+    // passport.serializeUser((user, done) => {
+    //   done(null, user)
+    // })
+    // passport.deserializeUser((user, done) => {
+    //   done(null, user)
+    // })
+    // vm.app.use(passport.initialize())
+    // vm.app.use(passport.session())
+    /* Commenting as of now end */
 
     require('./../routes')(vm.app)
 
