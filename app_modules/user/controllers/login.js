@@ -9,14 +9,16 @@ const queryProvider = require('../queryProvider')
 const authMiddleware = require('../../../middlewares/authentication')
 
 const controller = (req, res) => {
-  // console.log('Inside login', req.body)
+  console.log('Inside login', req.body)
   const validate = new ValidatonService()
   const password = req.body.password
   const email = req.body.email
   validate.login(req.body)
-    .then(data => __db.postgresql.__query(queryProvider.getUserDetailsByEmail(email)))
+    .then(data => {
+      return __db.postgresql.__query(queryProvider.getUserDetailsByEmail(email))
+    })
     .then(results => {
-      // console.log('Qquery Result', results)
+      console.log('Qquery Result login', results)
       if (results.rows.length === 0) {
         return __util.send(res, {
           type: __define.RESPONSE_MESSAGES.NOT_AUTHORIZED,
