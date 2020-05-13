@@ -3,20 +3,20 @@ const __util = require('../../../lib/util')
 const constants = require('../../../config/define')
 const passMgmt = require('../../../lib/util/password_mgmt')
 const __define = require('../../../config/define')
-// const __logger = require('../../../lib/logger')
+const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const authMiddleware = require('../../../middlewares/authentication')
 
 const controller = (req, res) => {
-  // console.log('Inside login', req.body)
+  console.log('Inside login', req.body)
   const validate = new ValidatonService()
   const password = req.body.password
   const email = req.body.email
   validate.login(req.body)
     .then(data => __db.postgresql.__query(queryProvider.getUserDetailsByEmail(email)))
     .then(results => {
-      // console.log('Qquery Result', results)
+      console.log('Qquery Result login', results)
       if (results.rows.length === 0) {
         return __util.send(res, {
           type: __define.RESPONSE_MESSAGES.NOT_AUTHORIZED,
@@ -39,7 +39,10 @@ const controller = (req, res) => {
         data: { token: token }
       })
     })
-    .catch(err => __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    .catch(err => {
+      __logger.error('error: ', err)
+      __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
 }
 
 module.exports = controller
