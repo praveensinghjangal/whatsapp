@@ -14,9 +14,7 @@ const controller = (req, res) => {
   const password = req.body.password
   const email = req.body.email
   validate.login(req.body)
-    .then(data => {
-      return __db.postgresql.__query(queryProvider.getUserDetailsByEmail(email))
-    })
+    .then(data => __db.postgresql.__query(queryProvider.getUserDetailsByEmail(email)))
     .then(results => {
       console.log('Qquery Result login', results)
       if (results.rows.length === 0) {
