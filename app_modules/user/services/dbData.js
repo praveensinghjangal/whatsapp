@@ -50,7 +50,7 @@ class UserData {
           userId = this.uniqueId.intId()
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
-          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source])
+          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId])
         } else {
           return rejectionHandler({ type: __define.RESPONSE_MESSAGES.USER_EXIST, data: {} })
         }
