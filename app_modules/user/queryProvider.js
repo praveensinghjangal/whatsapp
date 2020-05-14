@@ -4,8 +4,8 @@ const getUserDetailsByEmail = () => {
 }
 
 const createUser = () => {
-  return `insert into users ( email, hash_password, user_id,salt_key) values 
-  ($1,$2,$3,$4)`
+  return `insert into users ( email, hash_password, user_id,salt_key,create_source) values 
+  ($1,$2,$3,$4,$5)`
 }
 
 module.exports = { getUserDetailsByEmail, createUser }

@@ -351,10 +351,15 @@ const RESPONSE_MESSAGES = {
     code: 3004,
     message: 'credential are wrong.'
   },
-  USERNAME_EXIT: {
+  USERNAME_EXIST: {
     status_code: 200,
     code: 3005,
-    message: 'username already exit.'
+    message: 'username already exists.'
+  },
+  USER_EXIST: {
+    status_code: 200,
+    code: 3008,
+    message: 'user already exists.'
   },
   INACTIVE_USER: {
     status_code: 200,
