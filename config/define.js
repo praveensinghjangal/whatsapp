@@ -279,7 +279,8 @@ const CUSTOM_CONSTANT = {
     TWO_D: 2 * 24 * 60,
     THREE_D: 3 * 24 * 60,
     FOUR_D: 4 * 24 * 60
-  }
+  },
+  SESSION_TIME: 600
 }
 
 const RESPONSE_MESSAGES = {
@@ -350,10 +351,15 @@ const RESPONSE_MESSAGES = {
     code: 3004,
     message: 'credential are wrong.'
   },
-  USERNAME_EXIT: {
+  USERNAME_EXIST: {
     status_code: 200,
     code: 3005,
-    message: 'username already exit.'
+    message: 'username already exists.'
+  },
+  USER_EXIST: {
+    status_code: 200,
+    code: 3008,
+    message: 'user already exists.'
   },
   INACTIVE_USER: {
     status_code: 200,
