@@ -16,15 +16,12 @@ const controller = (req, res) => {
       const userId = uuid4() // todo : will use mongo id here
       const email = req.body.email
       const password = req.body.password
-
       const passwordSalt = passMgmt.genRandomString(16)
       const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
-      const tokenExpireyInSeconds = req.body.tokenExpireyInSeconds
-      return __db.postgresql.__query(queryProvider.createUser(email, hashPassword, userId, passwordSalt, tokenExpireyInSeconds))
+      return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt])
     })
     .then(results => {
       console.log('Qquery Result sign up', results)
-
       if (results) {
         return __util.send(res, {
           type: __define.RESPONSE_MESSAGES.SUCCESS,

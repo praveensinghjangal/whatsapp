@@ -14,7 +14,7 @@ const controller = (req, res) => {
   const password = req.body.password
   const email = req.body.email
   validate.login(req.body)
-    .then(data => __db.postgresql.__query(queryProvider.getUserDetailsByEmail(email)))
+    .then(data => __db.postgresql.__query(queryProvider.getUserDetailsByEmail(), [email]))
     .then(results => {
       console.log('Qquery Result login', results)
       if (results.rows.length === 0) {
@@ -33,7 +33,7 @@ const controller = (req, res) => {
       // console.log('Login Result', results)
       const userData = results.rows[0]
       const payload = { user_id: userData.user_id }
-      const token = authMiddleware.setToken(payload, +userData.tokenExpireyInSeconds)
+      const token = authMiddleware.setToken(payload, constants.CUSTOM_CONSTANT.SESSION_TIME)
       return __util.send(res, {
         type: __define.RESPONSE_MESSAGES.SUCCESS,
         data: { token: token }
