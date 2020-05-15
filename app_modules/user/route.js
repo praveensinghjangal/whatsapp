@@ -3,6 +3,14 @@ const authMiddleware = require('../../middlewares/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const router = express.Router()
 
+/* Controller start */
+const accountProfileController = require('./controllers/accoutProfile')
+const billingProfileController = require('./controllers/billingProfile')
+
+/* Controller end */
+
+/* Route start */
+
 router.post('/auth/login', require('./controllers/login'))
 router.post('/signUp', require('./controllers/signUp'))
 router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name, authstrategy.google.options))
@@ -31,5 +39,15 @@ router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.faceboo
   const token = authMiddleware.setToken(user, 600)
   res.send(token)
 })
+
+// Account Profile routes
+
+router.get('/getAcountProfile/:userId', accountProfileController.getAcountProfile)
+router.put('/updateAcountProfile/:userId', accountProfileController.updateAcountProfile)
+
+// Billing Profile routes
+router.get('/getBusinessBilllingProfile/:userId', billingProfileController.getBusinessBilllingProfile)
+router.post('/addBusinessBilllingProfile/:userId', billingProfileController.addBusinessBilllingProfile)
+router.put('/updateBusinessBilllingProfile/:userId', billingProfileController.updateBusinessBilllingProfile)
 
 module.exports = router

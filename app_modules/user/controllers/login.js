@@ -7,7 +7,7 @@ const authMiddleware = require('../../../middlewares/authentication')
 const UserService = require('../services/dbData')
 
 const controller = (req, res) => {
-  console.log('Inside login', req.body)
+  // console.log('Inside login', req.body)
   const validate = new ValidatonService()
   const userService = new UserService()
   const password = req.body.password
