@@ -42,12 +42,12 @@ router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.faceboo
 
 // Account Profile routes
 
-router.get('/getAcountProfile/:userId', accountProfileController.getAcountProfile)
-router.put('/updateAcountProfile/:userId', accountProfileController.updateAcountProfile)
+router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAcountProfile)
+router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAcountProfile)
 
 // Billing Profile routes
-router.get('/getBusinessBilllingProfile/:userId', billingProfileController.getBusinessBilllingProfile)
-router.post('/addBusinessBilllingProfile/:userId', billingProfileController.addBusinessBilllingProfile)
-router.put('/updateBusinessBilllingProfile/:userId', billingProfileController.updateBusinessBilllingProfile)
+router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.getBusinessBilllingProfile)
+router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.addBusinessBilllingProfile)
+router.put('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.updateBusinessBilllingProfile)
 
 module.exports = router

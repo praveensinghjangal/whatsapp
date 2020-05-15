@@ -280,7 +280,7 @@ const CUSTOM_CONSTANT = {
     THREE_D: 3 * 24 * 60,
     FOUR_D: 4 * 24 * 60
   },
-  SESSION_TIME: 600
+  SESSION_TIME: 86400
 }
 
 const RESPONSE_MESSAGES = {

@@ -10,66 +10,34 @@ const queryProvider = require('../queryProvider')
 const getAcountProfile = (req, res) => {
   // console.log('Inside getAcountProfile', req.params.userId)
   // console.log('Inside Sig Type', typeof (req.params.userId))
-
-  if (!req.params.userId) {
-    return __util.send(res, {
-      type: __define.RESPONSE_MESSAGES.INVALID_REQUEST,
-      err: { message: 'userId not provided' }
-    })
-  };
-
-  if (typeof (req.params.userId) !== 'string') {
-    return __util.send(res, {
-      type: __define.RESPONSE_MESSAGES.INVALID_REQUEST,
-      err: { message: 'userId provided is invalid' }
-    })
-  }
-
-  const userId = req.params.userId // todo : will use mongo id here
-
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
   __db.postgresql.__query(queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
       // console.log('Qquery Result getAcountProfile', results)
-
-      if (results) {
+      if (results && results.rows.length > 0) {
         return __util.send(res, {
           type: __define.RESPONSE_MESSAGES.SUCCESS,
           data: results.rows[0]
         })
       } else {
-        return __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        return __util.send(res, { type: constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err })
+      return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
 // Update Account Prfofile
 const updateAcountProfile = (req, res) => {
   // console.log('Inside updateAcountProfile', req.params.userId)
-
-  if (!req.params.userId) {
-    return __util.send(res, {
-      type: __define.RESPONSE_MESSAGES.INVALID_REQUEST,
-      err: { message: 'userId not provided' }
-    })
-  };
-
-  if (typeof (req.params.userId) !== 'string') {
-    return __util.send(res, {
-      type: __define.RESPONSE_MESSAGES.INVALID_REQUEST,
-      err: { message: 'userId provided is invalid' }
-    })
-  }
-
+  // todo : add user exists check
   const validate = new ValidatonService()
   validate.accountProfile(req.body)
     .then(data => {
     //   console.log('Data', data)
-      const userId = req.params.userId // todo : will use mongo id here
-      // const email = req.body.email
+      const userId = req.user && req.user.user_id ? req.user.user_id : 0
       const city = req.body.city
       const state = req.body.state
       const country = req.body.country
@@ -81,10 +49,10 @@ const updateAcountProfile = (req, res) => {
 
       return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, userId, userId])
     })
-    .then(results => {
+    .then(result => {
     //   console.log('Qquery Result updateAcountProfile', results)
 
-      if (results) {
+      if (result && result.rowCount && result.rowCount > 0) {
         return __util.send(res, {
           type: __define.RESPONSE_MESSAGES.SUCCESS,
           data: { }
@@ -95,7 +63,7 @@ const updateAcountProfile = (req, res) => {
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err })
+      return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
