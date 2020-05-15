@@ -49,27 +49,31 @@ module.exports = {
   //     }
   // },
   mongo: {
-    init: false,
-    host: '10.40.13.246:27018',
+    init: true,
+    host: '172.17.0.2:27017',
     use_auth: true,
-    name: 'helo_otp',
+    name: 'helo_whatsapp',
     options: {
-      db_name: 'helo_otp',
+      db_name: 'helo_whatsapp',
       authSource: 'admin',
       authMechanism: 'DEFAULT',
       user: 'root',
-      pass: 'BEZRzap2y95Q84'
+      pass: 'pass%40123'
     }
   },
-  // redis_local: {
-  //     init: true,
-  //     use_auth: true,
-  //     host: "10.40.13.246",
-  //     db: "2",
-  //     port: "6379",
-  //     user: "",
-  //     pass: "BEZRzap2y95Q84"
-  // },
+  postgresql: {
+    init: true,
+    name: 'helo_whatsapp',
+    options: {
+      host: 'localhost',
+      port: 5432,
+      database: 'helo_whatsapp',
+      user: 'postgres',
+      password: 'mysecretpassword',
+      max_connection: 10,
+      idleTimeoutMillis: 30000
+    }
+  },
   redis_local: {
     init: false,
     use_auth: true,
