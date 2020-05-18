@@ -5,15 +5,17 @@ const __define = require('../../../config/define')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const UserService = require('../services/dbData')
+const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 // Get Account Profile
 const getAcountProfile = (req, res) => {
-  // console.log('Inside getAcountProfile', req.params.userId)
-  // console.log('Inside Sig Type', typeof (req.params.userId))
+  __logger.info('Inside getAcountProfile', req.user.userId)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   __db.postgresql.__query(queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
-      // console.log('Qquery Result getAcountProfile', results)
+      __logger.info('Then 1', results)
+
       if (results && results.rows.length > 0) {
         return __util.send(res, {
           type: __define.RESPONSE_MESSAGES.SUCCESS,
@@ -31,12 +33,24 @@ const getAcountProfile = (req, res) => {
 
 // Update Account Prfofile
 const updateAcountProfile = (req, res) => {
-  // console.log('Inside updateAcountProfile', req.params.userId)
-  // todo : add user exists check
-  const validate = new ValidatonService()
-  validate.accountProfile(req.body)
+  __logger.info('Inside updateAcountProfile', req.user.user_id)
+  const userService = new UserService()
+
+  // User Id exist check
+  userService.checkUserIdExistsForAccountProfile(req.user.user_id)
+    .then(exists => {
+      __logger.info('UserId exist check then 1', exists)
+      if (exists) {
+        const validate = new ValidatonService()
+
+        return validate.accountProfile(req.body)
+      } else {
+        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
     .then(data => {
-    //   console.log('Data', data)
+      __logger.info('then 2', data)
+
       const userId = req.user && req.user.user_id ? req.user.user_id : 0
       const city = req.body.city
       const state = req.body.state
@@ -50,7 +64,7 @@ const updateAcountProfile = (req, res) => {
       return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, userId, userId])
     })
     .then(result => {
-    //   console.log('Qquery Result updateAcountProfile', results)
+      __logger.info('then 3', result)
 
       if (result && result.rowCount && result.rowCount > 0) {
         return __util.send(res, {
@@ -58,7 +72,7 @@ const updateAcountProfile = (req, res) => {
           data: { }
         })
       } else {
-        return __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        return __util.send(res, { type: constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
       }
     })
     .catch(err => {
@@ -68,4 +82,3 @@ const updateAcountProfile = (req, res) => {
 }
 
 module.exports = { getAcountProfile, updateAcountProfile }
-// todo : store req res selected data, logs

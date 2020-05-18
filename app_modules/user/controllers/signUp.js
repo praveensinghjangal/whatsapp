@@ -5,12 +5,16 @@ const __define = require('../../../config/define')
 const UserService = require('../services/dbData')
 
 const controller = (req, res) => {
-  // console.log('Inside Sign up')
+  __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const userService = new UserService()
   validate.signup(req.body)
-    .then(valResponse => userService.createUser(req.body.email, req.body.password, 'viva-portal'))
+    .then(valResponse => {
+      __logger.info('Then1')
+      return userService.createUser(req.body.email, req.body.password, 'viva-portal')
+    })
     .then(data => {
+      __logger.info('Then 2', data)
       return __util.send(res, { type: __define.RESPONSE_MESSAGES.SUCCESS, data })
     })
     .catch(err => {
@@ -20,4 +24,3 @@ const controller = (req, res) => {
 }
 
 module.exports = controller
-// todo : store req res selected data, logs
