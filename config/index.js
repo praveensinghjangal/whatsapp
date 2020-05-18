@@ -38,27 +38,6 @@ let all = {
       enabled: false
     }
   },
-  postgresql: {
-    init: true,
-    options: {
-      host: 'localhost',
-      port: 5432,
-      database: 'helo_whatsapp',
-      // database: 'whatsapp_business',
-      user: 'postgres',
-      password: 'mysecretpassword',
-      max_connection: 10,
-      idleTimeoutMillis: 30000
-    }
-    // options: {
-    //   host: 'localhost',
-    //   user: 'postgres',
-    //   database: 'test',
-    //   password: 'deepak',
-    //   port: 5432,
-    //   max_connection: 10
-    // }
-  },
   elasticsearch: {
     init: false,
     use_auth: false,

@@ -1,7 +1,8 @@
 const providerConfig = require('../../config').provider_id_to_provider_name_mapping
 const providers = { // keep on adding providers here
   messengerPeople: require('./messengerPeople'),
-  demo: require('./demo')
+  demo: require('./demo'),
+  sinch: require('./sinch')
 }
 // functions will be called as per provider
 class Messaage {
@@ -13,4 +14,11 @@ class Messaage {
   sendMessage (businessNumber, recieverNumber, payload) { return this.message.sendMessage(businessNumber, recieverNumber, payload) }
 }
 
-module.exports = { Messaage }
+class WebHooks {
+  constructor () {
+    this.sinch = new providers.sinch.Webhooks()
+    this.sendSinchPayloadToQUeue = this.sinch.sendToQueue
+  }
+}
+
+module.exports = { Messaage, WebHooks }
