@@ -390,6 +390,11 @@ const RESPONSE_MESSAGES = {
     status_code: 200,
     code: 3013,
     message: 'Record Already Exists.'
+  },
+  USER_ID_NOT_EXIST: {
+    status_code: 200,
+    code: 3014,
+    message: 'User does not exist'
   }
 }
 
