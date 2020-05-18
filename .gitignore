@@ -8,3 +8,4 @@ apidocs
 lib/apidoc/html/*
 projectFilesBackup
 package-lock.json
+.vscode/*

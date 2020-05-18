@@ -5,6 +5,7 @@ const __define = require('../../../config/define')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const UserService = require('../services/dbData')
 
 // Get Account Profile
 const getAcountProfile = (req, res) => {
@@ -31,39 +32,56 @@ const getAcountProfile = (req, res) => {
 
 // Update Account Prfofile
 const updateAcountProfile = (req, res) => {
-  // console.log('Inside updateAcountProfile', req.params.userId)
+  console.log('Inside updateAcountProfile', req.user.user_id)
+  // console.log('Inside updateAcountProfile', typeof (req.user.user_id))
   // todo : add user exists check
-  const validate = new ValidatonService()
-  validate.accountProfile(req.body)
-    .then(data => {
-    //   console.log('Data', data)
-      const userId = req.user && req.user.user_id ? req.user.user_id : 0
-      const city = req.body.city
-      const state = req.body.state
-      const country = req.body.country
-      const addressLine1 = req.body.addressLine1
-      const addressLine2 = req.body.addressLine2
-      const contactNumber = req.body.contactNumber
-      const phoneCode = req.body.phoneCode
-      const postalCode = req.body.postalCode
+  const userService = new UserService()
 
-      return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, userId, userId])
-    })
-    .then(result => {
-    //   console.log('Qquery Result updateAcountProfile', results)
+  // User Id exist check
+  userService.checkUserIdExistsForAccountProfile(req.user.user_id)
+    .then(exists => {
+      console.log('UserId exist check', exists)
+      if (exists) {
+        const validate = new ValidatonService()
 
-      if (result && result.rowCount && result.rowCount > 0) {
-        return __util.send(res, {
-          type: __define.RESPONSE_MESSAGES.SUCCESS,
-          data: { }
-        })
+        validate.accountProfile(req.body)
+          .then(data => {
+            //   console.log('Data', data)
+            const userId = req.user && req.user.user_id ? req.user.user_id : 0
+            const city = req.body.city
+            const state = req.body.state
+            const country = req.body.country
+            const addressLine1 = req.body.addressLine1
+            const addressLine2 = req.body.addressLine2
+            const contactNumber = req.body.contactNumber
+            const phoneCode = req.body.phoneCode
+            const postalCode = req.body.postalCode
+
+            return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, userId, userId])
+          })
+          .then(result => {
+            //   console.log('Qquery Result updateAcountProfile', results)
+
+            if (result && result.rowCount && result.rowCount > 0) {
+              return __util.send(res, {
+                type: __define.RESPONSE_MESSAGES.SUCCESS,
+                data: { }
+              })
+            } else {
+              return __util.send(res, { type: constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
+            }
+          })
+          .catch(err => {
+            __logger.error('error: ', err)
+            return __util.send(res, { type: err.type, err: err.err })
+          })
       } else {
-        return __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        return __util.send(res, { type: constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      return __util.send(res, { type: constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
     })
 }
 

@@ -70,6 +70,62 @@ class UserData {
       })
     return userCreated.promise
   }
+
+  checkUserIdExistsForAccountProfile (userId) {
+    // declare a prmoise
+    const doesUserIdExist = q.defer()
+    // checking using service whether the userId is  provided or not
+    this.validate.checkUserIdService({ userId })
+    // then using a query to check that a record exist or not in table
+      .then(valResponse => {
+        // console.log('Response', valResponse)
+        return __db.postgresql.__query(queryProvider.getUserDetailsByUserIdForAccountProfile(), [userId])
+      })
+      .then(result => {
+        console.log('Qquery Result checkUserExistByUserId', result)
+
+        // if exist throw return true exist
+        if (result && result.rowCount && result.rowCount > 0) {
+          doesUserIdExist.resolve(true)
+        } else {
+          // else return prmoise to continue the insertiono of data
+          doesUserIdExist.resolve(false)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in checkUserExistByUserId function: ', err)
+        doesUserIdExist.reject(false)
+      })
+    return doesUserIdExist.promise
+  }
+
+  checkUserIdExistForBusiness (userId) {
+    // declare a prmoise
+    const doesUserIdExist = q.defer()
+    // checking using service whether the userId is  provided or not
+    this.validate.checkUserIdService({ userId })
+    // then using a query to check that a record exist or not in table
+      .then(valResponse => {
+        // console.log('Response', valResponse)
+        return __db.postgresql.__query(queryProvider.getUserDetailsByUserIdForBusiness(), [userId])
+      })
+      .then(result => {
+        // console.log('Qquery Result checkUserExistByUserId', result)
+
+        // if exist throw return true exist
+        if (result && result.rowCount && result.rowCount > 0) {
+          doesUserIdExist.resolve(true)
+        } else {
+          // else return prmoise to continue the insertiono of data
+          doesUserIdExist.resolve(false)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in checkUserExistByUserId function: ', err)
+        doesUserIdExist.reject(false)
+      })
+    return doesUserIdExist.promise
+  }
 }
 
 module.exports = UserData

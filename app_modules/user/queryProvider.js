@@ -10,6 +10,11 @@ const createUser = () => {
 
 // Account Profile Queries
 
+const getUserDetailsByUserIdForAccountProfile = () => {
+  return `select user_id from users 
+  where user_id = $1 and is_active = true`
+}
+
 const getUserAccountProfile = () => {
   return `select email, city, state, country, address_line_1,address_line_2, contact_number,
    phone_code, postal_code from users WHERE user_id = $1 and is_active = true`
@@ -17,10 +22,15 @@ const getUserAccountProfile = () => {
 
 const updateUserAccountProfile = () => {
   return `update users set city=$1, state=$2, country=$3, address_line_1=$4,address_line_2=$5,
-  contact_number=$6, phone_code=$7, postal_code =$8, updated_by=$9 WHERE user_id=$10`
+  contact_number=$6, phone_code=$7, postal_code =$8, updated_by=$9 WHERE user_id=$10 and is_active = true`
 }
 
 // Billing Profile
+
+const getUserDetailsByUserIdForBusiness = () => {
+  return `select user_id from business_information 
+  where user_id = $1 and is_active = true`
+}
 
 const getBillingProfile = () => {
   return `select  business_name,city, state, country, address_line_1,address_line_2,
@@ -40,7 +50,7 @@ const updateBusinessBillingProfile = () => {
   return `update business_information
   set city=$1, state=$2, country=$3, address_line_1=$4,address_line_2=$5,contact_number=$6,
   phone_code=$7, postal_code =$8,pan_card=$9, gst_or_tax_no=$10,business_name=$11,
-  updated_by= $12 WHERE user_id=$13`
+  updated_by= $12 WHERE user_id=$13 and is_active = true`
 }
 
-module.exports = { getUserDetailsByEmail, createUser, getUserAccountProfile, updateUserAccountProfile, createBusinessBillingProfile, updateBusinessBillingProfile, getBillingProfile }
+module.exports = { getUserDetailsByEmail, createUser, getUserDetailsByUserIdForAccountProfile, getUserAccountProfile, updateUserAccountProfile, createBusinessBillingProfile, updateBusinessBillingProfile, getBillingProfile, getUserDetailsByUserIdForBusiness }

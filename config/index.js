@@ -44,6 +44,7 @@ let all = {
       host: 'localhost',
       port: 5432,
       database: 'helo_whatsapp',
+      // database: 'whatsapp_business',
       user: 'postgres',
       password: 'mysecretpassword',
       max_connection: 10,

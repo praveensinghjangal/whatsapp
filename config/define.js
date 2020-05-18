@@ -385,8 +385,12 @@ const RESPONSE_MESSAGES = {
     status_code: 200,
     code: 3012,
     message: 'camp_id not exit'
+  },
+  RECORD_EXIST: {
+    status_code: 200,
+    code: 3013,
+    message: 'Record Already Exists.'
   }
-
 }
 
 module.exports.MONGO_DBS = MONGO_DBS
