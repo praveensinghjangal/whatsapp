@@ -120,6 +120,97 @@ class VerificationService {
     smsSent.resolve({ code, phoneNumber, firstName })
     return smsSent.promise
   }
+
+  getCodeDetails (userId, code, verificationChannel) {
+    const codeData = q.defer()
+    if (!userId || typeof userId !== 'number') {
+      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+      return codeData.promise
+    }
+    if (!code || typeof code !== 'number') {
+      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      return codeData.promise
+    }
+    if (!verificationChannel || typeof verificationChannel !== 'string') {
+      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      return codeData.promise
+    }
+    const query = queryProvider.getCodeData()
+    __db.postgresql.__query(query, [userId, code, verificationChannel])
+      .then(result => {
+        if (result && result.rows && result.rows.length === 0) {
+          codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, data: {} })
+        } else {
+          codeData.resolve(result.rows[0])
+        }
+      })
+      .catch(err => codeData.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return codeData.promise
+  }
+
+  setTokenConsumed (userId, code, verificationChannel) {
+    const tokenMarkedConsumed = q.defer()
+    if (!userId || typeof userId !== 'number') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+      return tokenMarkedConsumed.promise
+    }
+    if (!code || typeof code !== 'number') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      return tokenMarkedConsumed.promise
+    }
+    if (!verificationChannel || typeof verificationChannel !== 'string') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      return tokenMarkedConsumed.promise
+    }
+    const query = queryProvider.setTokenConsumed()
+    __db.postgresql.__query(query, [userId, code, verificationChannel, userId])
+      .then(result => {
+        if (result && result.rowCount && result.rowCount > 0) {
+          tokenMarkedConsumed.resolve({ updated: true })
+        } else {
+          tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return tokenMarkedConsumed.promise
+  }
+
+  markChannelVerified (userId, verificationChannel) {
+    const tokenMarkedConsumed = q.defer()
+    if (!userId || typeof userId !== 'number') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+      return tokenMarkedConsumed.promise
+    }
+    if (!verificationChannel || typeof verificationChannel !== 'string') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      return tokenMarkedConsumed.promise
+    }
+    let query = queryProvider.setTokenConsumed()
+    switch (verificationChannel) {
+      case __define.VERIFICATION_CHANNEL.email.name:
+        query = queryProvider.markUserEmailVerified()
+        break
+      case __define.VERIFICATION_CHANNEL.sms.name:
+        query = queryProvider.markUserSmsVerified()
+        break
+      default:
+        query = false
+    }
+    if (!query) {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'verificationChannel not configured' })
+      return tokenMarkedConsumed.promise
+    }
+    __db.postgresql.__query(query, [userId, userId])
+      .then(result => {
+        if (result && result.rowCount && result.rowCount > 0) {
+          tokenMarkedConsumed.resolve({ updated: true })
+        } else {
+          tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return tokenMarkedConsumed.promise
+  }
 }
 
 module.exports = VerificationService

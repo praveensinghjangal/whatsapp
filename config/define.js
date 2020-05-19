@@ -342,8 +342,18 @@ const RESPONSE_MESSAGES = {
   },
   PHONE_VC: {
     status_code: 200,
-    code: 2001,
+    code: 2002,
     message: 'Please check your registered contact number for verification code'
+  },
+  EMAIL_VERIFIED: {
+    status_code: 200,
+    code: 2003,
+    message: 'Email address verified'
+  },
+  PHONE_VERIFIED: {
+    status_code: 200,
+    code: 2003,
+    message: 'Phone number verified'
   },
   // Note: use codes 3000 to 3999 for api error
   NO_RECORDS_FOUND: {
@@ -418,8 +428,13 @@ const RESPONSE_MESSAGES = {
   },
   PHONE_ALREADY_VERIFIED: {
     status_code: 200,
-    code: 3015,
+    code: 3016,
     message: 'Phone number already verified for user'
+  },
+  INVALID_VERIFICATION_CODE: {
+    status_code: 200,
+    code: 3017,
+    message: 'Invalid verification code'
   }
 }
 

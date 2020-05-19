@@ -74,6 +74,31 @@ const updateVerificationCode = () => {
   and is_consumed = false and is_active = true`
 }
 
+const getCodeData = () => {
+  return `select expires_in,created_on from user_verification_code
+  where user_id  = $1 and code = $2 and code_type = $3 and is_consumed = false
+  and is_active = true`
+}
+
+const setTokenConsumed = () => {
+  return `update user_verification_code 
+  set is_consumed = true, updated_by = $4, updated_on = now()
+  where user_id  = $1 and code = $2 and code_type = $3 and is_consumed = false
+  and is_active = true`
+}
+
+const markUserEmailVerified = () => {
+  return `update users 
+  set email_verified = true, updated_by = $2, updated_on = now() 
+  where user_id = $1 and is_active = true`
+}
+
+const markUserSmsVerified = () => {
+  return `update users 
+  set phone_verified = true, updated_by = $2, updated_on = now() 
+  where user_id = $1 and is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -86,5 +111,9 @@ module.exports = {
   getUserDetailsByUserIdForBusiness,
   getVerifiedAndCodeDataByUserId,
   addVerificationCode,
-  updateVerificationCode
+  updateVerificationCode,
+  getCodeData,
+  setTokenConsumed,
+  markUserEmailVerified,
+  markUserSmsVerified
 }
