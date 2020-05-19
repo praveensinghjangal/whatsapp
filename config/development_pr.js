@@ -135,5 +135,20 @@ module.exports = {
       facebook: { name: 'facebook', options: { scope: 'email' } },
       jwt: { name: 'jwt', options: { session: false } }
     }
+  },
+  emailProvider: {
+    service: 'sendgrid',
+    host: 'smtp.sendgrid.net',
+    port: 25587,
+    auth: {
+      user: 'apikey',
+      password: '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'
+    },
+    tls: true,
+    debug: true,
+    fromEmail: 'danish.galiyara@vivaconnect.co',
+    subject: {
+      emailVerification: 'Helo Whatsapp Email Verification'
+    }
   }
 }
