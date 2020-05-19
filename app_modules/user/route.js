@@ -49,5 +49,6 @@ router.put('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authst
 
 // Verification routes
 router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateEmailVerificationCode)
+router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateSmsVerificationCode)
 
 module.exports = router

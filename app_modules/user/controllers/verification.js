@@ -21,7 +21,6 @@ const generateEmailVerificationCode = (req, res) => {
     })
     .then(data => {
       if (data && data.user_verification_code_id) {
-        console.log('need to call update function', data)
         return verificationService.updateExistingTokens(+userId, __define.VERIFICATION_CHANNEL.email.name)
       } else {
         return data
@@ -36,4 +35,35 @@ const generateEmailVerificationCode = (req, res) => {
     })
 }
 
-module.exports = { generateEmailVerificationCode }
+const generateSmsVerificationCode = (req, res) => {
+  const verificationService = new VerificationService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  let firstName = ''
+  let phoneNumber = ''
+  verificationService.getVerifiedAndCodeDataByUserId(+userId, __define.VERIFICATION_CHANNEL.sms.name)
+    .then(data => {
+      firstName = data && data.first_name ? data.first_name : ''
+      phoneNumber = data && data.contact_number && data.phone_code ? data.phone_code + data.contact_number : ''
+      if (data && data.phone_verified) {
+        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.PHONE_ALREADY_VERIFIED, err: {} })
+      } else {
+        return data
+      }
+    })
+    .then(data => {
+      if (data && data.user_verification_code_id) {
+        return verificationService.updateExistingTokens(+userId, __define.VERIFICATION_CHANNEL.sms.name)
+      } else {
+        return data
+      }
+    })
+    .then(data => verificationService.addVerificationCode(+userId, __define.VERIFICATION_CHANNEL.sms.name, __define.VERIFICATION_CHANNEL.sms.expiresIn, __define.VERIFICATION_CHANNEL.sms.codeLength))
+    .then(data => verificationService.sendVerificationCodeBySms(data.code, phoneNumber, firstName))
+    .then(data => __util.send(res, { type: __define.RESPONSE_MESSAGES.PHONE_VC, data: data }))
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+    })
+}
+
+module.exports = { generateEmailVerificationCode, generateSmsVerificationCode }

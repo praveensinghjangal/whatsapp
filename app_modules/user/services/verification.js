@@ -96,11 +96,29 @@ class VerificationService {
       emailSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
       return emailSent.promise
     }
+    if (!email || typeof email !== 'string') {
+      emailSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email of type string' })
+      return emailSent.promise
+    }
     const emailService = new EmailService(__config.emailProvider)
     emailService.sendEmail([email], __config.emailProvider.subject.emailVerification, EmailTemplates.verificationCodeTemplate(code, firstName))
       .then(data => emailSent.resolve(data))
       .catch(err => emailSent.reject(err))
     return emailSent.promise
+  }
+
+  sendVerificationCodeBySms (code, phoneNumber, firstName) {
+    const smsSent = q.defer()
+    if (!code || typeof code !== 'number') {
+      smsSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      return smsSent.promise
+    }
+    if (!phoneNumber || typeof phoneNumber !== 'string') {
+      smsSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide phoneNumber of type string' })
+      return smsSent.promise
+    }
+    smsSent.resolve({ code, phoneNumber, firstName })
+    return smsSent.promise
   }
 }
 

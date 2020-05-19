@@ -55,7 +55,7 @@ const updateBusinessBillingProfile = () => {
 
 const getVerifiedAndCodeDataByUserId = () => {
   return `select uvc.id as user_verification_code_id , u.phone_verified ,u.email_verified,
-    u.email , u.first_name 
+    u.email ,u.first_name ,u.phone_code, u.contact_number
     from users u 
     left join user_verification_code uvc on u.user_id = uvc.user_id and lower(uvc.code_type) = lower($2) and uvc.is_consumed = false and uvc.is_active = true
     where u.user_id = $1

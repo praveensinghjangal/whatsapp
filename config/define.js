@@ -285,7 +285,7 @@ const CUSTOM_CONSTANT = {
 
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
-  sms: { name: 'email', expiresIn: 3600, codeLength: 4 }
+  sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
 }
 
 const RESPONSE_MESSAGES = {
@@ -338,7 +338,12 @@ const RESPONSE_MESSAGES = {
   EMAIL_VC: {
     status_code: 200,
     code: 2001,
-    message: 'Verification code generated, Please check your registered email'
+    message: 'Please check your registered email for verification code'
+  },
+  PHONE_VC: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check your registered contact number for verification code'
   },
   // Note: use codes 3000 to 3999 for api error
   NO_RECORDS_FOUND: {
@@ -410,6 +415,11 @@ const RESPONSE_MESSAGES = {
     status_code: 200,
     code: 3015,
     message: 'Email already verified for user'
+  },
+  PHONE_ALREADY_VERIFIED: {
+    status_code: 200,
+    code: 3015,
+    message: 'Phone number already verified for user'
   }
 }
 
