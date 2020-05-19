@@ -3,19 +3,17 @@ const authMiddleware = require('../../middlewares/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const router = express.Router()
 
-/* Controller start */
+// Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
 const billingProfileController = require('./controllers/billingProfile')
+const verificationController = require('./controllers/verification')
 
-/* Controller end */
-
-/* Route start */
-
+// Routes
+// User routes
 router.post('/auth/login', require('./controllers/login'))
 router.post('/signUp', require('./controllers/signUp'))
 router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name, authstrategy.google.options))
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
-
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {
   console.log('redirected', req.user)
@@ -41,7 +39,6 @@ router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.faceboo
 })
 
 // Account Profile routes
-
 router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAcountProfile)
 router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAcountProfile)
 
@@ -49,5 +46,8 @@ router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authst
 router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.getBusinessBilllingProfile)
 router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.addBusinessBilllingProfile)
 router.put('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.updateBusinessBilllingProfile)
+
+// Verification routes
+router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateEmailVerificationCode)
 
 module.exports = router

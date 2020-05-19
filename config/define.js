@@ -283,6 +283,11 @@ const CUSTOM_CONSTANT = {
   SESSION_TIME: 86400
 }
 
+const VERIFICATION_CHANNEL = {
+  email: { name: 'email', expiresIn: 3600, codeLength: 4 },
+  sms: { name: 'email', expiresIn: 3600, codeLength: 4 }
+}
+
 const RESPONSE_MESSAGES = {
   INVALID_REQUEST: {
     status_code: 400,
@@ -329,6 +334,11 @@ const RESPONSE_MESSAGES = {
     status_code: 200,
     code: 2000,
     message: 'Success'
+  },
+  EMAIL_VC: {
+    status_code: 200,
+    code: 2001,
+    message: 'Verification code generated, Please check your registered email'
   },
   // Note: use codes 3000 to 3999 for api error
   NO_RECORDS_FOUND: {
@@ -395,6 +405,11 @@ const RESPONSE_MESSAGES = {
     status_code: 200,
     code: 3014,
     message: 'User does not exist'
+  },
+  EMAIL_ALREADY_VERIFIED: {
+    status_code: 200,
+    code: 3015,
+    message: 'Email already verified for user'
   }
 }
 
@@ -406,3 +421,4 @@ module.exports.REDIS_KEYS = REDIS_KEYS
 module.exports.REDIS_HASH = REDIS_HASH
 module.exports.RESPONSE_MESSAGES = RESPONSE_MESSAGES
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
+module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
