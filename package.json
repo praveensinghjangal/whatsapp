@@ -39,7 +39,7 @@
     "jwt-simple": "^0.5.5",
     "line-by-line": "^0.1.6",
     "lodash": "^4.17.15",
-    "moment": "^2.23.0",
+    "moment": "^2.25.3",
     "moment-timezone": "^0.5.26",
     "mongodb": "^3.1.12",
     "mongodb-autoincrement": "^1.0.1",

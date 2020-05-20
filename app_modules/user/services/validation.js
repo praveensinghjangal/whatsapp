@@ -56,6 +56,10 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        tncAccepted: {
+          type: 'boolean',
+          required: true
         }
       }
     }
@@ -91,6 +95,10 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        tncAccepted: {
+          type: 'boolean',
+          required: true
         },
         source: {
           type: 'string',
@@ -196,6 +204,16 @@ class validate {
           type: 'string',
           required: true,
           minLength: 6
+        },
+        firstName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        lastName: {
+          type: 'string',
+          required: false,
+          minLength: 1
         }
       }
     }

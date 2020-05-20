@@ -60,8 +60,10 @@ const updateAcountProfile = (req, res) => {
       const contactNumber = req.body.contactNumber
       const phoneCode = req.body.phoneCode
       const postalCode = req.body.postalCode
+      const firstName = req.body.firstName
+      const lastName = req.body.lastName
 
-      return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, userId, userId])
+      return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, firstName, lastName, userId, userId])
     })
     .then(result => {
       __logger.info('then 3', result)

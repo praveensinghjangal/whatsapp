@@ -55,8 +55,8 @@ const addBusinessBilllingProfile = (req, res) => {
       const city = req.body.city
       const state = req.body.state
       const country = req.body.country
-      const addressLine1 = req.body.address_line_1
-      const addressLine2 = req.body.address_line_2
+      const addressLine1 = req.body.addressLine1
+      const addressLine2 = req.body.addressLine2
       const contactNumber = req.body.contactNumber
       const phoneCode = req.body.phoneCode
       const postalCode = req.body.postalCode
@@ -100,22 +100,29 @@ const updateBusinessBilllingProfile = (req, res) => {
         return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
-    .then(data => {
-      __logger.info('Then 2', data)
+    .then((data) => {
+      const userId = req.user && req.user.user_id ? req.user.user_id : 0
+      return __db.postgresql.__query(queryProvider.updateIsActiveStatusBusinessProfile(), [false, userId, userId])
+    })
+    .then(result1 => {
+      __logger.info('Then 2', result1)
+      const uniqueId = new UniqueId()
 
       const userId = req.user && req.user.user_id ? req.user.user_id : 0
       const city = req.body.city
       const state = req.body.state
       const country = req.body.country
-      const addressLine1 = req.body.address_line_1
-      const addressLine2 = req.body.address_line_2
+      const addressLine1 = req.body.addressLine1
+      const addressLine2 = req.body.addressLine2
       const contactNumber = req.body.contactNumber
       const phoneCode = req.body.phoneCode
       const postalCode = req.body.postalCode
       const GstOrTaxNo = req.body.GstOrTaxNo
       const businessName = req.body.businessName
       const panCard = req.body.panCard
-      return __db.postgresql.__query(queryProvider.updateBusinessBillingProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, panCard, GstOrTaxNo, businessName, userId, userId])
+      const tokenExpiryInSeconds = 864000
+
+      return __db.postgresql.__query(queryProvider.createBusinessBillingProfile(), [userId, businessName, city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, panCard, GstOrTaxNo, uniqueId.intId(), userId, tokenExpiryInSeconds])
     })
     .then(result => {
       __logger.info('Then 3', result)
