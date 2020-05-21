@@ -50,7 +50,7 @@ module.exports = {
   // },
   mongo: {
     init: true,
-    host: '172.17.0.2:27017',
+    host: '35.154.250.234:27018',
     use_auth: true,
     name: 'helo_whatsapp',
     options: {
