@@ -57,8 +57,8 @@ module.exports = {
       db_name: 'helo_whatsapp',
       authSource: 'admin',
       authMechanism: 'DEFAULT',
-      user: 'root',
-      pass: 'pass%40123'
+      user: 'dbwhatsapp',
+      pass: '1kwNPyemcLtbClWJ'
     }
   },
   postgresql: {
