@@ -50,7 +50,7 @@ module.exports = {
   // },
   mongo: {
     init: true,
-    host: '35.154.250.234:27018',
+    host: '127.0.0.1',
     use_auth: true,
     name: 'helo_whatsapp',
     options: {
@@ -65,7 +65,7 @@ module.exports = {
     init: true,
     name: 'helo_whatsapp',
     options: {
-      host: '35.154.250.234',
+      host: '127.0.0.1',
       port: 5432,
       database: 'helo_whatsapp',
       user: 'viva_helo_whatsapp',
