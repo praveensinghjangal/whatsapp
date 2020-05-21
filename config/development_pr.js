@@ -50,7 +50,7 @@ module.exports = {
   // },
   mongo: {
     init: true,
-    host: '172.17.0.2:27017',
+    host: '35.154.250.234:27018',
     use_auth: true,
     name: 'helo_whatsapp',
     options: {
@@ -65,11 +65,11 @@ module.exports = {
     init: true,
     name: 'helo_whatsapp',
     options: {
-      host: 'localhost',
+      host: '35.154.250.234',
       port: 5432,
       database: 'helo_whatsapp',
-      user: 'postgres',
-      password: 'mysecretpassword',
+      user: 'viva_helo_whatsapp',
+      password: 'hscbvyhd76734bhdf',
       max_connection: 10,
       idleTimeoutMillis: 30000
     }
@@ -134,6 +134,21 @@ module.exports = {
       google: { name: 'google', options: { scope: ['profile', 'email'] } },
       facebook: { name: 'facebook', options: { scope: 'email' } },
       jwt: { name: 'jwt', options: { session: false } }
+    }
+  },
+  emailProvider: {
+    service: 'sendgrid',
+    host: 'smtp.sendgrid.net',
+    port: 25587,
+    auth: {
+      user: 'apikey',
+      password: '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'
+    },
+    tls: true,
+    debug: true,
+    fromEmail: 'danish.galiyara@vivaconnect.co',
+    subject: {
+      emailVerification: 'Helo Whatsapp Email Verification'
     }
   }
 }
