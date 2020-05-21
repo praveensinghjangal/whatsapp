@@ -16,6 +16,6 @@ VOLUME ["/var/log"]
 
 RUN mkdir -p /var/log/node_apps/
 
-EXPOSE 4000
+EXPOSE 7777
 
 CMD ["node", "server.js"]
