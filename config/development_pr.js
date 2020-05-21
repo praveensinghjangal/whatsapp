@@ -65,11 +65,11 @@ module.exports = {
     init: true,
     name: 'helo_whatsapp',
     options: {
-      host: 'localhost',
+      host: '35.154.250.234',
       port: 5432,
       database: 'helo_whatsapp',
-      user: 'postgres',
-      password: 'mysecretpassword',
+      user: 'viva_helo_whatsapp',
+      password: 'hscbvyhd76734bhdf',
       max_connection: 10,
       idleTimeoutMillis: 30000
     }
