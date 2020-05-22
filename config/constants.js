@@ -1,12 +1,3 @@
-var MYSQL_QUERY = {
-  cdr_reason: 'case ' +
-        "when cm.hangup_cause='NORMAL_CLEARING' or cm.billsec>0 then 'SUCCESS' " +
-        "when cm.hangup_cause in ('NO_ANSWER','CALL_REJECTED','USER_BUSY','NO_USER_RESPONSE','NO_ANSWER','CALL_AWARDED_DELIVERED') then 'ATTEMPT' " +
-        "when cm.hangup_cause in ('BLACKLISTED','OPTOUT','COOLING_PERIOD','DAILY','MONTHLYDEPT','NDNC_REJECT') then cm.hangup_cause " +
-        "else 'FAILED' " +
-        'end as reason'
-}
-
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development_pr',
   PROD_ENV: 'production',
@@ -62,7 +53,6 @@ const VERIFICATION_CHANNEL = {
   sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
 }
 
-module.exports.MYSQL_QUERY = MYSQL_QUERY
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
