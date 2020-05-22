@@ -1,6 +1,7 @@
 const q = require('q')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const constants = require('../../../config/constants')
 const __define = require('../../../config/define')
 const ValidatonService = require('./validation')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
@@ -40,17 +41,19 @@ class UserData {
     return doesExist.promise
   }
 
-  createUser (email, password, source) {
+  createUser (email, password, tncAccepted, source) {
     const userCreated = q.defer()
     let userId = 0
-    this.validate.signupService({ email, password, source })
+    this.validate.signupService({ email, password, tncAccepted, source })
       .then(valResponse => this.doesUserExists(email))
       .then(exists => {
         if (!exists) {
-          userId = this.uniqueId.intId()
+          userId = this.uniqueId.uuid()
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
-          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId])
+          const accountTypeId = constants.ACCOUNT_PLAN_TYPE.Prepaid
+
+          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId])
         } else {
           return rejectionHandler({ type: __define.RESPONSE_MESSAGES.USER_EXIST, data: {} })
         }
@@ -82,14 +85,14 @@ class UserData {
         return __db.postgresql.__query(queryProvider.getUserDetailsByUserIdForAccountProfile(), [userId])
       })
       .then(result => {
-        console.log('Qquery Result checkUserExistByUserId', result)
+        // console.log('Qquery Result checkUserExistByUserId', result)
 
         // if exist throw return true exist
         if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve(true)
+          doesUserIdExist.resolve({ exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve(false)
+          doesUserIdExist.resolve({ exists: false })
         }
       })
       .catch(err => {
@@ -114,10 +117,10 @@ class UserData {
 
         // if exist throw return true exist
         if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve(true)
+          doesUserIdExist.resolve({ exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve(false)
+          doesUserIdExist.resolve({ exists: false })
         }
       })
       .catch(err => {

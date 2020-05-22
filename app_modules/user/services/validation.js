@@ -56,6 +56,10 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        tncAccepted: {
+          type: 'boolean',
+          required: true
         }
       }
     }
@@ -91,6 +95,10 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        tncAccepted: {
+          type: 'boolean',
+          required: true
         },
         source: {
           type: 'string',
@@ -152,50 +160,66 @@ class validate {
       type: 'object',
       required: true,
       properties: {
-        // email: {
-        //   type: 'string',
-        //   required: true,
-        //   minLength: 1
-        // },
         city: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         state: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         country: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false,
+          minLength: 1,
+          maxLength: 2
         },
         addressLine1: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         addressLine2: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         contactNumber: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 10
         },
         phoneCode: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         postalCode: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 6
+        },
+        firstName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        lastName: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        accountManagerName: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        accountTypeId: {
+          type: 'string',
+          required: false,
+          minLength: 1
         }
       }
     }
@@ -230,52 +254,52 @@ class validate {
         },
         city: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         state: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         country: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         addressLine1: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         addressLine2: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         contactNumber: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 10
         },
         phoneCode: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         postalCode: {
           type: 'string',
-          required: true,
-          minLength: 5
+          required: false,
+          minLength: 6
         },
         GstOrTaxNo: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 5
         },
         panCard: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 10
         }
       }

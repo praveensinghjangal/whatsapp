@@ -53,6 +53,13 @@ const VERIFICATION_CHANNEL = {
   sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
 }
 
+const ACCOUNT_PLAN_TYPE = {
+  Prepaid: 'd9718ee1-50a1-4826-b0fa-ad1394308d59',
+  Postpaid: 'eb004696-bcad-4998-adbb-d25fbbd3ad68',
+  SemiPostPaid: '570af199-5b7c-4e7f-bc9f-e298d65b6273'
+}
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
+module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE

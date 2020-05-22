@@ -1,6 +1,6 @@
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
-const constants = require('../../../config/define')
+const constants = require('../../../config/constants')
 const __define = require('../../../config/define')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
@@ -22,7 +22,7 @@ const getAcountProfile = (req, res) => {
           data: results.rows[0]
         })
       } else {
-        return __util.send(res, { type: constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return __util.send(res, { type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     })
     .catch(err => {
@@ -38,9 +38,9 @@ const updateAcountProfile = (req, res) => {
 
   // User Id exist check
   userService.checkUserIdExistsForAccountProfile(req.user.user_id)
-    .then(exists => {
-      __logger.info('UserId exist check then 1', exists)
-      if (exists) {
+    .then(result => {
+      __logger.info('UserId exist check then 1', result.exists)
+      if (result.exists) {
         const validate = new ValidatonService()
 
         return validate.accountProfile(req.body)
@@ -60,8 +60,12 @@ const updateAcountProfile = (req, res) => {
       const contactNumber = req.body.contactNumber
       const phoneCode = req.body.phoneCode
       const postalCode = req.body.postalCode
+      const firstName = req.body.firstName
+      const lastName = req.body.lastName
+      const accountManagerName = req.body.accountManagerName
+      const accountTypeId = req.body.accountTypeId ? req.body.accountTypeId : constants.ACCOUNT_PLAN_TYPE.Prepaid
 
-      return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, userId, userId])
+      return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [city, state, country, addressLine1, addressLine2, contactNumber, phoneCode, postalCode, firstName, lastName, accountManagerName, accountTypeId, userId, userId])
     })
     .then(result => {
       __logger.info('then 3', result)
@@ -72,7 +76,7 @@ const updateAcountProfile = (req, res) => {
           data: { }
         })
       } else {
-        return __util.send(res, { type: constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
+        return __util.send(res, { type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
       }
     })
     .catch(err => {
