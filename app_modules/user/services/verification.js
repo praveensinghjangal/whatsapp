@@ -14,8 +14,8 @@ class VerificationService {
 
   getVerifiedAndCodeDataByUserId (userId, verificationChannel) {
     const verificationData = q.defer()
-    if (!userId || typeof userId !== 'number') {
-      verificationData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+    if (!userId || typeof userId !== 'string') {
+      verificationData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return verificationData.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
@@ -37,8 +37,8 @@ class VerificationService {
 
   addVerificationCode (userId, verificationChannel, expiresIn, codeLength) {
     const verificationDataAdded = q.defer()
-    if (!userId || typeof userId !== 'number') {
-      verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+    if (!userId || typeof userId !== 'string') {
+      verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return verificationDataAdded.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
@@ -69,8 +69,8 @@ class VerificationService {
 
   updateExistingTokens (userId, verificationChannel) {
     const verificationDataUpdated = q.defer()
-    if (!userId || typeof userId !== 'number') {
-      verificationDataUpdated.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+    if (!userId || typeof userId !== 'string') {
+      verificationDataUpdated.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return verificationDataUpdated.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
@@ -123,8 +123,8 @@ class VerificationService {
 
   getCodeDetails (userId, code, verificationChannel) {
     const codeData = q.defer()
-    if (!userId || typeof userId !== 'number') {
-      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+    if (!userId || typeof userId !== 'string') {
+      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return codeData.promise
     }
     if (!code || typeof code !== 'number') {
@@ -150,8 +150,8 @@ class VerificationService {
 
   setTokenConsumed (userId, code, verificationChannel) {
     const tokenMarkedConsumed = q.defer()
-    if (!userId || typeof userId !== 'number') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+    if (!userId || typeof userId !== 'string') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return tokenMarkedConsumed.promise
     }
     if (!code || typeof code !== 'number') {
@@ -177,8 +177,8 @@ class VerificationService {
 
   markChannelVerified (userId, verificationChannel) {
     const tokenMarkedConsumed = q.defer()
-    if (!userId || typeof userId !== 'number') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type integer' })
+    if (!userId || typeof userId !== 'string') {
+      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return tokenMarkedConsumed.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {

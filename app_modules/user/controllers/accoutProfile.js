@@ -11,7 +11,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // Get Account Profile
 const getAcountProfile = (req, res) => {
   __logger.info('Inside getAcountProfile', req.user.userId)
-  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   __db.postgresql.__query(queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
       __logger.info('Then 1', results)
@@ -51,7 +51,7 @@ const updateAcountProfile = (req, res) => {
     .then(data => {
       __logger.info('then 2', data)
 
-      const userId = req.user && req.user.user_id ? req.user.user_id : 0
+      const userId = req.user && req.user.user_id ? req.user.user_id : '0'
       const city = req.body.city
       const state = req.body.state
       const country = req.body.country
