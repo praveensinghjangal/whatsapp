@@ -210,6 +210,16 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1
+        },
+        accountManagerName: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        accountTypeId: {
+          type: 'string',
+          required: false,
+          minLength: 1
         }
       }
     }

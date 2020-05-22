@@ -1,8 +1,9 @@
 const q = require('q')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const constants = require('../../../config/constants')
 const __define = require('../../../config/define')
-const ValidatonService = require('../services/validation')
+const ValidatonService = require('./validation')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const passMgmt = require('../../../lib/util/password_mgmt')
@@ -47,10 +48,12 @@ class UserData {
       .then(valResponse => this.doesUserExists(email))
       .then(exists => {
         if (!exists) {
-          userId = this.uniqueId.intId()
+          userId = this.uniqueId.uuid()
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
-          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted])
+          const accountTypeId = constants.ACCOUNT_PLAN_TYPE.Prepaid
+
+          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId])
         } else {
           return rejectionHandler({ type: __define.RESPONSE_MESSAGES.USER_EXIST, data: {} })
         }
