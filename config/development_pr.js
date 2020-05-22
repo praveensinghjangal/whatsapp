@@ -49,7 +49,7 @@ module.exports = {
   //     }
   // },
   mongo: {
-    init: true,
+    init: false,
     host: '172.17.0.2:27017',
     use_auth: true,
     name: 'helo_whatsapp',
@@ -63,11 +63,11 @@ module.exports = {
   },
   postgresql: {
     init: true,
-    name: 'helo_whatsapp',
+    name: 'whatsapp_business',
     options: {
       host: 'localhost',
       port: 5432,
-      database: 'helo_whatsapp',
+      database: 'whatsapp_business',
       user: 'postgres',
       password: 'mysecretpassword',
       max_connection: 10,

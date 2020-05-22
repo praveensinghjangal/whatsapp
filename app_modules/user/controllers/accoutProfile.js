@@ -38,9 +38,9 @@ const updateAcountProfile = (req, res) => {
 
   // User Id exist check
   userService.checkUserIdExistsForAccountProfile(req.user.user_id)
-    .then(exists => {
-      __logger.info('UserId exist check then 1', exists)
-      if (exists) {
+    .then(result => {
+      __logger.info('UserId exist check then 1', result.exists)
+      if (result.exists) {
         const validate = new ValidatonService()
 
         return validate.accountProfile(req.body)

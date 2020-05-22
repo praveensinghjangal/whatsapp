@@ -5,9 +5,14 @@ const __define = require('../../../config/define')
 const __logger = require('../../../lib/logger')
 const authMiddleware = require('../../../middlewares/authentication')
 const UserService = require('../services/dbData')
+// const UserService = require('../../../sampleDocuments/')
+const path = require('path')
 
 const controller = (req, res) => {
   __logger.info('Inside login')
+  // const filePath = '../../../sampleDocuments/'
+  // const fileName = 'Test.pdf'
+  // res.download(path.join(filePath, fileName))
   const validate = new ValidatonService()
   const userService = new UserService()
   const password = req.body.password

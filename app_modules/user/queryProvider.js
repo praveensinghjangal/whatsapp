@@ -32,9 +32,7 @@ const getUserDetailsByUserIdForBusiness = () => {
 }
 
 const getBillingProfile = () => {
-  return `select  businessName,city, state, country, addressLine1,addressLine2,
-  contactNumber, phoneCode, postalCode,panCard, gstOrTaxNo 
-  from business_information WHERE user_id = $1 and is_active = true`
+  return `select business_name as businessName,city, state, country, address_line_1 as addressLine1,address_line_2 as addressLine2,contact_number as contactNumber,phone_code as  phoneCode, postal_code as  postalCode, pan_card as panCard, gst_or_tax_no as gstOrTaxNo from business_information WHERE user_id = $1 and is_active = true`
 }
 
 const createBusinessBillingProfile = () => {
@@ -57,4 +55,8 @@ const updateIsActiveStatusBusinessProfile = () => {
   set is_active=$1,updated_on=now(),updated_by=$2 WHERE user_id=$3 and is_active = true`
 }
 
-module.exports = { getUserDetailsByEmail, createUser, getUserDetailsByUserIdForAccountProfile, getUserAccountProfile, updateUserAccountProfile, createBusinessBillingProfile, updateBusinessBillingProfile, getBillingProfile, getUserDetailsByUserIdForBusiness, updateIsActiveStatusBusinessProfile }
+const getBillingProfileWithBusinessInfoId = () => {
+  return `select business_information_id, business_name as businessName,city, state, country, address_line_1 as addressLine1,address_line_2 as addressLine2,contact_number as contactNumber,phone_code as  phoneCode, postal_code as  postalCode, pan_card as panCard, gst_or_tax_no as gstOrTaxNo from business_information WHERE user_id = $1 and is_active = true`
+}
+
+module.exports = { getUserDetailsByEmail, createUser, getUserDetailsByUserIdForAccountProfile, getUserAccountProfile, updateUserAccountProfile, createBusinessBillingProfile, updateBusinessBillingProfile, getBillingProfile, getUserDetailsByUserIdForBusiness, updateIsActiveStatusBusinessProfile, getBillingProfileWithBusinessInfoId }

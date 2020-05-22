@@ -82,14 +82,14 @@ class UserData {
         return __db.postgresql.__query(queryProvider.getUserDetailsByUserIdForAccountProfile(), [userId])
       })
       .then(result => {
-        console.log('Qquery Result checkUserExistByUserId', result)
+        // console.log('Qquery Result checkUserExistByUserId', result)
 
         // if exist throw return true exist
         if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve(true)
+          doesUserIdExist.resolve({ exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve(false)
+          doesUserIdExist.resolve({ exists: false })
         }
       })
       .catch(err => {
@@ -114,10 +114,10 @@ class UserData {
 
         // if exist throw return true exist
         if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve(true)
+          doesUserIdExist.resolve({ exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve(false)
+          doesUserIdExist.resolve({ exists: false })
         }
       })
       .catch(err => {
