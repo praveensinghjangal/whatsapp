@@ -1,5 +1,5 @@
 const getUserDetailsByEmail = () => {
-  return `select user_id, hash_password as hash_password,salt_key, email_verified, phone_verified, tnc_accepted from users 
+  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted from users 
   where email = $1 and is_active = true`
 }
 
@@ -16,7 +16,7 @@ const getUserDetailsByUserIdForAccountProfile = () => {
 }
 
 const getUserAccountProfile = () => {
-  return `select user_id as accountId,account_manager_name as accountManagerName,token_key as tokenKey,email,type_name as accountType ,city, state, country, address_line_1 as addressLine1,address_line_2 as addressLine2, contact_number as contactNumber,phone_code as phoneCode, postal_code as postalCode, first_name as firstName,last_name as lastName 
+  return `select user_id as "accountId",account_manager_name as "accountManagerName",token_key as "tokenKey",email,type_name as "accountType" ,city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2", contact_number as "contactNumber",phone_code as "phoneCode", postal_code as "postalCode", first_name as "firstName",last_name as "lastName" 
   from users u
   left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
   WHERE u.user_id = $1 and u.is_active = true`
@@ -30,7 +30,7 @@ const updateUserAccountProfile = () => {
 // Billing Profile
 
 const getBillingProfile = () => {
-  return `select business_name as businessName,city, state, country, address_line_1 as addressLine1,address_line_2 as addressLine2,contact_number as contactNumber,phone_code as  phoneCode, postal_code as  postalCode, pan_card as panCard, gst_or_tax_no as gstOrTaxNo 
+  return `select business_name as "businessName",city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2",contact_number as "contactNumber",phone_code as  "phoneCode", postal_code as  "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo" 
   from business_information 
   WHERE user_id = $1 and is_active = true`
 }
@@ -56,7 +56,7 @@ const updateIsActiveStatusBusinessProfile = () => {
 }
 
 const getBillingProfileWithBusinessInfoId = () => {
-  return `select business_information_id, business_name as businessName,city, state, country, address_line_1 as addressLine1,address_line_2 as addressLine2,contact_number as contactNumber,phone_code as  phoneCode, postal_code as  postalCode, pan_card as panCard, gst_or_tax_no as gstOrTaxNo 
+  return `select business_information_id, business_name as "businessName",city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2",contact_number as "contactNumber",phone_code as  "phoneCode", postal_code as  "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo" 
   from business_information 
   WHERE user_id = $1 and is_active = true`
 }
