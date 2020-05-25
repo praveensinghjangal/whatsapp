@@ -18,7 +18,7 @@ const getUserDetailsByUserIdForAccountProfile = () => {
 const getUserAccountProfile = () => {
   return `select user_id as accountId,account_manager_name as accountManagerName,token_key as tokenKey,email,type_name as accountType ,city, state, country, address_line_1 as addressLine1,address_line_2 as addressLine2, contact_number as contactNumber,phone_code as phoneCode, postal_code as postalCode, first_name as firstName,last_name as lastName 
   from users u
-  left join user_account_type uat on u.user_account_type_id = uat.account_type_id and uat.is_active = true
+  left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
   WHERE u.user_id = $1 and u.is_active = true`
 }
 
@@ -63,7 +63,7 @@ const getBillingProfileWithBusinessInfoId = () => {
 
 // Account Type
 const getAccountType = () => {
-  return `select account_type_id, type_name, is_active
+  return `select user_account_type_id, type_name
   from user_account_type 
   WHERE created_by = $1 and is_active = true`
 }
