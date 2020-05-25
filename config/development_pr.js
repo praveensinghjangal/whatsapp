@@ -74,7 +74,6 @@ module.exports = {
       idleTimeoutMillis: 30000
     }
   },
-
   redis_local: {
     init: false,
     use_auth: true,
