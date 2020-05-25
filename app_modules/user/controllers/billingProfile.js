@@ -33,37 +33,30 @@ const getBusinessBilllingProfile = (req, res) => {
 }
 
 //  Update Business Profile
-function updateBusinessBilllingProfile (userId, businessData) {
-  // __logger.info('Inside updateBusinessBilllingProfile', businessData)
+function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToBeUpdated) {
+  // __logger.info('Inside updateBusinessBilllingProfile oldBusinessData', oldBusinessData)
+  // __logger.info('Inside updateBusinessBilllingProfile businessDataToBeUpdated', businessDataToBeUpdated)
   // __logger.info('Inside updateBusinessBilllingProfile', userId)
 
   return new Promise((resolve, reject) => {
-    var businessInfo
-    // __db.postgresql.__query(queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
-    getBusinessProfileInfo(userId)
-      .then((data) => {
-        __logger.info('Then 1 update', data)
-        businessInfo = data.rows[0]
-        return updateBusinessProfileIsActiveStatusToFalse(userId)
-        // return __db.postgresql.__query(queryProvider.updateIsActiveStatusBusinessProfile(), [false, userId, userId])
-      })
+    updateBusinessProfileIsActiveStatusToFalse(userId)
       .then(result => {
         __logger.info('Then 2 update')
 
         const businessDataObj = {
-          city: businessData.city ? businessData.city : businessInfo.city,
-          state: businessData.state ? businessData.state : businessInfo.state,
-          country: businessData.country ? businessData.country : businessInfo.country,
-          addressLine1: businessData.addressLine1 ? businessData.addressLine1 : businessInfo.addressLine1,
-          addressLine2: businessData.addressLine2 ? businessData.addressLine2 : businessInfo.addressLine2,
-          contactNumber: businessData.contactNumber ? businessData.contactNumber : businessInfo.contactNumber,
-          phoneCode: businessData.phoneCode ? businessData.phoneCode : businessInfo.phoneCode,
-          postalCode: businessData.postalCode ? businessData.postalCode : businessInfo.postalCode,
-          GstOrTaxNo: businessData.GstOrTaxNo ? businessData.GstOrTaxNo : businessInfo.GstOrTaxNo,
-          businessName: businessData.businessName ? businessData.businessName : businessInfo.businessName,
-          panCard: businessData.panCard ? businessData.panCard : businessInfo.panCard,
+          city: businessDataToBeUpdated.city ? businessDataToBeUpdated.city : oldBusinessData.city,
+          state: businessDataToBeUpdated.state ? businessDataToBeUpdated.state : oldBusinessData.state,
+          country: businessDataToBeUpdated.country ? businessDataToBeUpdated.country : oldBusinessData.country,
+          addressLine1: businessDataToBeUpdated.addressLine1 ? businessDataToBeUpdated.addressLine1 : oldBusinessData.addressline1,
+          addressLine2: businessDataToBeUpdated.addressLine2 ? businessDataToBeUpdated.addressLine2 : oldBusinessData.addressline2,
+          contactNumber: businessDataToBeUpdated.contactNumber ? businessDataToBeUpdated.contactNumber : oldBusinessData.contactnumber,
+          phoneCode: businessDataToBeUpdated.phoneCode ? businessDataToBeUpdated.phoneCode : oldBusinessData.phonecode,
+          postalCode: businessDataToBeUpdated.postalCode ? businessDataToBeUpdated.postalCode : oldBusinessData.postalcode,
+          GstOrTaxNo: businessDataToBeUpdated.GstOrTaxNo ? businessDataToBeUpdated.GstOrTaxNo : oldBusinessData.gstortaxno,
+          businessName: businessDataToBeUpdated.businessName ? businessDataToBeUpdated.businessName : oldBusinessData.businessname,
+          panCard: businessDataToBeUpdated.panCard ? businessDataToBeUpdated.panCard : oldBusinessData.pancard,
           tokenExpiryInSeconds: 864000,
-          businessInformationId: businessInfo.business_information_id
+          businessInformationId: oldBusinessData.business_information_id
         }
 
         return insertBusinessBillingProfileInfo(userId, businessDataObj)
@@ -102,7 +95,7 @@ const addBusinessBilllingProfile = (req, res) => {
       if (!result.exists) {
         return insertBusinessBillingProfileInfo(userId, req.body)
       } else {
-        return updateBusinessBilllingProfile(userId, req.body)
+        return updateBusinessBilllingProfile(userId, result.record, req.body)
       }
     })
     .then(result => {

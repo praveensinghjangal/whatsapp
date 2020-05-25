@@ -59,7 +59,12 @@ const ACCOUNT_PLAN_TYPE = {
   SemiPostPaid: '570af199-5b7c-4e7f-bc9f-e298d65b6273'
 }
 
+const USER_TYPE = {
+  admin: 'admin'
+}
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
 module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE
+module.exports.USER_TYPE = USER_TYPE

@@ -110,17 +110,18 @@ class UserData {
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
         // console.log('Response', valResponse)
-        return __db.postgresql.__query(queryProvider.getUserDetailsByUserIdForBusiness(), [userId])
+
+        return __db.postgresql.__query(queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
       })
       .then(result => {
         // console.log('Qquery Result checkUserExistByUserId', result)
 
         // if exist throw return true exist
         if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve({ exists: true })
+          doesUserIdExist.resolve({ record: result.rows[0], exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve({ exists: false })
+          doesUserIdExist.resolve({ record: result.rows[0], exists: false })
         }
       })
       .catch(err => {

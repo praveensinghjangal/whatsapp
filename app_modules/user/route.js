@@ -5,6 +5,7 @@ const router = express.Router()
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
+const accountTypeController = require('./controllers/accountType')
 const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
 
@@ -52,5 +53,8 @@ router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.
 router.patch('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateEmailVerificationCode)
 router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateSmsVerificationCode)
 router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateSmsVerificationCode)
+
+// Acoount Type
+router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
 
 module.exports = router
