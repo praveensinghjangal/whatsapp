@@ -61,11 +61,86 @@ const getBillingProfileWithBusinessInfoId = () => {
   WHERE user_id = $1 and is_active = true`
 }
 
-// Account Type
 const getAccountType = () => {
   return `select user_account_type_id, type_name
   from user_account_type 
   WHERE created_by = $1 and is_active = true`
 }
+const getVerifiedAndCodeDataByUserId = () => {
+  return `select uvc.id as user_verification_code_id , u.phone_verified ,u.email_verified,
+    u.email ,u.first_name ,u.phone_code, u.contact_number
+    from users u 
+    left join user_verification_code uvc on u.user_id = uvc.user_id and lower(uvc.code_type) = lower($2) and uvc.is_consumed = false and uvc.is_active = true
+    where u.user_id = $1
+    and u.is_active = true`
+}
 
-module.exports = { getUserDetailsByEmail, createUser, getUserDetailsByUserIdForAccountProfile, getUserAccountProfile, updateUserAccountProfile, createBusinessBillingProfile, updateBusinessBillingProfile, getBillingProfile, updateIsActiveStatusBusinessProfile, getBillingProfileWithBusinessInfoId, getAccountType }
+const addVerificationCode = () => {
+  return `insert into user_verification_code (user_id,code,code_type,expires_in,created_by) values
+  ($1,$2,$3,$4,$5)`
+}
+
+const updateVerificationCode = () => {
+  return `update user_verification_code
+  set is_active = false 
+  where user_id  = $1 and lower(code_type) = $2
+  and is_consumed = false and is_active = true`
+}
+
+const getCodeData = () => {
+  return `select expires_in,created_on from user_verification_code
+  where user_id  = $1 and code = $2 and code_type = $3 and is_consumed = false
+  and is_active = true`
+}
+
+const setTokenConsumed = () => {
+  return `update user_verification_code 
+  set is_consumed = true, updated_by = $4, updated_on = now()
+  where user_id  = $1 and code = $2 and code_type = $3 and is_consumed = false
+  and is_active = true`
+}
+
+const markUserEmailVerified = () => {
+  return `update users 
+  set email_verified = true, updated_by = $2, updated_on = now() 
+  where user_id = $1 and is_active = true`
+}
+
+const markUserSmsVerified = () => {
+  return `update users 
+  set phone_verified = true, updated_by = $2, updated_on = now() 
+  where user_id = $1 and is_active = true`
+}
+
+const saveUserAgreement = () => {
+  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path,created_by)
+  values ($1,$2,$3,$4,$5)`
+}
+const getLatestAgreementByUserId = () => {
+  return `select file_path from user_agreement_files
+  where user_id = $1 and is_active = true 
+  order by created_on desc limit 1`
+}
+
+module.exports = {
+  getUserDetailsByEmail,
+  createUser,
+  getUserDetailsByUserIdForAccountProfile,
+  getUserAccountProfile,
+  updateUserAccountProfile,
+  createBusinessBillingProfile,
+  updateBusinessBillingProfile,
+  getBillingProfile,
+  updateIsActiveStatusBusinessProfile,
+  getBillingProfileWithBusinessInfoId,
+  getAccountType,
+  getVerifiedAndCodeDataByUserId,
+  addVerificationCode,
+  updateVerificationCode,
+  getCodeData,
+  setTokenConsumed,
+  markUserEmailVerified,
+  markUserSmsVerified,
+  saveUserAgreement,
+  getLatestAgreementByUserId
+}

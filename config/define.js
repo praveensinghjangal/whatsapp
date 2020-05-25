@@ -62,7 +62,10 @@ const VERIFICATION_CHANNEL = {
   sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
 }
 
+const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
+
 module.exports.MYSQL_QUERY = MYSQL_QUERY
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
+module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
