@@ -11,7 +11,8 @@ const controller = (req, res) => {
   validate.signup(req.body)
     .then(valResponse => {
       __logger.info('Then1')
-      return userService.createUser(req.body.email, req.body.password, 'viva-portal')
+
+      return userService.createUser(req.body.email, req.body.password, req.body.tncAccepted, 'viva-portal')
     })
     .then(data => {
       __logger.info('Then 2', data)

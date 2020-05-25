@@ -5,6 +5,7 @@ const router = express.Router()
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
+const accountTypeController = require('./controllers/accountType')
 const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
 const agreementController = require('./controllers/agreement')
@@ -42,11 +43,11 @@ router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.faceboo
 // Account Profile routes
 router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAcountProfile)
 router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAcountProfile)
+router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
 
 // Billing Profile routes
 router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.getBusinessBilllingProfile)
 router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.addBusinessBilllingProfile)
-router.put('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.updateBusinessBilllingProfile)
 
 // Verification routes
 router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateEmailVerificationCode)
