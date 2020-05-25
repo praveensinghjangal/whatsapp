@@ -63,8 +63,11 @@ const USER_TYPE = {
   admin: 'admin'
 }
 
+const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
 module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE
 module.exports.USER_TYPE = USER_TYPE
+module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
