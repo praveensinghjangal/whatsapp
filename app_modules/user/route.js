@@ -7,6 +7,7 @@ const router = express.Router()
 const accountProfileController = require('./controllers/accoutProfile')
 const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
+const agreementController = require('./controllers/agreement')
 
 // Routes
 // User routes
@@ -52,5 +53,9 @@ router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.
 router.patch('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateEmailVerificationCode)
 router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateSmsVerificationCode)
 router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateSmsVerificationCode)
+
+// Agreement Routes
+router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.uploadAgreement)
+router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreement)
 
 module.exports = router

@@ -99,6 +99,16 @@ const markUserSmsVerified = () => {
   where user_id = $1 and is_active = true`
 }
 
+const saveUserAgreement = () => {
+  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path,created_by)
+  values ($1,$2,$3,$4,$5)`
+}
+const getLatestAgreementByUserId = () => {
+  return `select file_path from user_agreement_files
+  where user_id = $1 and is_active = true 
+  order by created_on desc limit 1`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -115,5 +125,7 @@ module.exports = {
   getCodeData,
   setTokenConsumed,
   markUserEmailVerified,
-  markUserSmsVerified
+  markUserSmsVerified,
+  saveUserAgreement,
+  getLatestAgreementByUserId
 }

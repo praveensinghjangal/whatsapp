@@ -34,6 +34,16 @@ module.exports = {
     code: 4029,
     message: 'Too many request. request rate limited'
   },
+  PROVIDE_FILE: {
+    status_code: 400,
+    code: 4030,
+    message: 'Please provide a file'
+  },
+  INVALID_FILE_TYPE: {
+    status_code: 400,
+    code: 4031,
+    message: 'Invalid file type'
+  },
   SERVER_ERROR: {
     status_code: 500,
     code: 5000,
