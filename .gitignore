@@ -9,3 +9,4 @@ lib/apidoc/html/*
 projectFilesBackup
 package-lock.json
 .vscode/*
+public/agreements
