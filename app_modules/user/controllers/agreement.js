@@ -98,4 +98,9 @@ const getAgreement = (req, res) => {
     })
 }
 
-module.exports = { uploadAgreement, getAgreement }
+const generateAgreement = (req, res) => {
+  __logger.info('Inside generateAgreement', req.user.user_id)
+  res.download(__define.PUBLIC_FOLDER_PATH + '/agreements/agreement.pdf')
+}
+
+module.exports = { uploadAgreement, getAgreement, generateAgreement }
