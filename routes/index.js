@@ -19,6 +19,7 @@ const senderid_module = require('../app_modules/api/senderid/route')
 const test_numbers_module = require('../app_modules/api/test_numbers/route')
 const message = require('../app_modules/message/route')
 const user = require('../app_modules/user/route')
+const places = require('../app_modules/places/route')
 const webHooks = require('../app_modules/web_hooks/route')
 
 module.exports = function (app) {
@@ -53,6 +54,7 @@ module.exports = function (app) {
   app.use('/api/test_numbers', test_numbers_module)
   app.use(apiUrlPrefix + '/message', message)
   app.use(apiUrlPrefix + '/users', user)
+  app.use(apiUrlPrefix + '/places', places)
   app.use(apiUrlPrefix + '/web-hooks', webHooks)
 
   // app.use(api_url_prefix + '/sms-email/', require('../app_modules/sms_email/route'));
