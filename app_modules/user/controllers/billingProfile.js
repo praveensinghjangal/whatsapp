@@ -22,7 +22,7 @@ const getBusinessBilllingProfile = (req, res) => {
       if (results && results.rows.length > 0) {
         return checkBusinessProfileCompletionStatus(results.rows[0])
       } else {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(data => {
@@ -116,7 +116,7 @@ const addBusinessBilllingProfile = (req, res) => {
           data: { complete: result.complete }
         })
       } else {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
+        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
       }
     })
     .catch(err => {
