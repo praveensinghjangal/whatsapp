@@ -173,8 +173,7 @@ class validate {
         country: {
           type: 'string',
           required: false,
-          minLength: 1,
-          maxLength: 2
+          minLength: 1
         },
         addressLine1: {
           type: 'string',
@@ -203,7 +202,7 @@ class validate {
         },
         firstName: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         lastName: {
@@ -292,7 +291,7 @@ class validate {
           required: false,
           minLength: 6
         },
-        GstOrTaxNo: {
+        gstOrTaxNo: {
           type: 'string',
           required: false,
           minLength: 5
