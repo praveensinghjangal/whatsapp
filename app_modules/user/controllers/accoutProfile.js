@@ -24,7 +24,7 @@ const getAcountProfile = (req, res) => {
       if (results && results.rows.length > 0) {
         return checkAccountProfileCompletionStatus(results.rows[0])
       } else {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(data => {
@@ -87,7 +87,7 @@ const updateAcountProfile = (req, res) => {
       if (result && result.rowCount && result.rowCount > 0) {
         return checkAccountProfileCompletionStatus(accountProfileData)
       } else {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
+        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
       }
     })
     .then(data => {
