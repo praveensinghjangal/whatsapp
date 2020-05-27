@@ -8,6 +8,7 @@ const accountProfileController = require('./controllers/accoutProfile')
 const accountTypeController = require('./controllers/accountType')
 const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
+const agreementController = require('./controllers/agreement')
 
 // Routes
 // User routes
@@ -42,6 +43,7 @@ router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.faceboo
 // Account Profile routes
 router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAcountProfile)
 router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAcountProfile)
+router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
 
 // Billing Profile routes
 router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.getBusinessBilllingProfile)
@@ -55,5 +57,9 @@ router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.n
 
 // Account Type
 router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
+// Agreement Routes
+router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.generateAgreement)
+router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.uploadAgreement)
+router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreement)
 
 module.exports = router
