@@ -1,7 +1,8 @@
 const express = require('express')
+const router = express.Router()
 const authMiddleware = require('../../middlewares/authentication')
 const authstrategy = require('../../config').authentication.strategy
-const router = express.Router()
+const userConfiMiddleware = require('../../middlewares/setUserConfig')
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
@@ -60,6 +61,6 @@ router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, au
 // Agreement Routes
 router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.generateAgreement)
 router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.uploadAgreement)
-router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreement)
+router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), userConfiMiddleware, agreementController.getAgreement)
 
 module.exports = router
