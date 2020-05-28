@@ -75,13 +75,10 @@ module.exports = {
     }
   },
   redis_local: {
-    init: false,
-    use_auth: true,
-    host: '127.0.0.1',
-    db: '2',
-    port: '6379',
-    user: '',
-    pass: ''
+    init: true,
+    host: '10.40.12.68',
+    no_ready_check: true,
+    auth_pass: 'foobared'
   },
   rabbitmq_vb: {
     init: false,

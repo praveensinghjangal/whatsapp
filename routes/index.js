@@ -3,20 +3,10 @@
  * @author deepak.ambekar [6/19/2017].
  */
 
-const serveStatic = require('serve-static')
-const auth = require('../lib/auth')
 const dateUtil = require('date-format-utils')
 const __config = require('../config')
 const __logger = require('../lib/logger')
-const basic_api = require('../app_modules/api')
-const passport = require('passport')
 const login = require('../app_modules/api/login/route')
-const __db = require('../lib/db')
-const user_config = require('../app_modules/api/user_config')
-const user_module = require('../app_modules/api/user_module/route')
-const template_module = require('../app_modules/api/template/route')
-const senderid_module = require('../app_modules/api/senderid/route')
-const test_numbers_module = require('../app_modules/api/test_numbers/route')
 const message = require('../app_modules/message/route')
 const user = require('../app_modules/user/route')
 const places = require('../app_modules/places/route')
@@ -41,26 +31,12 @@ module.exports = function (app) {
 
   // region api routes
   const apiUrlPrefix = '/' + __config.api_prefix + '/api'
-  // app.all(api_url_prefix + "/*", [auth.authenticate]);
-  // app.use("/", new_api);
 
-  app.use('/', basic_api)
   app.use('/api', login)
-  // app.use(passport.authenticate('jwt', { session: true, failureRedirect: '/unauthorized' }));
-  // app.use(user_config.get_set_user_config);
-  app.use('/api/user_info', user_module)
-  app.use('/api/template', template_module)
-  app.use('/api/senderid', senderid_module)
-  app.use('/api/test_numbers', test_numbers_module)
   app.use(apiUrlPrefix + '/message', message)
   app.use(apiUrlPrefix + '/users', user)
   app.use(apiUrlPrefix + '/places', places)
   app.use(apiUrlPrefix + '/web-hooks', webHooks)
 
-  // app.use(api_url_prefix + '/sms-email/', require('../app_modules/sms_email/route'));
-  // endregion
-  // app.all("*", function(req, res, next){
-  //     res.status(404).json({message: "Not Found"});
-  // });
   require('../lib/swagger')(app, '/' + __config.api_prefix + __config.authConfig.apiAuthAlias) // todo handle '/' add in prefix after git access
 }
