@@ -83,7 +83,7 @@ class checkCompleteIncomplete {
       type: 'object',
       required: true,
       properties: {
-        businessName: {
+        billingName: {
           type: 'string',
           required: true,
           minLength: 1
