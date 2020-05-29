@@ -6,11 +6,11 @@ const __db = require('../../../lib/db')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const queryProvider = require('../queryProvider')
 
-// Get Account Type
-const getAcountType = (req, res) => {
-  __logger.info('Inside getAcountType', req.user.userId)
+// Get Business Category
+const getBusinessCategory = (req, res) => {
+  __logger.info('Inside getBusinessCategory', req.user.userId)
   const userType = constants.USER_TYPE.admin
-  __db.postgresql.__query(queryProvider.getAccountType(), [userType])
+  __db.postgresql.__query(queryProvider.getBusinessCategory(), [userType])
     .then(results => {
       __logger.info('Then 1', results)
 
@@ -29,9 +29,4 @@ const getAcountType = (req, res) => {
     })
 }
 
-// Update Account Type todo
-const updateAcountType = (req, res) => {
-  __logger.info('Inside updateAcountType')
-}
-
-module.exports = { getAcountType, updateAcountType }
+module.exports = { getBusinessCategory }
