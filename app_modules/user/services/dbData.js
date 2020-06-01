@@ -1,8 +1,7 @@
 const q = require('q')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
-const constants = require('../../../config/constants')
-const __define = require('../../../config/define')
+const __constants = require('../../../config/constants')
 const ValidatonService = require('./validation')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
@@ -21,14 +20,14 @@ class UserData {
       .then(result => {
         // console.log('Qquery Result', results)
         if (result && result.rows && result.rows.length === 0) {
-          userDetails.reject({ type: __define.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
         } else {
           userDetails.resolve(result.rows)
         }
       })
       .catch(err => {
         __logger.error('error in create user function: ', err)
-        userDetails.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
@@ -51,11 +50,11 @@ class UserData {
           userId = this.uniqueId.uuid()
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
-          const accountTypeId = constants.ACCOUNT_PLAN_TYPE.Prepaid
+          const accountTypeId = __constants.ACCOUNT_PLAN_TYPE.Prepaid
 
           return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId])
         } else {
-          return rejectionHandler({ type: __define.RESPONSE_MESSAGES.USER_EXIST, data: {} })
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.USER_EXIST, data: {} })
         }
       })
       .then(result => {
@@ -63,13 +62,13 @@ class UserData {
         if (result && result.rowCount && result.rowCount > 0) {
           userCreated.resolve({ userId })
         } else {
-          userCreated.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          userCreated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
         __logger.error('error in create user function: ', err)
         if (err.type) return userCreated.reject({ type: err.type, err: err.err })
-        userCreated.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        userCreated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userCreated.promise
   }

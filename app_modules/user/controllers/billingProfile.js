@@ -1,14 +1,13 @@
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const __util = require('../../../lib/util')
-const __define = require('../../../config/define')
+const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const UserService = require('../services/dbData')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
-const q = require('q')
 
 // Get Business Profile
 const getBusinessBilllingProfile = (req, res) => {
@@ -22,14 +21,14 @@ const getBusinessBilllingProfile = (req, res) => {
       if (results && results.rows.length > 0) {
         return checkBusinessProfileCompletionStatus(results.rows[0])
       } else {
-        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(data => {
       __logger.info('then 2')
       queryResult.complete = data.complete
       return __util.send(res, {
-        type: __define.RESPONSE_MESSAGES.SUCCESS,
+        type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: queryResult
       })
     })
@@ -73,7 +72,7 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
         if (result && result.rowCount && result.rowCount > 0) {
           return resolve({ rowCount: result.rowCount, complete: result.complete })
         } else {
-          return rejectionHandler({ type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
         }
       })
       .catch(err => {
@@ -111,11 +110,11 @@ const addBusinessBilllingProfile = (req, res) => {
 
       if (result && result.rowCount && result.rowCount > 0) {
         return __util.send(res, {
-          type: __define.RESPONSE_MESSAGES.SUCCESS,
+          type: __constants.RESPONSE_MESSAGES.SUCCESS,
           data: { complete: result.complete }
         })
       } else {
-        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
       }
     })
     .catch(err => {

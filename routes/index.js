@@ -6,7 +6,6 @@
 const dateUtil = require('date-format-utils')
 const __config = require('../config')
 const __logger = require('../lib/logger')
-const login = require('../app_modules/api/login/route')
 const message = require('../app_modules/message/route')
 const user = require('../app_modules/user/route')
 const places = require('../app_modules/places/route')
@@ -33,7 +32,6 @@ module.exports = function (app) {
   // region api routes
   const apiUrlPrefix = '/' + __config.api_prefix + '/api'
 
-  app.use('/api', login)
   app.use(apiUrlPrefix + '/message', message)
   app.use(apiUrlPrefix + '/users', user)
   app.use(apiUrlPrefix + '/places', places)

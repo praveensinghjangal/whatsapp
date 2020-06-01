@@ -13,7 +13,7 @@ const __db = require('../lib/db')
 const __logger = require('../lib/logger')
 const __util = require('../lib/util')
 const __config = require('../config')
-const __define = require('../config/define')
+const __constants = require('../config/constants')
 const helmet = require('helmet')
 const authMiddleware = require('../middlewares/authentication')
 
@@ -68,14 +68,14 @@ class httpApiWorker {
       } else {
         __logger.error('haltOnTimedout, request timedout', { req_uuid: req.id })
         __util.send(res, {
-          type: __define.RESPONSE_MESSAGES.SERVER_TIMEOUT,
+          type: __constants.RESPONSE_MESSAGES.SERVER_TIMEOUT,
           data: { message: 'request from client timedout' }
         })
       }
       req.on('timeout', (time, next) => {
         __logger.error('haltOnTimedout, server response timedout', { req_uuid: req.id })
         __util.send(res, {
-          type: __define.RESPONSE_MESSAGES.SERVER_TIMEOUT,
+          type: __constants.RESPONSE_MESSAGES.SERVER_TIMEOUT,
           data: { message: 'server timed out after ' + time + ' milliseconds' }
         })
       })
@@ -95,7 +95,7 @@ class httpApiWorker {
     vm.app.use((req, res, next) => {
       var err = new Error('Not Found')
       __util.send(res, {
-        type: __define.RESPONSE_MESSAGES.NOT_FOUND,
+        type: __constants.RESPONSE_MESSAGES.NOT_FOUND,
         data: { message: 'not found' },
         err: err
       })

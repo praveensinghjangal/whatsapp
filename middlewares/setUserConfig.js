@@ -3,7 +3,7 @@ const q = require('q')
 const UserService = require('../app_modules/user/services/dbData')
 const rejectionHandler = require('../lib/util/rejectionHandler')
 const __util = require('../lib/util')
-const __define = require('../config/define')
+const __constants = require('../config/constants')
 
 const setDataInRedis = userId => {
   const dataSet = q.defer()
@@ -13,7 +13,7 @@ const setDataInRedis = userId => {
     .then(dbData => {
       if (dbData.exists) {
         userData = dbData.rows[0]
-        return __db.redis.setex(userId, JSON.stringify(userData), __define.USER_CONFIG_REDIS_TTL)
+        return __db.redis.setex(userId, JSON.stringify(userData), __constants.USER_CONFIG_REDIS_TTL)
       } else {
         return rejectionHandler('user does not exists')
       }
@@ -54,6 +54,6 @@ module.exports = (req, res, next) => {
     })
     .catch(err => {
       console.log('err', err)
-      __util.send(res, { type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
 }

@@ -2,8 +2,7 @@ const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const UserService = require('../services/dbData')
 const __util = require('../../../lib/util')
-const constants = require('../../../config/constants')
-const __define = require('../../../config/define')
+const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
@@ -24,7 +23,7 @@ const getAcountProfile = (req, res) => {
       if (results && results.rows.length > 0) {
         return checkAccountProfileCompletionStatus(results.rows[0])
       } else {
-        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(data => {
@@ -32,7 +31,7 @@ const getAcountProfile = (req, res) => {
       __logger.info('queryResult', queryResult)
       // __logger.info('data', data)
       return __util.send(res, {
-        type: __define.RESPONSE_MESSAGES.SUCCESS,
+        type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: queryResult
       })
     })
@@ -72,12 +71,12 @@ const updateAcountProfile = (req, res) => {
           firstName: req.body.firstName ? req.body.firstName : result.rows[0].firstName,
           lastName: req.body.lastName ? req.body.lastName : result.rows[0].lastName,
           accountManagerName: req.body.accountManagerName ? req.body.accountManagerName : result.rows[0].accountManagerName,
-          accountTypeId: req.body.accountTypeId ? req.body.accountTypeId : constants.ACCOUNT_PLAN_TYPE.Prepaid
+          accountTypeId: req.body.accountTypeId ? req.body.accountTypeId : __constants.ACCOUNT_PLAN_TYPE.Prepaid
         }
 
         return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [accountProfileData.city, accountProfileData.state, accountProfileData.country, accountProfileData.addressLine1, accountProfileData.addressLine2, accountProfileData.contactNumber, accountProfileData.phoneCode, accountProfileData.postalCode, accountProfileData.firstName, accountProfileData.lastName, accountProfileData.accountManagerName, accountProfileData.accountTypeId, accountProfileData.userId, accountProfileData.userId])
       } else {
-        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(result => {
@@ -87,7 +86,7 @@ const updateAcountProfile = (req, res) => {
       if (result && result.rowCount && result.rowCount > 0) {
         return checkAccountProfileCompletionStatus(accountProfileData)
       } else {
-        return rejectionHandler({ type: __define.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
       }
     })
     .then(data => {
@@ -96,7 +95,7 @@ const updateAcountProfile = (req, res) => {
       __logger.info('queryResult', queryResult)
       __logger.info('data', data)
       return __util.send(res, {
-        type: __define.RESPONSE_MESSAGES.SUCCESS,
+        type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: { complete: queryResult.complete }
       })
     })

@@ -1,3 +1,12 @@
+var MYSQL_QUERY = {
+  cdr_reason: 'case ' +
+        "when cm.hangup_cause='NORMAL_CLEARING' or cm.billsec>0 then 'SUCCESS' " +
+        "when cm.hangup_cause in ('NO_ANSWER','CALL_REJECTED','USER_BUSY','NO_USER_RESPONSE','NO_ANSWER','CALL_AWARDED_DELIVERED') then 'ATTEMPT' " +
+        "when cm.hangup_cause in ('BLACKLISTED','OPTOUT','COOLING_PERIOD','DAILY','MONTHLYDEPT','NDNC_REJECT') then cm.hangup_cause " +
+        "else 'FAILED' " +
+        'end as reason'
+}
+
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development_pr',
   PROD_ENV: 'production',
@@ -69,3 +78,4 @@ module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE
 module.exports.USER_TYPE = USER_TYPE
 module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
 module.exports.USER_CONFIG_REDIS_TTL = USER_CONFIG_REDIS_TTL
+module.exports.MYSQL_QUERY = MYSQL_QUERY

@@ -2,7 +2,7 @@ const q = require('q')
 const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
-const __define = require('../../../config/define')
+const __constants = require('../../../config/constants')
 
 class validate {
   login (request) {
@@ -32,7 +32,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
@@ -71,7 +71,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
@@ -115,7 +115,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
@@ -144,7 +144,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
@@ -230,7 +230,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
@@ -311,7 +311,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }

@@ -1,6 +1,6 @@
 const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
-const __define = require('../../../config/define')
+const __constants = require('../../../config/constants')
 const csc = require('country-state-city').default
 
 // Get list of all countries
@@ -11,12 +11,12 @@ const getAllCountries = (req, res) => {
     const countries = csc.getAllCountries()
 
     if (countries && countries.length > 0) {
-      return __util.send(res, { type: __define.RESPONSE_MESSAGES.SUCCESS, data: countries })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: countries })
     } else {
-      return __util.send(res, { type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
     }
   } catch (err) {
-    return __util.send(res, { type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
   }
 }
 
@@ -30,15 +30,15 @@ const getStatesOfCountry = (req, res) => {
       const states = csc.getStatesOfCountry(req.params.countryId)
 
       if (states && states.length > 0) {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.SUCCESS, data: states })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: states })
       } else {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     } else {
-      return __util.send(res, { type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
     }
   } catch (err) {
-    return __util.send(res, { type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
   }
 }
 
@@ -52,15 +52,15 @@ const getCitiesOfState = (req, res) => {
       const states = csc.getCitiesOfState(req.params.stateId)
 
       if (states && states.length > 0) {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.SUCCESS, data: states })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: states })
       } else {
-        return __util.send(res, { type: __define.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     } else {
-      return __util.send(res, { type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
     }
   } catch (err) {
-    return __util.send(res, { type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
   }
 }
 

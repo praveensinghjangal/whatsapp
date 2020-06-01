@@ -1,7 +1,6 @@
 const q = require('q')
 const _ = require('lodash')
 const Validator = require('jsonschema').Validator
-// const __define = require('../../../config/define')
 
 const v = new Validator()
 

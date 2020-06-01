@@ -1,5 +1,5 @@
 const q = require('q')
-const __define = require('../../../config/define')
+const __constants = require('../../../config/constants')
 const __db = require('../../../lib/db')
 var __config = require('../../../config')
 const queryProvider = require('../queryProvider')
@@ -15,42 +15,42 @@ class VerificationService {
   getVerifiedAndCodeDataByUserId (userId, verificationChannel) {
     const verificationData = q.defer()
     if (!userId || typeof userId !== 'string') {
-      verificationData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return verificationData.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
-      verificationData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return verificationData.promise
     }
     const query = queryProvider.getVerifiedAndCodeDataByUserId()
     __db.postgresql.__query(query, [userId, verificationChannel])
       .then(result => {
         if (result && result.rows && result.rows.length === 0) {
-          verificationData.reject({ type: __define.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
+          verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {
           verificationData.resolve(result.rows[0])
         }
       })
-      .catch(err => verificationData.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+      .catch(err => verificationData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return verificationData.promise
   }
 
   addVerificationCode (userId, verificationChannel, expiresIn, codeLength) {
     const verificationDataAdded = q.defer()
     if (!userId || typeof userId !== 'string') {
-      verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return verificationDataAdded.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
-      verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return verificationDataAdded.promise
     }
     if (!expiresIn || typeof expiresIn !== 'number') {
-      verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide expiresIn of type integer' })
+      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide expiresIn of type integer' })
       return verificationDataAdded.promise
     }
     if (!codeLength || typeof codeLength !== 'number') {
-      verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide codeLength of type integer' })
+      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide codeLength of type integer' })
       return verificationDataAdded.promise
     }
     const query = queryProvider.addVerificationCode()
@@ -60,21 +60,21 @@ class VerificationService {
         if (result && result.rowCount && result.rowCount > 0) {
           verificationDataAdded.resolve({ userId, code })
         } else {
-          verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => verificationDataAdded.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+      .catch(err => verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return verificationDataAdded.promise
   }
 
   updateExistingTokens (userId, verificationChannel) {
     const verificationDataUpdated = q.defer()
     if (!userId || typeof userId !== 'string') {
-      verificationDataUpdated.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return verificationDataUpdated.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
-      verificationDataUpdated.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return verificationDataUpdated.promise
     }
     const query = queryProvider.updateVerificationCode()
@@ -83,21 +83,21 @@ class VerificationService {
         if (result && result.rowCount && result.rowCount > 0) {
           verificationDataUpdated.resolve({ userId })
         } else {
-          verificationDataUpdated.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => verificationDataUpdated.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+      .catch(err => verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return verificationDataUpdated.promise
   }
 
   sendVerificationCodeByEmail (code, email, firstName) {
     const emailSent = q.defer()
     if (!code || typeof code !== 'number') {
-      emailSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      emailSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
       return emailSent.promise
     }
     if (!email || typeof email !== 'string') {
-      emailSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email of type string' })
+      emailSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email of type string' })
       return emailSent.promise
     }
     const emailService = new EmailService(__config.emailProvider)
@@ -110,11 +110,11 @@ class VerificationService {
   sendVerificationCodeBySms (code, phoneNumber, firstName) {
     const smsSent = q.defer()
     if (!code || typeof code !== 'number') {
-      smsSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      smsSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
       return smsSent.promise
     }
     if (!phoneNumber || typeof phoneNumber !== 'string') {
-      smsSent.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide phoneNumber of type string' })
+      smsSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide phoneNumber of type string' })
       return smsSent.promise
     }
     smsSent.resolve({ code, phoneNumber, firstName })
@@ -124,42 +124,42 @@ class VerificationService {
   getCodeDetails (userId, code, verificationChannel) {
     const codeData = q.defer()
     if (!userId || typeof userId !== 'string') {
-      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return codeData.promise
     }
     if (!code || typeof code !== 'number') {
-      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
       return codeData.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
-      codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return codeData.promise
     }
     const query = queryProvider.getCodeData()
     __db.postgresql.__query(query, [userId, code, verificationChannel])
       .then(result => {
         if (result && result.rows && result.rows.length === 0) {
-          codeData.reject({ type: __define.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, data: {} })
+          codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, data: {} })
         } else {
           codeData.resolve(result.rows[0])
         }
       })
-      .catch(err => codeData.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+      .catch(err => codeData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return codeData.promise
   }
 
   setTokenConsumed (userId, code, verificationChannel) {
     const tokenMarkedConsumed = q.defer()
     if (!userId || typeof userId !== 'string') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return tokenMarkedConsumed.promise
     }
     if (!code || typeof code !== 'number') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
       return tokenMarkedConsumed.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return tokenMarkedConsumed.promise
     }
     const query = queryProvider.setTokenConsumed()
@@ -168,36 +168,36 @@ class VerificationService {
         if (result && result.rowCount && result.rowCount > 0) {
           tokenMarkedConsumed.resolve({ updated: true })
         } else {
-          tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+      .catch(err => tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return tokenMarkedConsumed.promise
   }
 
   markChannelVerified (userId, verificationChannel) {
     const tokenMarkedConsumed = q.defer()
     if (!userId || typeof userId !== 'string') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return tokenMarkedConsumed.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return tokenMarkedConsumed.promise
     }
     let query = queryProvider.setTokenConsumed()
     switch (verificationChannel) {
-      case __define.VERIFICATION_CHANNEL.email.name:
+      case __constants.VERIFICATION_CHANNEL.email.name:
         query = queryProvider.markUserEmailVerified()
         break
-      case __define.VERIFICATION_CHANNEL.sms.name:
+      case __constants.VERIFICATION_CHANNEL.sms.name:
         query = queryProvider.markUserSmsVerified()
         break
       default:
         query = false
     }
     if (!query) {
-      tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'verificationChannel not configured' })
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'verificationChannel not configured' })
       return tokenMarkedConsumed.promise
     }
     __db.postgresql.__query(query, [userId, userId])
@@ -205,10 +205,10 @@ class VerificationService {
         if (result && result.rowCount && result.rowCount > 0) {
           tokenMarkedConsumed.resolve({ updated: true })
         } else {
-          tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => tokenMarkedConsumed.reject({ type: __define.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+      .catch(err => tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return tokenMarkedConsumed.promise
   }
 }

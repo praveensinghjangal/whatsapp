@@ -1,7 +1,7 @@
 const integrationService = require('../../integration')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
-const constants = require('../../../config/define')
+const __constants = require('../../../config/constants')
 
 const controller = (req, res) => {
   const validate = new ValidatonService()
@@ -11,8 +11,8 @@ const controller = (req, res) => {
       const messageService = new integrationService.Messaage(req.jwtToken.providerId)
       return messageService.sendMessage(req.body)
     })
-    .then(data => __util.send(res, { type: constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
-    .catch(err => __util.send(res, { type: constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
+    .catch(err => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
 }
 
 module.exports = controller
