@@ -6,7 +6,7 @@ var MYSQL_QUERY = {
         "else 'FAILED' " +
         'end as reason'
 }
-
+const APP_NAME = 'helowhatsapp'
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development_pr',
   PROD_ENV: 'production',
@@ -79,3 +79,4 @@ module.exports.USER_TYPE = USER_TYPE
 module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
 module.exports.USER_CONFIG_REDIS_TTL = USER_CONFIG_REDIS_TTL
 module.exports.MYSQL_QUERY = MYSQL_QUERY
+module.exports.APP_NAME = APP_NAME
