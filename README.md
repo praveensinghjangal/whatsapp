@@ -1,5 +1,7 @@
 ### helo-whatsapp backend
-Developement environment .env file
+
+create a file named `.env` in config folder and paste the below content in newly created file.
+<br/>Developement environment .env file.
 ```sh
 PORT = 3000
 process.env.SOCKET_IO_PORT = 40010
