@@ -1,126 +1,103 @@
-const _ = require('lodash')
+const __constants = require('./constants')
+const appName = __constants.APP_NAME
+const dbName = __constants.DB_NAME
 
-const appName = 'helowhatsapp' // remember to rename this variable with new name(without spaces), it will also act as default mongodb database name and logging file name
-const dbName = 'helowhatsapp' // change if you want to have different database name than the application name.
-let all = {
+module.exports = {
   env: process.env.NODE_ENV,
   app_name: appName,
   db_name: dbName,
-  api_prefix: appName, // added to work with apache and passenger, acts as in general api prefix as well
-  base_url: 'http://localhost',
+  api_prefix: appName,
   port: process.env.PORT,
-  socket_io_port: 40010,
-  default_server_response_timeout: 20 * 60 * 1000, // min*60*1000 requests received will be timedout if not responded within the specified time
-  archive_db_name: 'archive',
+  base_url: process.env.BASE_URL ? process.env.BASE_URL : 'http://localhost:' + process.env.PORT,
+  socket_io_port: process.env.SOCKET_IO_PORT,
+  archive_db_name: process.env.ARCHIVE_DB_NAME,
   authConfig: {
-    apiAuthAlias: '/client',
-    secretKey: '6de5661ab3c401bcb266dff913',
-    cipherAlgorithm: 'aes-256-ctr',
-    inactiveTimeFrame: 12 * 60, // min
-    forceExpireTimeFrame: 24 * 60, // min
-    apiAccessKey: 'hDcbcQxAuGphBBvcMepR',
-    serverDocAccessKey: '7ae9f9a2674c42329142b63ee20fd865'
+    apiAuthAlias: process.env.AUTH_CONFIG_API_AUTH_ALIAS,
+    secretKey: process.env.AUTH_CONFIG_SECRET_KEY,
+    cipherAlgorithm: process.env.AUTH_CONFIG_CIPHER_ALGORITHM,
+    inactiveTimeFrame: +process.env.AUTH_CONFIG_API_AUTH_INACTIVE_TIME_FRAME,
+    forceExpireTimeFrame: +process.env.AUTH_CONFIG_API_AUTH_FORCE_EXPIREY_TIME_FRAME,
+    apiAccessKey: process.env.AUTH_CONFIG_API_AUTH_API_ACCESS_KEY,
+    serverDocAccessKey: process.env.AUTH_CONFIG_API_AUTH_SERVER_DOC_ACCESS_KEY
   },
   logging: {
-    log_file: '/var/log/' + appName + '/',
-    console: true,
-    only_console: false,
-    level: 'silly', // [silly,debug,verbose,info,warn,error]
-    datePattern: 'yyyy-MM-dd', // log rotation
-    maxsize: 104857600, // log rotates after specified size of file in bytes
-    colorize: 'true',
+    log_file: process.env.LOGGING_LOG_PATH + appName,
+    console: process.env.LOGGING_CONSOLE === 'true',
+    only_console: process.env.LOGGING_ONLY_CONSOLE === 'true',
+    level: process.env.LOGGING_LEVEL,
+    datePattern: process.env.LOGGING_DATE_PATTERN,
+    maxsize: +process.env.LOGGING_MAX_SIZE,
+    colorize: process.env.LOGGING_COLORIZE === 'true',
     mongo: {
-      host: 'localhost',
+      host: process.env.LOGGING_MONGO_HOST,
       db: dbName + 'Logs',
-      port: 27017,
-      username: '',
-      password: '',
-      enabled: false
-    }
+      port: +process.env.LOGGING_MONGO_PORT,
+      username: process.env.LOGGING_MONGO_USER_NAME,
+      password: process.env.LOGGING_MONGO_PASSWORD,
+      enabled: process.env.LOGGING_MONGO_ENABLED
+    },
+    log_path: process.env.LOGGING_LOG_PATH
   },
   elasticsearch: {
-    init: false,
-    use_auth: false,
+    init: process.env.ELASTIC_SEARCH_INIT === 'true',
+    use_auth: process.env.ELASTIC_SEARCH_USER_AUTH === 'true',
     options: {
-      host: '10.40.12.205',
-      protocol: 'http',
-      username: '',
-      password: '',
-      apiVersion: '5.4',
-      // log: 'trace',
-      port: 9200
+      host: process.env.ELASTIC_SEARCH_OPTIONS_HOST,
+      protocol: process.env.ELASTIC_SEARCH_OPTIONS_PROTOCOL,
+      username: process.env.ELASTIC_SEARCH_OPTIONS_USER_NAME,
+      password: process.env.ELASTIC_SEARCH_OPTIONS_PASSWORD,
+      apiVersion: process.env.ELASTIC_SEARCH_OPTIONS_API_VERSION,
+      port: +process.env.ELASTIC_SEARCH_OPTIONS_PORT
     }
   },
   mongo: {
-    init: false,
-    host: 'localhost:27017',
-    use_auth: true,
+    init: process.env.MONGO_INIT === 'true',
+    host: process.env.MONGO_HOST,
     options: {
-      db_name: 'db_name',
-      authSource: 'admin',
-      authMechanism: 'DEFAULT',
-      user: '',
-      pass: ''
-    }
+      db_name: process.env.MONGO_OPTIONS_DB_NAME,
+      authSource: process.env.MONGO_OPTIONS_AUTH_SOURCE,
+      authMechanism: process.env.MONGO_OPTIONS_AUTH_MECHANISM,
+      user: process.env.MONGO_OPTIONS_USER,
+      pass: process.env.MONGO_OPTIONS_PASS
+    },
+    name: process.env.MONGO_NAME,
+    uri: 'mongodb://' + process.env.MONGO_OPTIONS_USER + ':' + process.env.MONGO_OPTIONS_PASS + '@' + process.env.MONGO_HOST + '/' + (process.env.MONGO_OPTIONS_DB_NAME || dbName) + '?authSource=' + process.env.MONGO_OPTIONS_AUTH_SOURCE
   },
   dynamodb: {
-    init: false,
-    apiVersion: '2012-08-10',
-    region: 'ap-south-1',
+    init: process.env.DYNAMO_DB_INIT === 'true',
+    apiVersion: '',
+    region: '',
     accessKeyId: '',
     secretAccessKey: '',
     delay_connection_callback: 1000
   },
   aws: {
-    apiVersion: '2016-11-15',
-    region: 'us-west-2',
-    accessKeyId: '',
-    secretAccessKey: ''
+    apiVersion: process.env.AWS_API_VERSION,
+    region: process.env.AWS_REGION,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
   },
   aws_s3: {
     bucket_config: {
-      bucketName: 'bucket_name',
-      apiVersion: '2016-11-15',
-      region: 'us-west-2',
-      accessKeyId: '',
-      secretAccessKey: ''
+      bucketName: process.env.AWS_S3_BUCKET_CONFIG_NAME,
+      apiVersion: process.env.AWS_S3_BUCKET_CONFIG_API_VERSION,
+      region: process.env.AWS_S3_BUCKET_CONFIG__REGION,
+      accessKeyId: process.env.AWS_S3_BUCKET_CONFIG_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_S3_BUCKET_CONFIG_SECRET_ACCESS_KEY
     }
   },
   rabbitmq: {
-    init: false,
-    amqp_url: 'amqp://localhost:5672/test?heartbeat=30',
+    init: process.env.RABBITMQ_INIT === 'true',
+    amqp_url: process.env.RABBITMQ_AMQP_URL,
     reconnect_interval: 5000,
     delay_connection_callback: 1000,
-    use_auth: false,
-    host: 'localhost',
-    virtual_host: 'virtual_host_name',
-    port: '15682',
-    user: '',
-    pass: '',
+    use_auth: process.env.RABBITMQ_USE_AUTH,
+    host: process.env.RABBITMQ_HOST,
+    virtual_host: process.env.RABBITMQ_VIRTUAL_HOST,
+    port: process.env.RABBITMQ_PORT,
+    user: process.env.RABBITMQ_USER,
+    pass: process.env.RABBITMQ_PASS,
     truncate_message_log_length: 30
-  },
-  redis: {
-    init: false,
-    user_auth: false,
-    host: 'localhost',
-    db: '0',
-    port: 6379,
-    user: '',
-    pass: ''
-  },
-  mysql_aliase_name: {
-    init: false,
-    // name should be same as object name.
-    name: 'mysql_aliase_name',
-    is_slave: false,
-    options: {
-      connection_limit: 50,
-      host: 'localhost',
-      user: '',
-      password: '',
-      database: 'db_name',
-      acquireTimeout: 0 // set 0 for default timeout
-    }
   },
   app_settings: {
     interval: {
@@ -130,43 +107,123 @@ let all = {
       check_archive: 1 * 60 * 1000
     },
     file_upload: {
-      default_path: '/var/helouploads',
-      json_upload_path: '/var/helouploads/json',
-      max_file_size: 500 * 1024 * 1024, // bytes*kbs*mbs
+      default_path: process.env.APP_SETTINGS_FILE_UPLOAD_DEFAULT_PATH,
+      json_upload_path: process.env.APP_SETTINGS_FILE_UPLOAD_JSON_PATH,
+      max_file_size: 500 * 1024 * 1024, // bytes*kbs*mbs,
       min_file_size: 50 * 1024 * 1024 // bytes*kbs*mbs
     }
   },
   provider_id_to_provider_name_mapping: {
     1: 'messengerPeople',
     111: 'demo'
+  },
+  mysql: {
+    init: process.env.MYSQL_INIT === 'true',
+    name: process.env.MYSQL_NAME,
+    is_slave: process.env.MYSQL_IS_SLAVE,
+    options: {
+      connection_limit: +process.env.MYSQL_OPTIONS_CONNECTION_LIMIT,
+      host: process.env.MYSQL_OPTIONS_HOST,
+      user: process.env.MYSQL_OPTIONS_USER,
+      password: process.env.MYSQL_OPTIONS_PASSWORD,
+      database: process.env.MYSQL_OPTIONS_DATABASE,
+      acquireTimeout: 0,
+      port: +process.env.MYSQL_OPTIONS_PORT
+    }
+  },
+  postgresql: {
+    init: process.env.PSQL_INIT === 'true',
+    name: process.env.PSQL_NAME,
+    options: {
+      host: process.env.PSQL_OPTIONS_HOST,
+      port: +process.env.PSQL_OPTIONS_PORT,
+      database: process.env.PSQL_OPTIONS_DATABASE,
+      user: process.env.PSQL_OPTIONS_USER,
+      password: process.env.PSQL_OPTIONS_PASSWORD,
+      max_connection: +process.env.PSQL_OPTIONS_MAC_CONNECTIONS,
+      idleTimeoutMillis: 30000
+    }
+  },
+  redis_local: {
+    init: process.env.REDIS_INIT === 'true',
+    host: process.env.REDIS_HOST,
+    no_ready_check: process.env.REDIS_NO_READY_CHECK === 'true',
+    auth_pass: process.env.REDIS_AUTH_PASS,
+    uri: 'redis://' + process.env.REDIS_HOST + ':' + process.env.REDIS_PORT + '/' + process.env.REDIS_DB
+  },
+  integration: {
+    messengerPeople: {
+      authBaseUrl: 'https://auth.messengerpeople.dev',
+      baseUrl: 'https://api.messengerpeople.dev',
+      endpoint: {
+        token: '/token',
+        sendMessage: '/messages'
+      },
+      clientData: {
+        clientId: 'api_docs',
+        clientSecret: '',
+        grantType: 'client_credentials',
+        scope: 'messages:send'
+      }
+    }
+  },
+  authentication: {
+    jwtSecretKey: process.env.AUTHENTICATION_JWT_SECRET_KEY,
+    google: {
+      allow: process.env.AUTHENTICATION_GOOGLE_ALLOW === 'true',
+      clientID: process.env.AUTHENTICATION_GOOGLE_CLIENT_ID,
+      clientSecret: process.env.AUTHENTICATION_GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.AUTHENTICATION_GOOGLE_CALLBACK_URL,
+      authorizationURL: process.env.AUTHENTICATION_GOOGLE_AUTHORIZATION_URL,
+      tokenURL: process.env.AUTHENTICATION_GOOGLE_TOKEN_URL
+    },
+    facebook: {
+      allow: process.env.AUTHENTICATION_FACEBOOK_ALLOW === 'true',
+      clientID: process.env.AUTHENTICATION_FACEBOOK_CLIENT_ID,
+      clientSecret: process.env.AUTHENTICATION_FACEBOOK_CLIENT_SECRET,
+      callbackURL: process.env.AUTHENTICATION_FACEBOOK_CALLBACK_URL,
+      profileFields: process.env.AUTHENTICATION_FACEBOOK_PROFILE_FIELDS.split(','),
+      authorizationURL: process.env.AUTHENTICATION_FACEBOOK_AUTHORIZATION_URL,
+      tokenURL: process.env.AUTHENTICATION_FACEBOOK_TOKEN_URL,
+      scopeSeparator: ','
+    },
+    internal: {
+      allow: process.env.AUTHENTICATION_INTERNAL_ALLOW === 'true'
+    },
+    strategy: {
+      google: {
+        name: 'google',
+        options: {
+          scope: process.env.AUTHENTICATION_STRATEGY_GOOGLE_OPTIONS_SCOPE.split(',')
+        }
+      },
+      facebook: {
+        name: 'facebook',
+        options: {
+          scope: process.env.AUTHENTICATION_STRATEGY_FACEBOOK_OPTIONS_SCOPE
+        }
+      },
+      jwt: {
+        name: 'jwt',
+        options: {
+          session: process.env.AUTHENTICATION_STRATEGY_GOOGLE_OPTIONS_SESSION === 'true'
+        }
+      }
+    }
+  },
+  emailProvider: {
+    service: process.env.EMAIL_PROVIDER_SERVICE,
+    host: process.env.EMAIL_PROVIDER_HOST,
+    port: +process.env.EMAIL_PROVIDER_PORT,
+    auth: {
+      user: process.env.EMAIL_PROVIDER_AUTH_USER,
+      password: process.env.EMAIL_PROVIDER_AUTH_PASSWORD
+    },
+    tls: process.env.EMAIL_PROVIDER_TLS === 'true',
+    debug: process.env.EMAIL_PROVIDER_DEBUG === 'true',
+    fromEmail: process.env.EMAIL_PROVIDER_FROM_EMAIL,
+    subject: {
+      emailVerification: process.env.EMAIL_PROVIDER_SUBJECT_EMAIL_VERIFICATION
+    }
   }
 }
-all = _.merge(all, require('./' + process.env.NODE_ENV + '.js') || {})
-
-all.port = process.env.HTTP_API_PORT ? parseInt(process.env.HTTP_API_PORT) : all.port
-
-all.logging.log_path = all.logging.log_file
-all.logging.log_file += appName
-
-all.mongo.uri = 'mongodb://' + all.mongo.host + '/' + (all.mongo.options.db_name || dbName)
-if (all.mongo.use_auth) {
-  all.mongo.uri = 'mongodb://' + all.mongo.options.user + ':' + all.mongo.options.pass + '@' + all.mongo.host + '/' + (all.mongo.options.db_name || dbName) + '?authSource=' + all.mongo.options.authSource
-}
-all.redis.uri = 'redis://' + all.redis.host + ':' + all.redis.port + '/' + all.redis.db
-if (all.redis.use_auth) {
-  all.redis.uri = 'redis://' + all.redis.user + ':' + all.redis.pass + '@' + all.redis.host + ':' + all.redis.port + '/' + all.redis.db
-}
-all.redis_local.uri = 'redis://' + all.redis_local.host + ':' + all.redis_local.port + '/' + all.redis_local.db
-if (all.redis_local.use_auth) {
-  all.redis_local.uri = 'redis://' + all.redis_local.user + ':' + all.redis_local.pass + '@' + all.redis_local.host + ':' + all.redis_local.port + '/' + all.redis_local.db
-}
-
-// if (all.rabbitmq_vb.init && all.rabbitmq_vb.use_auth) {
-//     all.rabbitmq_vb.amqp_url = "amqp://" + all.rabbitmq_vb.user + ":" + all.rabbitmq_vb.pass + "@" + all.rabbitmq_vb.host + ":" + all.rabbitmq_vb.port + "/" + all.rabbitmq_vb.virtual_host + "?heartbeat=30";
-// }
-
-all.logging.level = process.env.LOG_LEVEL ? process.env.LOG_LEVEL : all.logging.level
-
-all.base_url = process.env.APP_DOMAIN ? 'http://' + process.env.APP_DOMAIN : 'http://localhost:' + all.port
-
-module.exports = all

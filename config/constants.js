@@ -1,3 +1,5 @@
+const APP_NAME = 'helowhatsapp'
+const DB_NAME = 'helowhatsapp'
 var MYSQL_QUERY = {
   cdr_reason: 'case ' +
         "when cm.hangup_cause='NORMAL_CLEARING' or cm.billsec>0 then 'SUCCESS' " +
@@ -6,9 +8,8 @@ var MYSQL_QUERY = {
         "else 'FAILED' " +
         'end as reason'
 }
-
 const CUSTOM_CONSTANT = {
-  DEV_ENV: 'development_pr',
+  DEV_ENV: 'development',
   PROD_ENV: 'production',
   STAG_ENV: 'staging',
   NOT_TO_UPDATE: '#$#NOT_TO_UPDATE#$#',
@@ -70,6 +71,7 @@ const USER_TYPE = {
 }
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
+const SERVER_TIMEOUT = 20 * 60 * 1000
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -79,3 +81,7 @@ module.exports.USER_TYPE = USER_TYPE
 module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
 module.exports.USER_CONFIG_REDIS_TTL = USER_CONFIG_REDIS_TTL
 module.exports.MYSQL_QUERY = MYSQL_QUERY
+module.exports.APP_NAME = APP_NAME
+module.exports.DB_NAME = DB_NAME
+module.exports.DB_NAME = DB_NAME
+module.exports.SERVER_TIMEOUT = SERVER_TIMEOUT

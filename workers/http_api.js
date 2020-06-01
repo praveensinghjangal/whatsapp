@@ -61,7 +61,6 @@ class httpApiWorker {
     vm.app.set('views', path.join(__dirname, 'views'))
     vm.app.set('view engine', 'pug')
     vm.app.use(addRequestId)
-    // vm.app.use(timeout(__config.default_server_response_timeout, {respond: false}));
     vm.app.use((req, res, next) => {
       if (!req.timedout) {
         next()
@@ -105,6 +104,7 @@ class httpApiWorker {
     vm.app.server = http.createServer(vm.app)
     const io = socketio.listen(vm.app.server)
     vm.app.server.listen(__config.port)
+    vm.app.server.timeout = __constants.SERVER_TIMEOUT
     io.sockets.on('connection', (socket) => {
       socket.on('disconnect', () => {
       })

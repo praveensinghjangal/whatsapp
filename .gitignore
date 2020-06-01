@@ -10,3 +10,4 @@ projectFilesBackup
 package-lock.json
 .vscode/*
 public/agreements
+config/.env
