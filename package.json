@@ -9,7 +9,7 @@
   },
   "nodemonConfig": {
     "env": {
-      "NODE_ENV": "development_pr",
+      "NODE_ENV": "development",
       "WORKER_TYPE": "http_api",
       "PORT": 3000
     },
@@ -28,6 +28,7 @@
     "country-state-city": "^1.0.4",
     "date-format-utils": "^2.2.0",
     "debug": "^4.1.1",
+    "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-request-id": "^1.4.1",
     "express-validator": "^6.1.1",
