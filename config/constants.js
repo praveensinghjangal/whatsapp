@@ -47,23 +47,20 @@ const CUSTOM_CONSTANT = {
   },
   SESSION_TIME: 86400
 }
-
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
   sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
 }
-
 const ACCOUNT_PLAN_TYPE = {
   Prepaid: 'd9718ee1-50a1-4826-b0fa-ad1394308d59',
   Postpaid: 'eb004696-bcad-4998-adbb-d25fbbd3ad68',
   SemiPostPaid: '570af199-5b7c-4e7f-bc9f-e298d65b6273'
 }
-
 const USER_TYPE = {
   admin: 'admin'
 }
-
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
+const USER_CONFIG_REDIS_TTL = 300
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -71,3 +68,4 @@ module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
 module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE
 module.exports.USER_TYPE = USER_TYPE
 module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
+module.exports.USER_CONFIG_REDIS_TTL = USER_CONFIG_REDIS_TTL
