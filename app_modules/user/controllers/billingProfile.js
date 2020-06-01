@@ -60,10 +60,9 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
           phoneCode: businessDataToBeUpdated.phoneCode ? businessDataToBeUpdated.phoneCode : oldBusinessData.phoneCode,
           postalCode: businessDataToBeUpdated.postalCode ? businessDataToBeUpdated.postalCode : oldBusinessData.postalCode,
           gstOrTaxNo: businessDataToBeUpdated.gstOrTaxNo ? businessDataToBeUpdated.gstOrTaxNo : oldBusinessData.gstOrTaxNo,
-          businessName: businessDataToBeUpdated.businessName ? businessDataToBeUpdated.businessName : oldBusinessData.businessName,
+          billingName: businessDataToBeUpdated.billingName ? businessDataToBeUpdated.billingName : oldBusinessData.billingName,
           panCard: businessDataToBeUpdated.panCard ? businessDataToBeUpdated.panCard : oldBusinessData.panCard,
-          tokenExpiryInSeconds: 864000,
-          businessInformationId: oldBusinessData.business_information_id
+          billingInformationId: oldBusinessData.billing_information_id
         }
 
         return insertBusinessBillingProfileInfo(userId, {}, businessDataObj)
@@ -144,16 +143,15 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
     phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
     postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode,
     gstOrTaxNo: businessData.gstOrTaxNo ? businessData.gstOrTaxNo : businessOldData.gstOrTaxNo,
-    businessName: businessData.businessName ? businessData.businessName : businessOldData.businessName,
+    billingName: businessData.billingName ? businessData.billingName : businessOldData.billingName,
     panCard: businessData.panCard ? businessData.panCard : businessOldData.panCard,
-    tokenExpiryInSeconds: 864000,
-    businessInformationId: businessOldData.businessInformationId ? businessOldData.businessInformationId : uniqueId.uuid()
+    billingInformationId: businessOldData.billingInformationId ? businessOldData.billingInformationId : uniqueId.uuid()
   }
 
   // __logger.info('Billing Obj', billingObj)
 
   return new Promise((resolve, reject) => {
-    __db.postgresql.__query(queryProvider.createBusinessBillingProfile(), [userId, billingObj.businessName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.businessInformationId, userId, billingObj.tokenExpiryInSeconds])
+    __db.postgresql.__query(queryProvider.createBusinessBillingProfile(), [userId, billingObj.billingName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.billingInformationId, userId])
       .then(result => {
         queryResult = result
         return checkBusinessProfileCompletionStatus(billingObj)

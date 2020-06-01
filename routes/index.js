@@ -10,6 +10,7 @@ const login = require('../app_modules/api/login/route')
 const message = require('../app_modules/message/route')
 const user = require('../app_modules/user/route')
 const places = require('../app_modules/places/route')
+const business = require('../app_modules/business/route')
 const webHooks = require('../app_modules/web_hooks/route')
 
 module.exports = function (app) {
@@ -36,6 +37,7 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/message', message)
   app.use(apiUrlPrefix + '/users', user)
   app.use(apiUrlPrefix + '/places', places)
+  app.use(apiUrlPrefix + '/business', business)
   app.use(apiUrlPrefix + '/web-hooks', webHooks)
 
   require('../lib/swagger')(app, '/' + __config.api_prefix + __config.authConfig.apiAuthAlias) // todo handle '/' add in prefix after git access
