@@ -3,10 +3,11 @@
 create a file named `.env` in config folder and paste the below content in newly created file.
 <br/>Developement environment .env file.
 ```sh
+WORKER_TYPE = http_api
 PORT = 3000
-process.env.SOCKET_IO_PORT = 40010
+SOCKET_IO_PORT = 40010
 BASE_URL = ''
-process.env.ARCHIVE_DB_NAME = archive
+ARCHIVE_DB_NAME = archive
 AUTH_CONFIG_API_AUTH_ALIAS = /client
 AUTH_CONFIG_SECRET_KEY = 6de5661ab3c401bcb266dff913
 AUTH_CONFIG_CIPHER_ALGORITHM = aes-256-ctr
