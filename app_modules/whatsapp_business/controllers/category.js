@@ -12,7 +12,6 @@ const getBusinessCategory = (req, res) => {
   __db.postgresql.__query(queryProvider.getBusinessCategory(), [userType])
     .then(results => {
       __logger.info('Then 1', results)
-
       if (results && results.rows.length > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
