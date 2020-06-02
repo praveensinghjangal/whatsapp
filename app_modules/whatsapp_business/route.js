@@ -5,11 +5,15 @@ const router = express.Router()
 
 // Controller require section
 
-const businessCategoryController = require('./controllers/businessCategory')
+const businessCategoryController = require('./controllers/category')
+const businessProfileController = require('./controllers/profile')
 
 // Routes
 
 // Business Category
 router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessCategoryController.getBusinessCategory)
+
+// Business Profile
+router.get('/profile', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getBusinessProfile)
 
 module.exports = router
