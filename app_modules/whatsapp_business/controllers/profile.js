@@ -4,10 +4,7 @@ const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const q = require('q')
 const queryProvider = require('../queryProvider')
-const _ = require('lodash')
-
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
-
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 // Get Business Profile
@@ -56,6 +53,10 @@ const getBusinessProfile = (req, res) => {
     })
 }
 
+const addUpdateBusinessPrfile = (req, res) => {
+
+}
+
 function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   __logger.info('Input Data ', data)
   const businessProfilePromise = q.defer()
@@ -84,4 +85,4 @@ function checkBusinessProfileCompletionStatus (data) {
   return checkCompleteStatus.validateBusinessProfile(data)
 }
 
-module.exports = { getBusinessProfile }
+module.exports = { getBusinessProfile, addUpdateBusinessPrfile }
