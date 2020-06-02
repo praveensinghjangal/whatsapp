@@ -73,12 +73,12 @@ class checkCompleteIncomplete {
     return isvalid.promise
   }
 
-  // Business Profile Validation Schema
+  // Business Billing Profile Validation Schema
 
-  checkBusinessProfileStatus (request) {
+  checkBusinessBillingProfileStatus (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/businessProfileApi',
+      id: '/businessBillingProfileApi',
       type: 'object',
       required: true,
       properties: {
@@ -140,7 +140,7 @@ class checkCompleteIncomplete {
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/businessProfileApi')
+    v.addSchema(schema, '/businessBillingProfileApi')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')

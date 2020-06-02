@@ -19,7 +19,7 @@ const getBusinessBilllingProfile = (req, res) => {
       __logger.info('Then 1', results)
       queryResult = results.rows[0]
       if (results && results.rows.length > 0) {
-        return checkBusinessProfileCompletionStatus(results.rows[0])
+        return checkBusinessBillingProfileCompletionStatus(results.rows[0])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
@@ -153,7 +153,7 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
     __db.postgresql.__query(queryProvider.createBusinessBillingProfile(), [userId, billingObj.billingName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.billingInformationId, userId])
       .then(result => {
         queryResult = result
-        return checkBusinessProfileCompletionStatus(billingObj)
+        return checkBusinessBillingProfileCompletionStatus(billingObj)
       })
       .then(data => {
         __logger.info('then 1')
@@ -179,10 +179,10 @@ function updateBusinessProfileIsActiveStatusToFalse (userId) {
   return __db.postgresql.__query(queryProvider.updateIsActiveStatusBusinessProfile(), [false, userId, userId])
 }
 
-function checkBusinessProfileCompletionStatus (data) {
+function checkBusinessBillingProfileCompletionStatus (data) {
   const checkCompleteStatus = new CheckInfoCompletionService()
 
-  return checkCompleteStatus.checkBusinessProfileStatus(data)
+  return checkCompleteStatus.checkBusinessBillingProfileStatus(data)
 }
 
 module.exports = { addBusinessBilllingProfile, getBusinessBilllingProfile, updateBusinessBilllingProfile, insertBusinessBillingProfileInfo, getBusinessProfileInfo, updateBusinessProfileIsActiveStatusToFalse }
