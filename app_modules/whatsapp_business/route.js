@@ -15,5 +15,6 @@ router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, aut
 
 // Business Profile
 router.get('/profile', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getBusinessProfile)
+router.put('/profileVerification', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.updateBusinessProfileVerificationStatus)
 
 module.exports = router

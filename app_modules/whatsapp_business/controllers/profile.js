@@ -1,14 +1,15 @@
 const __util = require('../../../lib/util')
-const constants = require('../../../config/constants')
+const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const q = require('q')
 const queryProvider = require('../queryProvider')
 const _ = require('lodash')
-
-const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
-
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+
+// Services
+const UserService = require('../services/dbData')
+const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
@@ -70,6 +71,74 @@ const getBusinessProfile = (req, res) => {
     })
 }
 
+// Update Account Prfofile
+
+// const updateBusinessProfileVerificationStatus = (req, res) => {
+//   __logger.info('Inside updateBusinessProfileVerification', req.user.user_id)
+
+//   // check user id exist
+//   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+
+//   const userService = new UserService()
+//   userService.checkUserIdExistForBusiness(userId)
+
+//   // if exist continue and check whether businessManagerVerified field is supplied or not
+
+//   //  if supplied then update
+//   // else throw error proper input not supplied
+
+//   // else thow error unauthorized
+
+//     .then(result => {
+//       __logger.info('UserId exist check then 1', result.exists)
+//       if (result.exists) {
+//         accountProfileData = {
+//           userId: req.user && req.user.user_id ? req.user.user_id : '0',
+//           city: req.body.city ? req.body.city : result.rows[0].city,
+//           state: req.body.state ? req.body.state : result.rows[0].state,
+//           country: req.body.country ? req.body.country : result.rows[0].country,
+//           addressLine1: req.body.addressLine1 ? req.body.addressLine1 : result.rows[0].addressLine1,
+//           addressLine2: req.body.addressLine2 ? req.body.addressLine2 : result.rows[0].addressLine2,
+//           contactNumber: req.body.contactNumber ? req.body.contactNumber : result.rows[0].contactNumber,
+//           phoneCode: req.body.phoneCode ? req.body.phoneCode : result.rows[0].phoneCode,
+//           postalCode: req.body.postalCode ? req.body.postalCode : result.rows[0].postalCode,
+//           firstName: req.body.firstName ? req.body.firstName : result.rows[0].firstName,
+//           lastName: req.body.lastName ? req.body.lastName : result.rows[0].lastName,
+//           accountManagerName: req.body.accountManagerName ? req.body.accountManagerName : result.rows[0].accountManagerName,
+//           accountTypeId: req.body.accountTypeId ? req.body.accountTypeId : __constants.ACCOUNT_PLAN_TYPE.Prepaid
+//         }
+
+//         return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [accountProfileData.city, accountProfileData.state, accountProfileData.country, accountProfileData.addressLine1, accountProfileData.addressLine2, accountProfileData.contactNumber, accountProfileData.phoneCode, accountProfileData.postalCode, accountProfileData.firstName, accountProfileData.lastName, accountProfileData.accountManagerName, accountProfileData.accountTypeId, accountProfileData.userId, accountProfileData.userId])
+//       } else {
+//         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+//       }
+//     })
+//     .then(result => {
+//       __logger.info('then 3', result)
+//       queryResult = result.rows
+
+//       if (result && result.rowCount && result.rowCount > 0) {
+//         return checkAccountProfileCompletionStatus(accountProfileData)
+//       } else {
+//         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
+//       }
+//     })
+//     .then(data => {
+//       queryResult.complete = data.complete
+//       // queryResult.push(data)
+//       __logger.info('queryResult', queryResult)
+//       __logger.info('data', data)
+//       return __util.send(res, {
+//         type: __constants.RESPONSE_MESSAGES.SUCCESS,
+//         data: { complete: queryResult.complete }
+//       })
+//     })
+//     .catch(err => {
+//       __logger.error('error: ', err)
+//       return __util.send(res, { type: err.type, err: err.err })
+//     })
+// }
+
 function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   __logger.info('Input Data ', data)
   const businessProfilePromise = q.defer()
@@ -111,4 +180,13 @@ function checkBusinessProfileCompletionStatus (data) {
   return checkCompleteStatus.validateBusinessProfile(data)
 }
 
-module.exports = { getBusinessProfile, checkBusinessProfileCompletionStatus }
+function getBusinessProfileInfo (userId) {
+  return __db.postgresql.__query(queryProvider.getBusinessProfile(), [userId])
+}
+
+module.exports = {
+  getBusinessProfile,
+  checkBusinessProfileCompletionStatus,
+  // updateBusinessProfileVerificationStatus,
+  getBusinessProfileInfo
+}

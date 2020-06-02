@@ -1,13 +1,15 @@
-const ValidatonService = require('../services/validation')
-const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
-const UserService = require('../services/dbData')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+
+// Services
+const UserService = require('../services/dbData')
+const ValidatonService = require('../services/validation')
+const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 
 // Get Business Profile
 const getBusinessBilllingProfile = (req, res) => {
