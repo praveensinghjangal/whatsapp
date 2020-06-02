@@ -8,8 +8,7 @@ const queryProvider = require('../queryProvider')
 // Get Account Type
 const getAcountType = (req, res) => {
   __logger.info('Inside getAcountType', req.user.userId)
-  const userType = __constants.USER_TYPE.admin
-  __db.postgresql.__query(queryProvider.getAccountType(), [userType])
+  __db.postgresql.__query(queryProvider.getAccountType())
     .then(results => {
       __logger.info('Then 1', results)
 
