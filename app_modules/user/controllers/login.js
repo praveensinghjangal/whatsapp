@@ -28,7 +28,7 @@ const controller = (req, res) => {
       const userData = results[0]
       const payload = { user_id: userData.user_id }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token: token, emailVerifiedStatus: results[0].email_verified, phoneVerifiedStatus: results[0].phone_verified, tncAccepted: results[0].tnc_accepted } })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token: token, emailVerifiedStatus: results[0].email_verified, phoneVerifiedStatus: results[0].phone_verified, tncAccepted: results[0].tnc_accepted, role: results[0].role_name } })
     })
     .catch(err => {
       __logger.error('error: ', err)

@@ -1,11 +1,13 @@
 const getUserDetailsByEmail = () => {
-  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted from users 
-  where email = $1 and is_active = true`
+  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name
+  from users u
+  join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true 
+  where lower(u.email) = lower($1) and u.is_active = true`
 }
 
 const createUser = () => {
-  return `insert into users ( email, hash_password, user_id,salt_key,signup_source,created_by,tnc_accepted,token_key,user_account_type_id) values 
-  ($1,$2,$3,$4,$5,$6,$7,$8,$9)`
+  return `insert into users ( email, hash_password, user_id,salt_key,signup_source,created_by,tnc_accepted,token_key,user_account_type_id,user_role_id) values 
+  ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`
 }
 
 // Account Profile Queries
@@ -64,7 +66,7 @@ const getBillingProfileWithBusinessInfoId = () => {
 const getAccountType = () => {
   return `select user_account_type_id, type_name
   from user_account_type 
-  WHERE created_by = $1 and is_active = true`
+  WHERE is_active = true`
 }
 
 const getVerifiedAndCodeDataByUserId = () => {
