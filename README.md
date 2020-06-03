@@ -3,10 +3,11 @@
 create a file named `.env` in config folder and paste the below content in newly created file.
 <br/>Developement environment .env file.
 ```sh
+WORKER_TYPE = http_api
 PORT = 3000
-process.env.SOCKET_IO_PORT = 40010
+SOCKET_IO_PORT = 40010
 BASE_URL = ''
-process.env.ARCHIVE_DB_NAME = archive
+ARCHIVE_DB_NAME = archive
 AUTH_CONFIG_API_AUTH_ALIAS = /client
 AUTH_CONFIG_SECRET_KEY = 6de5661ab3c401bcb266dff913
 AUTH_CONFIG_CIPHER_ALGORITHM = aes-256-ctr
@@ -78,7 +79,7 @@ PSQL_OPTIONS_PORT = 5432
 PSQL_OPTIONS_DATABASE = helo_whatsapp
 PSQL_OPTIONS_USER = viva_helo_whatsapp
 PSQL_OPTIONS_PASSWORD = hscbvyhd76734bhdf
-PSQL_OPTIONS_MAC_CONNECTIONS = 10
+PSQL_OPTIONS_MAX_CONNECTIONS = 5
 REDIS_INIT = true
 REDIS_HOST = 10.40.12.68
 REDIS_NO_READY_CHECK = true

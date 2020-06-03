@@ -140,7 +140,7 @@ module.exports = {
       database: process.env.PSQL_OPTIONS_DATABASE,
       user: process.env.PSQL_OPTIONS_USER,
       password: process.env.PSQL_OPTIONS_PASSWORD,
-      max_connection: +process.env.PSQL_OPTIONS_MAC_CONNECTIONS,
+      max: +process.env.PSQL_OPTIONS_MAX_CONNECTIONS,
       idleTimeoutMillis: 30000
     }
   },
