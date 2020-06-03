@@ -47,7 +47,7 @@ const addWabaTableData = () => {
 
 const setIsActiveFalseByWabaId = () => {
   return `update waba_information 
-          set is_active = false
+          set is_active = false, updated_on=now(),updated_by=$2
           where waba_information_id = $1 and is_active = true`
 }
 

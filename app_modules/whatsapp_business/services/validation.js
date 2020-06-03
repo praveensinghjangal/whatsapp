@@ -45,18 +45,15 @@ class validate {
       properties: {
         facebookManagerId: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: true
         },
         phoneCode: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         phoneNumber: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         canReceiveSms: {
           type: 'boolean',
@@ -72,43 +69,35 @@ class validate {
         },
         businessName: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         whatsappStatus: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         description: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         address: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         country: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         email: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         businessCategory: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         profilePhotoUrl: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         }
       }
     }

@@ -15,15 +15,14 @@ const CheckInfoCompletionService = require('../services/checkCompleteIncomplete'
 const getBusinessProfile = (req, res) => {
   let queryResult = []
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  // __logger.info('Inside getBusinessProfile', userId)
-
   const businessAccountService = new BusinessAccountService()
   businessAccountService.getBusinessProfileInfo(userId)
     .then(results => {
-      __logger.info('Then 1', results)
+      __logger.info('Then 1')
       queryResult = results.rows[0]
       if (results && results.rows.length > 0) {
-        return checkBusinessProfileCompletionStatus(results.rows[0])
+        const checkCompleteStatus = new CheckInfoCompletionService()
+        return checkCompleteStatus.validateBusinessProfile(results.rows[0])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
@@ -41,7 +40,7 @@ const getBusinessProfile = (req, res) => {
       return formatFinalStatus(queryResult, result)
     })
     .then(result => {
-      __logger.info('Final Result then 4 ', result)
+      __logger.info('Final Result then 4')
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
@@ -50,7 +49,7 @@ const getBusinessProfile = (req, res) => {
     })
 }
 
-const addBusinessAccessInfo = (req, res) => {
+const addupdateBusinessAccountInfo = (req, res) => {
   __logger.info('Inside addBusinessAccessInfo', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let queryResult
@@ -60,39 +59,34 @@ const addBusinessAccessInfo = (req, res) => {
 
   validate.checkCompleteBillingInfo(req.body)
     .then(data => {
-      __logger.info(' then 1', data)
+      __logger.info(' then 1')
 
       return businessAccountService.checkUserIdExist(userId)
     })
     .then(result => {
-      __logger.info(' then 2', result)
+      __logger.info(' then 2')
 
       /* If exists then updating else inserting */
-      queryResult = result.record
-
-      if (!result.exists) {
-        queryResult = {
-          canReceiveSms: req.body.canReceiveSms ? req.body.canReceiveSms : false,
-          canReceiveVoiceCall: req.body.canReceiveVoiceCall ? req.body.canReceiveVoiceCall : false,
-          associatedWithIvr: req.body.associatedWithIvr ? req.body.associatedWithIvr : false,
-          businessVerificationCompletionStatus: req.body.businessManagerVerified ? req.body.businessManagerVerified : false
-        }
-
-        return businessAccountService.insertBusinessData(userId, req.body, {})
+      queryResult = {
+        canReceiveSms: req.body.canReceiveSms ? req.body.canReceiveSms : false,
+        canReceiveVoiceCall: req.body.canReceiveVoiceCall ? req.body.canReceiveVoiceCall : false,
+        associatedWithIvr: req.body.associatedWithIvr ? req.body.associatedWithIvr : false,
+        businessVerificationCompletionStatus: req.body.businessManagerVerified ? req.body.businessManagerVerified : false
       }
 
-      // else {
-      //   return updateBusinessBilllingProfile(userId, result.record, req.body)
-      // }
+      if (!result.exists) {
+        return businessAccountService.insertBusinessData(userId, req.body, {})
+      } else {
+        return businessAccountService.updateBusinessData(req.body, result.record)
+      }
     })
-
     .then(result => {
-      __logger.info(' then 3', result)
-
-      return checkBusinessProfileCompletionStatus(result)
+      __logger.info(' then 3')
+      const checkCompleteStatus = new CheckInfoCompletionService()
+      return checkCompleteStatus.validateBusinessProfile(result)
     })
     .then(data => {
-      __logger.info('then 4', data)
+      __logger.info('then 4')
       if (data.err) {
         return computeBusinessAccessAndBusinessProfleCompleteStatus(data)
       } else {
@@ -100,11 +94,12 @@ const addBusinessAccessInfo = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('Then 5', result)
+      __logger.info('Then 5')
       return formatFinalStatus(queryResult, result.finalData)
     })
     .then(result => {
-      __logger.info('Then 4', result)
+      __logger.info('Then 6', result)
+      queryResult = result
 
       if (result) {
         // if (result && result.rowCount && result.rowCount > 0) {
@@ -120,7 +115,7 @@ const addBusinessAccessInfo = (req, res) => {
 }
 
 function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
-  __logger.info('Input Data ', data)
+  // __logger.info('Input Data ', data)
   const businessProfilePromise = q.defer()
   const errorFields = data.fieldErr
   const businessAccessProfileFields = ['facebookManagerId', 'phoneCode', 'phoneNumber', 'canReceiveSms', 'canReceiveVoiceCall', 'associatedWithIvr']
@@ -137,38 +132,21 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   }
   delete data.fieldErr
   delete data.complete
-  __logger.info('Result Data ', data)
+  // __logger.info('Result Data ', data)
   businessProfilePromise.resolve({ finalData: data })
   return businessProfilePromise.promise
-}
-
-function checkBusinessProfileCompletionStatus (data) {
-  const checkCompleteStatus = new CheckInfoCompletionService()
-  return checkCompleteStatus.validateBusinessProfile(data)
 }
 
 function formatFinalStatus (queryResult, result) {
   const finalResult = q.defer()
 
-  __logger.info('Query Result formatFinalStatus', queryResult)
-  __logger.info('Query result formatFinalStatus', result)
-  __logger.info('Query result formatFinalStatus err', result.err)
-  __logger.info('Query result  businessAccessProfileCompletionStatus', result.businessAccessProfileCompletionStatus)
-
   if (queryResult.canReceiveSms || (queryResult.canReceiveVoiceCall && queryResult.associatedWithIvr)) {
     queryResult.businessAccessProfileCompletionStatus = true
-    // queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : result.finalData.businessAccessProfileCompletionStatus
   } else {
     queryResult.businessAccessProfileCompletionStatus = false
   }
-  // // Business Manager Check
 
-  // if (queryResult.businessManagerVerified) {
-  //   queryResult.businessVerificationCompletionStatus = true
-  // } else {
-  //   queryResult.businessVerificationCompletionStatus = false
-  // }
-  queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : result.finalData.businessProfileCompletionStatus
+  queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   delete queryResult.canReceiveSms
   delete queryResult.canReceiveVoiceCall
   delete queryResult.associatedWithIvr
@@ -178,6 +156,5 @@ function formatFinalStatus (queryResult, result) {
 
 module.exports = {
   getBusinessProfile,
-  checkBusinessProfileCompletionStatus,
-  addBusinessAccessInfo
+  addupdateBusinessAccountInfo
 }
