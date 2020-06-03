@@ -8,7 +8,7 @@ const queryProvider = require('../queryProvider')
 // Get Business Category
 const getBusinessCategory = (req, res) => {
   __logger.info('Inside getBusinessCategory', req.user.userId)
-  __db.postgresql.__query(queryProvider.getBusinessCategory())
+  __db.postgresql.__query(queryProvider.getBusinessCategory(), [])
     .then(results => {
       __logger.info('Then 1', results)
       if (results && results.rows.length > 0) {
