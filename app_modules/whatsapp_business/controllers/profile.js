@@ -1,29 +1,35 @@
 const __util = require('../../../lib/util')
-const constants = require('../../../config/constants')
+const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const __db = require('../../../lib/db')
 const q = require('q')
-const queryProvider = require('../queryProvider')
-const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+
+// Services
+const BusinessAccountService = require('../services/businesAccount')
+const ValidatonService = require('../services/validation')
+const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
+
+//  Business Profile
 
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   let queryResult = []
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   // __logger.info('Inside getBusinessProfile', userId)
-  __db.postgresql.__query(queryProvider.getBusinessProfile(), [userId])
+
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getBusinessProfileInfo(userId)
     .then(results => {
-      // __logger.info('Then 1', results)
+      __logger.info('Then 1', results)
       queryResult = results.rows[0]
       if (results && results.rows.length > 0) {
         return checkBusinessProfileCompletionStatus(results.rows[0])
       } else {
-        return rejectionHandler({ type: constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(data => {
-      // __logger.info('then 2')
+      __logger.info('then 2')
       if (data.err) {
         return computeBusinessAccessAndBusinessProfleCompleteStatus(data)
       } else {
@@ -31,21 +37,110 @@ const getBusinessProfile = (req, res) => {
       }
     })
     .then(result => {
-      // __logger.info('then 3', result)
-      // Check the capabilities and set the status of completeness of access profile
-      if (queryResult.canReceiveSms || (queryResult.canReceiveVoiceCall && queryResult.associatedWithIvr)) {
-        queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : result.finalData.businessAccessProfileCompletionStatus
-      } else {
-        queryResult.businessAccessProfileCompletionStatus = false
+      __logger.info('Then 3')
+      return formatFinalStatus(queryResult, result)
+    })
+    .then(result => {
+      __logger.info('Final Result then 4 ', result)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+const addBusinessAccessInfo = (req, res) => {
+  __logger.info('Inside addBusinessAccessInfo', req.user.user_id)
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  let queryResult
+
+  const validate = new ValidatonService()
+  const businessAccountService = new BusinessAccountService()
+
+  validate.checkCompleteBusinessInfo(req.body)
+    .then(data => {
+      __logger.info(' then 1', data)
+
+      return businessAccountService.checkUserIdExist(userId)
+    })
+    .then(result => {
+      __logger.info(' then 2', result)
+
+      /* If exists then updating else inserting */
+      queryResult = result.record
+
+      if (!result.exists) {
+        queryResult = {
+          canReceiveSms: req.body.canReceiveSms ? req.body.canReceiveSms : false,
+          canReceiveVoiceCall: req.body.canReceiveVoiceCall ? req.body.canReceiveVoiceCall : false,
+          associatedWithIvr: req.body.associatedWithIvr ? req.body.associatedWithIvr : false,
+          businessVerificationCompletionStatus: req.body.businessManagerVerified ? req.body.businessManagerVerified : false
+        }
+
+        return businessAccountService.insertBusinessData(userId, req.body, {})
       }
-      // Business Manager Check
-      if (queryResult.businessManagerVerified) {
-        queryResult.businessVerificationCompletionStatus = true
+
+      // else {
+      //   return updateBusinessBilllingProfile(userId, result.record, req.body)
+      // }
+    })
+
+    .then(result => {
+      __logger.info(' then 3', result)
+
+      return checkBusinessProfileCompletionStatus(result)
+    })
+    .then(data => {
+      __logger.info('then 4', data)
+      if (data.err) {
+        return computeBusinessAccessAndBusinessProfleCompleteStatus(data)
       } else {
-        queryResult.businessVerificationCompletionStatus = false
+        return { businessAccessProfileCompletionStatus: true, businessProfileCompletionStatus: true }
       }
-      queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : result.finalData.businessProfileCompletionStatus
-      return __util.send(res, { type: constants.RESPONSE_MESSAGES.SUCCESS, data: queryResult })
+    })
+    .then(result => {
+      __logger.info('Then 5', result)
+      return formatFinalStatus(queryResult, result.finalData)
+    })
+    .then(result => {
+      __logger.info('Then 4', result)
+
+      if (result) {
+        // if (result && result.rowCount && result.rowCount > 0) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: queryResult })
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
+      }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+// todo : add check if category id exists in master
+const addUpdateBusinessPrfile = (req, res) => {
+  __logger.info('API TO ADD/UPDATE BUSINESS PROFILE CALLED', req.user.user_id)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  validate.addUpdateBusinessInfo(req.body)
+    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => {
+      __logger.info('exists ----------------->', data)
+      if (!data.exists) {
+        req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
+        return businessAccountService.insertBusinessData(userId, req.body, {})
+      } else {
+        __logger.info('time to update')
+        return businessAccountService.updateBusinessData(req.body, data.record || {})
+      }
+    })
+    .then(data => validate.isAddUpdateBusinessInfoComplete(data))
+    .then(data => {
+      __logger.info('After inserting or updating', data)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessProfileCompletionStatus: data } })
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -81,4 +176,38 @@ function checkBusinessProfileCompletionStatus (data) {
   return checkCompleteStatus.validateBusinessProfile(data)
 }
 
-module.exports = { getBusinessProfile }
+function formatFinalStatus (queryResult, result) {
+  const finalResult = q.defer()
+
+  __logger.info('Query Result formatFinalStatus', queryResult)
+  __logger.info('Query result formatFinalStatus', result)
+  __logger.info('Query result formatFinalStatus err', result.err)
+  __logger.info('Query result  businessAccessProfileCompletionStatus', result.businessAccessProfileCompletionStatus)
+
+  if (queryResult.canReceiveSms || (queryResult.canReceiveVoiceCall && queryResult.associatedWithIvr)) {
+    queryResult.businessAccessProfileCompletionStatus = true
+    // queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : result.finalData.businessAccessProfileCompletionStatus
+  } else {
+    queryResult.businessAccessProfileCompletionStatus = false
+  }
+  // // Business Manager Check
+
+  // if (queryResult.businessManagerVerified) {
+  //   queryResult.businessVerificationCompletionStatus = true
+  // } else {
+  //   queryResult.businessVerificationCompletionStatus = false
+  // }
+  queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : result.finalData.businessProfileCompletionStatus
+  delete queryResult.canReceiveSms
+  delete queryResult.canReceiveVoiceCall
+  delete queryResult.associatedWithIvr
+  finalResult.resolve(queryResult)
+  return finalResult.promise
+}
+
+module.exports = {
+  getBusinessProfile,
+  checkBusinessProfileCompletionStatus,
+  addBusinessAccessInfo,
+  addUpdateBusinessPrfile
+}
