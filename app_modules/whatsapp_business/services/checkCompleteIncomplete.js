@@ -102,6 +102,41 @@ class checkCompleteIncomplete {
     }
     return isvalid.promise
   }
+
+  // Business Profile Verification
+
+  validateBusinessProfileVerification (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/validateBusinessProfileVerificationApi',
+      type: 'object',
+      required: true,
+      properties: {
+        business_manager_verified: {
+          type: 'boolean',
+          required: true
+        }
+      }
+    }
+    const formatedError = []
+    const formatedFieldError = []
+    v.addSchema(schema, '/validateBusinessProfileVerificationApi')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+
+      const reFromatedErr = formatedErr[formatedErr.length - 1].split(' ')
+
+      formatedError.push(formatedErr[formatedErr.length - 1])
+      formatedFieldError.push(reFromatedErr[0])
+    })
+    if (formatedError.length > 0) {
+      isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError })
+    } else {
+      isvalid.resolve({ complete: true })
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = checkCompleteIncomplete
