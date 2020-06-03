@@ -59,7 +59,6 @@ class businesAccountService {
   insertBusinessData (userId, businessData, businessOldData) {
     const dataInserted = q.defer()
     __logger.info('Inputs insertBusinessData userId', userId)
-    const uniqueId = new UniqueId()
     const businessAccountObj = {
       facebookManagerId: businessData.facebookManagerId ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
@@ -79,9 +78,11 @@ class businesAccountService {
       wabaProfileSetupStatusId: businessData.wabaProfileSetupStatusId ? businessData.wabaProfileSetupStatusId : businessOldData.wabaProfileSetupStatusId,
       businessManagerVerified: businessData.businessManagerVerified ? businessData.businessManagerVerified : businessOldData.businessManagerVerified,
       phoneVerified: businessData.phoneVerified ? businessData.phoneVerified : businessOldData.phoneVerified,
-      wabaInformationId: businessOldData.wabaInformationId ? businessOldData.wabaInformationId : uniqueId.uuid()
+      wabaInformationId: businessOldData.wabaInformationId ? businessOldData.wabaInformationId : this.uniqueId.uuid(),
+      city: businessData.city ? businessData.city : businessOldData.city,
+      postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode
     }
-    __db.postgresql.__query(queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.state, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId])
+    __db.postgresql.__query(queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode])
       .then(result => {
         if (result && result.rowCount && result.rowCount > 0) {
           dataInserted.resolve(businessAccountObj)
@@ -110,7 +111,6 @@ class businesAccountService {
 
   getBusinessProfileInfo (userId) {
     const businessDataFetched = q.defer()
-
     __db.postgresql.__query(queryProvider.getBusinessProfile(), [userId])
       .then(businessData => businessDataFetched.resolve(businessData))
       .catch(err => {

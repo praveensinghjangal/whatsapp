@@ -69,6 +69,8 @@ const ACCOUNT_PLAN_TYPE = {
 const USER_ROLE_ID = {
   admin: '7393e61e-df2e-4643-9eee-0f2382d19afa'
 }
+
+const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
 const SERVER_TIMEOUT = 20 * 60 * 1000
@@ -85,3 +87,4 @@ module.exports.APP_NAME = APP_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.SERVER_TIMEOUT = SERVER_TIMEOUT
+module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID

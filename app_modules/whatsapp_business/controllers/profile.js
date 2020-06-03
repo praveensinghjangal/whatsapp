@@ -58,7 +58,7 @@ const addBusinessAccessInfo = (req, res) => {
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
 
-  validate.checkCompleteBillingInfo(req.body)
+  validate.checkCompleteBusinessInfo(req.body)
     .then(data => {
       __logger.info(' then 1', data)
 
@@ -119,8 +119,33 @@ const addBusinessAccessInfo = (req, res) => {
     })
 }
 
+// todo : add check if category id exists in master
 const addUpdateBusinessPrfile = (req, res) => {
-
+  __logger.info('API TO ADD/UPDATE BUSINESS PROFILE CALLED', req.user.user_id)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  validate.addUpdateBusinessInfo(req.body)
+    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => {
+      __logger.info('exists ----------------->', data)
+      if (!data.exists) {
+        req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
+        return businessAccountService.insertBusinessData(userId, req.body, {})
+      } else {
+        __logger.info('time to update')
+        return businessAccountService.updateBusinessData(req.body, data.record || {})
+      }
+    })
+    .then(data => validate.isAddUpdateBusinessInfoComplete(data))
+    .then(data => {
+      __logger.info('After inserting or updating', data)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessProfileCompletionStatus: data } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
 }
 
 function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {

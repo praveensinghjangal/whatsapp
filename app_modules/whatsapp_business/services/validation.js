@@ -36,7 +36,7 @@ class validate {
 
   // Business Access Info Validation Schema
 
-  checkCompleteBillingInfo (request) {
+  checkCompleteBusinessInfo (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/businessAccessInfoApi',
@@ -123,6 +123,165 @@ class validate {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  addUpdateBusinessInfo (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addUpdateBusinessInfo',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        businessName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        whatsappStatus: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        description: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        address: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        country: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        city: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        state: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        postalCode: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        email: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        businessCategoryId: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        profilePhotoUrl: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/addUpdateBusinessInfo')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  isAddUpdateBusinessInfoComplete (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/isAddUpdateBusinessInfoComplete',
+      type: 'object',
+      required: true,
+      properties: {
+        businessName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        whatsappStatus: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        description: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        address: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        country: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        city: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        state: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        postalCode: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        email: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        businessCategoryId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        profilePhotoUrl: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/isAddUpdateBusinessInfoComplete')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.resolve(false)
+    } else {
+      isvalid.resolve(true)
     }
     return isvalid.promise
   }
