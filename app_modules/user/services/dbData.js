@@ -51,8 +51,8 @@ class UserData {
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
           const accountTypeId = __constants.ACCOUNT_PLAN_TYPE.Prepaid
-
-          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId])
+          const userRole = __constants.USER_ROLE_ID.admin
+          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId, userRole])
         } else {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.USER_EXIST, data: {} })
         }

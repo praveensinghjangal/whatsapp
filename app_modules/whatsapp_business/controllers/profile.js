@@ -1,11 +1,7 @@
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const __db = require('../../../lib/db')
 const q = require('q')
-const queryProvider = require('../queryProvider')
-const _ = require('lodash')
-const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 // Services
@@ -14,6 +10,8 @@ const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 
 //  Business Profile
+
+// Get Business Profile
 const getBusinessProfile = (req, res) => {
   let queryResult = []
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
