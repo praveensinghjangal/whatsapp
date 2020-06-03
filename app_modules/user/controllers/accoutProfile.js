@@ -10,7 +10,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 // Get Account Profile
 const getAcountProfile = (req, res) => {
-  __logger.info('Inside getAcountProfile', req.user.userId)
+  __logger.info('Inside getAcountProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let queryResult = []
 
