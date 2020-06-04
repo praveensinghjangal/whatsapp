@@ -13,7 +13,7 @@ const getBusinessProfile = () => {
   description, profile_photo_url as "profilePhotoUrl", address, country, can_receive_sms as "canReceiveSms",
   can_receive_voice_call as "canReceiveVoiceCall", associated_with_ivr as "associatedWithIvr", 
   wabaprof.status_name as "wabaProfileSetupStatus", business_manager_verified as "businessManagerVerified", 
-  phone_verified as "phoneVerified"
+  phone_verified as "phoneVerified", city, postal_code as "postalCode"
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
   LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active 

@@ -73,10 +73,20 @@ class checkCompleteIncomplete {
         },
         businessCategory: {
           type: 'string',
-          required: false,
+          required: true,
           minLength: 1
         },
         profilePhotoUrl: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        city: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        postalCode: {
           type: 'string',
           required: true,
           minLength: 1
