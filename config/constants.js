@@ -71,9 +71,9 @@ const USER_ROLE_ID = {
 }
 
 const TEMPLATE_TYPE = [{
-  standard: 'Standard Message Template'
+  templateType: 'Standard Message Template'
 }, {
-  media: 'Media Message Template'
+  templateType: 'Media Message Template'
 }]
 
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
