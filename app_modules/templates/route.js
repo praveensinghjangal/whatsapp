@@ -10,10 +10,6 @@ const templatesCategoryController = require('./controllers/category')
 const templatesLanguageController = require('./controllers/language')
 
 // Routes
-// Fetch Templates
-router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
-router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfo)
-
 // Template Type
 router.get('/types', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateTypes)
 
@@ -22,5 +18,9 @@ router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, aut
 
 // Template Language
 router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLanguageController.getTemplateLanguages)
+
+// Fetch Templates
+router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
+router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfo)
 
 module.exports = router
