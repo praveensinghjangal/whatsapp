@@ -36,7 +36,7 @@ const getBusinessProfile = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('Then 3')
+      __logger.info('Then 3', result)
       return formatFinalStatus(queryResult, result)
     })
     .then(result => {
@@ -52,61 +52,27 @@ const getBusinessProfile = (req, res) => {
 const addupdateBusinessAccountInfo = (req, res) => {
   __logger.info('Inside addupdateBusinessAccountInfo', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  let queryResult
-
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
 
-  validate.checkCompleteBusinessInfo(req.body)
+  validate.businessAccessInfo(req.body)
     .then(data => {
       __logger.info(' then 1')
-
       return businessAccountService.checkUserIdExist(userId)
     })
     .then(result => {
       __logger.info(' then 2')
-
-      /* If exists then updating else inserting */
-      queryResult = {
-        canReceiveSms: req.body.canReceiveSms ? req.body.canReceiveSms : false,
-        canReceiveVoiceCall: req.body.canReceiveVoiceCall ? req.body.canReceiveVoiceCall : false,
-        associatedWithIvr: req.body.associatedWithIvr ? req.body.associatedWithIvr : false,
-        businessVerificationCompletionStatus: req.body.businessManagerVerified ? req.body.businessManagerVerified : false
-      }
-
       if (!result.exists) {
+        req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
         return businessAccountService.insertBusinessData(userId, req.body, {})
       } else {
         return businessAccountService.updateBusinessData(req.body, result.record)
       }
     })
-    .then(result => {
-      __logger.info(' then 3')
-      const checkCompleteStatus = new CheckInfoCompletionService()
-      return checkCompleteStatus.validateBusinessProfile(result)
-    })
+    .then(data => validate.isAddUpdateBusinessAccessInfoComplete(data))
     .then(data => {
-      __logger.info('then 4')
-      if (data.err) {
-        return computeBusinessAccessAndBusinessProfleCompleteStatus(data)
-      } else {
-        return { businessAccessProfileCompletionStatus: true, businessProfileCompletionStatus: true }
-      }
-    })
-    .then(result => {
-      __logger.info('Then 5')
-      return formatFinalStatus(queryResult, result.finalData)
-    })
-    .then(result => {
-      __logger.info('Then 6', result)
-      queryResult = result
-
-      if (result) {
-        // if (result && result.rowCount && result.rowCount > 0) {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: queryResult })
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
-      }
+      __logger.info('After inserting or updating', data)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessAccessProfileCompletionStatus: data } })
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -148,7 +114,7 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   const businessProfilePromise = q.defer()
   const errorFields = data.fieldErr
   const businessAccessProfileFields = ['facebookManagerId', 'phoneCode', 'phoneNumber', 'canReceiveSms', 'canReceiveVoiceCall', 'associatedWithIvr']
-  const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'profilePhotoUrl']
+  const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'profilePhotoUrl', 'city', 'postalCode']
   data.businessAccessProfileCompletionStatus = true
   data.businessProfileCompletionStatus = true
   for (let key = 0; key < errorFields.length; key++) {
@@ -162,7 +128,7 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   delete data.fieldErr
   delete data.complete
   // __logger.info('Result Data ', data)
-  businessProfilePromise.resolve({ finalData: data })
+  businessProfilePromise.resolve(data)
   return businessProfilePromise.promise
 }
 
@@ -174,7 +140,6 @@ function formatFinalStatus (queryResult, result) {
   } else {
     queryResult.businessAccessProfileCompletionStatus = false
   }
-
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   delete queryResult.canReceiveSms
   delete queryResult.canReceiveVoiceCall

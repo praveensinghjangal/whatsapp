@@ -36,12 +36,13 @@ class validate {
 
   // Business Access Info Validation Schema
 
-  checkCompleteBusinessInfo (request) {
+  businessAccessInfo (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/businessAccessInfoApi',
       type: 'object',
       required: true,
+      additionalProperties: false,
       properties: {
         facebookManagerId: {
           type: 'string',
@@ -65,38 +66,6 @@ class validate {
         },
         associatedWithIvr: {
           type: 'boolean',
-          required: false
-        },
-        businessName: {
-          type: 'string',
-          required: false
-        },
-        whatsappStatus: {
-          type: 'string',
-          required: false
-        },
-        description: {
-          type: 'string',
-          required: false
-        },
-        address: {
-          type: 'string',
-          required: false
-        },
-        country: {
-          type: 'string',
-          required: false
-        },
-        email: {
-          type: 'string',
-          required: false
-        },
-        businessCategory: {
-          type: 'string',
-          required: false
-        },
-        profilePhotoUrl: {
-          type: 'string',
           required: false
         }
       }
@@ -262,6 +231,51 @@ class validate {
     }
     const formatedError = []
     v.addSchema(schema, '/isAddUpdateBusinessInfoComplete')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.resolve(false)
+    } else {
+      isvalid.resolve(true)
+    }
+    return isvalid.promise
+  }
+
+  isAddUpdateBusinessAccessInfoComplete (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/isAddUpdateBusinessAccessInfoComplete',
+      type: 'object',
+      required: true,
+      properties: {
+        facebookManagerId: {
+          type: 'string',
+          required: true
+        },
+        phoneCode: {
+          type: 'string',
+          required: true
+        },
+        phoneNumber: {
+          type: 'string',
+          required: true
+        },
+        canReceiveSms: {
+          type: 'boolean'
+        },
+        canReceiveVoiceCall: {
+          type: 'boolean'
+        },
+        associatedWithIvr: {
+          type: 'boolean'
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/isAddUpdateBusinessAccessInfoComplete')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
