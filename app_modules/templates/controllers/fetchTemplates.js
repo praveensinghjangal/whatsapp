@@ -2,13 +2,12 @@ const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
-
 const queryProvider = require('../queryProvider')
 
 const getTemplateList = (req, res) => {
   __logger.info('Get Templates List API Called', req.query)
 
-  const { message_template_status_id: messageTemplateStatusId } = req.query
+  const { messageTemplateStatusId } = req.query
 
   const params = [req.user.user_id]
 
