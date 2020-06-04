@@ -70,6 +70,12 @@ const USER_ROLE_ID = {
   admin: '7393e61e-df2e-4643-9eee-0f2382d19afa'
 }
 
+const TEMPLATE_TYPE = [{
+  standard: 'Standard Message Template'
+}, {
+  media: 'Media Message Template'
+}]
+
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
@@ -87,4 +93,5 @@ module.exports.APP_NAME = APP_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.SERVER_TIMEOUT = SERVER_TIMEOUT
+module.exports.TEMPLATE_TYPE = TEMPLATE_TYPE
 module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID

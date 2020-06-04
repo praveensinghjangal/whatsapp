@@ -6,9 +6,20 @@ const authstrategy = require('../../config').authentication.strategy
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
+const templatesCategoryController = require('./controllers/category')
+const templatesLanguageController = require('./controllers/language')
 
 // Routes
 // Fetch Templates
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
+
+// Template Type
+router.get('/types', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateTypes)
+
+// Template Category
+router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesCategoryController.getTemplateCategories)
+
+// Template Language
+router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLanguageController.getTemplateLanguages)
 
 module.exports = router
