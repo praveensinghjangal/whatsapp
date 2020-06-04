@@ -155,5 +155,15 @@ module.exports = {
     status_code: 200,
     code: 3017,
     message: 'Invalid verification code'
+  },
+  BUSINESS_ACCESS_INFO_NOT_COMPLETE: {
+    status_code: 200,
+    code: 3018,
+    message: 'Please complete whatsapp business access info first'
+  },
+  BUSINESS_INFO_NOT_COMPLETE: {
+    status_code: 200,
+    code: 3019,
+    message: 'Please complete whatsapp business info first'
   }
 }

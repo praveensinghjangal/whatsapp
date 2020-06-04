@@ -30,16 +30,13 @@ class checkCompleteIncomplete {
           minLength: 1
         },
         canReceiveSms: {
-          type: 'boolean',
-          required: true
+          type: 'boolean'
         },
         canReceiveVoiceCall: {
-          type: 'boolean',
-          required: true
+          type: 'boolean'
         },
         associatedWithIvr: {
-          type: 'boolean',
-          required: true
+          type: 'boolean'
         },
         businessName: {
           type: 'string',

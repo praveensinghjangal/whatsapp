@@ -109,6 +109,50 @@ const addUpdateBusinessPrfile = (req, res) => {
     })
 }
 
+const markManagerVerified = (req, res) => {
+  __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  let record
+  validate.markManagerVerified(req.body)
+    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => {
+      __logger.info('exists ----------------->', data)
+      if (!data.exists) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      } else {
+        record = data.record
+        __logger.info('time to update')
+        // return
+        return validate.isAddUpdateBusinessAccessInfoComplete(record)
+      }
+    })
+    .then(data => {
+      console.log('datatatatata', data)
+      if (data) {
+        return validate.isAddUpdateBusinessInfoComplete(record)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_ACCESS_INFO_NOT_COMPLETE, err: {}, data: {} })
+      }
+    })
+    .then(data => {
+      if (data) {
+        return businessAccountService.updateBusinessData(req.body, record || {})
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_INFO_NOT_COMPLETE, err: {}, data: {} })
+      }
+    })
+    .then(data => {
+      __logger.info('After Marking Manager verified', data)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessVerificationCompletionStatus: true } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   // __logger.info('Input Data ', data)
   const businessProfilePromise = q.defer()
@@ -134,13 +178,8 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
 
 function formatFinalStatus (queryResult, result) {
   const finalResult = q.defer()
-
-  if (queryResult.canReceiveSms || (queryResult.canReceiveVoiceCall && queryResult.associatedWithIvr)) {
-    queryResult.businessAccessProfileCompletionStatus = true
-  } else {
-    queryResult.businessAccessProfileCompletionStatus = false
-  }
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
+  queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : false
   delete queryResult.canReceiveSms
   delete queryResult.canReceiveVoiceCall
   delete queryResult.associatedWithIvr
@@ -151,5 +190,6 @@ function formatFinalStatus (queryResult, result) {
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessPrfile,
-  addupdateBusinessAccountInfo
+  addupdateBusinessAccountInfo,
+  markManagerVerified
 }

@@ -245,6 +245,7 @@ class validate {
   }
 
   isAddUpdateBusinessAccessInfoComplete (request) {
+    console.log('req --------------------', request)
     const isvalid = q.defer()
     const schema = {
       id: '/isAddUpdateBusinessAccessInfoComplete',
@@ -285,6 +286,36 @@ class validate {
       isvalid.resolve(false)
     } else {
       isvalid.resolve(true)
+    }
+    return isvalid.promise
+  }
+
+  markManagerVerified (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/markManagerVerified',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        businessManagerVerified: {
+          type: 'boolean',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/markManagerVerified')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
     }
     return isvalid.promise
   }
