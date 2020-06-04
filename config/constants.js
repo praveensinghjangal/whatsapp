@@ -59,7 +59,8 @@ const CUSTOM_CONSTANT = {
 }
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
-  sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
+  sms: { name: 'sms', expiresIn: 600, codeLength: 4 },
+  businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 }
 }
 const ACCOUNT_PLAN_TYPE = {
   Prepaid: 'd9718ee1-50a1-4826-b0fa-ad1394308d59',

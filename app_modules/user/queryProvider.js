@@ -85,7 +85,7 @@ const addVerificationCode = () => {
 
 const updateVerificationCode = () => {
   return `update user_verification_code
-  set is_active = false 
+  set is_active = false , updated_by = $1, updated_on = now()
   where user_id  = $1 and lower(code_type) = $2
   and is_consumed = false and is_active = true`
 }
@@ -109,6 +109,12 @@ const markUserEmailVerified = () => {
   where user_id = $1 and is_active = true`
 }
 
+const markbusinessNumberVerified = () => {
+  return `update waba_information 
+  set phone_verified = true, updated_by = $2, updated_on = now() 
+  where user_id = $1 and is_active = true`
+}
+
 const markUserSmsVerified = () => {
   return `update users 
   set phone_verified = true, updated_by = $2, updated_on = now() 
@@ -124,6 +130,15 @@ const getLatestAgreementByUserId = () => {
   return `select file_path from user_agreement_files
   where user_id = $1 and is_active = true 
   order by created_on desc limit 1`
+}
+
+const getVerifiedAndCodeDataByUserIdForBusinessNumber = () => {
+  return `select uvc.id as user_verification_code_id , wi.phone_verified , wi.business_name ,
+  wi.phone_code, wi.phone_number
+    from waba_information wi 
+    left join user_verification_code uvc on wi.user_id = uvc.user_id and lower(uvc.code_type) = lower($2) and uvc.is_consumed = false and uvc.is_active = true
+    where wi.user_id = $1
+    and wi.is_active = true`
 }
 
 module.exports = {
@@ -146,5 +161,7 @@ module.exports = {
   markUserEmailVerified,
   markUserSmsVerified,
   saveUserAgreement,
-  getLatestAgreementByUserId
+  getLatestAgreementByUserId,
+  getVerifiedAndCodeDataByUserIdForBusinessNumber,
+  markbusinessNumberVerified
 }
