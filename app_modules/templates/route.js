@@ -10,5 +10,6 @@ const fetchTemplatesController = require('./controllers/fetchTemplates')
 // Routes
 // Fetch Templates
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
+router.get('/template', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfo)
 
 module.exports = router

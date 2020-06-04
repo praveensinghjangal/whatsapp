@@ -19,15 +19,34 @@ const getTemplateList = (req, res) => {
   __db.postgresql.__query(queryProvider.getTemplateList(message_template_status_id), params)
     .then(result => {
       if (result && result.rows && result.rows.length === 0) {
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: { msg: 'No templates found' } })
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result.rows })
       }
     })
     .catch(err => {
       __logger.error('error in create user function: ', err)
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: { msg: 'Some error occured' } })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
     })
 }
 
-module.exports = { getTemplateList }
+const getTemplateInfo = (req, res) => {
+  __logger.info('Get Templates Info API Called')
+
+  const { waba_information_id, message_template_id } = req.query
+
+  __db.postgresql.__query(queryProvider.getTemplateInfo(), [waba_information_id, message_template_id])
+    .then(result => {
+      if (result && result.rows && result.rows.length === 0) {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+      } else {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result.rows })
+      }
+    })
+    .catch(err => {
+      __logger.error('error in create user function: ', err)
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+    })
+}
+
+module.exports = { getTemplateList, getTemplateInfo }
