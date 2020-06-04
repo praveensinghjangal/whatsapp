@@ -152,7 +152,7 @@ module.exports = {
     message: 'Phone number already verified for user'
   },
   INVALID_VERIFICATION_CODE: {
-    status_code: 200,
+    status_code: 401,
     code: 3017,
     message: 'Invalid verification code'
   },
