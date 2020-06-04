@@ -1,6 +1,3 @@
-const sampleQuery = () => {
-  return 'select now()'
-}
 // Template Categories
 const getTemplateCategories = () => {
   return `select message_template_category_id as "messageTemplateCategoryId", category_name as "categoryName"
@@ -16,7 +13,6 @@ const getTemplateLanguages = () => {
 }
 
 module.exports = {
-  sampleQuery,
   getTemplateCategories,
   getTemplateLanguages
 }

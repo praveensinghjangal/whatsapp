@@ -75,6 +75,16 @@ module.exports = {
     code: 2003,
     message: 'Phone number verified'
   },
+  BUSINESS_PHONE_VC: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check your registered business phone number for verification code'
+  },
+  BUSINESS_PHONE_VERIFIED: {
+    status_code: 200,
+    code: 2003,
+    message: 'Business phone number verified'
+  },
   // Note: use codes 3000 to 3999 for api error
   NO_RECORDS_FOUND: {
     status_code: 200,
@@ -165,5 +175,10 @@ module.exports = {
     status_code: 200,
     code: 3019,
     message: 'Please complete whatsapp business info first'
+  },
+  BUSINESS_PHONE_NUMBER_ALREADY_VERIFIED: {
+    status_code: 200,
+    code: 3020,
+    message: 'Business phone number already verified for WABA'
   }
 }
