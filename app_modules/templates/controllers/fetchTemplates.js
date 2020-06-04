@@ -6,17 +6,17 @@ const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 
 const getTemplateList = (req, res) => {
-  __logger.info('Get Templates List API Called')
+  __logger.info('Get Templates List API Called', req.query)
 
-  const { waba_information_id, message_template_status_id } = req.query
+  const { message_template_status_id: messageTemplateStatusId } = req.query
 
-  const params = [waba_information_id]
+  const params = [req.user.user_id]
 
-  if (message_template_status_id) {
-    params.push(message_template_status_id);
+  if (messageTemplateStatusId) {
+    params.push(messageTemplateStatusId)
   }
 
-  __db.postgresql.__query(queryProvider.getTemplateList(message_template_status_id), params)
+  __db.postgresql.__query(queryProvider.getTemplateList(messageTemplateStatusId), params)
     .then(result => {
       if (result && result.rows && result.rows.length === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
@@ -31,11 +31,9 @@ const getTemplateList = (req, res) => {
 }
 
 const getTemplateInfo = (req, res) => {
-  __logger.info('Get Templates Info API Called')
+  __logger.info('Get Templates Info API Called', req.params)
 
-  const { waba_information_id, message_template_id } = req.query
-
-  __db.postgresql.__query(queryProvider.getTemplateInfo(), [waba_information_id, message_template_id])
+  __db.postgresql.__query(queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
     .then(result => {
       if (result && result.rows && result.rows.length === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
