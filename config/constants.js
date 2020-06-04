@@ -59,7 +59,8 @@ const CUSTOM_CONSTANT = {
 }
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
-  sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
+  sms: { name: 'sms', expiresIn: 600, codeLength: 4 },
+  businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 }
 }
 const ACCOUNT_PLAN_TYPE = {
   Prepaid: 'd9718ee1-50a1-4826-b0fa-ad1394308d59',
@@ -69,6 +70,14 @@ const ACCOUNT_PLAN_TYPE = {
 const USER_ROLE_ID = {
   admin: '7393e61e-df2e-4643-9eee-0f2382d19afa'
 }
+
+const TEMPLATE_TYPE = [{
+  templateType: 'Standard Message Template'
+}, {
+  templateType: 'Media Message Template'
+}]
+
+const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
 const SERVER_TIMEOUT = 20 * 60 * 1000
@@ -85,3 +94,5 @@ module.exports.APP_NAME = APP_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.SERVER_TIMEOUT = SERVER_TIMEOUT
+module.exports.TEMPLATE_TYPE = TEMPLATE_TYPE
+module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID

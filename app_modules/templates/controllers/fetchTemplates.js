@@ -46,4 +46,10 @@ const getTemplateInfo = (req, res) => {
     })
 }
 
-module.exports = { getTemplateList, getTemplateInfo }
+const getTemplateTypes = (req, res) => {
+  __logger.info('Get Templates Type API Called')
+
+  return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.TEMPLATE_TYPE })
+}
+
+module.exports = { getTemplateList, getTemplateInfo, getTemplateTypes }

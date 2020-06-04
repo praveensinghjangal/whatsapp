@@ -40,4 +40,23 @@ const getTemplateInfo = () => {
     WHERE mt.is_active = true AND wi.user_id = $1 AND mt.message_template_id = $2`
 }
 
-module.exports = { getTemplateList, getTemplateInfo }
+// Template Categories
+const getTemplateCategories = () => {
+  return `select message_template_category_id as "messageTemplateCategoryId", category_name as "categoryName"
+    from message_template_category 
+    WHERE is_active = true`
+}
+
+// Template Languages
+const getTemplateLanguages = () => {
+  return `select message_template_language_id as "messageTemplateLanguageId", language_name as "languageName"
+    from message_template_language 
+    WHERE is_active = true`
+}
+
+module.exports = {
+  getTemplateList,
+  getTemplateInfo,
+  getTemplateCategories,
+  getTemplateLanguages
+}
