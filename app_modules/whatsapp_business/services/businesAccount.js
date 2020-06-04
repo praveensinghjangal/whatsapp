@@ -13,10 +13,10 @@ class businesAccountService {
     this.uniqueId = new UniqueId()
   }
 
-  deactivateWabaRecord (wabaInformationId) {
+  deactivateWabaRecord (wabaInformationId, userId) {
     const recordDeactivated = q.defer()
     __logger.info('Setting is active false to waba record', wabaInformationId)
-    __db.postgresql.__query(queryProvider.setIsActiveFalseByWabaId(), [wabaInformationId])
+    __db.postgresql.__query(queryProvider.setIsActiveFalseByWabaId(), [wabaInformationId, userId])
       .then(result => {
         if (result && result.rowCount && result.rowCount > 0) {
           recordDeactivated.resolve(true)
@@ -99,7 +99,7 @@ class businesAccountService {
 
   updateBusinessData (businessData, businessOldData) {
     const businessDataUpdated = q.defer()
-    this.deactivateWabaRecord(businessOldData.wabaInformationId)
+    this.deactivateWabaRecord(businessOldData.wabaInformationId, businessOldData.userId)
       .then(data => this.insertBusinessData(businessOldData.userId, businessData, businessOldData))
       .then(insertedData => businessDataUpdated.resolve(insertedData))
       .catch(err => {
