@@ -26,7 +26,7 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in create user function: ', err)
+        __logger.error('error in get user function: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
