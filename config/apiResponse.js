@@ -180,5 +180,15 @@ module.exports = {
     status_code: 200,
     code: 3020,
     message: 'Business phone number already verified for WABA'
+  },
+  WABA_ID_NOT_EXISTS: {
+    status_code: 200,
+    code: 3021,
+    message: 'WABA id does not exists.'
+  },
+  MAX_TEMPLATE: {
+    status_code: 200,
+    code: 3022,
+    message: 'Maximum number of template allowed for this account has exausted.'
   }
 }
