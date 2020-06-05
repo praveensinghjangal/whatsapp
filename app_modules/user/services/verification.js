@@ -193,6 +193,9 @@ class VerificationService {
       case __constants.VERIFICATION_CHANNEL.sms.name:
         query = queryProvider.markUserSmsVerified()
         break
+      case __constants.VERIFICATION_CHANNEL.businessNumber.name:
+        query = queryProvider.markbusinessNumberVerified()
+        break
       default:
         query = false
     }
@@ -210,6 +213,39 @@ class VerificationService {
       })
       .catch(err => tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return tokenMarkedConsumed.promise
+  }
+
+  getVerifiedAndCodeDataByUserIdForBusinessNumber (userId) {
+    const verificationData = q.defer()
+    if (!userId || typeof userId !== 'string') {
+      verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return verificationData.promise
+    }
+    const query = queryProvider.getVerifiedAndCodeDataByUserIdForBusinessNumber()
+    __db.postgresql.__query(query, [userId, __constants.VERIFICATION_CHANNEL.businessNumber.name])
+      .then(result => {
+        if (result && result.rows && result.rows.length === 0) {
+          verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
+        } else {
+          verificationData.resolve(result.rows[0])
+        }
+      })
+      .catch(err => verificationData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return verificationData.promise
+  }
+
+  sendVerificationCodeByVoice (code, phoneNumber, firstName) {
+    const voiceCallSent = q.defer()
+    if (!code || typeof code !== 'number') {
+      voiceCallSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      return voiceCallSent.promise
+    }
+    if (!phoneNumber || typeof phoneNumber !== 'string') {
+      voiceCallSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide phoneNumber of type string' })
+      return voiceCallSent.promise
+    }
+    voiceCallSent.resolve({ code, phoneNumber, firstName })
+    return voiceCallSent.promise
   }
 }
 

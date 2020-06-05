@@ -59,7 +59,8 @@ const CUSTOM_CONSTANT = {
 }
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
-  sms: { name: 'sms', expiresIn: 600, codeLength: 4 }
+  sms: { name: 'sms', expiresIn: 600, codeLength: 4 },
+  businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 }
 }
 const ACCOUNT_PLAN_TYPE = {
   Prepaid: 'd9718ee1-50a1-4826-b0fa-ad1394308d59',
@@ -71,9 +72,9 @@ const USER_ROLE_ID = {
 }
 
 const TEMPLATE_TYPE = [{
-  standard: 'Standard Message Template'
+  templateType: 'Standard Message Template'
 }, {
-  media: 'Media Message Template'
+  templateType: 'Media Message Template'
 }]
 
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
