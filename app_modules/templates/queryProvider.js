@@ -65,8 +65,7 @@ const getTemplateCountByStatus = () => {
           where mt.is_active  = true 
           and wi.is_active =true 
           and mts.is_active  = true 
-          and mt.waba_information_id  = $1
-          and wi.user_id = $2
+          and wi.user_id = $1
           group by mts.message_template_status_id`
 }
 
@@ -74,8 +73,7 @@ const getTempalteAllocatedCountToWaba = () => {
   return `select templates_allowed as "allocatedTemplateCount" 
           from waba_information wi 
           where wi.is_active = true 
-          and wi.waba_information_id = $1
-          and wi.user_id=$2`
+          and wi.user_id=$1`
 }
 
 const getTempalteUsedCountByWaba = () => {
@@ -85,8 +83,7 @@ const getTempalteUsedCountByWaba = () => {
           on mt.waba_information_id = wi.waba_information_id
           where mt.is_active  = true 
           and wi.is_active = true 
-          and mt.waba_information_id = $1
-          and wi.user_id=$2`
+          and wi.user_id=$1`
 }
 
 const getMessageTemplateDataByWabaId = () => {
