@@ -2,7 +2,6 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/authentication')
 const authstrategy = require('../../config').authentication.strategy
-// const userConfiMiddleware = require('../../middlewares/setUserConfig')
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
@@ -10,6 +9,7 @@ const templatesCategoryController = require('./controllers/category')
 const templatesLanguageController = require('./controllers/language')
 const templatesCountController = require('./controllers/count')
 const addUpdateTemplateController = require('./controllers/addUpdateTemplates')
+const setMasterInRedis = require('./services/setmaster')
 
 // Routes
 // Template Type
@@ -23,6 +23,9 @@ router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, auth
 
 // Template Count
 router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesCountController.getTemplateCount)
+
+// setMasterConfigInRedis
+router.get('/refreshMasterInredis', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), setMasterInRedis)
 
 // Fetch Templates
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateTemplateController.addUpdateTemplates)

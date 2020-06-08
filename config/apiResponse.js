@@ -190,5 +190,10 @@ module.exports = {
     status_code: 200,
     code: 3022,
     message: 'Maximum number of template allowed for this account has exausted.'
+  },
+  MASTER_NOT_EXISTS: {
+    status_code: 200,
+    code: 3021,
+    message: 'Master data does not exists.'
   }
 }

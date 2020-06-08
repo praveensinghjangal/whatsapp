@@ -191,7 +191,7 @@ class validate {
         },
         footerText: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         },
         mediaType: {
