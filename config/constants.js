@@ -75,6 +75,7 @@ const TEMPLATE_TYPE = [{
 }, {
   templateType: 'Media Message Template'
 }]
+const TEMPLATE_STATUS = ['Approved', 'Rejected']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
@@ -106,8 +107,8 @@ module.exports.USER_CONFIG_REDIS_TTL = USER_CONFIG_REDIS_TTL
 module.exports.MYSQL_QUERY = MYSQL_QUERY
 module.exports.APP_NAME = APP_NAME
 module.exports.DB_NAME = DB_NAME
-module.exports.DB_NAME = DB_NAME
 module.exports.SERVER_TIMEOUT = SERVER_TIMEOUT
 module.exports.TEMPLATE_TYPE = TEMPLATE_TYPE
 module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID
 module.exports.MASTER_TABLE = MASTER_TABLE
+module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
