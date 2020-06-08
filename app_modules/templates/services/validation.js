@@ -220,6 +220,130 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkTemplateInfoStatus (request) {
+    console.log('Request', request)
+    const isvalid = q.defer()
+    if (request && request.type) request.type = request.type.toLowerCase()
+    const schema = {
+      id: '/checkTemplateInfoStatus',
+      type: 'object',
+      required: true,
+      properties: {
+        messageTemplateId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        templateName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        type: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        categoryName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        statusName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        languageName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        bodyText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        headerText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        footerText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        mediaType: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabaInformationId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+
+    // Standard Template
+    if (request.type === 'standard') {
+      delete schema.properties.headerText
+      delete schema.properties.footerText
+      delete schema.properties.mediaType
+    }
+
+    // Media Template
+    if (request.type === 'media message template') {
+      delete schema.properties.bodyText
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/checkTemplateInfoStatus')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.resolve({ complete: false, err: formatedError })
+    } else {
+      isvalid.resolve({ complete: true })
+    }
+    return isvalid.promise
+  }
+
+  checkMessageTemplateId (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkMessageTemplateId',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        templateId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkMessageTemplateId')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
