@@ -5,11 +5,11 @@ const authstrategy = require('../../config').authentication.strategy
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
+const templatesLibraryController = require('./controllers/templateLibrary')
 const templatesCategoryController = require('./controllers/category')
 const templatesLanguageController = require('./controllers/language')
 const templatesCountController = require('./controllers/count')
 const addUpdateTemplateController = require('./controllers/addUpdateTemplates')
-const setMasterInRedis = require('./services/setmaster')
 
 // Routes
 // Template Type
@@ -24,8 +24,9 @@ router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, auth
 // Template Count
 router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesCountController.getTemplateCount)
 
-// setMasterConfigInRedis
-router.get('/refreshMasterInredis', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), setMasterInRedis)
+// Template Library
+router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLibraryController.getSampleTemplateList)
+router.get('/sample/:id', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLibraryController.getSampleTemplateInfo)
 
 // Fetch Templates
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateTemplateController.addUpdateTemplates)
