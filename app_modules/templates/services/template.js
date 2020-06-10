@@ -2,10 +2,8 @@ const q = require('q')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const ValidatonService = require('./validation')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const __logger = require('../../../lib/logger')
-const __constants = require('../../../config/constants')
 
 class templateService {
   constructor () {

@@ -62,13 +62,14 @@ const getSampleTemplateList = (messageTemplateCategoryId, templateName) => {
       ON mtl.is_active = true and mtl.message_template_language_id = mtlib.message_template_language_id
   WHERE mtlib.is_active = true`
 
-  if (messageTemplateCategoryId) {
-    query += ' AND mtlib.message_template_category_id = $1'
+  if (messageTemplateCategoryId !== undefined) {
+    query += ` AND mtlib.message_template_category_id = '${messageTemplateCategoryId}' AND mtlib.message_template_category_id is not null`
   }
 
-  if (templateName) {
-    query += ' AND mtlib.template_name = $2'
+  if (templateName !== undefined) {
+    query += ` AND mtlib.template_name = '${templateName}' AND mtlib.template_name is not null `
   }
+
   return query
 }
 
