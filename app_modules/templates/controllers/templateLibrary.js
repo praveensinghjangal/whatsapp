@@ -7,9 +7,10 @@ const queryProvider = require('../queryProvider')
 const getSampleTemplateList = (req, res) => {
   __logger.info('Get Sample Templates List API Called', req.query)
 
-  const { messageTemplateCategoryId } = req.query
+  const messageTemplateCategoryId = req.query.messageTemplateCategoryId
+  const templateName = req.query.templateName
 
-  __db.postgresql.__query(queryProvider.getSampleTemplateList(messageTemplateCategoryId), [messageTemplateCategoryId, templateName])
+  __db.postgresql.__query(queryProvider.getSampleTemplateList(messageTemplateCategoryId, templateName), [])
     .then(result => {
       __logger.info('Result', result)
       if (result && result.rows && result.rows.length === 0) {
