@@ -96,6 +96,27 @@ const MASTER_TABLE = {
     }
   }
 }
+const ENTITY_NAME = {
+  MESSAGE_TEMPLATE_CATEGORY: 'message_template_category',
+  MESSAGE_TEMPLATE_LANGUAGE: 'message_template_language',
+  MESSAGE_TEMPLATE_STATUS: 'message_template_status',
+  WABA_INFORMATION: 'waba_information',
+  BUSINESS_CATEGORY: 'business_category',
+  WABA_PROFILE_SETUP_STATUS: 'waba_profile_setup_status',
+  APP_CATEGORY: 'app_category',
+  MESSAGE_TEMPLATE: 'message_template',
+  HISTORY_DATA: 'history_data',
+  BILLING_INFORMATION: 'billing_information',
+  USERS: 'users',
+  USER_ROLE: 'user_role',
+  SERVICE_PROVIDER: 'service_provider',
+  SERVICE_PROVIDER_APPS: 'service_provider_apps',
+  USER_VERIFICATION_CODE: 'user_verification_code',
+  USER_APPS: 'user_apps',
+  USER_ACCOUNT_TYPE: 'user_account_type',
+  MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
+  USER_AGREEMENT_FILES: 'user_agreement_files'
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -112,3 +133,4 @@ module.exports.TEMPLATE_TYPE = TEMPLATE_TYPE
 module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID
 module.exports.MASTER_TABLE = MASTER_TABLE
 module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
+module.exports.ENTITY_NAME = ENTITY_NAME

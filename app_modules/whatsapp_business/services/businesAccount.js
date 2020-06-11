@@ -2,10 +2,10 @@ const q = require('q')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const ValidatonService = require('./validation')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 
 class businesAccountService {
   constructor () {
@@ -103,6 +103,7 @@ class businesAccountService {
     __logger.info('Inputs insertBusinessData userId', userId)
     __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
     __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
+    saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
     const businessAccountObj = {
       facebookManagerId: typeof businessData.facebookManagerId === 'string' ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
