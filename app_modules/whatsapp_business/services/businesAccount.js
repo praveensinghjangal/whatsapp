@@ -101,8 +101,10 @@ class businesAccountService {
   updateBusinessInfo (userId, businessData, businessOldData) {
     const dataUpdated = q.defer()
     __logger.info('Inputs insertBusinessData userId', userId)
+    __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
+    __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
     const businessAccountObj = {
-      facebookManagerId: businessData.facebookManagerId ? businessData.facebookManagerId : businessOldData.facebookManagerId,
+      facebookManagerId: typeof businessData.facebookManagerId === 'string' ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
       phoneNumber: businessData.phoneNumber ? businessData.phoneNumber : businessOldData.phoneNumber,
       canReceiveSms: typeof businessData.canReceiveSms === 'boolean' ? businessData.canReceiveSms : businessOldData.canReceiveSms,
@@ -124,7 +126,7 @@ class businesAccountService {
       city: businessData.city ? businessData.city : businessOldData.city,
       postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode
     }
-    __db.postgresql.__query(queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode])
+    __db.postgresql.__query(queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId])
       .then(result => {
         if (result && result.rowCount && result.rowCount > 0) {
           dataUpdated.resolve(businessAccountObj)
