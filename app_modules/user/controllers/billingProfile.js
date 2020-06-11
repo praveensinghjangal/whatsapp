@@ -5,7 +5,7 @@ const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
-
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 // Services
 const UserService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
@@ -46,7 +46,7 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
   // __logger.info('Inside updateBusinessBilllingProfile businessDataToBeUpdated', businessDataToBeUpdated)
   // __logger.info('Inside updateBusinessBilllingProfile', userId)
   let queryResult
-
+  saveHistoryData(oldBusinessData, 'billing_information', oldBusinessData.billing_information_id, userId)
   return new Promise((resolve, reject) => {
     const businessDataObj = {
       city: businessDataToBeUpdated.city ? businessDataToBeUpdated.city : oldBusinessData.city,
