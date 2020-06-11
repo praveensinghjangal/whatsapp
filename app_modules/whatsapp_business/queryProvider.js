@@ -55,8 +55,8 @@ const updateWabaTableData = () => {
   return `update waba_information  set phone_code =$1,phone_number=$2,can_receive_sms=$3,
   can_receive_voice_call=$4, associated_with_ivr=$5,business_name =$6, state=$7,whatsapp_status =$8, description=$9
   ,address=$10,country=$11, email=$12, business_category_id =$13,profile_photo_url =$14,
-  waba_profile_setup_status_id =$15,business_manager_verified=$16,
-  phone_verified =$17,waba_information_id=$18,updated_by=$19,updated_on=now(),user_id=$20,city=$21,postal_code =$22
+  waba_profile_setup_status_id =$15,business_manager_verified=$16,phone_verified =$17,waba_information_id=$18,
+  updated_by=$19,updated_on=now(),user_id=$20,city=$21,postal_code =$22, facebook_manager_id=$23
   where waba_information_id=$18 and user_id=$20`
 }
 
