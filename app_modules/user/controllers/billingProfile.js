@@ -46,7 +46,7 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
   // __logger.info('Inside updateBusinessBilllingProfile businessDataToBeUpdated', businessDataToBeUpdated)
   // __logger.info('Inside updateBusinessBilllingProfile', userId)
   let queryResult
-  saveHistoryData(oldBusinessData, 'billing_information', oldBusinessData.billing_information_id, userId)
+  saveHistoryData(oldBusinessData, __constants.ENTITY_NAME.BILLING_INFORMATION, oldBusinessData.billing_information_id, userId)
   return new Promise((resolve, reject) => {
     const businessDataObj = {
       city: businessDataToBeUpdated.city ? businessDataToBeUpdated.city : oldBusinessData.city,

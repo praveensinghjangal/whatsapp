@@ -1,12 +1,12 @@
 const q = require('q')
 const _ = require('lodash')
-const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 
 class TemplateService {
   constructor () {
@@ -122,6 +122,7 @@ class TemplateService {
   updateTemplate (newData, oldData, userId) {
     __logger.info('Updating template')
     const dataUpdated = q.defer()
+    saveHistoryData(oldData, __constants.ENTITY_NAME.MESSAGE_TEMPLATE, oldData.messageTemplateId, userId)
     const templateData = {
       messageTemplateId: oldData.messageTemplateId,
       wabaInformationId: oldData.wabaInformationId,
