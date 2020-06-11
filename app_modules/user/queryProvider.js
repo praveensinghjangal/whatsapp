@@ -49,7 +49,7 @@ const updateBusinessBillingProfile = () => {
   return `update billing_information
   set city=$1, state=$2, country=$3, address_line_1=$4,address_line_2=$5,contact_number=$6,
   phone_code=$7, postal_code =$8,pan_card=$9, gst_or_tax_no=$10,billing_name=$11,
-  updated_by= $12 WHERE user_id=$13 and is_active = true`
+  updated_by= $12 ,updated_on=now() WHERE user_id=$13 and is_active = true`
 }
 
 const updateIsActiveStatusBusinessProfile = () => {

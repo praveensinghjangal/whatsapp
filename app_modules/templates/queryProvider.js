@@ -42,8 +42,17 @@ const getTemplateInfo = () => {
 }
 
 const addTemplate = () => {
-  return `insert into message_template(message_template_id, waba_information_id, template_name, "type", message_template_category_id, message_template_status_id, message_template_language_id, body_text , header_text, footer_text, media_type, created_by)
-    values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+  return `insert into message_template(message_template_id, waba_information_id, template_name, "type",
+  message_template_category_id, message_template_status_id, message_template_language_id, body_text ,
+  header_text, footer_text, media_type, created_by)
+  values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+}
+
+const updateTemplate = () => {
+  return `update message_template set template_name =$3, "type" =$4, message_template_category_id =$5,
+  message_template_status_id =$6,message_template_language_id =$7, body_text  =$8, header_text =$9,
+  footer_text =$10, media_type =$11,updated_by =$12, updated_on = now() 
+  where message_template_id =$1 and  waba_information_id =$2`
 }
 
 // Sample Template
@@ -178,6 +187,7 @@ module.exports = {
   getTemplateTableDataAndWabaId,
   getTemplateCount,
   addTemplate,
+  updateTemplate,
   setIsActiveFalseByTemplateId,
   getSampleTemplateList,
   getSampleTemplateInfo

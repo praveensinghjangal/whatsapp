@@ -103,17 +103,6 @@ class TemplateService {
     return dataInserted.promise
   }
 
-  updateTemplateData (newData, oldData, userId) {
-    __logger.info('update template service called', newData, oldData, userId)
-    const templateUpdated = q.defer()
-    console.log('i will updateeeee')
-    this.deactivateOldTemplateData(oldData.messageTemplateId, userId)
-      .then(data => this.insertTemplate(newData, oldData, userId))
-      .then(data => templateUpdated.resolve(data))
-      .catch(err => templateUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-    return templateUpdated.promise
-  }
-
   addTemplateData (insertData, wabaData, userId) {
     __logger.info('Add template service called', insertData, wabaData, userId)
     const templateAdded = q.defer()
@@ -128,6 +117,53 @@ class TemplateService {
       .then(data => templateAdded.resolve(data))
       .catch(err => templateAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return templateAdded.promise
+  }
+
+  updateTemplate (newData, oldData, userId) {
+    __logger.info('Updating template')
+    const dataUpdated = q.defer()
+    const templateData = {
+      messageTemplateId: oldData.messageTemplateId,
+      wabaInformationId: oldData.wabaInformationId,
+      templateName: newData.templateName || oldData.templateName,
+      type: newData.type || oldData.type,
+      messageTemplateCategoryId: newData.messageTemplateCategoryId || oldData.messageTemplateCategoryId,
+      messageTemplateStatusId: newData.messageTemplateStatusId || oldData.messageTemplateStatusId,
+      messageTemplateLanguageId: newData.messageTemplateLanguageId || oldData.messageTemplateLanguageId,
+      bodyText: newData.bodyText || oldData.bodyText,
+      headerText: newData.headerText || oldData.headerText,
+      footerText: newData.footerText || oldData.footerText,
+      mediaType: newData.mediaType || oldData.mediaType
+    }
+    const queryParam = []
+    _.each(templateData, (val) => queryParam.push(val))
+    queryParam.push(userId)
+    __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
+    __db.postgresql.__query(queryProvider.updateTemplate(), queryParam)
+      .then(result => {
+        if (result && result.rowCount && result.rowCount > 0) {
+          dataUpdated.resolve(templateData)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
+  }
+
+  updateTemplateData (newData, oldData, userId) {
+    __logger.info('update template service called', newData, oldData, userId)
+    const templateUpdated = q.defer()
+    console.log('i will updateeeee')
+    // this.deactivateOldTemplateData(oldData.messageTemplateId, userId)
+    // .then(data => this.insertTemplate(newData, oldData, userId))
+    this.updateTemplate(newData, oldData, userId)
+      .then(data => templateUpdated.resolve(data))
+      .catch(err => templateUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return templateUpdated.promise
   }
 }
 
