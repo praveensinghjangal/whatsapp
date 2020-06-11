@@ -45,34 +45,37 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
   // __logger.info('Inside updateBusinessBilllingProfile oldBusinessData', oldBusinessData)
   // __logger.info('Inside updateBusinessBilllingProfile businessDataToBeUpdated', businessDataToBeUpdated)
   // __logger.info('Inside updateBusinessBilllingProfile', userId)
+  let queryResult
 
   return new Promise((resolve, reject) => {
-    updateBusinessProfileIsActiveStatusToFalse(userId)
-      .then(result => {
-        __logger.info('Then 1 update')
+    const businessDataObj = {
+      city: businessDataToBeUpdated.city ? businessDataToBeUpdated.city : oldBusinessData.city,
+      state: businessDataToBeUpdated.state ? businessDataToBeUpdated.state : oldBusinessData.state,
+      country: businessDataToBeUpdated.country ? businessDataToBeUpdated.country : oldBusinessData.country,
+      addressLine1: businessDataToBeUpdated.addressLine1 ? businessDataToBeUpdated.addressLine1 : oldBusinessData.addressLine1,
+      addressLine2: businessDataToBeUpdated.addressLine2 ? businessDataToBeUpdated.addressLine2 : oldBusinessData.addressLine2,
+      contactNumber: businessDataToBeUpdated.contactNumber ? businessDataToBeUpdated.contactNumber : oldBusinessData.contactNumber,
+      phoneCode: businessDataToBeUpdated.phoneCode ? businessDataToBeUpdated.phoneCode : oldBusinessData.phoneCode,
+      postalCode: businessDataToBeUpdated.postalCode ? businessDataToBeUpdated.postalCode : oldBusinessData.postalCode,
+      gstOrTaxNo: businessDataToBeUpdated.gstOrTaxNo ? businessDataToBeUpdated.gstOrTaxNo : oldBusinessData.gstOrTaxNo,
+      billingName: businessDataToBeUpdated.billingName ? businessDataToBeUpdated.billingName : oldBusinessData.billingName,
+      panCard: businessDataToBeUpdated.panCard ? businessDataToBeUpdated.panCard : oldBusinessData.panCard,
+      billingInformationId: oldBusinessData.billing_information_id
+    }
 
-        const businessDataObj = {
-          city: businessDataToBeUpdated.city ? businessDataToBeUpdated.city : oldBusinessData.city,
-          state: businessDataToBeUpdated.state ? businessDataToBeUpdated.state : oldBusinessData.state,
-          country: businessDataToBeUpdated.country ? businessDataToBeUpdated.country : oldBusinessData.country,
-          addressLine1: businessDataToBeUpdated.addressLine1 ? businessDataToBeUpdated.addressLine1 : oldBusinessData.addressLine1,
-          addressLine2: businessDataToBeUpdated.addressLine2 ? businessDataToBeUpdated.addressLine2 : oldBusinessData.addressLine2,
-          contactNumber: businessDataToBeUpdated.contactNumber ? businessDataToBeUpdated.contactNumber : oldBusinessData.contactNumber,
-          phoneCode: businessDataToBeUpdated.phoneCode ? businessDataToBeUpdated.phoneCode : oldBusinessData.phoneCode,
-          postalCode: businessDataToBeUpdated.postalCode ? businessDataToBeUpdated.postalCode : oldBusinessData.postalCode,
-          gstOrTaxNo: businessDataToBeUpdated.gstOrTaxNo ? businessDataToBeUpdated.gstOrTaxNo : oldBusinessData.gstOrTaxNo,
-          billingName: businessDataToBeUpdated.billingName ? businessDataToBeUpdated.billingName : oldBusinessData.billingName,
-          panCard: businessDataToBeUpdated.panCard ? businessDataToBeUpdated.panCard : oldBusinessData.panCard,
-          billingInformationId: oldBusinessData.billing_information_id
-        }
+    __db.postgresql.__query(queryProvider.updateBusinessBillingProfile(), [businessDataObj.city, businessDataObj.state, businessDataObj.country, businessDataObj.addressLine1, businessDataObj.addressLine2, businessDataObj.contactNumber, businessDataObj.phoneCode, businessDataObj.postalCode, businessDataObj.panCard, businessDataObj.gstOrTaxNo, businessDataObj.billingName, userId, userId])
 
-        return insertBusinessBillingProfileInfo(userId, {}, businessDataObj)
-      })
       .then(result => {
         __logger.info('Then 2 update', result)
 
-        if (result && result.rowCount && result.rowCount > 0) {
-          return resolve({ rowCount: result.rowCount, complete: result.complete })
+        queryResult = result
+        return checkBusinessBillingProfileCompletionStatus(businessDataObj)
+      })
+      .then(result => {
+        __logger.info('Then 3 update', result)
+        queryResult.complete = result.complete
+        if (queryResult && queryResult.rowCount && queryResult.rowCount > 0) {
+          return resolve({ rowCount: queryResult.rowCount, complete: queryResult.complete })
         } else {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
         }
@@ -81,6 +84,11 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
         __logger.error('error: ', err)
         return rejectionHandler({ type: err.type, err: err.err, data: {} })
       })
+      /* Logic to add records to logs to be implemented
+      .then(() => {
+        return insertBusinessBillingProfileInfo(userId, {}, businessDataObj)
+
+      }) */
   })
 }
 

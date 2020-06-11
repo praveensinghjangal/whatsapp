@@ -34,7 +34,7 @@ const getTemplateList = (req, res) => {
 }
 
 const getTemplateInfo = (req, res) => {
-  // __logger.info('Get Templates Info API Called', req.params)
+  __logger.info('Get Templates Info API Called', req.params)
   // __logger.info('Get Templates Info API Called', req.user.user_id)
   const validate = new ValidatonService()
   let finalResult
