@@ -6,6 +6,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 // Get Account Profile
@@ -58,6 +59,8 @@ const updateAcountProfile = (req, res) => {
     .then(result => {
       __logger.info('UserId exist check then 1', result.exists)
       if (result.exists) {
+        saveHistoryData(result.rows[0], __constants.ENTITY_NAME.USER_ACCOUNT_PROFILE, req.user.user_id, req.user.user_id)
+
         accountProfileData = {
           userId: req.user && req.user.user_id ? req.user.user_id : '0',
           city: req.body.city ? req.body.city : result.rows[0].city,
