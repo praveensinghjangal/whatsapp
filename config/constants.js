@@ -114,6 +114,7 @@ const ENTITY_NAME = {
   USER_VERIFICATION_CODE: 'user_verification_code',
   USER_APPS: 'user_apps',
   USER_ACCOUNT_TYPE: 'user_account_type',
+  USER_ACCOUNT_PROFILE: 'user_account_profile',
   MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
   USER_AGREEMENT_FILES: 'user_agreement_files'
 }
