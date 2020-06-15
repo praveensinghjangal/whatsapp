@@ -66,4 +66,21 @@ const getTemplateTypes = (req, res) => {
   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.TEMPLATE_TYPE })
 }
 
-module.exports = { getTemplateList, getTemplateInfo, getTemplateTypes }
+const getTemplateHeaderTypes = (req, res) => {
+  __logger.info('Get Templates Header Type API Called')
+
+  return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.TEMPLATE_HEADER_TYPE })
+}
+
+const getTemplateButtonTypes = (req, res) => {
+  __logger.info('Get Templates Button Type API Called')
+
+  return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.TEMPLATE_BUTTON_TYPE })
+}
+module.exports = {
+  getTemplateList,
+  getTemplateInfo,
+  getTemplateTypes,
+  getTemplateHeaderTypes,
+  getTemplateButtonTypes
+}

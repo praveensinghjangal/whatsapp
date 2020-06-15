@@ -75,6 +75,20 @@ const TEMPLATE_TYPE = [{
 }, {
   templateType: 'Media Message Template'
 }]
+const TEMPLATE_HEADER_TYPE = [{
+  templateHeaderType: 'Video'
+}, {
+  templateHeaderType: 'Pdf'
+}, {
+  templateHeaderType: 'Location'
+}, {
+  templateHeaderType: 'Text'
+}]
+const TEMPLATE_BUTTON_TYPE = [{
+  buttonType: 'Call To Action'
+}, {
+  buttonType: 'Quick Reply'
+}]
 const TEMPLATE_STATUS = ['Approved', 'Rejected']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
@@ -130,6 +144,8 @@ module.exports.APP_NAME = APP_NAME
 module.exports.DB_NAME = DB_NAME
 module.exports.SERVER_TIMEOUT = SERVER_TIMEOUT
 module.exports.TEMPLATE_TYPE = TEMPLATE_TYPE
+module.exports.TEMPLATE_HEADER_TYPE = TEMPLATE_HEADER_TYPE
+module.exports.TEMPLATE_BUTTON_TYPE = TEMPLATE_BUTTON_TYPE
 module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID
 module.exports.MASTER_TABLE = MASTER_TABLE
 module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
