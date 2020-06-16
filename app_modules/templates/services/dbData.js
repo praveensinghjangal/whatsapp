@@ -82,7 +82,13 @@ class TemplateService {
       bodyText: newData.bodyText || oldData.bodyText,
       headerText: newData.headerText || oldData.headerText,
       footerText: newData.footerText || oldData.footerText,
-      mediaType: newData.mediaType || oldData.mediaType
+      mediaType: newData.mediaType || oldData.mediaType,
+      secondLanguageRequired: newData.secondLanguageRequired || oldData.secondLanguageRequired,
+      secondMessageTemplateLanguageId: newData.secondMessageTemplateLanguageId || oldData.secondMessageTemplateLanguageId,
+      secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
+      headerType: newData.headerType || oldData.headerType,
+      buttonType: newData.buttonType || oldData.buttonType,
+      buttonData: newData.buttonData || oldData.buttonData
     }
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
@@ -134,12 +140,18 @@ class TemplateService {
       bodyText: newData.bodyText || oldData.bodyText,
       headerText: newData.headerText || oldData.headerText,
       footerText: newData.footerText || oldData.footerText,
-      mediaType: newData.mediaType || oldData.mediaType
+      mediaType: newData.mediaType || oldData.mediaType,
+      secondLanguageRequired: typeof newData.secondLanguageRequired === 'boolean' ? newData.secondLanguageRequired : oldData.secondLanguageRequired,
+      secondMessageTemplateLanguageId: newData.secondMessageTemplateLanguageId || oldData.secondMessageTemplateLanguageId,
+      secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
+      headerType: newData.headerType || oldData.headerType,
+      buttonType: newData.buttonType || oldData.buttonType,
+      buttonData: newData.buttonData || oldData.buttonData
     }
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
     queryParam.push(userId)
-    __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
+    __logger.info('updateeeeee --->', templateData, queryParam)
     __db.postgresql.__query(queryProvider.updateTemplate(), queryParam)
       .then(result => {
         if (result && result.rowCount && result.rowCount > 0) {

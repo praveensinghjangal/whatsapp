@@ -44,14 +44,17 @@ const getTemplateInfo = () => {
 const addTemplate = () => {
   return `insert into message_template(message_template_id, waba_information_id, template_name, "type",
   message_template_category_id, message_template_status_id, message_template_language_id, body_text ,
-  header_text, footer_text, media_type, created_by)
-  values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)`
+  header_text, footer_text, media_type, second_language_required, second_message_template_language_id, second_language_body_text ,
+  header_type, button_type,button_data, created_by)
+  values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`
 }
 
 const updateTemplate = () => {
   return `update message_template set template_name =$3, "type" =$4, message_template_category_id =$5,
   message_template_status_id =$6,message_template_language_id =$7, body_text  =$8, header_text =$9,
-  footer_text =$10, media_type =$11,updated_by =$12, updated_on = now() 
+  footer_text =$10, media_type =$11, second_language_required = $12, second_message_template_language_id = $13,
+  second_language_body_text = $14,header_type = $15, button_type = $16,button_data = $17, updated_by =$18,
+  updated_on = now() 
   where message_template_id =$1 and  waba_information_id =$2`
 }
 
@@ -163,7 +166,9 @@ const getTemplateTableDataAndWabaId = () => {
   mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
   mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
   mt.message_template_language_id as "messageTemplatelanguageId", mt.body_text as "bodyText", mt.header_text as "headerText",
-  mt.footer_text as "footerText",mt.media_type as "mediaType"
+  mt.footer_text as "footerText",mt.media_type as "mediaType" , mt.second_language_required as "secondLanguageRequired",
+  mt.second_message_template_language_id as "secondMessageTemplateLanguageId" ,mt.second_language_body_text as "secondlanguageBodyText",
+  mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData"
   from waba_information wi
   left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = $1
   where wi.is_active = true and wi.user_id = $2`

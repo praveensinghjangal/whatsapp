@@ -67,6 +67,8 @@ class validate {
   addUpdateTemplate (request) {
     const isvalid = q.defer()
     if (request && request.type) request.type = request.type.toLowerCase()
+    if (request && request.headerType) request.headerType = request.headerType.toLowerCase()
+    if (request && request.buttonType) request.buttonType = request.buttonType.toLowerCase()
     const schema = {
       id: '/addUpdateTemplate',
       type: 'object',
@@ -122,6 +124,68 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1
+        },
+        secondLanguageRequired: {
+          type: 'boolean',
+          required: false,
+          minLength: 1
+        },
+        secondMessageTemplateLanguageId: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        secondlanguageBodyText: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        headerType: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+        },
+        buttonType: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+        },
+        buttonData: {
+          type: 'object',
+          required: false,
+          properties: {
+            quickReply: {
+              type: 'array',
+              required: false,
+              minItems: 1,
+              maxItems: 3,
+              items: {
+                type: 'string'
+              }
+            },
+            phoneButtonText: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            phoneNumber: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            websiteButtontext: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            webAddress: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            }
+          }
         }
       }
     }
@@ -143,6 +207,8 @@ class validate {
   isTemplateComplete (request) {
     const isvalid = q.defer()
     if (request && request.type) request.type = request.type.toLowerCase()
+    if (request && request.headerType) request.headerType = request.headerType.toLowerCase()
+    if (request && request.buttonType) request.buttonType = request.buttonType.toLowerCase()
     const schema = {
       id: '/isTemplateComplete',
       type: 'object',
@@ -203,6 +269,68 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        secondLanguageRequired: {
+          type: 'boolean',
+          required: true,
+          minLength: 1
+        },
+        secondMessageTemplateLanguageId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        secondlanguageBodyText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        headerType: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+        },
+        buttonType: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+        },
+        buttonData: {
+          type: 'object',
+          required: true,
+          properties: {
+            quickReply: {
+              type: 'array',
+              required: false,
+              minItems: 1,
+              maxItems: 3,
+              items: {
+                type: 'string'
+              }
+            },
+            phoneButtonText: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            phoneNumber: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            websiteButtontext: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            webAddress: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            }
+          }
         }
       }
     }

@@ -118,6 +118,20 @@ const ENTITY_NAME = {
   MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
   USER_AGREEMENT_FILES: 'user_agreement_files'
 }
+const TEMPLATE_HEADER_TYPE = [{
+  templateHeaderType: 'Video'
+}, {
+  templateHeaderType: 'Pdf'
+}, {
+  templateHeaderType: 'Location'
+}, {
+  templateHeaderType: 'Text'
+}]
+const TEMPLATE_BUTTON_TYPE = [{
+  buttonType: 'Call To Action'
+}, {
+  buttonType: 'Quick Reply'
+}]
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -135,3 +149,5 @@ module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID
 module.exports.MASTER_TABLE = MASTER_TABLE
 module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
 module.exports.ENTITY_NAME = ENTITY_NAME
+module.exports.TEMPLATE_HEADER_TYPE = TEMPLATE_HEADER_TYPE
+module.exports.TEMPLATE_BUTTON_TYPE = TEMPLATE_BUTTON_TYPE

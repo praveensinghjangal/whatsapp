@@ -1,4 +1,3 @@
-const q = require('q')
 const ValidatonService = require('../services/validation')
 const TemplateService = require('../services/dbData')
 const __util = require('../../../lib/util')
@@ -10,7 +9,7 @@ const addUpdateTemplates = (req, res) => {
   const validate = new ValidatonService()
   const templateService = new TemplateService()
   validate.addUpdateTemplate(req.body)
-  templateService.getTemplateTableDataAndWabaId(req.body.messageTemplateId, req.user.user_id)
+    .then(data => templateService.getTemplateTableDataAndWabaId(req.body.messageTemplateId, req.user.user_id))
     .then(wabaAndTemplateData => {
       if (wabaAndTemplateData.messageTemplateId) {
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
