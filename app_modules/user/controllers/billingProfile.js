@@ -154,7 +154,9 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
     gstOrTaxNo: businessData.gstOrTaxNo ? businessData.gstOrTaxNo : businessOldData.gstOrTaxNo,
     billingName: businessData.billingName ? businessData.billingName : businessOldData.billingName,
     panCard: businessData.panCard ? businessData.panCard : businessOldData.panCard,
-    billingInformationId: businessOldData.billingInformationId ? businessOldData.billingInformationId : uniqueId.uuid()
+    billingInformationId: businessOldData.billingInformationId ? businessOldData.billingInformationId : uniqueId.uuid(),
+    planId: __constants.FREE_PLAN_ID
+
   }
 
   // __logger.info('Billing Obj', billingObj)
