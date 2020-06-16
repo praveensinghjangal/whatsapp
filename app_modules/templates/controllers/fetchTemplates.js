@@ -51,7 +51,7 @@ const getTemplateInfo = (req, res) => {
     })
     .then(data => {
       __logger.info('then 2')
-      finalResult[0].complete = data.complete
+      finalResult[0].mediaTemplateComplete = data.complete
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult })
     })
     .catch(err => {

@@ -353,6 +353,8 @@ class validate {
     console.log('Request', request)
     const isvalid = q.defer()
     if (request && request.type) request.type = request.type.toLowerCase()
+    if (request && request.headerType) request.headerType = request.headerType.toLowerCase()
+    if (request && request.buttonType) request.buttonType = request.buttonType.toLowerCase()
     const schema = {
       id: '/checkTemplateInfoStatus',
       type: 'object',
@@ -412,22 +414,89 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        secondLanguageRequired: {
+          type: 'boolean',
+          required: true,
+          minLength: 1
+        },
+        secondLanguageName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        secondlanguageBodyText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        headerType: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+        },
+        buttonType: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+        },
+        buttonData: {
+          type: 'object',
+          required: true,
+          properties: {
+            quickReply: {
+              type: 'array',
+              required: true,
+              minItems: 1,
+              maxItems: 3,
+              items: {
+                type: 'string'
+              }
+            },
+            phoneButtonText: {
+              type: 'string',
+              required: true,
+              minLength: 1
+            },
+            phoneNumber: {
+              type: 'string',
+              required: true,
+              minLength: 1
+            },
+            websiteButtontext: {
+              type: 'string',
+              required: true,
+              minLength: 1
+            },
+            webAddress: {
+              type: 'string',
+              required: true,
+              minLength: 1
+            }
+          }
         }
       }
     }
 
-    // Standard Template
     if (request.type === 'standard') {
       delete schema.properties.headerText
       delete schema.properties.footerText
       delete schema.properties.mediaType
     }
-
-    // Media Template
     if (request.type === 'media message template') {
       delete schema.properties.bodyText
     }
-
+    if (request && request.buttonType === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLocaleLowerCase()) {
+      delete schema.properties.buttonData.properties.quickReply
+    }
+    if (request && request.buttonType === __constants.TEMPLATE_BUTTON_TYPE[1].buttonType.toLocaleLowerCase()) {
+      delete schema.properties.buttonData.properties.phoneButtonText
+      delete schema.properties.buttonData.properties.phoneNumber
+      delete schema.properties.buttonData.properties.websiteButtontext
+      delete schema.properties.buttonData.properties.webAddress
+    }
     const formatedError = []
     v.addSchema(schema, '/checkTemplateInfoStatus')
     const error = _.map(v.validate(request, schema).errors, 'stack')

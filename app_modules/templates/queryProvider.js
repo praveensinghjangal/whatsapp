@@ -28,7 +28,9 @@ const getTemplateInfo = () => {
     SELECT DISTINCT mt.message_template_id as "messageTemplateId", mt.waba_information_id as "wabaInformationId",
     mt.template_name as "templateName", mt.type, mt.body_text as "bodyText", mt.header_text as "headerText",
     mt.footer_text as "footerText", mt.media_type as "mediaType", mtc.category_name as "categoryName",
-    mts.status_name as "statusName", mtl.language_name as "languageName"
+    mts.status_name as "statusName", mtl.language_name as "languageName",mt.second_language_required as "secondLanguageRequired",
+    mtl2.language_name as "secondLanguageName" ,mt.second_language_body_text as "secondlanguageBodyText",
+    mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData"
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
@@ -38,6 +40,8 @@ const getTemplateInfo = () => {
         ON mts.is_active = true and mts.message_template_status_id = mt.message_template_status_id
       JOIN message_template_language mtl
         ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
+      LEFT JOIN message_template_language mtl2
+        ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
     WHERE mt.is_active = true AND wi.user_id = $1 AND mt.message_template_id = $2`
 }
 
