@@ -75,6 +75,12 @@ const TEMPLATE_TYPE = [{
 }, {
   templateType: 'Media Message Template'
 }]
+const PLAN_CATEGORY = {
+  standard: 'Standard',
+  custom: 'Custom'
+}
+
+const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
 const TEMPLATE_STATUS = ['Approved', 'Rejected']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
@@ -151,3 +157,5 @@ module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
 module.exports.ENTITY_NAME = ENTITY_NAME
 module.exports.TEMPLATE_HEADER_TYPE = TEMPLATE_HEADER_TYPE
 module.exports.TEMPLATE_BUTTON_TYPE = TEMPLATE_BUTTON_TYPE
+module.exports.PLAN_CATEGORY = PLAN_CATEGORY
+module.exports.FREE_PLAN_ID = FREE_PLAN_ID
