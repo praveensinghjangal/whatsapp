@@ -32,9 +32,14 @@ const updateUserAccountProfile = () => {
 // Billing Profile
 
 const getBillingProfile = () => {
-  return `select billing_name as "billingName",city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2",contact_number as "contactNumber",phone_code as  "phoneCode", postal_code as  "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo" 
-  from billing_information 
-  WHERE user_id = $1 and is_active = true`
+  return `select billing_name as "billingName",city, state, country, address_line_1 as "addressLine1"
+  ,address_line_2 as "addressLine2",contact_number as "contactNumber",phone_code as  "phoneCode",
+  postal_code as  "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo", pd.plan_name as "planActivated",
+  to_char(bi.created_on,'DD/MM/YYYY') as "accoutCreatedOn"
+  from billing_information bi
+  left join plan_details pd on
+  bi.plan_id  = pd.plan_id and pd.is_active =true and bi.is_active = true
+  WHERE user_id = $1 `
 }
 
 const createBusinessBillingProfile = () => {
