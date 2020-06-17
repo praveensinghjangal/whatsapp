@@ -91,7 +91,7 @@ module.exports = {
     amqp_url: process.env.RABBITMQ_AMQP_URL,
     reconnect_interval: 5000,
     delay_connection_callback: 1000,
-    use_auth: process.env.RABBITMQ_USE_AUTH,
+    use_auth: process.env.RABBITMQ_USE_AUTH === 'true',
     host: process.env.RABBITMQ_HOST,
     virtual_host: process.env.RABBITMQ_VIRTUAL_HOST,
     port: process.env.RABBITMQ_PORT,
