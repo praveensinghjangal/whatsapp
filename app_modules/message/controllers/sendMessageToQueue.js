@@ -40,7 +40,7 @@ const controller = (req, res) => {
     .then(valRes => ruleCheck(req.body))
     .then(isValid => sendToQueueBulk(req.body))
     .then(sendToQueueRes => __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: sendToQueueRes }))
-    .catch(err => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
 }
 
 module.exports = controller

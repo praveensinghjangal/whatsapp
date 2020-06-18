@@ -2,6 +2,7 @@ const q = require('q')
 const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
+const __constants = require('../../../config/constants')
 // "payload": {
 //     "text": "This is an example response"
 // }
@@ -54,46 +55,65 @@ class validate {
 
   sendMessageToQueue (request) {
     const isvalid = q.defer()
-    isvalid.resolve(request)
-    return isvalid.promise
+    // isvalid.resolve(request)
+    // return isvalid.promise
     const schema = {
-      id: '/sendMessage',
-      type: 'object',
+      id: '/sendMessageToQueue',
+      type: 'array',
       required: true,
-      properties: {
-        senderNumber: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        receiverNumber: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        payload: {
-          type: 'object',
-          required: true,
-          minLength: 1,
-          properties: {
-            text: {
+      minItems: 1,
+      items: {
+        type: 'object',
+        required: true,
+        properties: {
+          to: {
+            type: 'string',
+            required: true,
+            minLength: 1
+          },
+          channels: {
+            type: 'array',
+            required: true,
+            minItems: 1,
+            items: {
               type: 'string',
-              required: true,
-              minLength: 1
+              enum: ['whatsapp']
+            }
+          },
+          whatsapp: {
+            type: 'object',
+            required: true,
+            minLength: 1,
+            properties: {
+              from: {
+                type: 'string',
+                required: true,
+                minLength: 1
+              },
+              contentType: {
+                type: 'string',
+                required: true,
+                minLength: 1
+              },
+              text: {
+                type: 'string',
+                required: true,
+                minLength: 1
+              }
             }
           }
         }
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/sendMessage')
+    v.addSchema(schema, '/sendMessageToQueue')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ statusCode: 'VE001', message: 'invalid input', error: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
