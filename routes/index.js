@@ -34,7 +34,7 @@ module.exports = function (app) {
   // region api routes
   const apiUrlPrefix = '/' + __config.api_prefix + '/api'
 
-  app.use(apiUrlPrefix + '/message', message)
+  app.use(apiUrlPrefix + '/chat/v1/messages', message)
   app.use(apiUrlPrefix + '/users', user)
   app.use(apiUrlPrefix + '/places', places)
   app.use(apiUrlPrefix + '/business', whatsappBusiness)

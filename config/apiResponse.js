@@ -55,6 +55,11 @@ module.exports = {
     code: 2000,
     message: 'Success'
   },
+  ACCEPTED: {
+    status_code: 202,
+    code: 2002,
+    message: 'Request Accepted'
+  },
   EMAIL_VC: {
     status_code: 200,
     code: 2001,

@@ -15,7 +15,13 @@
     "watch": [
       "app_modules",
       "routes"
-    ]
+    ],
+    "events": {
+      "restart": "fuser -k 3000/tcp;",
+      "start": "fuser -k 3000/tcp;",
+      "crash": "fuser -k 3000/tcp;"
+    },
+    "delay": "1500"
   },
   "dependencies": {
     "amqplib": "^0.5.5",
