@@ -139,7 +139,8 @@ const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Quick Reply'
 }]
 const MQ = {
-  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
+  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
+  mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
 }
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
