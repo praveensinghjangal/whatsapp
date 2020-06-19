@@ -11,8 +11,8 @@ if (process.env.NODE_ENV === 'development') require('dotenv').config({ path: pro
 // LOAD ENV FILE END ====================================================
 
 const SERVER_SCRIPTS = {
-  http_api: './workers/http_api.js'
-  // 'download_worker': "./workers/download_worker.js"
+  http_api: './workers/http_api.js',
+  processQueueConsumer: './workers/message_consumers/processMessage.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {
