@@ -2,24 +2,29 @@ const q = require('q')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
+const config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 
-const sendToQueue = data => {
+const sendToQueue = (data, providerId) => {
   const messageSent = q.defer()
   const uniqueId = new UniqueId()
   data.messageId = uniqueId.uuid()
-  rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(data))
+  const queueData = {
+    config: config.provider_config[providerId],
+    payload: data
+  }
+  rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData))
     .then(queueResponse => messageSent.resolve({ messageId: data.messageId, acceptedAt: new Date() }))
     .catch(err => messageSent.reject(err))
   return messageSent.promise
 }
 
-const sendToQueueBulk = data => {
+const sendToQueueBulk = (data, providerId) => {
   let p = q()
   const thePromises = []
   data.forEach(singleObject => {
-    p = p.then(() => sendToQueue(singleObject))
+    p = p.then(() => sendToQueue(singleObject, providerId))
       .catch(err => err)
     thePromises.push(p)
   })
@@ -35,10 +40,10 @@ const ruleCheck = data => {
 
 const controller = (req, res) => {
   const validate = new ValidatonService()
-  req.jwtToken = { providerId: 111 } // todo: replace with actual jwt data
+  if (!req.user.providerId) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
     .then(valRes => ruleCheck(req.body))
-    .then(isValid => sendToQueueBulk(req.body))
+    .then(isValid => sendToQueueBulk(req.body, req.user.providerId))
     .then(sendToQueueRes => __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: sendToQueueRes }))
     .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
 }

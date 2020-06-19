@@ -1,4 +1,4 @@
-const providerConfig = require('../../config').provider_id_to_provider_name_mapping
+const providerConfig = require('../../config').provider_config
 const providers = { // keep on adding providers here
   messengerPeople: require('./messengerPeople'),
   demo: require('./demo'),
@@ -7,7 +7,7 @@ const providers = { // keep on adding providers here
 // functions will be called as per provider
 class Messaage {
   constructor (providerId) {
-    this.providerName = providerConfig[providerId] // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
     this.message = new providers[this.providerName].Messaage()
   }
 

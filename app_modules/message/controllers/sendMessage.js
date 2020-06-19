@@ -5,7 +5,7 @@ const __constants = require('../../../config/constants')
 
 const controller = (req, res) => {
   const validate = new ValidatonService()
-  req.jwtToken = { providerId: 111 } // todo: replace with actual jwt data
+  req.jwtToken = { providerId: 'e76a602e-37e3-4c5d-898f-56bf0c880f93' } // todo: replace with actual jwt data
   validate.sendMessage(req.body)
     .then(data => {
       const messageService = new integrationService.Messaage(req.jwtToken.providerId)

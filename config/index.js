@@ -113,9 +113,17 @@ module.exports = {
       min_file_size: 50 * 1024 * 1024 // bytes*kbs*mbs
     }
   },
-  provider_id_to_provider_name_mapping: {
-    1: 'messengerPeople',
-    111: 'demo'
+  provider_config: {
+    [process.env.SERVICE_PROVIDER_ID_TYNTEC]: {
+      name: 'tyntec',
+      queueName: process.env.SERVICE_PROVIDER_QUEUE_TYNTEC,
+      servicProviderId: process.env.SERVICE_PROVIDER_ID_TYNTEC
+    },
+    [process.env.SERVICE_PROVIDER_ID_DEMO]: {
+      name: 'demo',
+      queueName: process.env.SERVICE_PROVIDER_QUEUE_DEMO,
+      servicProviderId: process.env.SERVICE_PROVIDER_ID_DEMO
+    }
   },
   mysql: {
     init: process.env.MYSQL_INIT === 'true',
