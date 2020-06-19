@@ -5,7 +5,7 @@ const q = require('q')
 
 const sendToRespectiveProviderQueue = (message, queueObj) => {
   const messageRouted = q.defer()
-  queueObj.sendToQueue(__constants.MQ[message.config.queueName], JSON.stringify(message.payload))
+  queueObj.sendToQueue(__constants.MQ[message.config.queueName], JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise
