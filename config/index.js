@@ -116,7 +116,7 @@ module.exports = {
   provider_config: {
     [process.env.SERVICE_PROVIDER_ID_TYNTEC]: {
       name: 'tyntec',
-      queueName: process.env.SERVICE_PROVIDER_QUEUE_TYNTEC,
+      queueName: process.env.SERVICE_PROVIDER_QUEUE_TYNTEC_OUTGOING,
       servicProviderId: process.env.SERVICE_PROVIDER_ID_TYNTEC
     },
     [process.env.SERVICE_PROVIDER_ID_DEMO]: {
