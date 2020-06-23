@@ -198,7 +198,12 @@ module.exports = {
   },
   MASTER_NOT_EXISTS: {
     status_code: 200,
-    code: 3021,
+    code: 3023,
     message: 'Master data does not exists.'
+  },
+  ERROR_SENDING_MESSAGE: {
+    status_code: 500,
+    code: 3024,
+    message: 'Error while sending message'
   }
 }

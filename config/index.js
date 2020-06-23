@@ -116,7 +116,7 @@ module.exports = {
   provider_config: {
     [process.env.SERVICE_PROVIDER_ID_TYNTEC]: {
       name: 'tyntec',
-      queueName: process.env.SERVICE_PROVIDER_QUEUE_TYNTEC,
+      queueName: process.env.SERVICE_PROVIDER_QUEUE_TYNTEC_OUTGOING,
       servicProviderId: process.env.SERVICE_PROVIDER_ID_TYNTEC
     },
     [process.env.SERVICE_PROVIDER_ID_DEMO]: {
@@ -172,6 +172,12 @@ module.exports = {
         clientSecret: '',
         grantType: 'client_credentials',
         scope: 'messages:send'
+      }
+    },
+    tyntec: {
+      baseUrl: 'https://api.tyntec.com',
+      endpoint: {
+        sendMessage: '/chat-api/v2/messages'
       }
     }
   },
