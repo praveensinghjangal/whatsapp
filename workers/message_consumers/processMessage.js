@@ -22,6 +22,7 @@ class ProcessQueueConsumer {
           try {
             const messageData = JSON.parse(mqData.content.toString())
             __logger.debug('processQueueConsumer::received:', { mqData })
+            __logger.debug('processQueueConsumer::received: messageData', messageData)
             sendToRespectiveProviderQueue(messageData, rmqObject)
               .then(data => rmqObject.channel[queue].ack(mqData))
               .catch(err => __logger.error('processQueueConsumer::error while routing to queue', err))
