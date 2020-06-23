@@ -2,7 +2,8 @@ const providerConfig = require('../../config').provider_config
 const providers = { // keep on adding providers here
   messengerPeople: require('./messengerPeople'),
   demo: require('./demo'),
-  sinch: require('./sinch')
+  sinch: require('./sinch'),
+  tyntec: require('./tyntec')
 }
 // functions will be called as per provider
 class Messaage {
@@ -18,6 +19,9 @@ class WebHooks {
   constructor () {
     this.sinch = new providers.sinch.Webhooks()
     this.sendSinchPayloadToQUeue = this.sinch.sendToQueue
+
+    this.tyntec = new providers.tyntec.Webhooks()
+    this.sendTyntecPayloadToQUeue = this.tyntec.sendToQueue
   }
 }
 

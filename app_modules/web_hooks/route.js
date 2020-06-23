@@ -5,5 +5,6 @@ const router = express.Router()
 // const authstrategy = require('../../config').authentication.strategy
 
 router.post('/sinch/queue/5ebe781115b0fbc7bd5db58c', require('../web_hooks/controllers/sendSinchDatatoQueue'))
+router.post('/tyntec/queue/e464e894-0ded-4122-86bc-4e215f9f8f5a', require('../web_hooks/controllers/sendTyntecDatatoQueue'))
 
 module.exports = router
