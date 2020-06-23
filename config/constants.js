@@ -143,7 +143,7 @@ const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Quick Reply'
 }]
 const MQ = {
-  process_message: { type: 'queue', q_name: 'process_message-d', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
+  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   error: { type: 'queue', q_name: 'error_consumer', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
