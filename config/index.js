@@ -173,6 +173,12 @@ module.exports = {
         grantType: 'client_credentials',
         scope: 'messages:send'
       }
+    },
+    tyntec: {
+      baseUrl: 'https://api.tyntec.com',
+      endpoint: {
+        sendMessage: '/chat-api/v2/messages'
+      }
     }
   },
   authentication: {

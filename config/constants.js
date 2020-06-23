@@ -100,6 +100,10 @@ const MASTER_TABLE = {
       name: 'message_template_language',
       columns: ['message_template_language_id as id', 'language_name']
     }
+  },
+  wabaPhoneNoToProviderInfo: {
+    name: 'waba_information',
+    columns: ['phone_code || phone_number as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"']
   }
 }
 const ENTITY_NAME = {
