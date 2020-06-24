@@ -14,6 +14,7 @@ const SERVER_SCRIPTS = {
   http_api: './workers/http_api.js',
   processQueueConsumer: './workers/message_consumers/processMessage.js',
   mockQueueConsumer: './workers/message_consumers/mockQueueConsumer.js',
+  tyntecOutGoingQueueConsumer: './workers/message_consumers/tyntecOutGoingQueueConsumer.js',
   tyntecIncoming: './workers/message_consumers/tyntecIncoming.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null

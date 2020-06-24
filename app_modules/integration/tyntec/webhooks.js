@@ -1,10 +1,15 @@
 const q = require('q')
-const mongoDb = require('../../../lib/db').mongo
+const postgresql = require('../../../lib/db').postgresql
+const queryProvider = require('./queryProvider')
+const __logger = require('../../../lib/logger')
 const dbSchema = require('./dbSchema')
+
 class Webhooks {
-  sendToQueue (payload) {
+  storePayloadInDb (payload) {
+    __logger.info('storePayloadInDb payload >>>>>>>>>>>>>>>>>', payload)
     const dataSaved = q.defer()
-    mongoDb.__insert(dbSchema.database, dbSchema.collectionName, payload || {})
+    const data = payload.notifications[0]
+    postgresql.__query(queryProvider.addPayload(), [data.to, data.from, payload])
       .then(response => dataSaved.resolve(response.ops))
       .catch(err => dataSaved.reject(err))
     return dataSaved.promise

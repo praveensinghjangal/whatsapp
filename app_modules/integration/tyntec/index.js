@@ -1,2 +1,3 @@
 const Webhooks = require('./webhooks')
-module.exports = { Webhooks }
+const Messaage = require('./message')
+module.exports = { Messaage, Webhooks }

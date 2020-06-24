@@ -100,6 +100,10 @@ const MASTER_TABLE = {
       name: 'message_template_language',
       columns: ['message_template_language_id as id', 'language_name']
     }
+  },
+  wabaPhoneNoToProviderInfo: {
+    name: 'waba_information',
+    columns: ['phone_code || phone_number as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"']
   }
 }
 const ENTITY_NAME = {
@@ -141,7 +145,8 @@ const TEMPLATE_BUTTON_TYPE = [{
 const MQ = {
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  error: { type: 'queue', q_name: 'error', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
+  error: { type: 'queue', q_name: 'error_consumer', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
+  tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   tyntec: { type: 'queue', q_name: 'tyntec', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
 }
 
