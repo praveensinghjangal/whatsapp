@@ -251,7 +251,26 @@ class validate {
                                   }
                                 }
                               }
-                            }
+                            },
+                            anyOf: [
+                              {
+                                properties: {
+                                  type: { const: 'text' }
+                                },
+                                required: ['text']
+                              },
+                              {
+                                properties: {
+                                  type: { const: 'media' }
+                                },
+                                required: ['media']
+                              }, {
+                                properties: {
+                                  type: { const: 'location' }
+                                },
+                                required: ['location']
+                              }
+                            ]
                           }
                         }
                       }
@@ -259,7 +278,31 @@ class validate {
                   }
                 }
               }
-            }
+            },
+            anyOf: [
+              {
+                properties: {
+                  contentType: { const: 'text' }
+                },
+                required: ['text']
+              },
+              {
+                properties: {
+                  contentType: { const: 'media' }
+                },
+                required: ['media']
+              }, {
+                properties: {
+                  contentType: { const: 'location' }
+                },
+                required: ['location']
+              }, {
+                properties: {
+                  contentType: { const: 'template' }
+                },
+                required: ['template']
+              }
+            ]
           }
         }
       }
