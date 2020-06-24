@@ -93,14 +93,216 @@ class validate {
               contentType: {
                 type: 'string',
                 required: true,
-                minLength: 1
+                minLength: 1,
+                enum: ['text', 'media', 'template', 'location']
               },
               text: {
                 type: 'string',
-                required: true,
+                required: false,
                 minLength: 1
+              },
+              media: {
+                type: 'object',
+                required: false,
+                minLength: 1,
+                properties: {
+                  type: {
+                    type: 'string',
+                    required: true,
+                    minLength: 1,
+                    enum: ['image', 'document', 'video']
+                  },
+                  url: {
+                    type: 'string',
+                    required: true,
+                    minLength: 1
+                  },
+                  caption: {
+                    type: 'string',
+                    required: false,
+                    minLength: 1
+                  },
+                  filename: {
+                    type: 'string',
+                    required: false,
+                    minLength: 1
+                  }
+                }
+              },
+              location: {
+                type: 'object',
+                required: false,
+                minLength: 1,
+                properties: {
+                  longitude: {
+                    type: 'number',
+                    required: true,
+                    minLength: 1
+                  },
+                  latitude: {
+                    type: 'number',
+                    required: true,
+                    minLength: 1
+                  }
+                }
+              },
+              template: {
+                type: 'object',
+                required: false,
+                minLength: 1,
+                properties: {
+                  templateId: {
+                    type: 'string',
+                    required: true,
+                    minLength: 1
+                  },
+                  language: {
+                    type: 'object',
+                    required: true,
+                    minLength: 1,
+                    properties: {
+                      policy: {
+                        type: 'string',
+                        required: true,
+                        minLength: 1,
+                        enum: ['deterministic']
+                      },
+                      code: {
+                        type: 'string',
+                        required: true,
+                        minLength: 1
+                      }
+                    }
+                  },
+                  components: {
+                    type: 'array',
+                    required: false,
+                    minItems: 1,
+                    items: {
+                      type: 'object',
+                      required: true,
+                      properties: {
+                        type: {
+                          type: 'string',
+                          required: true,
+                          minLength: 1,
+                          enum: ['header', 'body', 'footer']
+                        },
+                        parameters: {
+                          type: 'array',
+                          required: false,
+                          items: {
+                            type: 'object',
+                            required: true,
+                            properties: {
+                              type: {
+                                type: 'string',
+                                required: true,
+                                minLength: 1,
+                                enum: ['text', 'media', 'location']
+                              },
+                              text: {
+                                type: 'string',
+                                required: false,
+                                minLength: 1
+                              },
+                              media: {
+                                type: 'object',
+                                required: false,
+                                minLength: 1,
+                                properties: {
+                                  type: {
+                                    type: 'string',
+                                    required: true,
+                                    minLength: 1,
+                                    enum: ['image', 'document', 'video']
+                                  },
+                                  url: {
+                                    type: 'string',
+                                    required: true,
+                                    minLength: 1
+                                  },
+                                  caption: {
+                                    type: 'string',
+                                    required: false,
+                                    minLength: 1
+                                  },
+                                  filename: {
+                                    type: 'string',
+                                    required: false,
+                                    minLength: 1
+                                  }
+                                }
+                              },
+                              location: {
+                                type: 'object',
+                                required: false,
+                                minLength: 1,
+                                properties: {
+                                  longitude: {
+                                    type: 'number',
+                                    required: true,
+                                    minLength: 1
+                                  },
+                                  latitude: {
+                                    type: 'number',
+                                    required: true,
+                                    minLength: 1
+                                  }
+                                }
+                              }
+                            },
+                            anyOf: [
+                              {
+                                properties: {
+                                  type: { const: 'text' }
+                                },
+                                required: ['text']
+                              },
+                              {
+                                properties: {
+                                  type: { const: 'media' }
+                                },
+                                required: ['media']
+                              }, {
+                                properties: {
+                                  type: { const: 'location' }
+                                },
+                                required: ['location']
+                              }
+                            ]
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
               }
-            }
+            },
+            anyOf: [
+              {
+                properties: {
+                  contentType: { const: 'text' }
+                },
+                required: ['text']
+              },
+              {
+                properties: {
+                  contentType: { const: 'media' }
+                },
+                required: ['media']
+              }, {
+                properties: {
+                  contentType: { const: 'location' }
+                },
+                required: ['location']
+              }, {
+                properties: {
+                  contentType: { const: 'template' }
+                },
+                required: ['template']
+              }
+            ]
           }
         }
       }
