@@ -150,6 +150,9 @@ const MQ = {
   tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
 }
+const INCOMING_MESSAGE_RETRY = {
+  tyntec: 5
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -174,3 +177,4 @@ module.exports.TEMPLATE_BUTTON_TYPE = TEMPLATE_BUTTON_TYPE
 module.exports.PLAN_CATEGORY = PLAN_CATEGORY
 module.exports.FREE_PLAN_ID = FREE_PLAN_ID
 module.exports.MQ = MQ
+module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
