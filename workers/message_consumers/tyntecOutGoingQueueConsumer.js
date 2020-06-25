@@ -6,7 +6,7 @@ const q = require('q')
 
 const sendToErrorQueue = (message, queueObj) => {
   const messageRouted = q.defer()
-  queueObj.sendToQueue(__constants.MQ.error, JSON.stringify(message))
+  queueObj.sendToQueue(__constants.MQ.tyntecSendmessageError, JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise

@@ -13,11 +13,4 @@ class Messaage {
   sendMessage (payload) { return this.message.sendMessage(payload) }
 }
 
-class WebHooks {
-  constructor () {
-    this.tyntec = new providers.tyntec.Webhooks()
-    this.storePayloadInDb = this.tyntec.storePayloadInDb
-  }
-}
-
-module.exports = { Messaage, WebHooks }
+module.exports = { Messaage }
