@@ -205,5 +205,10 @@ module.exports = {
     status_code: 500,
     code: 3024,
     message: 'Error while sending message'
+  },
+  NOT_REDIRECTED: {
+    status_code: 406,
+    code: 3025,
+    message: 'Fail to redirect payload'
   }
 }

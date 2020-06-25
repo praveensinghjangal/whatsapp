@@ -22,6 +22,7 @@ class Message {
     }
     this.http.Post(inputRequest, 'body', messengerPeopleIntegrationConfig.baseUrl + messengerPeopleIntegrationConfig.endpoint.sendMessage, headers)
       .then(apiRes => {
+        apiRes = apiRes.body || apiRes
         console.log('datatattatatattatatat', apiRes)
         if (apiRes && apiRes.hint && apiRes.hint === 'The request has not been authenticated.') {
           return authToken.setToken()
@@ -41,6 +42,7 @@ class Message {
         }
       })
       .then(finalRes => { // todo : handle response properly
+        finalRes = finalRes.body || finalRes
         if (finalRes.firstAttempSuccess) finalRes = finalRes.data
         console.log('final res --->', finalRes)
         if (finalRes && finalRes.error) {
