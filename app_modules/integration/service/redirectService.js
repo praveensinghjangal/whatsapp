@@ -7,8 +7,9 @@ const __logger = require('../../../lib/logger')
 
 class RedirectService {
   webhookPost (wabaNumber, payload) {
+    __logger.info('inside webhook post service', payload)
     const redirected = q.defer()
-    const http = new HttpService(2000)
+    const http = new HttpService(3000)
     __db.redis.get(wabaNumber)
       .then(data => {
         console.log('dataatatatat', data, typeof data)

@@ -20,26 +20,17 @@ const getTemplateCount = (req, res) => {
   __db.postgresql.__query(queryProvider.getTemplateCountByStatus(), [userId])
     .then(data => {
       __logger.info(' then 1')
-      return checkAndAddDefaultCount(data)
+      return formatAndReturnTemplateCount(data)
     })
     .then(data => {
-      __logger.info(' then 2')
+      __logger.info('then 2')
       templateCountByStatus.push(data)
-      return __db.postgresql.__query(queryProvider.getTempalteAllocatedCountToWaba(), [userId])
-    })
-    .then(data => {
-      __logger.info(' then 3')
-      return checkAndAddDefaultAllocatedTemplateCount(data)
-    })
-    .then(data => {
-      __logger.info('then 4')
-      templateCountByStatus[0].push(data)
       return __db.postgresql.__query(queryProvider.getTempalteUsedCountByWaba(), [userId])
     })
     .then(data => {
-      __logger.info(' then 5')
+      __logger.info(' then 3', data)
       templateCountByStatus[0].push(data.rows[0])
-      finalCount = templateCountByStatus
+      finalCount = templateCountByStatus[0]
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalCount })
     })
     .catch(err => {
@@ -48,78 +39,72 @@ const getTemplateCount = (req, res) => {
     })
 }
 
-/*
- Checks whether there's entry for approved and rejected
- if not add's default object
-*/
-function checkAndAddDefaultCount (inputData) {
-  // __logger.info('Input data', inputData)
-  // __logger.info('Input data row length', inputData.rows)
+function formatAndReturnTemplateCount (data) {
+  __logger.info('formatAndReturnTemplateCount', data)
   const isDone = q.defer()
-  let result = []
-  if (inputData.rows.length === 0) {
-    __logger.info('Input data row length 0')
 
-    result =
+  const result = []
+  if (data.rows && data.rows.length === 0) {
+    __logger.info('Length-------------------------- 0')
 
-      [
-        {
-          templateCount: 0,
-          statusName: 'Rejected'
-        },
-        {
-          templateCount: 0,
-          statusName: 'Approved'
-        }
-      ]
-  } else if (inputData.rows.length === 1) {
-    __logger.info('Input data row length== 1')
+    __constants.TEMPLATE_STATUS.forEach(templateStatus => {
+      result.push({
+        templateCount: 0,
+        statusName: templateStatus
+      })
+    })
+    result.push({
+      allocatedTemplateCount: data.rows.length
+    })
+  }
 
-    /*
-      if the length is less than 2 then do the addition
-      of the object
-      else return the result as it is
-
-    */
-
-    result.push(inputData.rows[0])
-
+  if (data.rows && data.rows.length === 1) {
+    __logger.info('Length-------------------------- 1')
+    result.push({
+      allocatedTemplateCount: data.rows[0].templates_allowed
+    })
     __constants.TEMPLATE_STATUS.forEach(status => {
-      if (inputData.rows[0].statusName !== status) {
+      __logger.info('Status ', status)
+      __logger.info('data.rows[0].status_name ', data.rows[0].status_name)
+      if (data.rows[0].status_name !== status) {
         result.push({
           templateCount: 0,
           statusName: status
         })
+      } else {
+        result.push({
+          templateCount: data.rows[0].count,
+          statusName: status
+        })
       }
     })
-  } else {
-    // __logger.info('Input data row length > 1')
+  }
 
-    result = inputData.rows
+  if (data.rows && data.rows.length > 1) {
+    __logger.info('Length-------------------------- >1')
+
+    result.push({
+      allocatedTemplateCount: data.rows[0].templates_allowed
+    })
+
+    data.rows.forEach(record => {
+      if (!__constants.TEMPLATE_STATUS.includes(record.status_name)) {
+        result.push({
+          templateCount: 0,
+          statusName: record.status_name
+        })
+      } else {
+        result.push({
+          templateCount: record.count,
+          statusName: record.status_name
+        })
+      }
+    })
   }
 
   isDone.resolve(result)
-  // __logger.info('Default Result', result)
-  return isDone.promise
-}
+  __logger.info('Result ', result)
 
-/*
-  Checks whether there's recroed with allocated template count
-  if not add's default object
-*/
-function checkAndAddDefaultAllocatedTemplateCount (inputData) {
-  const isDone = q.defer()
-  let result = []
-
-  if (inputData.rows.length > 0) {
-    result = inputData.rows[0]
-  } else {
-    result = {
-      allocatedTemplateCount: 0
-
-    }
-  }
-  isDone.resolve(result)
   return isDone.promise
 }
 

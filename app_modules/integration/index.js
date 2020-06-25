@@ -13,11 +13,4 @@ class Messaage {
   sendMessage (payload) { return this.message.sendMessage(payload) }
 }
 
-class WebHooks {
-  // constructor () {
-  //   this.sinch = new providers.sinch.Webhooks()
-  //   this.sendSinchPayloadToQUeue = this.sinch.sendToQueue
-  // }
-}
-
-module.exports = { Messaage, WebHooks }
+module.exports = { Messaage }

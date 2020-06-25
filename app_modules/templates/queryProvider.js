@@ -121,18 +121,26 @@ const getTemplateLanguages = () => {
 
 // Template Count
 const getTemplateCountByStatus = () => {
-  return `select count(mt.message_template_id) as "templateCount",
-          mts.status_name  as "statusName"
-          from message_template mt 
-          left join message_template_status mts
-          on mt.message_template_status_id  = mts.message_template_status_id
-          left join waba_information wi
-          on mt.waba_information_id = wi.waba_information_id
-          where mt.is_active  = true 
-          and wi.is_active =true 
-          and mts.is_active  = true 
-          and wi.user_id = $1
-          group by mts.message_template_status_id`
+  return `select wi.templates_allowed , count(mt.message_template_id ), mts.status_name
+from waba_information wi
+left join message_template mt on wi.waba_information_id = mt.waba_information_id and mt.is_active = true
+left join message_template_status mts on mt.message_template_status_id = mts.message_template_status_id 
+and mts.is_active = true
+where wi.is_active = true and wi.user_id = $1
+group by wi.templates_allowed , mts.status_name`
+
+  // return `select count(mt.message_template_id) as "templateCount",
+  //         mts.status_name  as "statusName"
+  //         from message_template mt
+  //         left join message_template_status mts
+  //         on mt.message_template_status_id  = mts.message_template_status_id
+  //         left join waba_information wi
+  //         on mt.waba_information_id = wi.waba_information_id
+  //         where mt.is_active  = true
+  //         and wi.is_active =true
+  //         and mts.is_active  = true
+  //         and wi.user_id = $1
+  //         group by mts.message_template_status_id`
 }
 
 const getTempalteAllocatedCountToWaba = () => {
