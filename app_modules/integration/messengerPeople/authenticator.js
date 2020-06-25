@@ -20,6 +20,7 @@ class Authentication {
     }
     this.http.Post(inputRequest, 'form', messengerPeopleIntegrationConfig.authBaseUrl + messengerPeopleIntegrationConfig.endpoint.token, headers)
       .then(data => {
+        data = data.body || data
         if (data && data.access_token) {
           deferred.resolve({ success: true, message: 'token fetched successfully', token: data.access_token })
         } else {

@@ -17,12 +17,12 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
-      // console.log('pppppppppppppppppppp', response)
+      // console.log('pppppppppppppppppppp', response.statusCode)
       if (error) {
         console.log('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
-        deferred.resolve(body)
+        deferred.resolve(response)
       }
     })
     return deferred.promise
