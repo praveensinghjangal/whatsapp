@@ -19,7 +19,6 @@ class TemplateParamValidationService {
         }
       })
       .then(dbData => {
-        console.log('here is the db data', dbData.length)
         _.each(dbData, singleObj => {
           const dataObject = {
             templateId: singleObj.message_template_id,
@@ -28,7 +27,6 @@ class TemplateParamValidationService {
             footerParamCount: (singleObj.footer_text.match(/{{\d}}/g) || []).length
           }
           __db.redis.set(dataObject.templateId, JSON.stringify(dataObject))
-          console.log('dataObject', dataObject)
         })
       })
       .catch(err => {
@@ -50,7 +48,6 @@ class TemplateParamValidationService {
         }
       })
       .then(dbData => {
-        console.log('here is the db data', dbData.length)
         _.each(dbData, singleObj => {
           const dataObject = {
             templateId: singleObj.message_template_id,
@@ -59,7 +56,6 @@ class TemplateParamValidationService {
             footerParamCount: (singleObj.footer_text.match(/{{\d}}/g) || []).length
           }
           __db.redis.set(dataObject.templateId, JSON.stringify(dataObject))
-          console.log('dataObject', dataObject)
         })
       })
       .catch(err => {
