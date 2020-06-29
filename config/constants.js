@@ -154,6 +154,10 @@ const INCOMING_MESSAGE_RETRY = {
   tyntec: 5
 }
 
+const OUTGOING_MESSAGE_RETRY = {
+  tyntec: 5
+}
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -178,3 +182,4 @@ module.exports.PLAN_CATEGORY = PLAN_CATEGORY
 module.exports.FREE_PLAN_ID = FREE_PLAN_ID
 module.exports.MQ = MQ
 module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
+module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
