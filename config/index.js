@@ -239,5 +239,10 @@ module.exports = {
     subject: {
       emailVerification: process.env.EMAIL_PROVIDER_SUBJECT_EMAIL_VERIFICATION
     }
+  },
+  mockWebHook: {
+    authorization: process.env.MOCK_WEBHOOK_AUTH,
+    receiverNumber: process.env.MOCK_WEBHOOK_RECEIVER_NUMBER.split(','),
+    senderNumber: process.env.MOCK_WEBHOOK_SENDER_NUMBER
   }
 }

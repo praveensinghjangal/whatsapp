@@ -35,7 +35,7 @@ class MessageConsumer {
             __logger.debug('processQueueConsumer::received:', { mqData })
             __logger.debug('processQueueConsumer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
-              messageData.payload.retryCount = 5
+              messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.tyntec
             }
 
             const messageService = new integrationService.Messaage(messageData.config.servicProviderId)
