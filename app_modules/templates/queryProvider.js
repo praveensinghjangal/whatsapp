@@ -192,6 +192,22 @@ const setIsActiveFalseByTemplateId = () => {
           where message_template_id = $1 and is_active = true`
 }
 
+const setAllTemplatesInRedis = () => {
+  return `select mt.message_template_id , mt.header_text ,mt.body_text ,
+  mt.footer_text,wi.phone_code || wi.phone_number as phone_number
+  from message_template mt
+  join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
+  where mt.is_active = true`
+}
+
+const setTemplatesInRedisForWabaId = () => {
+  return `select mt.message_template_id , mt.header_text ,mt.body_text ,
+  mt.footer_text,wi.phone_code || wi.phone_number as phone_number
+  from message_template mt
+  join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
+  where mt.is_active = true and wi.waba_information_id = $1`
+}
+
 module.exports = {
   getTemplateList,
   getTemplateInfo,
@@ -207,5 +223,7 @@ module.exports = {
   updateTemplate,
   setIsActiveFalseByTemplateId,
   getSampleTemplateList,
-  getSampleTemplateInfo
+  getSampleTemplateInfo,
+  setAllTemplatesInRedis,
+  setTemplatesInRedisForWabaId
 }

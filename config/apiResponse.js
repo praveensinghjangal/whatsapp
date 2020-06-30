@@ -210,5 +210,45 @@ module.exports = {
     status_code: 406,
     code: 3025,
     message: 'Fail to redirect payload'
+  },
+  TEMPLATE_ID_NOT_EXISTS: {
+    status_code: 400,
+    code: 3026,
+    message: 'TemplateId does not exist for this waba number'
+  },
+  COMPONENTS_COUNT_MISMATCH: {
+    status_code: 400,
+    code: 3027,
+    message: 'Header,footer and body should appear in component only once'
+  },
+  HEADER_PARAM_MISMATCH: {
+    status_code: 400,
+    code: 3030,
+    message: 'Parameters provided in request and parameters required by template hedaer does not match'
+  },
+  BODY_PARAM_MISMATCH: {
+    status_code: 400,
+    code: 3028,
+    message: 'Parameters provided in request and parameters required by template body does not match'
+  },
+  FOOTER_PARAM_MISMATCH: {
+    status_code: 400,
+    code: 3029,
+    message: 'Parameters provided in request and parameters required by template footer does not match'
+  },
+  TEMPLATE_VALID: {
+    status_code: 200,
+    code: 2055,
+    message: 'Template Valid'
+  },
+  WABA_NO_VALID: {
+    status_code: 200,
+    code: 2056,
+    message: 'WABA number valid'
+  },
+  WABA_NO_INVALID: {
+    status_code: 400,
+    code: 3031,
+    message: 'Provided WABA number is invalid'
   }
 }
