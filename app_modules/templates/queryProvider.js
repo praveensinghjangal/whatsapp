@@ -193,15 +193,19 @@ const setIsActiveFalseByTemplateId = () => {
 }
 
 const setAllTemplatesInRedis = () => {
-  return `select message_template_id , header_text ,body_text , footer_text
+  return `select mt.message_template_id , mt.header_text ,mt.body_text ,
+  mt.footer_text,wi.phone_code || wi.phone_number as phone_number
   from message_template mt
-  where is_active = true`
+  join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
+  where mt.is_active = true`
 }
 
 const setTemplatesInRedisForWabaId = () => {
-  return `select message_template_id , header_text ,body_text , footer_text
+  return `select mt.message_template_id , mt.header_text ,mt.body_text ,
+  mt.footer_text,wi.phone_code || wi.phone_number as phone_number
   from message_template mt
-  where is_active = true and waba_information_id = $1`
+  join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
+  where mt.is_active = true and wi.waba_information_id = $1`
 }
 
 module.exports = {
