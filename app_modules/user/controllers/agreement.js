@@ -62,7 +62,7 @@ const savFileDataInDataBase = (userId, fileName, filePath) => {
 const uploadAgreement = (req, res) => {
   upload(req, res, function (err, data) {
     if (err) {
-      __logger.err('file upload API error', err)
+      __logger.error('file upload API error', err)
       return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
     }
     if (!req.files || (req.files && !req.files[0])) {
@@ -72,7 +72,7 @@ const uploadAgreement = (req, res) => {
       savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path)
         .then(data => res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { } })))
         .catch(err => {
-          __logger.err('file upload API error', err)
+          __logger.error('file upload API error', err)
           res.send(__util.send(res, { type: err.type, err: err.err }))
         })
     }

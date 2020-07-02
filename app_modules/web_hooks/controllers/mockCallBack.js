@@ -1,4 +1,5 @@
 const __config = require('../../../config')
+const __constants = require('../../../config/constants')
 const request = require('request')
 
 const controller = (req, res) => {
@@ -18,7 +19,7 @@ const controller = (req, res) => {
     })
   })
 
-  const url = __config.base_url + '/helowhatsapp/api/chat/v1/messages'
+  const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   // __logger.info('Url>>>>>>>>>>>>>>>>>>>>>>>>', typeof url)
   console.log('..........................', inputData)
   const options = {

@@ -153,9 +153,12 @@ const MQ = {
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5
 }
-
 const OUTGOING_MESSAGE_RETRY = {
   tyntec: 5
+}
+
+const INTERNAL_END_POINTS = {
+  sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages'
 }
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
@@ -183,3 +186,4 @@ module.exports.FREE_PLAN_ID = FREE_PLAN_ID
 module.exports.MQ = MQ
 module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
 module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
+module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
