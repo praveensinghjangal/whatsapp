@@ -1,0 +1,1554 @@
+swagger: "2.0"
+info:
+  description: "Helo Whatsapp (internal) API documentation (v1.0)"
+  version: "1.0.0"    
+  title: "Helo Whatsapp             "
+  termsOfService: ""
+  contact:
+    name: "vivaconnect support"
+    email: "support@vivaconnect.co"
+host: "localhost:3000"
+basePath: "/helowhatsapp/api"
+tags:
+- name: "message"
+  description: "API's to send bulk messages to end user"
+- name: "accountProfile"
+  description: "API's related to account information of registered user"
+- name: "businessBillingProfile"
+  description: "API's related to billing information of registered user"
+- name: "verification"
+  description: "email and sms verification of registered user"
+- name: "agreement"
+  description: "API's related to agreement for using vivaconnect helo-whatsapp platform services"
+- name: "users"
+  description: "API's related to login and registration"
+- name: "web-hooks"
+  description: "Web hook API's provided to our vendors to send incoming messages"
+- name: "places"
+  description: "API's related to country ,state, city details"
+- name: "WABA"
+  description: "API's related to whatsapp business account (WABA) information of registered user"
+- name: "templates"
+  description: "API's related to whatsapp templates"
+schemes:
+- "http"
+paths:
+  "/chat/v1/messages":
+    post:
+      summary: send
+      tags:
+      - message
+      operationId: send
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          example:
+          - to: '919860245659'
+            channels:
+            - whatsapp
+            whatsapp:
+              from: '918080800808'
+              contentType: template
+              template:
+                templateId: opt_1
+                language:
+                  policy: deterministic
+                  code: hi
+                components:
+                - type: body
+                  parameters:
+                  - type: text
+                    text: VivaConnect
+                  - type: text
+                    text: '007'
+                  - type: text
+                    text: '2022'
+          type: array
+          items:
+            "$ref": "#/definitions/sendrequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/chat/v1/messages/whatsapp/excel":
+    post:
+      description: API to send bulk message using excel
+      summary: whatsapp excel send message
+      tags:
+      - message
+      operationId: whatsappexcelsendmessage
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/x-www-form-urlencoded
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: messagefile
+        in: formData
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/account":
+    put:
+      summary: updateAccountInfo
+      tags:
+      - accountProfile
+      operationId: updateAccountInfo
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/updateAccountInfoRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    get:
+      summary: getAccountInfo
+      tags:
+      - accountProfile
+      operationId: getAccountInfo
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/accountType":
+    get:
+      summary: accountType - dropdown
+      tags:
+      - accountProfile
+      operationId: accountType-dropdown
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/billing":
+    post:
+      summary: addBillingData
+      tags:
+      - businessBillingProfile
+      operationId: addBillingData
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/addBillingDataRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    get:
+      summary: getBillingData
+      tags:
+      - businessBillingProfile
+      operationId: getBillingData
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/verification/email":
+    post:
+      summary: sendVerificationCodeByEmail
+      tags:
+      - verification
+      operationId: sendVerificationCodeByEmail
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    patch:
+      summary: validateEmailCode
+      tags:
+      - verification
+      operationId: validateEmailCode
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/validateEmailCodeRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/verification/sms":
+    post:
+      summary: sendVerificationCodeBySms
+      tags:
+      - verification
+      operationId: sendVerificationCodeBySms
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    patch:
+      summary: validateSmsCode
+      tags:
+      - verification
+      operationId: validateSmsCode
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/validateSmsCodeRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/agreement":
+    post:
+      summary: upload agreement
+      tags:
+      - agreement
+      operationId: uploadagreement
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/x-www-form-urlencoded
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: agreement
+        in: formData
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    get:
+      summary: download signed agreement
+      tags:
+      - agreement
+      operationId: downloadsignedagreement
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/agreement/generate":
+    get:
+      summary: generate agreement
+      tags:
+      - agreement
+      operationId: generateagreement
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/users/auth/login":
+    post:
+      summary: auth/login
+      tags:
+      - users
+      operationId: auth/login
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/auth~1loginrequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  "/users/signUp":
+    post:
+      summary: signUp
+      tags:
+      - users
+      operationId: signUp
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/signUpRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  "/users/auth/google":
+    get:
+      summary: auth/google
+      tags:
+      - users
+      operationId: auth/google
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  "/users/auth/facebook":
+    get:
+      summary: auth/facebook
+      tags:
+      - users
+      operationId: auth/facebook
+      deprecated: false
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  "/web-hooks/sinch/queue/5ebe781115b0fbc7bd5db58c":
+    post:
+      summary: sinch/sendDataToQueue
+      tags:
+      - web-hooks
+      operationId: sinch/sendDataToQueue
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/sinch~1sendDataToQueueRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  "/places/states/22/cities":
+    get:
+      description: This API will return list of cities based on state ID passed in
+        req url
+      summary: get cities by state ID
+      tags:
+      - places
+      operationId: getcitiesbystateID
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/places/countries/101/states":
+    get:
+      description: This API returns list of states based on country id passed in request
+        url
+      summary: Get states list by country ID
+      tags:
+      - places
+      operationId: GetstateslistbycountryID
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/places/countries":
+    get:
+      description: This API returns list of countries
+      summary: get countries list
+      tags:
+      - places
+      operationId: getcountrieslist
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/business/categories":
+    get:
+      description: Getss dropdown of business category
+      summary: business categories
+      tags:
+      - WABA
+      operationId: businesscategories
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/business/profile":
+    get:
+      description: Gets business profile data
+      summary: get business profile
+      tags:
+      - WABA
+      operationId: getbusinessprofile
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    post:
+      description: This api adds or updates business profile of waba
+      summary: add / update business profile
+      tags:
+      - WABA
+      operationId: add/updatebusinessprofile
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/add~1updatebusinessprofilerequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/business/profile/accessInformation":
+    post:
+      description: this api is used to add and update business access info
+      summary: add update business profilr access Information
+      tags:
+      - WABA
+      operationId: addupdatebusinessprofilraccessInformation
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/addupdatebusinessprofilraccessInformationRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/business/profile/markManagerVerified":
+    post:
+      summary: mark manager verified
+      tags:
+      - WABA
+      operationId: markmanagerverified
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/markmanagerverifiedrequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/business/verification/phoneNumber":
+    post:
+      description: send verification code to verify waba number by sms or voice channel
+      summary: send verification code for business number
+      tags:
+      - WABA
+      operationId: sendverificationcodeforbusinessnumber
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: verificationChannel
+        in: query
+        required: true
+        type: string
+        description: ''
+      - name: Content-Type
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    patch:
+      description: API to verify otp sent to user for business number verififcation
+      summary: verifiy code for business number
+      tags:
+      - WABA
+      operationId: verifiycodeforbusinessnumber
+      deprecated: false
+      produces:
+      - application/json
+      consumes:
+      - application/json
+      parameters:
+      - name: Content-Type
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/verifiycodeforbusinessnumberrequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates":
+    get:
+      description: this api returns list of templates based on filters
+      summary: Get template list
+      tags:
+      - templates
+      operationId: Gettemplatelist
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+    post:
+      description: |-
+        API to add and update template
+        to add template do not pass templateID to update template pass template ID along with parameters to update
+      summary: Add update template
+      tags:
+      - templates
+      operationId: Addupdatetemplate
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      - name: Body
+        in: body
+        required: true
+        description: ''
+        schema:
+          "$ref": "#/definitions/AddupdatetemplateRequest"
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/mt03":
+    get:
+      summary: Get template Info
+      tags:
+      - templates
+      operationId: GettemplateInfo
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/languages":
+    get:
+      description: API for language dropdown
+      summary: template languages dropdown
+      tags:
+      - templates
+      operationId: templatelanguagesdropdown
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/types":
+    get:
+      summary: template types dropdown
+      tags:
+      - templates
+      operationId: templatetypesdropdown
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/categories":
+    get:
+      summary: templates categories dropdown
+      tags:
+      - templates
+      operationId: templatescategoriesdropdown
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/sample":
+    get:
+      description: |-
+        accepts template name search and status id search
+        remove the query param to get all templates
+      summary: get sample templates
+      tags:
+      - templates
+      operationId: getsampletemplates
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: templateName
+        in: query
+        required: true
+        type: string
+        description: ''
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/sample/1be3ae85-a3a6-4684-b575-114ed787a468":
+    get:
+      description: get info od a sample template
+      summary: get sample templates info
+      tags:
+      - templates
+      operationId: getsampletemplatesinfo
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/buttonType":
+    get:
+      summary: get buttonType
+      tags:
+      - templates
+      operationId: getbuttonType
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+  "/templates/headerType":
+    get:
+      summary: get header Type
+      tags:
+      - templates
+      operationId: getheaderType
+      deprecated: false
+      produces:
+      - application/json
+      parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: ''
+      responses:
+        '200':
+          description: ''
+          headers: {}
+      security: []
+definitions:
+  sendrequest:
+    title: sendrequest
+    example:
+      to: '919860245659'
+      channels:
+      - whatsapp
+      whatsapp:
+        from: '918080800808'
+        contentType: template
+        template:
+          templateId: opt_1
+          language:
+            policy: deterministic
+            code: hi
+          components:
+          - type: body
+            parameters:
+            - type: text
+              text: VivaConnect
+            - type: text
+              text: '007'
+            - type: text
+              text: '2022'
+    type: object
+    properties:
+      to:
+        type: string
+      channels:
+        type: array
+        items:
+          type: string
+      whatsapp:
+        "$ref": "#/definitions/Whatsapp"
+    required:
+    - to
+    - channels
+    - whatsapp
+  Whatsapp:
+    title: Whatsapp
+    example:
+      from: '918080800808'
+      contentType: template
+      template:
+        templateId: opt_1
+        language:
+          policy: deterministic
+          code: hi
+        components:
+        - type: body
+          parameters:
+          - type: text
+            text: VivaConnect
+          - type: text
+            text: '007'
+          - type: text
+            text: '2022'
+    type: object
+    properties:
+      from:
+        type: string
+      contentType:
+        type: string
+      template:
+        "$ref": "#/definitions/Template"
+    required:
+    - from
+    - contentType
+    - template
+  Template:
+    title: Template
+    example:
+      templateId: opt_1
+      language:
+        policy: deterministic
+        code: hi
+      components:
+      - type: body
+        parameters:
+        - type: text
+          text: VivaConnect
+        - type: text
+          text: '007'
+        - type: text
+          text: '2022'
+    type: object
+    properties:
+      templateId:
+        type: string
+      language:
+        "$ref": "#/definitions/Language"
+      components:
+        type: array
+        items:
+          "$ref": "#/definitions/Component"
+    required:
+    - templateId
+    - language
+    - components
+  Language:
+    title: Language
+    example:
+      policy: deterministic
+      code: hi
+    type: object
+    properties:
+      policy:
+        type: string
+      code:
+        type: string
+    required:
+    - policy
+    - code
+  Component:
+    title: Component
+    example:
+      type: body
+      parameters:
+      - type: text
+        text: VivaConnect
+      - type: text
+        text: '007'
+      - type: text
+        text: '2022'
+    type: object
+    properties:
+      type:
+        type: string
+      parameters:
+        type: array
+        items:
+          "$ref": "#/definitions/Parameter"
+    required:
+    - type
+    - parameters
+  Parameter:
+    title: Parameter
+    example:
+      type: text
+      text: VivaConnect
+    type: object
+    properties:
+      type:
+        type: string
+      text:
+        type: string
+    required:
+    - type
+    - text
+  updateAccountInfoRequest:
+    title: updateAccountInfoRequest
+    example:
+      city: Test123444
+      state: Test
+      country: Test
+      addressLine1: Test
+      addressLine2: Test
+      contactNumber: '1234567890'
+      phoneCode: "+91"
+      postalCode: '440222'
+    type: object
+    properties:
+      city:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      contactNumber:
+        type: string
+      phoneCode:
+        type: string
+      postalCode:
+        type: string
+    required:
+    - city
+    - state
+    - country
+    - addressLine1
+    - addressLine2
+    - contactNumber
+    - phoneCode
+    - postalCode
+  addBillingDataRequest:
+    title: addBillingDataRequest
+    example:
+      city: llol
+      state: Test
+      country: Test
+      addressLine1: Test
+      addressLine2: Test
+      contactNumber: 222222222aaaaaa2
+      phoneCode: "+91"
+      postalCode: '44033'
+      userId: '158947372622817'
+      GstOrTaxNo: asfsdf
+      businessName: Car Maker
+      panCard: sdf2345678
+    type: object
+    properties:
+      city:
+        type: string
+      state:
+        type: string
+      country:
+        type: string
+      addressLine1:
+        type: string
+      addressLine2:
+        type: string
+      contactNumber:
+        type: string
+      phoneCode:
+        type: string
+      postalCode:
+        type: string
+      userId:
+        type: string
+      GstOrTaxNo:
+        type: string
+      businessName:
+        type: string
+      panCard:
+        type: string
+    required:
+    - city
+    - state
+    - country
+    - addressLine1
+    - addressLine2
+    - contactNumber
+    - phoneCode
+    - postalCode
+    - userId
+    - GstOrTaxNo
+    - businessName
+    - panCard
+  validateEmailCodeRequest:
+    title: validateEmailCodeRequest
+    example:
+      code: 5363
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+    required:
+    - code
+  validateSmsCodeRequest:
+    title: validateSmsCodeRequest
+    example:
+      code: 3167
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+    required:
+    - code
+  auth/loginrequest:
+    title: auth/loginrequest
+    example:
+      email: abc@gmail.com
+      password: '123'
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+  signUpRequest:
+    title: signUpRequest
+    example:
+      email: ghij@gmail.com
+      password: '123'
+      tncAccepted: true
+    type: object
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      tncAccepted:
+        type: boolean
+    required:
+    - email
+    - password
+    - tncAccepted
+  sinch/sendDataToQueueRequest:
+    title: sinch/sendDataToQueueRequest
+    example:
+      type: whatsapp
+      contacts:
+      - profile:
+          name: John Smith
+        wa_id: '0732001122'
+      notifications:
+      - from: '0732001122'
+        to: sinchbot
+        message_id: 01DPNXZ0WCF9XD19MH84XD0P62
+        message:
+          type: text
+          body: Hello bot I want to know something!
+    type: object
+    properties:
+      type:
+        type: string
+      contacts:
+        type: array
+        items:
+          "$ref": "#/definitions/Contact"
+      notifications:
+        type: array
+        items:
+          "$ref": "#/definitions/Notification"
+    required:
+    - type
+    - contacts
+    - notifications
+  Contact:
+    title: Contact
+    example:
+      profile:
+        name: John Smith
+      wa_id: '0732001122'
+    type: object
+    properties:
+      profile:
+        "$ref": "#/definitions/Profile"
+      wa_id:
+        type: string
+    required:
+    - profile
+    - wa_id
+  Profile:
+    title: Profile
+    example:
+      name: John Smith
+    type: object
+    properties:
+      name:
+        type: string
+    required:
+    - name
+  Notification:
+    title: Notification
+    example:
+      from: '0732001122'
+      to: sinchbot
+      message_id: 01DPNXZ0WCF9XD19MH84XD0P62
+      message:
+        type: text
+        body: Hello bot I want to know something!
+    type: object
+    properties:
+      from:
+        type: string
+      to:
+        type: string
+      message_id:
+        type: string
+      message:
+        "$ref": "#/definitions/Message"
+    required:
+    - from
+    - to
+    - message_id
+    - message
+  Message:
+    title: Message
+    example:
+      type: text
+      body: Hello bot I want to know something!
+    type: object
+    properties:
+      type:
+        type: string
+      body:
+        type: string
+    required:
+    - type
+    - body
+  add/updatebusinessprofilerequest:
+    title: add/updatebusinessprofilerequest
+    example:
+      businessName: Danny business updated
+      whatsappStatus: available up-date
+      description: available 24/7
+      address: a
+      country: IN
+      city: mumbai
+      state: maharashtra
+      postalCode: '400009'
+      email: a@b.com
+      businessCategoryId: bda36704-cde5-41c9-b039-e3841fa9229f
+      profilePhotoUrl: www.google.comaaaaaaaaaaaaaaaaaaa
+    type: object
+    properties:
+      businessName:
+        type: string
+      whatsappStatus:
+        type: string
+      description:
+        type: string
+      address:
+        type: string
+      country:
+        type: string
+      city:
+        type: string
+      state:
+        type: string
+      postalCode:
+        type: string
+      email:
+        type: string
+      businessCategoryId:
+        type: string
+      profilePhotoUrl:
+        type: string
+    required:
+    - businessName
+    - whatsappStatus
+    - description
+    - address
+    - country
+    - city
+    - state
+    - postalCode
+    - email
+    - businessCategoryId
+    - profilePhotoUrl
+  addupdatebusinessprofilraccessInformationRequest:
+    title: addupdatebusinessprofilraccessInformationRequest
+    example:
+      facebookManagerId: asfsf
+      phoneCode: "+91"
+      phoneNumber: '123456'
+      canReceiveSms: true
+      canReceiveVoiceCall: false
+      associatedWithIvr: false
+    type: object
+    properties:
+      facebookManagerId:
+        type: string
+      phoneCode:
+        type: string
+      phoneNumber:
+        type: string
+      canReceiveSms:
+        type: boolean
+      canReceiveVoiceCall:
+        type: boolean
+      associatedWithIvr:
+        type: boolean
+    required:
+    - facebookManagerId
+    - phoneCode
+    - phoneNumber
+    - canReceiveSms
+    - canReceiveVoiceCall
+    - associatedWithIvr
+  markmanagerverifiedrequest:
+    title: markmanagerverifiedrequest
+    example:
+      businessManagerVerified: true
+    type: object
+    properties:
+      businessManagerVerified:
+        type: boolean
+    required:
+    - businessManagerVerified
+  verifiycodeforbusinessnumberrequest:
+    title: verifiycodeforbusinessnumberrequest
+    example:
+      code: 5976
+    type: object
+    properties:
+      code:
+        type: integer
+        format: int32
+    required:
+    - code
+  AddupdatetemplateRequest:
+    title: AddupdatetemplateRequest
+    example:
+      messageTemplateId: 9bf57a21-a05c-47f4-82df-9da15c03deb9
+      templateName: 3rd template
+      type: media message templAte
+      messageTemplateCategoryId: b8203a31-e439-4ea4-a270-bd211317d3ff
+      messageTemplateStatusId: c71a8387-80e0-468b-9ee3-abb5ec328176
+      messageTemplateLanguageId: 57aa7635-5717-4397-8eb6-4799ef3bec05
+      bodyText: wassup bro
+      headerText: ssup
+      footerText: foot
+      mediaType: pdf
+      secondLanguageRequired: false
+      secondMessageTemplateLanguageId: cde192b7-c60f-4d2d-8573-dd5af7c9379b
+      secondlanguageBodyText: hii
+      headerType: Video
+      buttonType: Quick Reply
+      buttonData:
+        quickReply:
+        - '1'
+        - '2'
+        - '3'
+        phoneButtonText: call us
+        phoneNumber: '9876543210'
+        websiteButtontext: oursite.com
+        webAddress: www.google.com
+    type: object
+    properties:
+      messageTemplateId:
+        type: string
+      templateName:
+        type: string
+      type:
+        type: string
+      messageTemplateCategoryId:
+        type: string
+      messageTemplateStatusId:
+        type: string
+      messageTemplateLanguageId:
+        type: string
+      bodyText:
+        type: string
+      headerText:
+        type: string
+      footerText:
+        type: string
+      mediaType:
+        type: string
+      secondLanguageRequired:
+        type: boolean
+      secondMessageTemplateLanguageId:
+        type: string
+      secondlanguageBodyText:
+        type: string
+      headerType:
+        type: string
+      buttonType:
+        type: string
+      buttonData:
+        "$ref": "#/definitions/ButtonData"
+    required:
+    - messageTemplateId
+    - templateName
+    - type
+    - messageTemplateCategoryId
+    - messageTemplateStatusId
+    - messageTemplateLanguageId
+    - bodyText
+    - headerText
+    - footerText
+    - mediaType
+    - secondLanguageRequired
+    - secondMessageTemplateLanguageId
+    - secondlanguageBodyText
+    - headerType
+    - buttonType
+    - buttonData
+  ButtonData:
+    title: ButtonData
+    example:
+      quickReply:
+      - '1'
+      - '2'
+      - '3'
+      phoneButtonText: call us
+      phoneNumber: '9876543210'
+      websiteButtontext: oursite.com
+      webAddress: www.google.com
+    type: object
+    properties:
+      quickReply:
+        type: array
+        items:
+          type: string
+      phoneButtonText:
+        type: string
+      phoneNumber:
+        type: string
+      websiteButtontext:
+        type: string
+      webAddress:
+        type: string
+    required:
+    - quickReply
+    - phoneButtonText
+    - phoneNumber
+    - websiteButtontext
+    - webAddress
+tags:
+- name: message
+- name: accountProfile
+- name: businessBillingProfile
+- name: verification
+- name: agreement
+- name: users
+- name: web-hooks
+- name: places
+- name: WABA
+- name: templates

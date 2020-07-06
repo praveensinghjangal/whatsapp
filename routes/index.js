@@ -42,5 +42,5 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/templates', templates)
   app.use(apiUrlPrefix + '/plans', plans)
 
-  require('../lib/swagger')(app, '/' + __config.api_prefix + __config.authConfig.apiAuthAlias) // todo handle '/' add in prefix after git access
+  require('../lib/swagger')(app, '/' + __config.api_prefix + '/api')
 }
