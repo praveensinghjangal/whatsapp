@@ -207,7 +207,7 @@ const upload = multer({
 
 const controller = (req, res) => {
   __logger.info('sendMessageToQueueExcel :: API to send message called', req.userConfig)
-  if (!req.userConfig.tokenKey) {
+  if (!req.userConfig || !req.userConfig.tokenKey) {
     return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} }))
   }
   upload(req, res, function (err, data) {

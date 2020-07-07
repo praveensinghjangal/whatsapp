@@ -1,41 +1,46 @@
-swagger: "2.0"
+swagger: '2.0'
 info:
-  description: "Helo Whatsapp (internal) API documentation (v1.0)"
-  version: "1.0.0"    
-  title: "Helo Whatsapp             "
-  termsOfService: ""
+  description: Helo Whatsapp API documentation
+  version: 1.0.0
+  title: 'Helo Whatsapp             '
+  termsOfService: ''
   contact:
-    name: "vivaconnect support"
-    email: "support@vivaconnect.co"
-host: "localhost:3000"
+    name: vivaconnect support
+    email: support@vivaconnect.co
+host: localhost:3000
 basePath: "/helowhatsapp/api"
 tags:
-- name: "message"
-  description: "API's to send bulk messages to end user"
-- name: "accountProfile"
-  description: "API's related to account information of registered user"
-- name: "businessBillingProfile"
-  description: "API's related to billing information of registered user"
-- name: "verification"
-  description: "email and sms verification of registered user"
-- name: "agreement"
-  description: "API's related to agreement for using vivaconnect helo-whatsapp platform services"
-- name: "users"
-  description: "API's related to login and registration"
-- name: "web-hooks"
-  description: "Web hook API's provided to our vendors to send incoming messages"
-- name: "places"
-  description: "API's related to country ,state, city details"
-- name: "WABA"
-  description: "API's related to whatsapp business account (WABA) information of registered user"
-- name: "templates"
-  description: "API's related to whatsapp templates"
+- name: message
+  description: API's to send bulk messages to end user
+- name: accountProfile
+  description: API's related to account information of registered user
+- name: businessBillingProfile
+  description: API's related to billing information of registered user
+- name: verification
+  description: email and sms verification of registered user
+- name: agreement
+  description: API's related to agreement for using vivaconnect helo-whatsapp platform
+    services
+- name: users
+  description: API's related to login and registration
+- name: web-hooks
+  description: Web hook API's provided to our vendors to send incoming messages
+- name: places
+  description: API's related to country ,state, city details
+- name: WABA
+  description: API's related to whatsapp business account (WABA) information of registered
+    user
+- name: templates
+  description: API's related to whatsapp templates
 schemes:
-- "http"
+- http
 paths:
   "/chat/v1/messages":
     post:
-      summary: send
+      description: |-
+        This API is used to send mesages using a channel.
+         This API can send single as well as bulk messsages.
+      summary: This API is used to send mesages using a channel
       tags:
       - message
       operationId: send
@@ -47,45 +52,146 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: Provided by vivaconnect upon signup
       - name: Body
         in: body
         required: true
-        description: ''
+        description: Accepts Array of json to send bulk message
         schema:
           example:
-          - to: '919860245659'
+          - to: '9112345'
             channels:
             - whatsapp
             whatsapp:
-              from: '918080800808'
+              from: '9167890'
+              contentType: location
+              location:
+                longitude: 7.4954884
+                latitude: 51.5005765
+          - to: '9112345'
+            channels:
+            - whatsapp
+            whatsapp:
+              from: '9167890'
               contentType: template
               template:
-                templateId: opt_1
+                templateId: welcome
                 language:
                   policy: deterministic
-                  code: hi
+                  code: en
                 components:
+                - type: header
+                  parameters:
+                  - type: text
+                    text: Hi!
+                  - type: media
+                    media:
+                      type: document
+                      url: http://www.africau.edu/images/default/sample.pdf
                 - type: body
                   parameters:
                   - type: text
-                    text: VivaConnect
+                    text: Hi!
+                  - type: media
+                    media:
+                      type: document
+                      url: http://www.africau.edu/images/default/sample.pdf
+                - type: footer
+                  parameters:
                   - type: text
-                    text: '007'
-                  - type: text
-                    text: '2022'
+                    text: Hi!
+                  - type: media
+                    media:
+                      type: document
+                      url: http://www.africau.edu/images/default/sample.pdf
+          - to: '9112345'
+            channels:
+            - whatsapp
+            whatsapp:
+              from: '9167890'
+              contentType: media
+              media:
+                type: image
+                url: https://i.ibb.co/kXgjphY/925869358s.png
+                caption: viva connect
+          - to: '9112345'
+            channels:
+            - whatsapp
+            whatsapp:
+              from: '9167890'
+              contentType: text
+              text: hello
           type: array
           items:
             "$ref": "#/definitions/sendrequest"
       responses:
         '200':
-          description: ''
+          description: Returns message ID
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2002
+              msg: Request Accepted
+              data:
+              - messageId: 9fcb694e-312f-4945-bc62-008b7a8b376f
+                acceptedAt: '2020-07-07T08:33:32.537Z'
+              - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
+                acceptedAt: '2020-07-07T08:33:32.648Z'
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/chat/v1/messages/whatsapp/excel":
     post:
-      description: API to send bulk message using excel
-      summary: whatsapp excel send message
+      description: API to send bulk template message using excel
+      summary: whatsapp excel send template message
       tags:
       - message
       operationId: whatsappexcelsendmessage
@@ -94,25 +200,87 @@ paths:
       - application/json
       consumes:
       - application/x-www-form-urlencoded
+      - multipart/form-data
       parameters:
       - name: Authorization
         in: header
         required: true
         type: string
-        description: ''
+        description: User can obtain auth token by using login API
       - name: messagefile
         in: formData
         required: true
-        type: string
-        description: ''
+        type: file
+        description: excel file with template parameters download sample file using
+          this link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing
       responses:
         '200':
-          description: ''
+          description: Returns message ID
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2002
+              msg: Request Accepted
+              data:
+              - messageId: 9fcb694e-312f-4945-bc62-008b7a8b376f
+                acceptedAt: '2020-07-07T08:33:32.537Z'
+              - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
+                acceptedAt: '2020-07-07T08:33:32.648Z'
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/account":
     put:
-      summary: updateAccountInfo
+      description: API is used for adding and updating user account info
+      summary: add and update user account details
       tags:
       - accountProfile
       operationId: updateAccountInfo
@@ -124,7 +292,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -133,11 +301,68 @@ paths:
           "$ref": "#/definitions/updateAccountInfoRequest"
       responses:
         '200':
-          description: ''
+          description: Returns Status if account info is completed
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data:
+                complete: true
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
     get:
-      summary: getAccountInfo
+      summary: gets account info
+      description: returns account info of user account and completion staus
       tags:
       - accountProfile
       operationId: getAccountInfo
@@ -149,15 +374,68 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: Returns account info and its completition status
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data:
+                accountId: '158944412352512'
+                accountManagerName: abc@gmail.com
+                tokenKey: 
+                email: abc@gmail.com
+                accountType: Prepaid
+                city: '6462'
+                state: '180'
+                country: '6'
+                addressLine1: VIVAPLEX, PLOT NO C 7
+                addressLine2: MIDC ROAD, ANDHERI EAST
+                contactNumber: '90998789999'
+                phoneCode: India
+                postalCode: '400093'
+                firstName: abc
+                lastName: def
+                complete: true
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/accountType":
     get:
-      summary: accountType - dropdown
+      description: APi which returns dropdown of all account type
+      summary: dropdown of all account type
       tags:
       - accountProfile
       operationId: accountType-dropdown
@@ -169,15 +447,58 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: Returns dropdown of all account type
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2000
+              msg: Success
+              data:
+              - user_account_type_id: d9718ee1-50a1-4826-b0fa-ad1394308d59
+                type_name: Prepaid
+              - user_account_type_id: eb004696-bcad-4998-adbb-d25fbbd3ad68
+                type_name: Postpaid
+              - user_account_type_id: 570af199-5b7c-4e7f-bc9f-e298d65b6273
+                type_name: Semi Postpaid
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/billing":
     post:
-      summary: addBillingData
+      summary: add or update billing details
+      description: add or update billing details
       tags:
       - businessBillingProfile
       operationId: addBillingData
@@ -189,20 +510,77 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
-        description: ''
+        description: API Request Body
         schema:
           "$ref": "#/definitions/addBillingDataRequest"
       responses:
         '200':
-          description: ''
+          description: Returns Status if billing info is completed
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data:
+                complete: true
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
     get:
-      summary: getBillingData
+      summary: get billing details
+      description: gets billing details
       tags:
       - businessBillingProfile
       operationId: getBillingData
@@ -214,15 +592,66 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: Returns billing info and its completition status
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data:
+                billingName: Helo-Whatsapp
+                city: Mumbai
+                state: Maharashtra
+                country: IN
+                addressLine1: Test1
+                addressLine2: Test2
+                contactNumber: '1234567890'
+                phoneCode: "+91"
+                postalCode: '400001'
+                panCard: ABCDE1234F
+                gstOrTaxNo: ABCDE1234F
+                planActivated: Free
+                accoutCreatedOn: 03/06/2020
+                complete: true
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/verification/email":
     post:
-      summary: sendVerificationCodeByEmail
+      summary: API to send verification code by email
+      description: API to send verification code by email
       tags:
       - verification
       operationId: sendVerificationCodeByEmail
@@ -234,14 +663,55 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: success or already verified response
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+            - code: 2001
+              msg: Please check your registered email for verification code
+              data: {}
+            - code: 3015
+              msg: Email already verified for user
+              data: 
+              error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
     patch:
-      summary: validateEmailCode
+      summary: validate code sent on email
+      description: validate email code sent on registered email
       tags:
       - verification
       operationId: validateEmailCode
@@ -253,7 +723,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -262,12 +732,72 @@ paths:
           "$ref": "#/definitions/validateEmailCodeRequest"
       responses:
         '200':
-          description: ''
+          description: verification success message
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2003
+              msg: Email address verified
+              data: {}
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            example:
+            - Unauthorized
+            - code: 3017
+              msg: Invalid verification code
+              data: 
+              error: {}
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/verification/sms":
     post:
-      summary: sendVerificationCodeBySms
+      summary: API to send verification code by sms
+      description: API to send verification code by sms
       tags:
       - verification
       operationId: sendVerificationCodeBySms
@@ -279,14 +809,55 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: success or already verified response
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+            - code: 2001
+              msg: Please check your registered phone number for verification code
+              data: {}
+            - code: 3016
+              msg: Phone number already verified for user
+              data: 
+              error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
     patch:
-      summary: validateSmsCode
+      summary: validate code sent on phone number
+      description: validate code sent on registered phone number
       tags:
       - verification
       operationId: validateSmsCode
@@ -298,7 +869,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -307,12 +878,72 @@ paths:
           "$ref": "#/definitions/validateSmsCodeRequest"
       responses:
         '200':
-          description: ''
+          description: verification success message
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2003
+              msg: Phone number verified
+              data: {}
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            example:
+            - Unauthorized
+            - code: 3017
+              msg: Invalid verification code
+              data: 
+              error: {}
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/agreement":
     post:
-      summary: upload agreement
+      summary: upload signed agreement
+      description: upload signed agreement
       tags:
       - agreement
       operationId: uploadagreement
@@ -321,24 +952,91 @@ paths:
       - application/json
       consumes:
       - application/x-www-form-urlencoded
+      - multipart/form-data
       parameters:
       - name: Authorization
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: agreement
         in: formData
         required: true
-        type: string
-        description: ''
+        type: file
+        description: Agreement in Pdf format. (download unsigned agreement using GET
+          /user/agreement/generate API)
       responses:
         '200':
-          description: ''
+          description: verification success message
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data: {}
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+            - code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+            - code: 4030
+              msg: Please provide a file
+              data: {}
+            - code: 4031
+              msg: Invalid file type
+              data: {}
+              error: File upload only supports the following filetypes - /pdf/
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
     get:
       summary: download signed agreement
+      description: |-
+        Download signed agreement
+        Latest uploaded document wil be download
       tags:
       - agreement
       operationId: downloadsignedagreement
@@ -350,11 +1048,37 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: A pdf file will be downloaded
+          schema:
+            type: file
+            format: pdf
+        '401':
+          description: Invalid token in header
           headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/agreement/generate":
     get:
@@ -370,15 +1094,42 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
-          description: ''
+          description: A pdf file will be downloaded
+          schema:
+            type: file
+            format: pdf
+        '401':
+          description: Invalid token in header
           headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
       security: []
   "/users/auth/login":
     post:
-      summary: auth/login
+      summary: login API
+      description: Login API for logging in and using another API's
       tags:
       - users
       operationId: auth/login
@@ -394,11 +1145,80 @@ paths:
           "$ref": "#/definitions/auth~1loginrequest"
       responses:
         '200':
-          description: ''
+          description: Returns auth token if credentials provided are correct
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data:
+                token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiIxNTg5ODg2ODA4MTQ5MTIifSwiaWF0IjoxNTk0MTI4NDQ5LCJleHAiOjE1OTQyMTQ4NDl9.A-1L6NxxayZi6Poxo7a3neNVjNjBXsHGiVBlmaol2eU
+                emailVerifiedStatus: true
+                phoneVerifiedStatus: true
+                tncAccepted: true
+                role: cc-agent
+        '400':
+          description: Returns invalid request error in error array
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: 
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
   "/users/signUp":
     post:
-      summary: signUp
+      summary: sign up / create account
+      description: API to sign up / create account with viva connect helo-whatsapp
       tags:
       - users
       operationId: signUp
@@ -409,44 +1229,70 @@ paths:
       - name: Body
         in: body
         required: true
-        description: ''
+        description: JSON Input
         schema:
           "$ref": "#/definitions/signUpRequest"
       responses:
         '200':
-          description: ''
+          description: Returns userId if user is created
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+            - code: 2000
+              msg: Success
+              data:
+                userId: e3157044-7cc4-4bc1-b510-ba63a3eb65d1
+            - code: 3008
+              msg: user already exists.
+              data: 
+        '400':
+          description: Returns invalid request error in error array
           headers: {}
-  "/users/auth/google":
-    get:
-      summary: auth/google
-      tags:
-      - users
-      operationId: auth/google
-      deprecated: false
-      produces:
-      - application/json
-      parameters: []
-      responses:
-        '200':
-          description: ''
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: 
+              error:
+              - invalid body error here
+        '500':
+          description: in case of some exceptional error
           headers: {}
-  "/users/auth/facebook":
-    get:
-      summary: auth/facebook
-      tags:
-      - users
-      operationId: auth/facebook
-      deprecated: false
-      produces:
-      - application/json
-      parameters: []
-      responses:
-        '200':
-          description: ''
-          headers: {}
-  "/web-hooks/sinch/queue/5ebe781115b0fbc7bd5db58c":
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+  "/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a":
     post:
-      summary: sinch/sendDataToQueue
+      summary: Web hook API for tytntec
+      description: Web hook API for tytntec to receive incoming messages and store
+        in queue
       tags:
       - web-hooks
       operationId: sinch/sendDataToQueue
@@ -459,14 +1305,46 @@ paths:
         required: true
         description: ''
         schema:
-          "$ref": "#/definitions/sinch~1sendDataToQueueRequest"
+          type: object
+          example:
+            key: accepts any json input and pushes to queue
       responses:
-        '200':
-          description: ''
+        '202':
+          description: Accepts input object and sends to queue
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2002
+              msg: Request Accepted
+              data: 
+        '500':
+          description: in case of some exceptional error
           headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
   "/places/states/22/cities":
     get:
-      description: This API will return list of cities based on state ID passed in
+      description: |-
+        This API will return list of cities based on state ID passed in
         req url
       summary: get cities by state ID
       tags:
@@ -480,7 +1358,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -488,7 +1366,8 @@ paths:
       security: []
   "/places/countries/101/states":
     get:
-      description: This API returns list of states based on country id passed in request
+      description: |-
+        This API returns list of states based on country id passed in request
         url
       summary: Get states list by country ID
       tags:
@@ -502,7 +1381,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -523,7 +1402,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -544,7 +1423,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -565,7 +1444,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -585,7 +1464,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -619,7 +1498,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -645,7 +1524,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -684,7 +1563,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -711,7 +1590,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -738,7 +1617,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -760,7 +1639,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       - name: Body
         in: body
         required: true
@@ -786,7 +1665,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -807,7 +1686,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -827,7 +1706,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -847,7 +1726,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -875,7 +1754,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -896,7 +1775,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -916,7 +1795,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -936,7 +1815,7 @@ paths:
         in: header
         required: true
         type: string
-        description: ''
+        description: user can obtain auth token by using login API
       responses:
         '200':
           description: ''
@@ -1094,16 +1973,22 @@ definitions:
   updateAccountInfoRequest:
     title: updateAccountInfoRequest
     example:
-      city: Test123444
-      state: Test
-      country: Test
-      addressLine1: Test
-      addressLine2: Test
+      firstName: user
+      lastName: viva
+      city: Mumbai
+      state: Maharashtra
+      country: IN
+      addressLine1: some street
+      addressLine2: some lane
       contactNumber: '1234567890'
       phoneCode: "+91"
-      postalCode: '440222'
+      postalCode: '400001'
     type: object
     properties:
+      firstName:
+        type: string
+      lastName:
+        type: string
       city:
         type: string
       state:
@@ -1120,30 +2005,20 @@ definitions:
         type: string
       postalCode:
         type: string
-    required:
-    - city
-    - state
-    - country
-    - addressLine1
-    - addressLine2
-    - contactNumber
-    - phoneCode
-    - postalCode
   addBillingDataRequest:
     title: addBillingDataRequest
     example:
-      city: llol
-      state: Test
-      country: Test
-      addressLine1: Test
-      addressLine2: Test
-      contactNumber: 222222222aaaaaa2
+      city: Mumbai
+      state: Maharashtra
+      country: IN
+      addressLine1: Test 1
+      addressLine2: Test 2
+      contactNumber: '1234567890'
       phoneCode: "+91"
-      postalCode: '44033'
-      userId: '158947372622817'
-      GstOrTaxNo: asfsdf
-      businessName: Car Maker
-      panCard: sdf2345678
+      postalCode: '400001'
+      gstOrTaxNo: ABCDE1234F
+      businessName: Helo-Whatsapp
+      panCard: ABCDE1234F
     type: object
     properties:
       city:
@@ -1162,31 +2037,16 @@ definitions:
         type: string
       postalCode:
         type: string
-      userId:
-        type: string
-      GstOrTaxNo:
+      gstOrTaxNo:
         type: string
       businessName:
         type: string
       panCard:
         type: string
-    required:
-    - city
-    - state
-    - country
-    - addressLine1
-    - addressLine2
-    - contactNumber
-    - phoneCode
-    - postalCode
-    - userId
-    - GstOrTaxNo
-    - businessName
-    - panCard
   validateEmailCodeRequest:
     title: validateEmailCodeRequest
     example:
-      code: 5363
+      code: 1234
     type: object
     properties:
       code:
@@ -1208,8 +2068,8 @@ definitions:
   auth/loginrequest:
     title: auth/loginrequest
     example:
-      email: abc@gmail.com
-      password: '123'
+      email: user@gmail.com
+      password: 123oneTwo#
     type: object
     properties:
       email:
@@ -1222,8 +2082,8 @@ definitions:
   signUpRequest:
     title: signUpRequest
     example:
-      email: ghij@gmail.com
-      password: '123'
+      email: usertwo@gmail.com
+      password: 123oneTw@3
       tncAccepted: true
     type: object
     properties:
@@ -1541,14 +2401,3 @@ definitions:
     - phoneNumber
     - websiteButtontext
     - webAddress
-tags:
-- name: message
-- name: accountProfile
-- name: businessBillingProfile
-- name: verification
-- name: agreement
-- name: users
-- name: web-hooks
-- name: places
-- name: WABA
-- name: templates
