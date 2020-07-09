@@ -31,7 +31,7 @@
         },
         {
             "name": "agreement",
-            "description": "API's related to agreement for using vivaconnect helo-whatsapp platform services"
+            "description": "API's related to agreement for using vivaconnect helo-whatsapp platform\nservices"
         },
         {
             "name": "users",
@@ -47,7 +47,7 @@
         },
         {
             "name": "WABA",
-            "description": "API's related to whatsapp business account (WABA) information of registered user"
+            "description": "API's related to whatsapp business account (WABA) information of registered\nuser"
         },
         {
             "name": "templates",
@@ -327,7 +327,7 @@
                         "in": "formData",
                         "required": true,
                         "type": "file",
-                        "description": "excel file with template parameters download sample file using this link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing"
+                        "description": "excel file with template parameters download sample file using\nthis link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing"
                     }
                 ],
                 "responses": {
@@ -1414,7 +1414,7 @@
                         "in": "formData",
                         "required": true,
                         "type": "file",
-                        "description": "Agreement in Pdf format. (download unsigned agreement using GET /user/agreement/generate API)"
+                        "description": "Agreement in Pdf format. (download unsigned agreement using GET\n/user/agreement/generate API)"
                     }
                 ],
                 "responses": {
@@ -1894,7 +1894,7 @@
         "/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a": {
             "post": {
                 "summary": "Web hook API for tytntec",
-                "description": "Web hook API for tytntec to receive incoming messages and store in queue",
+                "description": "Web hook API for tytntec to receive incoming messages and store\nin queue",
                 "tags": [
                     "web-hooks"
                 ],
@@ -1968,9 +1968,9 @@
                 }
             }
         },
-        "/places/states/22/cities": {
+        "/places/states/{stateId}/cities": {
             "get": {
-                "description": "This API will return list of cities based on state ID passed in\nreq url",
+                "description": "This API will return list of cities based on state ID passed in req url",
                 "summary": "get cities by state ID",
                 "tags": [
                     "places"
@@ -1987,20 +1987,95 @@
                         "required": true,
                         "type": "string",
                         "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "stateId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of state returned by /places/countries/states API"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all countries",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "id": "2474",
+                                        "name": "Achalpur",
+                                        "state_id": "22"
+                                    },
+                                    {
+                                        "id": "2475",
+                                        "name": "Aheri",
+                                        "state_id": "22"
+                                    },
+                                    {
+                                        "id": "2476",
+                                        "name": "Ahmadnagar Cantonment",
+                                        "state_id": "22"
+                                    },
+                                    "2880 MORE ..."
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
             }
         },
-        "/places/countries/101/states": {
+        "/places/countries/{countryId}/states": {
             "get": {
-                "description": "This API returns list of states based on country id passed in request\nurl",
+                "description": "This API returns list of states based on country id passed in request url",
                 "summary": "Get states list by country ID",
                 "tags": [
                     "places"
@@ -2017,12 +2092,82 @@
                         "required": true,
                         "type": "string",
                         "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "countryId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of country returned by /places/countries API"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all countries",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "id": "1",
+                                        "name": "Andaman and Nicobar Islands",
+                                        "country_id": "101"
+                                    },
+                                    {
+                                        "id": "2",
+                                        "name": "Andhra Pradesh",
+                                        "country_id": "101"
+                                    },
+                                    "39 MORE ..."
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2031,7 +2176,7 @@
         "/places/countries": {
             "get": {
                 "description": "This API returns list of countries",
-                "summary": "get countries list",
+                "summary": "Get countries list",
                 "tags": [
                     "places"
                 ],
@@ -2051,17 +2196,81 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all countries",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "id": "100",
+                                        "sortname": "IS",
+                                        "name": "Iceland",
+                                        "phonecode": "354"
+                                    },
+                                    {
+                                        "id": "101",
+                                        "sortname": "IN",
+                                        "name": "India",
+                                        "phonecode": "91"
+                                    },
+                                    "244 MORE ..."
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
-                },
-                "security": []
+                }
             }
         },
         "/business/categories": {
             "get": {
-                "description": "Getss dropdown of business category",
-                "summary": "business categories",
+                "description": "Gets list of business categories",
+                "summary": "Get business categories",
                 "tags": [
                     "WABA"
                 ],
@@ -2081,8 +2290,128 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all business categories",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "business_category_id": "860af85d-cbd3-4a16-92ec-05177fce7f59",
+                                        "category_name": "Automotive"
+                                    },
+                                    {
+                                        "business_category_id": "c54ad9f3-2b0f-4009-8020-74224a4b4d61",
+                                        "category_name": "Beauty, Spa and Salon"
+                                    },
+                                    {
+                                        "business_category_id": "e5b61cae-3b98-4006-85a4-8ca481b67530",
+                                        "category_name": "Clothing and Apparel"
+                                    },
+                                    {
+                                        "business_category_id": "5139294f-4c99-4b4c-a955-be13ef0a623c",
+                                        "category_name": "Education"
+                                    },
+                                    {
+                                        "business_category_id": "b82779e2-3f4f-46e6-813c-7e36481a7c9b",
+                                        "category_name": "Entertainment"
+                                    },
+                                    {
+                                        "business_category_id": "82675f69-9d91-45de-a4f2-6e4006c149f1",
+                                        "category_name": "Event Planning and Service"
+                                    },
+                                    {
+                                        "business_category_id": "d754dd28-8feb-4795-9ea7-1d060c4dd960",
+                                        "category_name": "Finance and Banking"
+                                    },
+                                    {
+                                        "business_category_id": "aa8497f3-2aa7-4e7e-8dd6-505627a07f91",
+                                        "category_name": "Food and Grocery"
+                                    },
+                                    {
+                                        "business_category_id": "17d62487-2b17-4e3d-bf59-a43c6fe1021b",
+                                        "category_name": "Public Service"
+                                    },
+                                    {
+                                        "business_category_id": "23265ebe-b9ba-4ad5-9431-ed84a8575b58",
+                                        "category_name": "Hotel and Lodging"
+                                    },
+                                    {
+                                        "business_category_id": "aa211646-8f6c-4d63-b0d0-a4f81d53b70c",
+                                        "category_name": "Medical and Health"
+                                    },
+                                    {
+                                        "business_category_id": "45c78d57-8189-4860-8d5f-611b525b30a5",
+                                        "category_name": "Non-profit"
+                                    },
+                                    {
+                                        "business_category_id": "e1314510-030a-430b-a450-b0f4b309e515",
+                                        "category_name": "Professional Services"
+                                    },
+                                    {
+                                        "business_category_id": "3294f5b9-9110-4e42-af2a-d6afa64dbebb",
+                                        "category_name": "Shopping and Retail"
+                                    },
+                                    {
+                                        "business_category_id": "812680c7-aa9b-4f4c-a7a1-9bcdee4c9686",
+                                        "category_name": "Travel and Transportation"
+                                    },
+                                    {
+                                        "business_category_id": "04b35da4-759c-43be-bce9-6ada128b8534",
+                                        "category_name": "Restaurant"
+                                    },
+                                    {
+                                        "business_category_id": "bda36704-cde5-41c9-b039-e3841fa9229f",
+                                        "category_name": "Other"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2091,7 +2420,7 @@
         "/business/profile": {
             "get": {
                 "description": "Gets business profile data",
-                "summary": "get business profile",
+                "summary": "Get business profile",
                 "tags": [
                     "WABA"
                 ],
@@ -2111,15 +2440,87 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "business profie data",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "wabaInformationId": "f742d535-4161-4a11-df98-0c97154b72sde",
+                                    "phoneNumber": "1234567890",
+                                    "phoneCode": "91",
+                                    "facebookManagerId": "my-business manager-id",
+                                    "businessName": "vivaconnect",
+                                    "email": "123@gmail.com",
+                                    "businessCategory": "Other",
+                                    "state": "maharashtra",
+                                    "whatsappStatus": "available up-date",
+                                    "description": "available 24/7",
+                                    "profilePhotoUrl": "www.google.com/image",
+                                    "address": "some address",
+                                    "country": "IN",
+                                    "wabaProfileSetupStatus": "Profile Incomplete / Pending For Submission",
+                                    "businessManagerVerified": true,
+                                    "phoneVerified": true,
+                                    "city": "mumbai",
+                                    "postalCode": "400009",
+                                    "businessProfileCompletionStatus": true,
+                                    "businessAccessProfileCompletionStatus": true
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
             },
             "post": {
-                "description": "This api adds or updates business profile of waba",
-                "summary": "add / update business profile",
+                "description": "API to add or update business profile",
+                "summary": "add or update business profil",
                 "tags": [
                     "WABA"
                 ],
@@ -2148,8 +2549,103 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "Returns Status of business profile info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "businessProfileCompletionStatus": true
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2157,8 +2653,8 @@
         },
         "/business/profile/accessInformation": {
             "post": {
-                "description": "this api is used to add and update business access info",
-                "summary": "add update business profilr access Information",
+                "description": "This api is used to add or update business access information",
+                "summary": "Add or update business profile access information",
                 "tags": [
                     "WABA"
                 ],
@@ -2171,13 +2667,6 @@
                     "application/json"
                 ],
                 "parameters": [
-                    {
-                        "name": "Content-Type",
-                        "in": "header",
-                        "required": true,
-                        "type": "string",
-                        "description": ""
-                    },
                     {
                         "name": "Authorization",
                         "in": "header",
@@ -2197,8 +2686,103 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "Returns Status of business profile info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "businessProfileCompletionStatus": true
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2207,6 +2791,7 @@
         "/business/profile/markManagerVerified": {
             "post": {
                 "summary": "mark manager verified",
+                "description": "This API marks manager verified",
                 "tags": [
                     "WABA"
                 ],
@@ -2235,8 +2820,103 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "Returns Status of business verification completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "businessVerificationCompletionStatus": true
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2244,8 +2924,8 @@
         },
         "/business/verification/phoneNumber": {
             "post": {
-                "description": "send verification code to verify waba number by sms or voice channel",
-                "summary": "send verification code for business number",
+                "description": "Send verification code to verify waba number by sms or voice channel",
+                "summary": "Send verification code for business number",
                 "tags": [
                     "WABA"
                 ],
@@ -2263,13 +2943,10 @@
                         "in": "query",
                         "required": true,
                         "type": "string",
-                        "description": ""
-                    },
-                    {
-                        "name": "Content-Type",
-                        "in": "header",
-                        "required": true,
-                        "type": "string",
+                        "enum": [
+                            "sms",
+                            "voice"
+                        ],
                         "description": ""
                     },
                     {
@@ -2282,8 +2959,96 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "success or already verified response",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2001,
+                                    "msg": "Please check your registered business phone number for verification code",
+                                    "data": {}
+                                },
+                                {
+                                    "code": 3020,
+                                    "msg": "Business phone number already verified for WABA",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2304,13 +3069,6 @@
                 ],
                 "parameters": [
                     {
-                        "name": "Content-Type",
-                        "in": "header",
-                        "required": true,
-                        "type": "string",
-                        "description": ""
-                    },
-                    {
                         "name": "Authorization",
                         "in": "header",
                         "required": true,
@@ -2329,8 +3087,95 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "verification success message",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2003,
+                                "msg": "Business phone number verified",
+                                "data": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "example": [
+                                "Unauthorized",
+                                {
+                                    "code": 3017,
+                                    "msg": "Invalid verification code",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2338,7 +3183,7 @@
         },
         "/templates": {
             "get": {
-                "description": "this api returns list of templates based on filters",
+                "description": "This api returns list of templates based on filters",
                 "summary": "Get template list",
                 "tags": [
                     "templates"
@@ -2355,18 +3200,95 @@
                         "required": true,
                         "type": "string",
                         "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "messageTemplateStatusId",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all Templates for waba account",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "messageTemplateId": "account_update_1",
+                                        "TemplateName": "account_update_1",
+                                        "type": "Standard Message Template",
+                                        "categoryName": "Account Update",
+                                        "statusName": "Approved",
+                                        "languageName": "English",
+                                        "mediaType": ""
+                                    },
+                                    {
+                                        "messageTemplateId": "account_update_2",
+                                        "TemplateName": "account_update_2",
+                                        "type": "Standard Message Template",
+                                        "categoryName": "Account Update",
+                                        "statusName": "Approved",
+                                        "languageName": "English",
+                                        "mediaType": ""
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
             },
             "post": {
-                "description": "API to add and update template\nto add template do not pass templateID to update template pass template ID along with parameters to update",
+                "description": "API to add or update template\nTo add template do not pass templateID to update template pass template ID along with parameters to update",
                 "summary": "Add update template",
                 "tags": [
                     "templates"
@@ -2396,16 +3318,119 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "Returns Status of template info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": {
+                                        "mediaTemplateComplete": true
+                                    }
+                                },
+                                {
+                                    "code": 3022,
+                                    "msg": "Maximum number of template allowed for this account has exausted.",
+                                    "data": {}
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
             }
         },
-        "/templates/mt03": {
+        "/templates/{templateId}": {
             "get": {
                 "summary": "Get template Info",
+                "description": "Use this API to get information of a template",
                 "tags": [
                     "templates"
                 ],
@@ -2421,12 +3446,113 @@
                         "required": true,
                         "type": "string",
                         "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of Template"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "Returns info of a template",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": [
+                                        {
+                                            "messageTemplateId": "account_update_1",
+                                            "wabaInformationId": "f742d535-4161-4a11-b99f-0c97154b720d",
+                                            "templateName": "account_update_1",
+                                            "type": "standard message template",
+                                            "bodyText": "This is to remind you that {{1}} is due by {{2}}.",
+                                            "headerText": "",
+                                            "footerText": "",
+                                            "mediaType": "",
+                                            "categoryName": "Account Update",
+                                            "statusName": "Approved",
+                                            "languageName": "English",
+                                            "secondLanguageRequired": false,
+                                            "secondLanguageName": null,
+                                            "secondlanguageBodyText": null,
+                                            "headerType": null,
+                                            "buttonType": null,
+                                            "buttonData": null,
+                                            "mediaTemplateComplete": false
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2434,8 +3560,8 @@
         },
         "/templates/languages": {
             "get": {
-                "description": "API for language dropdown",
-                "summary": "template languages dropdown",
+                "description": "API to get list of languages available with helo-whatsapp",
+                "summary": "get template languages",
                 "tags": [
                     "templates"
                 ],
@@ -2455,8 +3581,84 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all languages",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "messageTemplateLanguageId": "5de770f6-3fc0-4eca-b9aa-da1653be9ac7",
+                                        "languageName": "Select Language"
+                                    },
+                                    {
+                                        "messageTemplateLanguageId": "57aa7635-5717-4397-8eb6-4799ef3bec05",
+                                        "languageName": "English"
+                                    },
+                                    {
+                                        "messageTemplateLanguageId": "cde192b7-c60f-4d2d-8573-dd5af7c9379b",
+                                        "languageName": "Marathi"
+                                    },
+                                    {
+                                        "messageTemplateLanguageId": "8e50adb9-d12f-43f2-968b-7fa19e1fb761",
+                                        "languageName": "Gujarat"
+                                    },
+                                    {
+                                        "messageTemplateLanguageId": "b3c06bd2-7460-4efa-9c72-388e3ecd13da",
+                                        "languageName": "Punjabi"
+                                    },
+                                    {
+                                        "messageTemplateLanguageId": "21c843cb-37de-4b88-914f-82620505276b",
+                                        "languageName": "Bengali"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2464,7 +3666,8 @@
         },
         "/templates/types": {
             "get": {
-                "summary": "template types dropdown",
+                "description": "API to get list of template types available with helo-whatsapp",
+                "summary": "Get template types",
                 "tags": [
                     "templates"
                 ],
@@ -2484,8 +3687,66 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all languages",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "templateType": "Standard Message Template"
+                                    },
+                                    {
+                                        "templateType": "Media Message Template"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2493,7 +3754,8 @@
         },
         "/templates/categories": {
             "get": {
-                "summary": "templates categories dropdown",
+                "description": "API to get list of template categories available with helo-whatsapp",
+                "summary": "get templates categories",
                 "tags": [
                     "templates"
                 ],
@@ -2513,8 +3775,76 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all languages",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "messageTemplateCategoryId": "b8203a31-e439-4ea4-a270-bd211317d3ff",
+                                        "categoryName": "Account Update"
+                                    },
+                                    {
+                                        "messageTemplateCategoryId": "957e4375-3297-42c6-a9a8-6a57fd8e5045",
+                                        "categoryName": "Alert Update"
+                                    },
+                                    {
+                                        "messageTemplateCategoryId": "15b0c326-2bee-401a-8568-a6e27d8f0af0",
+                                        "categoryName": "Appointment Update"
+                                    },
+                                    {
+                                        "messageTemplateCategoryId": "6feb234a-4513-486a-8f4a-977dfb6e1597",
+                                        "categoryName": "Issue Resolution"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2522,7 +3852,7 @@
         },
         "/templates/sample": {
             "get": {
-                "description": "accepts template name search and status id search\nremove the query param to get all templates",
+                "description": "API to fetch sample template list based on filters\ncurrently accepts template name search and category id search",
                 "summary": "get sample templates",
                 "tags": [
                     "templates"
@@ -2536,7 +3866,14 @@
                     {
                         "name": "templateName",
                         "in": "query",
-                        "required": true,
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    },
+                    {
+                        "name": "messageTemplateCategoryId",
+                        "in": "query",
+                        "required": false,
                         "type": "string",
                         "description": ""
                     },
@@ -2550,16 +3887,86 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of sample template based on filters",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "messageTemplateLibraryId": "1a995366-be23-4d58-9d81-61c1918e88fb",
+                                        "templateName": "T7",
+                                        "type": "standard",
+                                        "categoryName": "Personal Finance Update",
+                                        "statusName": "Approved",
+                                        "languageName": "English",
+                                        "mediaType": ""
+                                    },
+                                    {
+                                        "messageTemplateLibraryId": "1be3ae85-a3a6-4684-b575-114ed787a468",
+                                        "templateName": "T5",
+                                        "type": "standard",
+                                        "categoryName": "Issue Resolution",
+                                        "statusName": "Approved",
+                                        "languageName": "English",
+                                        "mediaType": ""
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
             }
         },
-        "/templates/sample/1be3ae85-a3a6-4684-b575-114ed787a468": {
+        "/templates/sample/{templateId}": {
             "get": {
-                "description": "get info od a sample template",
+                "description": "get info of a sample template by template id",
                 "summary": "get sample templates info",
                 "tags": [
                     "templates"
@@ -2576,12 +3983,105 @@
                         "required": true,
                         "type": "string",
                         "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "templateId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of Template"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "Returns info of a sample template",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": [
+                                        {
+                                            "messageTemplateId": "1be3ae85-a3a6-4684-b575-114ed787a468",
+                                            "templateName": "T5",
+                                            "type": "standard",
+                                            "bodyText": "Your {{1}} is pending. Please {{2}} by clicking on {{3}",
+                                            "headerText": "",
+                                            "footerText": "",
+                                            "mediaType": "",
+                                            "categoryName": "Issue Resolution",
+                                            "statusName": "Approved",
+                                            "languageName": "English"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2590,6 +4090,7 @@
         "/templates/buttonType": {
             "get": {
                 "summary": "get buttonType",
+                "description": "get list of all available button types in helo-whatsapp",
                 "tags": [
                     "templates"
                 ],
@@ -2609,8 +4110,66 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all available button types",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "buttonType": "Call To Action"
+                                    },
+                                    {
+                                        "buttonType": "Quick Reply"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -2619,6 +4178,7 @@
         "/templates/headerType": {
             "get": {
                 "summary": "get header Type",
+                "description": "get list of all available header types in helo-whatsapp",
                 "tags": [
                     "templates"
                 ],
@@ -2638,8 +4198,72 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "",
-                        "headers": {}
+                        "description": "List of all available header types",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": [
+                                    {
+                                        "templateHeaderType": "Video"
+                                    },
+                                    {
+                                        "templateHeaderType": "Pdf"
+                                    },
+                                    {
+                                        "templateHeaderType": "Location"
+                                    },
+                                    {
+                                        "templateHeaderType": "Text"
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
                     }
                 },
                 "security": []
@@ -3199,17 +4823,17 @@
         "add/updatebusinessprofilerequest": {
             "title": "add/updatebusinessprofilerequest",
             "example": {
-                "businessName": "Danny business updated",
-                "whatsappStatus": "available up-date",
+                "businessName": "vivaconnect",
+                "whatsappStatus": "available",
                 "description": "available 24/7",
-                "address": "a",
+                "address": "some address ",
                 "country": "IN",
                 "city": "mumbai",
                 "state": "maharashtra",
-                "postalCode": "400009",
-                "email": "a@b.com",
+                "postalCode": "400001",
+                "email": "123@gmail.com",
                 "businessCategoryId": "bda36704-cde5-41c9-b039-e3841fa9229f",
-                "profilePhotoUrl": "www.google.comaaaaaaaaaaaaaaaaaaa"
+                "profilePhotoUrl": "www.google.com/image"
             },
             "type": "object",
             "properties": {
@@ -3248,23 +4872,13 @@
                 }
             },
             "required": [
-                "businessName",
-                "whatsappStatus",
-                "description",
-                "address",
-                "country",
-                "city",
-                "state",
-                "postalCode",
-                "email",
-                "businessCategoryId",
-                "profilePhotoUrl"
+                "businessName"
             ]
         },
         "addupdatebusinessprofilraccessInformationRequest": {
             "title": "addupdatebusinessprofilraccessInformationRequest",
             "example": {
-                "facebookManagerId": "asfsf",
+                "facebookManagerId": "my-manager-id",
                 "phoneCode": "+91",
                 "phoneNumber": "123456",
                 "canReceiveSms": true,
@@ -3293,12 +4907,7 @@
                 }
             },
             "required": [
-                "facebookManagerId",
-                "phoneCode",
-                "phoneNumber",
-                "canReceiveSms",
-                "canReceiveVoiceCall",
-                "associatedWithIvr"
+                "facebookManagerId"
             ]
         },
         "markmanagerverifiedrequest": {
@@ -3335,20 +4944,20 @@
         "AddupdatetemplateRequest": {
             "title": "AddupdatetemplateRequest",
             "example": {
-                "messageTemplateId": "9bf57a21-a05c-47f4-82df-9da15c03deb9",
-                "templateName": "3rd template",
-                "type": "media message templAte",
+                "messageTemplateId": "9bf57a21-a05c-47f4-82df-jki09v03deb9",
+                "templateName": "Welcome",
+                "type": "media message template",
                 "messageTemplateCategoryId": "b8203a31-e439-4ea4-a270-bd211317d3ff",
                 "messageTemplateStatusId": "c71a8387-80e0-468b-9ee3-abb5ec328176",
                 "messageTemplateLanguageId": "57aa7635-5717-4397-8eb6-4799ef3bec05",
-                "bodyText": "wassup bro",
-                "headerText": "ssup",
-                "footerText": "foot",
-                "mediaType": "pdf",
+                "bodyText": "Hi {{1}} welcome to our platform",
+                "headerText": "",
+                "footerText": "vivaconnect",
+                "mediaType": "image",
                 "secondLanguageRequired": false,
                 "secondMessageTemplateLanguageId": "cde192b7-c60f-4d2d-8573-dd5af7c9379b",
-                "secondlanguageBodyText": "hii",
-                "headerType": "Video",
+                "secondlanguageBodyText": "Hi {{1}} welcome to our platform",
+                "headerType": "image",
                 "buttonType": "Quick Reply",
                 "buttonData": {
                     "quickReply": [
@@ -3371,7 +4980,11 @@
                     "type": "string"
                 },
                 "type": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Standard Message Template",
+                        "Media Message Template"
+                    ]
                 },
                 "messageTemplateCategoryId": {
                     "type": "string"
@@ -3404,32 +5017,28 @@
                     "type": "string"
                 },
                 "headerType": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Video",
+                        "Pdf",
+                        "Location",
+                        "Text",
+                        "image"
+                    ]
                 },
                 "buttonType": {
-                    "type": "string"
+                    "type": "string",
+                    "enum": [
+                        "Call To Action",
+                        "Quick Reply"
+                    ]
                 },
                 "buttonData": {
                     "$ref": "#/definitions/ButtonData"
                 }
             },
             "required": [
-                "messageTemplateId",
-                "templateName",
-                "type",
-                "messageTemplateCategoryId",
-                "messageTemplateStatusId",
-                "messageTemplateLanguageId",
-                "bodyText",
-                "headerText",
-                "footerText",
-                "mediaType",
-                "secondLanguageRequired",
-                "secondMessageTemplateLanguageId",
-                "secondlanguageBodyText",
-                "headerType",
-                "buttonType",
-                "buttonData"
+                "templateName"
             ]
         },
         "ButtonData": {
@@ -3442,7 +5051,7 @@
                 ],
                 "phoneButtonText": "call us",
                 "phoneNumber": "9876543210",
-                "websiteButtontext": "oursite.com",
+                "websiteButtontext": "oursite",
                 "webAddress": "www.google.com"
             },
             "type": "object",
@@ -3465,14 +5074,7 @@
                 "webAddress": {
                     "type": "string"
                 }
-            },
-            "required": [
-                "quickReply",
-                "phoneButtonText",
-                "phoneNumber",
-                "websiteButtontext",
-                "webAddress"
-            ]
+            }
         }
     }
 }
