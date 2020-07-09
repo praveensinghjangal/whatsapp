@@ -109,7 +109,7 @@ class httpApiWorker {
       socket.on('disconnect', () => {
       })
     })
-    __logger.info('SERVER SWAGGER API-DOC URL: ' + __config.base_url + '/' + __config.api_prefix + '/api' + '/docs/server/' + __config.authConfig.serverDocAccessKey)
+    __logger.info('SERVER SWAGGER API-DOC URL: ' + __config.base_url + '/' + __config.api_prefix + '/api' + '/internal-docs/' + __config.authConfig.serverDocAccessKey + '  ')
     const stopGraceFully = () => {
       vm.stopExpressServer()
       __db.close().then((result) => {

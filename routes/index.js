@@ -46,5 +46,5 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/audience', audience)
   app.use(apiUrlPrefix + '/message-history', messageHistory)
 
-  require('../lib/swagger')(app, '/' + __config.api_prefix + __config.authConfig.apiAuthAlias) // todo handle '/' add in prefix after git access
+  require('../lib/swagger')(app, '/' + __config.api_prefix + '/api')
 }
