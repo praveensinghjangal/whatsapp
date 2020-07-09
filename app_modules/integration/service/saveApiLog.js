@@ -42,6 +42,11 @@ const validateInput = input => {
         type: 'object',
         required: true,
         minProperties: 1
+      },
+      toPhoneNo: {
+        type: 'string',
+        required: true,
+        minLength: 1
       }
     }
   }
@@ -60,13 +65,13 @@ const validateInput = input => {
   return isvalid.promise
 }
 
-module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response) => {
+module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo) => {
   const historyStored = q.defer()
-  const query = `insert into service_provider_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response)
-  values ($1,$2,$3,$4,$5,$6)`
+  const query = `insert into service_provider_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number)
+  values ($1,$2,$3,$4,$5,$6,$7)`
   __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId)
-  validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response })
-    .then(validData => __db.postgresql.__query(query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response]))
+  validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
+    .then(validData => __db.postgresql.__query(query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo]))
     .then(result => {
       if (result && result.rowCount && result.rowCount > 0) {
         historyStored.resolve(true)

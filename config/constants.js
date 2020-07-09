@@ -142,6 +142,7 @@ const TEMPLATE_BUTTON_TYPE = [{
 }, {
   buttonType: 'Quick Reply'
 }]
+
 const MQ = {
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
@@ -155,6 +156,10 @@ const INCOMING_MESSAGE_RETRY = {
 }
 const OUTGOING_MESSAGE_RETRY = {
   tyntec: 5
+}
+
+const DELIVERY_CHANNEL = {
+  whatsapp: 'whatsapp'
 }
 
 const INTERNAL_END_POINTS = {
@@ -186,4 +191,5 @@ module.exports.FREE_PLAN_ID = FREE_PLAN_ID
 module.exports.MQ = MQ
 module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
 module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
+module.exports.DELIVERY_CHANNEL = DELIVERY_CHANNEL
 module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
