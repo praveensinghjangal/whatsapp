@@ -13,6 +13,8 @@ const whatsappBusiness = require('../app_modules/whatsapp_business/route')
 const webHooks = require('../app_modules/web_hooks/route')
 const templates = require('../app_modules/templates/route')
 const plans = require('../app_modules/plans/route')
+const audience = require('../app_modules/audience/route')
+const messageHistory = require('../app_modules/message_history/route')
 
 module.exports = function (app) {
   // region all api
@@ -41,6 +43,8 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/web-hooks', webHooks)
   app.use(apiUrlPrefix + '/templates', templates)
   app.use(apiUrlPrefix + '/plans', plans)
+  app.use(apiUrlPrefix + '/audience', audience)
+  app.use(apiUrlPrefix + '/message-history', messageHistory)
 
   require('../lib/swagger')(app, '/' + __config.api_prefix + __config.authConfig.apiAuthAlias) // todo handle '/' add in prefix after git access
 }

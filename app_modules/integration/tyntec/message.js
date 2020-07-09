@@ -36,7 +36,7 @@ class Message {
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
-        saveApiLog(payload.messageId, apiRes.messageId, spId, 'sendMessage', reqObj, apiRes)
+        saveApiLog(payload.messageId, apiRes.messageId, spId, 'sendMessage', reqObj, apiRes, payload.to)
         if (apiRes.messageId) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes })
         } else {

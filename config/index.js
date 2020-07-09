@@ -244,5 +244,8 @@ module.exports = {
     authorization: process.env.MOCK_WEBHOOK_AUTH,
     receiverNumber: process.env.MOCK_WEBHOOK_RECEIVER_NUMBER.split(','),
     senderNumber: process.env.MOCK_WEBHOOK_SENDER_NUMBER
+  },
+  tyntec: {
+    authorization: process.env.TYNTEC_AUTH_TOKEN
   }
 }
