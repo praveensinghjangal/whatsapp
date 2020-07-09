@@ -161,6 +161,8 @@ const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages'
 }
 
+const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -187,3 +189,4 @@ module.exports.MQ = MQ
 module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
 module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
 module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
+module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME

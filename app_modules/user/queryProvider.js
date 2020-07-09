@@ -2,12 +2,12 @@ const getUserDetailsByEmail = () => {
   return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name
   from users u
   join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true 
-  where lower(u.email) = lower($1) and u.is_active = true`
+  where lower(u.email) = lower(?) and u.is_active = true`
 }
 
 const createUser = () => {
   return `insert into users ( email, hash_password, user_id,salt_key,signup_source,created_by,tnc_accepted,token_key,user_account_type_id,user_role_id) values 
-  ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)`
+  (?,?,?,?,?,?,?,?,?,?)`
 }
 
 // Account Profile Queries
@@ -21,7 +21,7 @@ const getUserAccountProfile = () => {
   return `select user_id as "accountId",email as "accountManagerName",token_key as "tokenKey",email,type_name as "accountType" ,city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2", contact_number as "contactNumber",phone_code as "phoneCode", postal_code as "postalCode", first_name as "firstName",last_name as "lastName" 
   from users u
   left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
-  WHERE u.user_id = $1 and u.is_active = true`
+  WHERE u.user_id = ? and u.is_active = true`
 }
 
 const updateUserAccountProfile = () => {
@@ -65,7 +65,7 @@ const updateIsActiveStatusBusinessProfile = () => {
 const getBillingProfileWithBusinessInfoId = () => {
   return `select billing_information_id, billing_name as "billingName",city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2",contact_number as "contactNumber",phone_code as  "phoneCode", postal_code as  "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo" 
   from billing_information 
-  WHERE user_id = $1 and is_active = true`
+  WHERE user_id = ? and is_active = true`
 }
 
 const getAccountType = () => {

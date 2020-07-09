@@ -125,18 +125,18 @@ module.exports = {
       servicProviderId: process.env.SERVICE_PROVIDER_ID_DEMO
     }
   },
-  mysql: {
-    init: process.env.MYSQL_INIT === 'true',
-    name: process.env.MYSQL_NAME,
-    is_slave: process.env.MYSQL_IS_SLAVE,
+  helo_whatsapp_mysql: {
+    init: process.env.HW_MYSQL_INIT === 'true',
+    name: __constants.HW_MYSQL_NAME,
+    is_slave: process.env.HW_MYSQL_IS_SLAVE === 'true',
     options: {
-      connection_limit: +process.env.MYSQL_OPTIONS_CONNECTION_LIMIT,
-      host: process.env.MYSQL_OPTIONS_HOST,
-      user: process.env.MYSQL_OPTIONS_USER,
-      password: process.env.MYSQL_OPTIONS_PASSWORD,
-      database: process.env.MYSQL_OPTIONS_DATABASE,
+      connection_limit: +process.env.HW_MYSQL_OPTIONS_CONNECTION_LIMIT,
+      host: process.env.HW_MYSQL_OPTIONS_HOST,
+      user: process.env.HW_MYSQL_OPTIONS_USER,
+      password: process.env.HW_MYSQL_OPTIONS_PASSWORD,
+      database: process.env.HW_MYSQL_OPTIONS_DATABASE,
       acquireTimeout: 0,
-      port: +process.env.MYSQL_OPTIONS_PORT
+      port: +process.env.HW_MYSQL_OPTIONS_PORT
     }
   },
   postgresql: {
