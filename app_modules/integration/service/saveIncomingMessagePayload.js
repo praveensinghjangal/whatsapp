@@ -5,6 +5,8 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const Validator = require('jsonschema').Validator
+const __config = require('../../../config')
+const request = require('request')
 const v = new Validator()
 
 const validateInput = input => {
@@ -28,6 +30,11 @@ const validateInput = input => {
         type: 'object',
         required: true,
         minProperties: 1
+      },
+      fromNumber: {
+        type: 'string',
+        required: true,
+        minLength: 1
       }
     }
   }
@@ -46,18 +53,50 @@ const validateInput = input => {
   return isvalid.promise
 }
 
-module.exports = (vivaMessageId, serviceProviderMessageId, payload) => {
+function postDatatoAudienceTable (inputData) {
+  const audienceData = q.defer()
+
+  const url = __config.base_url + '/helowhatsapp/api/audience/'
+  // __logger.info('Url>>>>>>>>>>>>>>>>>>>>>>>>', typeof url)
+  console.log('..........................', inputData)
+
+  const audienceDataToBePosted = {
+    phoneNumber: inputData,
+    channel: 'whatsapp'
+
+  }
+  const options = {
+    url,
+    body: audienceDataToBePosted,
+    headers: { Authorization: __config.tyntec.authorization },
+    json: true
+  }
+  // Calling another api for sending messages
+  request.post(options, (err, httpResponse, body) => {
+    if (err) {
+      // __logger.info('err>>>>>>>>>>>>>>>>>>>>>>>>', err)
+      audienceData.reject(err)
+    } else {
+      console.log('Body', body)
+      audienceData.resolve(inputData)
+    }
+  })
+  return audienceData.promise
+}
+
+module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) => {
   const payloadStored = q.defer()
-  const query = `insert into incoming_message_payload(viva_message_id,service_provider_message_id,service_provider_id,payload)
-  values ($1,$2,$3,$4)`
+  const query = `insert into incoming_message_payload(viva_message_id,service_provider_message_id,service_provider_id,payload,from_number)
+  values ($1,$2,$3,$4,$5)`
   __logger.info('Inside function to store incoming message in incoming_message_payload table', vivaMessageId, serviceProviderMessageId)
-  validateInput({ vivaMessageId, serviceProviderMessageId, payload })
+  validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
     .then(valres => __db.redis.get(payload.to))
     .then(data => {
+      postDatatoAudienceTable(fromNumber)
       console.log('dataatatatat', data, typeof data)
       if (data) {
         data = JSON.parse(data)
-        return __db.postgresql.__query(query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, payload])
+        return __db.postgresql.__query(query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, payload, fromNumber])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
       }

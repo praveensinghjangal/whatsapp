@@ -32,7 +32,7 @@ class TyntecConsumer {
             const retryCount = messageData.retryCount || 0
             // console.log('Alteredddddddddddddddddddddddd------', messageData, retryCount)
             __logger.info('tyntec incoming message QueueConsumer:: messageData received:', messageData)
-            saveIncomingMessagePayloadService(messageData.vivaMessageId, messageData.messageId, messageData)
+            saveIncomingMessagePayloadService(messageData.vivaMessageId, messageData.messageId, messageData, messageData.from)
               .then(payloadSaved => {
                 messageData.messageId = messageData.vivaMessageId
                 delete messageData.vivaMessageId
