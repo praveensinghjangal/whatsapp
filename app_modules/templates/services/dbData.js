@@ -16,13 +16,13 @@ class TemplateService {
   getTemplateTableDataAndWabaId (messageTemplateId, userId) {
     __logger.info('inside get template by id service', messageTemplateId)
     const templateData = q.defer()
-    __db.postgresql.__query(queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
       // console.log('Qquery Result', results)
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.affectedRows && result.affectedRows === 0) {
           templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
         } else {
-          templateData.resolve(result.rows[0])
+          templateData.resolve(result[0])
         }
       })
       .catch(err => {
@@ -35,12 +35,12 @@ class TemplateService {
   getTemplatesCount (wabaInformationId) {
     __logger.info('inside get template count service', wabaInformationId)
     const count = q.defer()
-    __db.postgresql.__query(queryProvider.getTemplateCount(), [wabaInformationId])
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCount(), [wabaInformationId])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.affectedRows && result.affectedRows === 0) {
           count.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         } else {
-          count.resolve(result.rows[0])
+          count.resolve(result[0])
         }
       })
       .catch(err => {
@@ -53,9 +53,9 @@ class TemplateService {
   deactivateOldTemplateData (messageTemplateId, userId) {
     const recordDeactivated = q.defer()
     __logger.info('Setting is active false to Template record', messageTemplateId)
-    __db.postgresql.__query(queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           recordDeactivated.resolve(true)
         } else {
           recordDeactivated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -94,9 +94,9 @@ class TemplateService {
     _.each(templateData, (val) => queryParam.push(val))
     queryParam.push(userId)
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
-    __db.postgresql.__query(queryProvider.addTemplate(), queryParam)
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.addTemplate(), queryParam)
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(templateData)
         } else {
           dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -152,9 +152,9 @@ class TemplateService {
     _.each(templateData, (val) => queryParam.push(val))
     queryParam.push(userId)
     __logger.info('updateeeeee --->', templateData, queryParam)
-    __db.postgresql.__query(queryProvider.updateTemplate(), queryParam)
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplate(), queryParam)
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(templateData)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

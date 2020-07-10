@@ -17,7 +17,7 @@ const getBusinessProfile = () => {
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
   LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active 
-  where wabainfo.user_id = $1 and wabainfo.is_active = true`
+  where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
 // Business Profile
@@ -33,14 +33,14 @@ const getWabaTableDataByUserId = () => {
   business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified",city,postal_code as "postalCode"
   FROM waba_information wabainfo
-  where wabainfo.user_id = $1 and wabainfo.is_active = true`
+  where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
 // Business Verification
 
 const updateBusinessProfileVerificationStatus = () => {
   return `update waba_information
-  set business_manager_verified=$1,updated_on=now(),updated_by=$2 WHERE user_id=$3 and is_active = true`
+  set business_manager_verified=?,updated_on=now(),updated_by=? WHERE user_id=? and is_active = true`
 }
 
 const addWabaTableData = () => {
@@ -48,22 +48,22 @@ const addWabaTableData = () => {
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
   country, email, business_category_id ,profile_photo_url , waba_profile_setup_status_id ,business_manager_verified,
   phone_verified ,waba_information_id,created_by, user_id,city,postal_code)
-  VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23)`
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateWabaTableData = () => {
-  return `update waba_information  set phone_code =$1,phone_number=$2,can_receive_sms=$3,
-  can_receive_voice_call=$4, associated_with_ivr=$5,business_name =$6, state=$7,whatsapp_status =$8, description=$9
-  ,address=$10,country=$11, email=$12, business_category_id =$13,profile_photo_url =$14,
-  waba_profile_setup_status_id =$15,business_manager_verified=$16,phone_verified =$17,waba_information_id=$18,
-  updated_by=$19,updated_on=now(),user_id=$20,city=$21,postal_code =$22, facebook_manager_id=$23
-  where waba_information_id=$18 and user_id=$20`
+  return `update waba_information  set phone_code =?,phone_number=?,can_receive_sms=?,
+  can_receive_voice_call=?, associated_with_ivr=?,business_name =?, state=?,whatsapp_status =?, description=?
+  ,address=?,country=?, email=?, business_category_id =?,profile_photo_url =?,
+  waba_profile_setup_status_id =?,business_manager_verified=?,phone_verified =?,waba_information_id=?,
+  updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?
+  where waba_information_id=? and user_id=?`
 }
 
 const setIsActiveFalseByWabaId = () => {
   return `update waba_information 
-          set is_active = false, updated_on=now(),updated_by=$2
-          where waba_information_id = $1 and is_active = true`
+          set is_active = false, updated_on=now(),updated_by=?
+          where waba_information_id = ? and is_active = true`
 }
 
 module.exports = {

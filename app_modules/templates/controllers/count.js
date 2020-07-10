@@ -17,7 +17,7 @@ const getTemplateCount = (req, res) => {
   const templateCountByStatus = []
   let finalCount
 
-  __db.postgresql.__query(queryProvider.getTemplateCountByStatus(), [userId])
+  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountByStatus(), [userId])
     .then(data => {
       __logger.info(' then 1')
       return formatAndReturnTemplateCount(data)
@@ -25,11 +25,11 @@ const getTemplateCount = (req, res) => {
     .then(data => {
       __logger.info('then 2')
       templateCountByStatus.push(data)
-      return __db.postgresql.__query(queryProvider.getTempalteUsedCountByWaba(), [userId])
+      return __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTempalteUsedCountByWaba(), [userId])
     })
     .then(data => {
       __logger.info(' then 3', data)
-      templateCountByStatus[0].push(data.rows[0])
+      templateCountByStatus[0].push(data[0])
       finalCount = templateCountByStatus[0]
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalCount })
     })
@@ -44,7 +44,7 @@ function formatAndReturnTemplateCount (data) {
   const isDone = q.defer()
 
   const result = []
-  if (data.rows && data.rows.length === 0) {
+  if (data.affectedRows && data.affectedRows === 0) {
     __logger.info('Length-------------------------- 0')
 
     __constants.TEMPLATE_STATUS.forEach(templateStatus => {
@@ -54,40 +54,40 @@ function formatAndReturnTemplateCount (data) {
       })
     })
     result.push({
-      allocatedTemplateCount: data.rows.length
+      allocatedTemplateCount: data.length
     })
   }
 
-  if (data.rows && data.rows.length === 1) {
+  if (data && data.length === 1) {
     __logger.info('Length-------------------------- 1')
     result.push({
-      allocatedTemplateCount: data.rows[0].templates_allowed
+      allocatedTemplateCount: data[0].templates_allowed
     })
     __constants.TEMPLATE_STATUS.forEach(status => {
       __logger.info('Status ', status)
-      __logger.info('data.rows[0].status_name ', data.rows[0].status_name)
-      if (data.rows[0].status_name !== status) {
+      __logger.info('data[0].status_name ', data[0].status_name)
+      if (data[0].status_name !== status) {
         result.push({
           templateCount: 0,
           statusName: status
         })
       } else {
         result.push({
-          templateCount: data.rows[0].count,
+          templateCount: data[0].count,
           statusName: status
         })
       }
     })
   }
 
-  if (data.rows && data.rows.length > 1) {
+  if (data && data.length > 1) {
     __logger.info('Length-------------------------- >1')
 
     result.push({
-      allocatedTemplateCount: data.rows[0].templates_allowed
+      allocatedTemplateCount: data[0].templates_allowed
     })
 
-    data.rows.forEach(record => {
+    data.forEach(record => {
       if (!__constants.TEMPLATE_STATUS.includes(record.status_name)) {
         result.push({
           templateCount: 0,

@@ -9,12 +9,12 @@ const getAllPlans =
 (req, res) => {
   __logger.info('Get Plan List API Called')
 
-  __db.postgresql.__query(queryProvider.getPlanList(), [])
+  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getPlanList(), [])
     .then(result => {
-      if (result && result.rows && result.rows.length === 0) {
+      if (result && result.affectedRows && result.affectedRows === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result.rows })
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       }
     })
     .catch(err => {

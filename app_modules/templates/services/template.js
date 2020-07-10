@@ -21,15 +21,15 @@ class templateService {
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
         __logger.info('valResponse', valResponse)
-        return __db.postgresql.__query(queryProvider.getMessageTemplateDataByWabaId(), [wabaInformationId])
+        return __db.mysql.__query(queryProvider.getMessageTemplateDataByWabaId(), [wabaInformationId])
       })
       .then(result => {
         // if exist throw return true exist
-        if (result && result.rowCount && result.rowCount > 0) {
-          doesWabaIdExist.resolve({ record: result.rows[0], exists: true })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          doesWabaIdExist.resolve({ record: result[0], exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesWabaIdExist.resolve({ record: result.rows[0], exists: false })
+          doesWabaIdExist.resolve({ record: result[0], exists: false })
         }
       })
       .catch(err => {

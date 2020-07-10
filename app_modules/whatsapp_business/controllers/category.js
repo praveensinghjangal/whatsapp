@@ -8,13 +8,13 @@ const queryProvider = require('../queryProvider')
 // Get Business Category
 const getBusinessCategory = (req, res) => {
   __logger.info('Inside getBusinessCategory', req.user.userId)
-  __db.postgresql.__query(queryProvider.getBusinessCategory(), [])
-    .then(results => {
-      __logger.info('Then 1', results)
-      if (results && results.rows.length > 0) {
+  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessCategory(), [])
+    .then(result => {
+      __logger.info('Then 1', result)
+      if (result && result.affectedRows && result.affectedRows > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
-          data: results.rows
+          data: result
         })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })

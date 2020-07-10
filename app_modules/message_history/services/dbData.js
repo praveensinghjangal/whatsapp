@@ -15,13 +15,13 @@ class MessgaeHistoryService {
   getMessageHistoryTableDataWithId (messageId) {
     __logger.info('inside get message history by id service', typeof messageId)
     const messageHistoryData = q.defer()
-    __db.postgresql.__query(queryProvider.getMessageTableDataWithId(), [messageId])
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getMessageTableDataWithId(), [messageId])
       .then(result => {
         // console.log('Query Result', result)
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.affectedRows && result.affectedRows === 0) {
           messageHistoryData.resolve(null)
         } else {
-          messageHistoryData.resolve(result.rows)
+          messageHistoryData.resolve(result)
         }
       })
       .catch(err => {
@@ -47,10 +47,10 @@ class MessgaeHistoryService {
     const queryParam = []
     _.each(messageHistoryData, (val) => queryParam.push(val))
     // __logger.info('inserttttttttttttttttttttt->', messageHistoryData, queryParam)
-    __db.postgresql.__query(queryProvider.addMessageHistoryData(), queryParam)
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(), queryParam)
       .then(result => {
         // console.log('Add Result', result)
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           messageHistoryDataAdded.resolve(messageHistoryData)
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

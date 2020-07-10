@@ -3,15 +3,15 @@ const addAudienceData = () => {
   return `INSERT INTO audience
   (audience_id, phone_number, channel, optin, optin_source_id,
   segment_id,chat_flow_id, "name", email, gender, country)
-  VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 }
 
 const updateAudienceRecord = () => {
   return `UPDATE audience
-  SET channel=$3, optin=$4, optin_source_id=$5,
-  segment_id=$6, chat_flow_id=$7, "name"=$8, email=$9, gender=$10,
-  country=$11, updated_by =$12,updated_on = now(),last_message = now()
-  WHERE audience_id=$1 and phone_number=$2 and is_active=true`
+  SET channel=?, optin=?, optin_source_id=?,
+  segment_id=?, chat_flow_id=?, "name"=?, email=?, gender=?,
+  country=?, updated_by =?,updated_on = now(),last_message = now()
+  WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
 const getAudienceRecordList = (columnArray) => {
@@ -55,7 +55,7 @@ const getAudienceTableDataWithId = () => {
   and osm.is_active = true
   left join segment_master sm  on sm.segment_id  = aud.segment_id
   and sm.is_active  =true
-  WHERE aud.is_active = true and aud.audience_id=$1`
+  WHERE aud.is_active = true and aud.audience_id=?`
 }
 
 const getAudienceTableDataByPhoneNumber = () => {
@@ -64,13 +64,13 @@ const getAudienceTableDataByPhoneNumber = () => {
   to_char(last_message,'DD/MM/YYYY HH:mm:ss') as "lastMessage", segment_id as "segmentId",
   chat_flow_id as "chatFlowId","name", email, gender, country
   FROM audience
-  where phone_number=$1 and is_active=true`
+  where phone_number=? and is_active=true`
 }
 
 const getTempOptinStatus = () => {
   return `select phone_number, audience_id ,optin from audience aud 
   where aud.is_active =true 
-  and aud.audience_id =$1
+  and aud.audience_id =?
   and  aud.last_message between now()- interval  '24 HOURS' and now()`
 }
 

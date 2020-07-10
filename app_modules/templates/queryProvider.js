@@ -13,11 +13,11 @@ const getTemplateList = (messageTemplateStatusId) => {
         ON mts.is_active = true and mts.message_template_status_id = mt.message_template_status_id
       JOIN message_template_language mtl
         ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
-    WHERE mt.is_active = true and wi.user_id = $1
+    WHERE mt.is_active = true and wi.user_id = ?
   `
 
   if (messageTemplateStatusId) {
-    query += ' AND mt.message_template_status_id = $2'
+    query += ' AND mt.message_template_status_id = ?'
   }
 
   return query
@@ -42,7 +42,7 @@ const getTemplateInfo = () => {
         ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
       LEFT JOIN message_template_language mtl2
         ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-    WHERE mt.is_active = true AND wi.user_id = $1 AND mt.message_template_id = $2`
+    WHERE mt.is_active = true AND wi.user_id = ? AND mt.message_template_id = ?`
 }
 
 const addTemplate = () => {
@@ -50,16 +50,16 @@ const addTemplate = () => {
   message_template_category_id, message_template_status_id, message_template_language_id, body_text ,
   header_text, footer_text, media_type, second_language_required, second_message_template_language_id, second_language_body_text ,
   header_type, button_type,button_data, created_by)
-  values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`
+  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateTemplate = () => {
-  return `update message_template set template_name =$3, "type" =$4, message_template_category_id =$5,
-  message_template_status_id =$6,message_template_language_id =$7, body_text  =$8, header_text =$9,
-  footer_text =$10, media_type =$11, second_language_required = $12, second_message_template_language_id = $13,
-  second_language_body_text = $14,header_type = $15, button_type = $16,button_data = $17, updated_by =$18,
+  return `update message_template set template_name =?, "type" =?, message_template_category_id =?,
+  message_template_status_id =?,message_template_language_id =?, body_text  =?, header_text =?,
+  footer_text =?, media_type =?, second_language_required = ?, second_message_template_language_id = ?,
+  second_language_body_text = ?,header_type = ?, button_type = ?,button_data = ?, updated_by =?,
   updated_on = now() 
-  where message_template_id =$1 and  waba_information_id =$2`
+  where message_template_id =? and  waba_information_id =?`
 }
 
 // Sample Template
@@ -102,7 +102,7 @@ const getSampleTemplateInfo = () => {
       ON mts.is_active = true and mts.message_template_status_id = mtlib.message_template_status_id
     JOIN message_template_language mtl
       ON mtl.is_active = true and mtl.message_template_language_id = mtlib.message_template_language_id
-  WHERE mtlib.is_active = true AND mtlib.message_template_library_id = $1`
+  WHERE mtlib.is_active = true AND mtlib.message_template_library_id = ?`
 }
 
 // Template Categories
@@ -126,7 +126,7 @@ from waba_information wi
 left join message_template mt on wi.waba_information_id = mt.waba_information_id and mt.is_active = true
 left join message_template_status mts on mt.message_template_status_id = mts.message_template_status_id 
 and mts.is_active = true
-where wi.is_active = true and wi.user_id = $1
+where wi.is_active = true and wi.user_id = ?
 group by wi.templates_allowed , mts.status_name`
 
   // return `select count(mt.message_template_id) as "templateCount",
@@ -139,7 +139,7 @@ group by wi.templates_allowed , mts.status_name`
   //         where mt.is_active  = true
   //         and wi.is_active =true
   //         and mts.is_active  = true
-  //         and wi.user_id = $1
+  //         and wi.user_id = ?
   //         group by mts.message_template_status_id`
 }
 
@@ -147,7 +147,7 @@ const getTempalteAllocatedCountToWaba = () => {
   return `select templates_allowed as "allocatedTemplateCount" 
           from waba_information wi 
           where wi.is_active = true 
-          and wi.user_id=$1`
+          and wi.user_id=?`
 }
 
 const getTempalteUsedCountByWaba = () => {
@@ -157,12 +157,12 @@ const getTempalteUsedCountByWaba = () => {
           on mt.waba_information_id = wi.waba_information_id
           where mt.is_active  = true 
           and wi.is_active = true 
-          and wi.user_id=$1`
+          and wi.user_id=?`
 }
 
 const getTemplateCount = () => {
   return `select count(1) as "templatesConsumed" from message_template
-        where waba_information_id = $1 and is_active = true`
+        where waba_information_id = ? and is_active = true`
 }
 
 // Template By Id
@@ -170,7 +170,7 @@ const getMessageTemplateDataByWabaId = () => {
   return `SELECT  message_template_id as "messageTemplateId", 
     waba_information_id as "wabaInformationId", template_name as "templateName"
     FROM message_template mt 
-    where is_active = true and mt.waba_information_id =$1`
+    where is_active = true and mt.waba_information_id =?`
 }
 
 const getTemplateTableDataAndWabaId = () => {
@@ -182,14 +182,14 @@ const getTemplateTableDataAndWabaId = () => {
   mt.second_message_template_language_id as "secondMessageTemplateLanguageId" ,mt.second_language_body_text as "secondlanguageBodyText",
   mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData"
   from waba_information wi
-  left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = $1
-  where wi.is_active = true and wi.user_id = $2`
+  left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = ?
+  where wi.is_active = true and wi.user_id = ?`
 }
 
 const setIsActiveFalseByTemplateId = () => {
   return `update message_template 
-          set is_active = false, updated_on=now(),updated_by=$2
-          where message_template_id = $1 and is_active = true`
+          set is_active = false, updated_on=now(),updated_by=?
+          where message_template_id = ? and is_active = true`
 }
 
 const setAllTemplatesInRedis = () => {
@@ -205,7 +205,7 @@ const setTemplatesInRedisForWabaId = () => {
   mt.footer_text,wi.phone_code || wi.phone_number as phone_number
   from message_template mt
   join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
-  where mt.is_active = true and wi.waba_information_id = $1`
+  where mt.is_active = true and wi.waba_information_id = ?`
 }
 
 module.exports = {

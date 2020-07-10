@@ -56,12 +56,12 @@ const getAudienceRecordList = (req, res) => {
 
   console.log('columnArray', columnArray)
   console.log('valArray', valArray)
-  __db.postgresql.__query(queryProvider.getAudienceRecordList(columnArray), valArray)
+  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray)
     .then(result => {
-      if (result && result.rows && result.rows.length === 0) {
+      if (result && result.affectedRows && result.affectedRows === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result.rows })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       }
     })
     .catch(err => {
