@@ -15,13 +15,13 @@ const CheckInfoCompletionService = require('../services/checkCompleteIncomplete'
 const getBusinessBilllingProfile = (req, res) => {
   __logger.info('Inside getBusinessBilllingProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  let queryResult = []
-  __db.postgresql.__query(queryProvider.getBillingProfile(), [userId])
+  let queryResult = {}
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBillingProfile(), [userId])
     .then(results => {
       __logger.info('Then 1', results)
-      queryResult = results.rows[0]
-      if (results && results.rows.length > 0) {
-        return checkBusinessBillingProfileCompletionStatus(results.rows[0])
+      if (results && results.length > 0) {
+        queryResult = results[0]
+        return checkBusinessBillingProfileCompletionStatus(results[0])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
@@ -62,20 +62,17 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
       panCard: businessDataToBeUpdated.panCard ? businessDataToBeUpdated.panCard : oldBusinessData.panCard,
       billingInformationId: oldBusinessData.billing_information_id
     }
-
-    __db.postgresql.__query(queryProvider.updateBusinessBillingProfile(), [businessDataObj.city, businessDataObj.state, businessDataObj.country, businessDataObj.addressLine1, businessDataObj.addressLine2, businessDataObj.contactNumber, businessDataObj.phoneCode, businessDataObj.postalCode, businessDataObj.panCard, businessDataObj.gstOrTaxNo, businessDataObj.billingName, userId, userId])
-
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateBusinessBillingProfile(), [businessDataObj.city, businessDataObj.state, businessDataObj.country, businessDataObj.addressLine1, businessDataObj.addressLine2, businessDataObj.contactNumber, businessDataObj.phoneCode, businessDataObj.postalCode, businessDataObj.panCard, businessDataObj.gstOrTaxNo, businessDataObj.billingName, userId, userId])
       .then(result => {
         __logger.info('Then 2 update', result)
-
         queryResult = result
         return checkBusinessBillingProfileCompletionStatus(businessDataObj)
       })
       .then(result => {
         __logger.info('Then 3 update', result)
         queryResult.complete = result.complete
-        if (queryResult && queryResult.rowCount && queryResult.rowCount > 0) {
-          return resolve({ rowCount: queryResult.rowCount, complete: queryResult.complete })
+        if (queryResult && queryResult.affectedRows && queryResult.affectedRows > 0) {
+          return resolve({ affectedRows: queryResult.affectedRows, complete: queryResult.complete })
         } else {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, data: {} })
         }
@@ -84,11 +81,6 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
         __logger.error('error: ', err)
         return rejectionHandler({ type: err.type, err: err.err, data: {} })
       })
-      /* Logic to add records to logs to be implemented
-      .then(() => {
-        return insertBusinessBillingProfileInfo(userId, {}, businessDataObj)
-
-      }) */
   })
 }
 
@@ -96,19 +88,16 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
 const addBusinessBilllingProfile = (req, res) => {
   __logger.info('Inside getBusinessBilllingProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-
   const validate = new ValidatonService()
   validate.businessProfile(req.body)
     .then(data => {
       __logger.info(' then 1')
-
       const userService = new UserService()
       return userService.checkUserIdExistForBusiness(userId)
     })
     .then(result => {
       /* If exists then updating else inserting */
       __logger.info('Inside Query execution function then 2', result)
-
       if (!result.exists) {
         return insertBusinessBillingProfileInfo(userId, req.body, {})
       } else {
@@ -117,8 +106,7 @@ const addBusinessBilllingProfile = (req, res) => {
     })
     .then(result => {
       __logger.info('Then 3', result)
-
-      if (result && result.rowCount && result.rowCount > 0) {
+      if (result && result.affectedRows && result.affectedRows > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
           data: { complete: result.complete }
@@ -138,10 +126,8 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
   __logger.info('Inputs insertBusinessBillingProfileInfo userId', userId)
   // __logger.info('Inputs businessData', businessData)
   // __logger.info('Inputs businessOldData', businessOldData)
-
   const uniqueId = new UniqueId()
   let queryResult
-
   const billingObj = {
     city: businessData.city ? businessData.city : businessOldData.city,
     state: businessData.state ? businessData.state : businessOldData.state,
@@ -158,37 +144,28 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
     planId: __constants.FREE_PLAN_ID
 
   }
-
   // __logger.info('Billing Obj', billingObj)
-
   return new Promise((resolve, reject) => {
-    __db.postgresql.__query(queryProvider.createBusinessBillingProfile(), [userId, billingObj.billingName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.billingInformationId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createBusinessBillingProfile(), [userId, billingObj.billingName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.billingInformationId, userId])
       .then(result => {
-        queryResult = result
-        return checkBusinessBillingProfileCompletionStatus(billingObj)
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          queryResult = result
+          return checkBusinessBillingProfileCompletionStatus(billingObj)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+        }
       })
       .then(data => {
-        __logger.info('then 1')
-
+        __logger.info('then 1', data)
         // __logger.info('queryResult', queryResult)
         // __logger.info('data', data)
-        return resolve({ rowCount: queryResult.rowCount, complete: data.complete })
+        return resolve({ affectedRows: queryResult.affectedRows, complete: data.complete })
       })
       .catch(err => {
         __logger.error('error: ', err)
-        return rejectionHandler({ type: err.type, err: err.err, data: {} })
+        return reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }) // eslint-disable-line
       })
   })
-}
-
-// Function to get business info by id
-function getBusinessProfileInfo (userId) {
-  return __db.postgresql.__query(queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
-}
-
-// Function to update is active status for business
-function updateBusinessProfileIsActiveStatusToFalse (userId) {
-  return __db.postgresql.__query(queryProvider.updateIsActiveStatusBusinessProfile(), [false, userId, userId])
 }
 
 function checkBusinessBillingProfileCompletionStatus (data) {
@@ -197,4 +174,4 @@ function checkBusinessBillingProfileCompletionStatus (data) {
   return checkCompleteStatus.checkBusinessBillingProfileStatus(data)
 }
 
-module.exports = { addBusinessBilllingProfile, getBusinessBilllingProfile, updateBusinessBilllingProfile, insertBusinessBillingProfileInfo, getBusinessProfileInfo, updateBusinessProfileIsActiveStatusToFalse }
+module.exports = { addBusinessBilllingProfile, getBusinessBilllingProfile, updateBusinessBilllingProfile, insertBusinessBillingProfileInfo }
