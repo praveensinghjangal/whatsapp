@@ -15,29 +15,13 @@ class AudienceService {
   getAudienceTableDataWithId (audienceId) {
     __logger.info('inside get audience by id service', typeof audienceId)
     const audienceData = q.defer()
-    let finalResult = []
     __db.postgresql.__query(queryProvider.getAudienceTableDataWithId(), [audienceId])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.rows && result.rows.length === 0) {
           audienceData.resolve(null)
         } else {
-          finalResult = result.rows[0]
-          return this.getTempOptinStatus(audienceId)
-          // audienceData.resolve(result.rows[0])
-        }
-      })
-      .then(data => {
-        console.log(' Temp Optin then', data)
-        console.log(' Temp Optin then finalResult', finalResult)
-        if (data && finalResult) {
-          finalResult.tempOptin = true
-          audienceData.resolve(finalResult)
-        } else if (finalResult && !data) {
-          finalResult.tempOptin = false
-          audienceData.resolve(finalResult)
-        } else {
-          audienceData.resolve(null)
+          audienceData.resolve(result.rows[0])
         }
       })
       .catch(err => {
@@ -66,18 +50,9 @@ class AudienceService {
     return audienceData.promise
   }
 
-  addAudienceDataService (insertData, audienceData) {
+  addAudienceDataService (newData, oldData) {
     // __logger.info('Add audience service called', insertData, audienceData)
     const audienceDataAdded = q.defer()
-    this.insertAudienceData(insertData, audienceData)
-      .then(data => audienceDataAdded.resolve(data))
-      .catch(err => audienceDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-    return audienceDataAdded.promise
-  }
-
-  insertAudienceData (newData, oldData) {
-    // __logger.info('Inserting new AudienceData>>>>>>>>>>.', newData)
-    const dataInserted = q.defer()
     const audienceData = {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
       phoneNumber: newData.phoneNumber || oldData.phoneNumber,
@@ -99,31 +74,20 @@ class AudienceService {
       .then(result => {
         // console.log('Add Result', result)
         if (result && result.rowCount && result.rowCount > 0) {
-          dataInserted.resolve(audienceData)
+          audienceDataAdded.resolve(audienceData)
         } else {
-          dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          audienceDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => {
-        __logger.error('error: ', err)
-        dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return dataInserted.promise
+      .catch(err => audienceDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return audienceDataAdded.promise
   }
 
   updateAudienceDataService (newData, oldData) {
     // __logger.info('update audience service called', newData, oldData)
     const audienceUpdated = q.defer()
     // console.log('i will updateeeee')
-    this.updateAudience(newData, oldData)
-      .then(data => audienceUpdated.resolve(data))
-      .catch(err => audienceUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-    return audienceUpdated.promise
-  }
-
-  updateAudience (newData, oldData) {
-    __logger.info('Updating audience')
-    const dataUpdated = q.defer()
+    // this.updateAudience(newData, oldData)
     const audienceData = {
       audienceId: oldData.audienceId,
       phoneNumber: oldData.phoneNumber,
@@ -135,8 +99,8 @@ class AudienceService {
       name: newData.name || oldData.name,
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
-      country: newData.country || oldData.country
-
+      country: newData.country || oldData.country,
+      updatedBy: newData.user_id
     }
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
@@ -146,16 +110,13 @@ class AudienceService {
       .then(data => __db.postgresql.__query(queryProvider.updateAudienceRecord(), queryParam))
       .then(result => {
         if (result && result.rowCount && result.rowCount > 0) {
-          dataUpdated.resolve(audienceData)
+          audienceUpdated.resolve(audienceData)
         } else {
-          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          audienceUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => {
-        __logger.error('error: ', err)
-        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return dataUpdated.promise
+      .catch(err => audienceUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return audienceUpdated.promise
   }
 
   getTempOptinStatus (audienceId) {
