@@ -23,12 +23,12 @@ class VerificationService {
       return verificationData.promise
     }
     const query = queryProvider.getVerifiedAndCodeDataByUserId()
-    __db.postgresql.__query(query, [userId, verificationChannel])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, verificationChannel])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {
-          verificationData.resolve(result.rows[0])
+          verificationData.resolve(result[0])
         }
       })
       .catch(err => verificationData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
@@ -55,9 +55,9 @@ class VerificationService {
     }
     const query = queryProvider.addVerificationCode()
     const code = this.uniqueId.randomInt(codeLength)
-    __db.postgresql.__query(query, [userId, code, verificationChannel, expiresIn, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, code, verificationChannel, expiresIn, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           verificationDataAdded.resolve({ userId, code })
         } else {
           verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -78,9 +78,9 @@ class VerificationService {
       return verificationDataUpdated.promise
     }
     const query = queryProvider.updateVerificationCode()
-    __db.postgresql.__query(query, [userId, verificationChannel])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, verificationChannel])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           verificationDataUpdated.resolve({ userId })
         } else {
           verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -136,12 +136,12 @@ class VerificationService {
       return codeData.promise
     }
     const query = queryProvider.getCodeData()
-    __db.postgresql.__query(query, [userId, code, verificationChannel])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, code, verificationChannel])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, data: {} })
         } else {
-          codeData.resolve(result.rows[0])
+          codeData.resolve(result[0])
         }
       })
       .catch(err => codeData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
@@ -163,9 +163,9 @@ class VerificationService {
       return tokenMarkedConsumed.promise
     }
     const query = queryProvider.setTokenConsumed()
-    __db.postgresql.__query(query, [userId, code, verificationChannel, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, code, verificationChannel, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           tokenMarkedConsumed.resolve({ updated: true })
         } else {
           tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -203,9 +203,9 @@ class VerificationService {
       tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'verificationChannel not configured' })
       return tokenMarkedConsumed.promise
     }
-    __db.postgresql.__query(query, [userId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           tokenMarkedConsumed.resolve({ updated: true })
         } else {
           tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -222,12 +222,12 @@ class VerificationService {
       return verificationData.promise
     }
     const query = queryProvider.getVerifiedAndCodeDataByUserIdForBusinessNumber()
-    __db.postgresql.__query(query, [userId, __constants.VERIFICATION_CHANNEL.businessNumber.name])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, __constants.VERIFICATION_CHANNEL.businessNumber.name])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result.length === 0) {
           verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {
-          verificationData.resolve(result.rows[0])
+          verificationData.resolve(result[0])
         }
       })
       .catch(err => verificationData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))

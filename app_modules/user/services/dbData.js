@@ -110,18 +110,16 @@ class UserData {
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
         // console.log('Response', valResponse)
-
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
       })
       .then(result => {
         // console.log('Qquery Result checkUserExistByUserId', result)
-
         // if exist throw return true exist
         if (result && result.length === 0) {
-          doesUserIdExist.resolve({ record: result.rows[0], exists: true })
+          doesUserIdExist.resolve({ record: result[0], exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve({ record: result.rows[0], exists: false })
+          doesUserIdExist.resolve({ record: result[0], exists: false })
         }
       })
       .catch(err => {

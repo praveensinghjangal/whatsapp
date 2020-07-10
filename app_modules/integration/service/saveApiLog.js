@@ -68,12 +68,12 @@ const validateInput = input => {
 module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo) => {
   const historyStored = q.defer()
   const query = `insert into service_provider_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number)
-  values ($1,$2,$3,$4,$5,$6,$7)`
+  values (?,?,?,?,?,?,?)`
   __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId)
   validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
-    .then(validData => __db.postgresql.__query(query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo]))
+    .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo]))
     .then(result => {
-      if (result && result.rowCount && result.rowCount > 0) {
+      if (result && result.affectedRows && result.affectedRows > 0) {
         historyStored.resolve(true)
       } else {
         historyStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

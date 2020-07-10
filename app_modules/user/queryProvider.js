@@ -14,7 +14,7 @@ const createUser = () => {
 
 const getUserDetailsByUserIdForAccountProfile = () => {
   return `select user_id from users 
-  where user_id = $1 and is_active = true`
+  where user_id = ? and is_active = true`
 }
 
 const getUserAccountProfile = () => {
@@ -39,7 +39,7 @@ const getBillingProfile = () => {
   from billing_information bi
   left join plan_details pd on
   bi.plan_id  = pd.plan_id and pd.is_active =true and bi.is_active = true
-  WHERE user_id = $1 `
+  WHERE user_id = ? `
 }
 
 const createBusinessBillingProfile = () => {
@@ -47,19 +47,19 @@ const createBusinessBillingProfile = () => {
   (user_id, billing_name, city, state, country, address_line_1, address_line_2,
     contact_number, phone_code, postal_code, pan_card, gst_or_tax_no,billing_information_id,
     created_by)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`
+    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateBusinessBillingProfile = () => {
   return `update billing_information
-  set city=$1, state=$2, country=$3, address_line_1=$4,address_line_2=$5,contact_number=$6,
-  phone_code=$7, postal_code =$8,pan_card=$9, gst_or_tax_no=$10,billing_name=$11,
-  updated_by= $12 ,updated_on=now() WHERE user_id=$13 and is_active = true`
+  set city=?, state=?, country=?, address_line_1=?,address_line_2=?,contact_number=?,
+  phone_code=?, postal_code =?,pan_card=?, gst_or_tax_no=?,billing_name=?,
+  updated_by= ? ,updated_on=now() WHERE user_id=? and is_active = true`
 }
 
 const updateIsActiveStatusBusinessProfile = () => {
   return `update billing_information
-  set is_active=$1,updated_on=now(),updated_by=$2 WHERE user_id=$3 and is_active = true`
+  set is_active=?,updated_on=now(),updated_by=? WHERE user_id=? and is_active = true`
 }
 
 const getBillingProfileWithBusinessInfoId = () => {
@@ -78,62 +78,62 @@ const getVerifiedAndCodeDataByUserId = () => {
   return `select uvc.id as user_verification_code_id , u.phone_verified ,u.email_verified,
     u.email ,u.first_name ,u.phone_code, u.contact_number
     from users u 
-    left join user_verification_code uvc on u.user_id = uvc.user_id and lower(uvc.code_type) = lower($2) and uvc.is_consumed = false and uvc.is_active = true
-    where u.user_id = $1
+    left join user_verification_code uvc on u.user_id = uvc.user_id and lower(uvc.code_type) = lower(?) and uvc.is_consumed = false and uvc.is_active = true
+    where u.user_id = ?
     and u.is_active = true`
 }
 
 const addVerificationCode = () => {
   return `insert into user_verification_code (user_id,code,code_type,expires_in,created_by) values
-  ($1,$2,$3,$4,$5)`
+  (?,?,?,?,?)`
 }
 
 const updateVerificationCode = () => {
   return `update user_verification_code
-  set is_active = false , updated_by = $1, updated_on = now()
-  where user_id  = $1 and lower(code_type) = $2
+  set is_active = false , updated_by = ?, updated_on = now()
+  where user_id  = ? and lower(code_type) = ?
   and is_consumed = false and is_active = true`
 }
 
 const getCodeData = () => {
   return `select expires_in,created_on from user_verification_code
-  where user_id  = $1 and code = $2 and code_type = $3 and is_consumed = false
+  where user_id  = ? and code = ? and code_type = ? and is_consumed = false
   and is_active = true`
 }
 
 const setTokenConsumed = () => {
   return `update user_verification_code 
-  set is_consumed = true, updated_by = $4, updated_on = now()
-  where user_id  = $1 and code = $2 and code_type = $3 and is_consumed = false
+  set is_consumed = true, updated_by = ?, updated_on = now()
+  where user_id  = ? and code = ? and code_type = ? and is_consumed = false
   and is_active = true`
 }
 
 const markUserEmailVerified = () => {
   return `update users 
-  set email_verified = true, updated_by = $2, updated_on = now() 
-  where user_id = $1 and is_active = true`
+  set email_verified = true, updated_by = ?, updated_on = now() 
+  where user_id = ? and is_active = true`
 }
 
 const markbusinessNumberVerified = () => {
   return `update waba_information 
-  set phone_verified = true, updated_by = $2, updated_on = now() 
-  where user_id = $1 and is_active = true`
+  set phone_verified = true, updated_by = ?, updated_on = now() 
+  where user_id = ? and is_active = true`
 }
 
 const markUserSmsVerified = () => {
   return `update users 
-  set phone_verified = true, updated_by = $2, updated_on = now() 
-  where user_id = $1 and is_active = true`
+  set phone_verified = true, updated_by = ?, updated_on = now() 
+  where user_id = ? and is_active = true`
 }
 
 const saveUserAgreement = () => {
   return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path,created_by)
-  values ($1,$2,$3,$4,$5)`
+  values (?,?,?,?,?)`
 }
 
 const getLatestAgreementByUserId = () => {
   return `select file_path from user_agreement_files
-  where user_id = $1 and is_active = true 
+  where user_id = ? and is_active = true 
   order by created_on desc limit 1`
 }
 
@@ -141,8 +141,8 @@ const getVerifiedAndCodeDataByUserIdForBusinessNumber = () => {
   return `select uvc.id as user_verification_code_id , wi.phone_verified , wi.business_name ,
   wi.phone_code, wi.phone_number
     from waba_information wi 
-    left join user_verification_code uvc on wi.user_id = uvc.user_id and lower(uvc.code_type) = lower($2) and uvc.is_consumed = false and uvc.is_active = true
-    where wi.user_id = $1
+    left join user_verification_code uvc on wi.user_id = uvc.user_id and lower(uvc.code_type) = lower(?) and uvc.is_consumed = false and uvc.is_active = true
+    where wi.user_id = ?
     and wi.is_active = true`
 }
 
