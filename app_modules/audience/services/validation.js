@@ -93,8 +93,7 @@ class validate {
         },
         chatFlowId: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         name: {
           type: 'string',
