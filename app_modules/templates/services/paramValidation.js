@@ -10,12 +10,12 @@ class TemplateParamValidationService {
   setAllTemplatesInRedis () {
     __logger.info('inside setAllTemplatesInRedis')
     const dataStored = q.defer()
-    __db.postgresql.__query(queryProvider.setAllTemplatesInRedis(), [])
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.setAllTemplatesInRedis(), [])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.affectedRows && result.affectedRows === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
-          return result.rows
+          return result
         }
       })
       .then(dbData => {
@@ -40,12 +40,12 @@ class TemplateParamValidationService {
   setTemplatesInRedisForWabaId (wabaId) {
     __logger.info('inside setTemplatesInRedisForWabaId')
     const dataStored = q.defer()
-    __db.postgresql.__query(queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
+    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.affectedRows && result.affectedRows === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
-          return result.rows
+          return result
         }
       })
       .then(dbData => {
