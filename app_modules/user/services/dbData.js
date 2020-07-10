@@ -18,7 +18,7 @@ class UserData {
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserDetailsByEmail(), [email])
       .then(result => {
-        console.log('Qquery Result', result[0])
+        // console.log('Qquery Result', result[0])
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
         } else {
@@ -88,8 +88,8 @@ class UserData {
         // console.log('Qquery Result checkUserExistByUserId', result)
 
         // if exist throw return true exist
-        if (result && result.length === 0) {
-          doesUserIdExist.resolve({ rows: result.rows, exists: true })
+        if (result && result.length > 0) {
+          doesUserIdExist.resolve({ rows: result, exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
           doesUserIdExist.resolve({ exists: false })

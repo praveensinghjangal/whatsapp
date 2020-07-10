@@ -25,8 +25,8 @@ const getUserAccountProfile = () => {
 }
 
 const updateUserAccountProfile = () => {
-  return `update users set city=$1, state=$2, country=$3, address_line_1=$4,address_line_2=$5,
-  contact_number=$6, phone_code=$7, postal_code =$8,first_name=$9,last_name=$10, updated_on=now(),account_manager_name=$11,user_account_type_id=$12,updated_by=$13 WHERE user_id=$14 and is_active = true`
+  return `update users set city= ?, state= ?, country= ?, address_line_1= ?,address_line_2= ?,
+  contact_number= ?, phone_code= ?, postal_code = ?,first_name= ?,last_name= ?, updated_on=now(),account_manager_name= ?,user_account_type_id= ?,updated_by= ? WHERE user_id= ? and is_active = true`
 }
 
 // Billing Profile

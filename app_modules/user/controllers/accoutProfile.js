@@ -13,16 +13,14 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const getAcountProfile = (req, res) => {
   __logger.info('Inside getAcountProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  let queryResult = []
-
-  __db.postgresql.__query(queryProvider.getUserAccountProfile(), [userId])
+  let queryResult = {}
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
       __logger.info('Then 1')
       // __logger.info('Then 1', results)
-      queryResult = results.rows[0]
-
-      if (results && results.rows.length > 0) {
-        return checkAccountProfileCompletionStatus(results.rows[0])
+      if (results && results.length > 0) {
+        queryResult = results[0]
+        return checkAccountProfileCompletionStatus(queryResult)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
@@ -77,7 +75,7 @@ const updateAcountProfile = (req, res) => {
           accountTypeId: req.body.accountTypeId ? req.body.accountTypeId : __constants.ACCOUNT_PLAN_TYPE.Prepaid
         }
 
-        return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [accountProfileData.city, accountProfileData.state, accountProfileData.country, accountProfileData.addressLine1, accountProfileData.addressLine2, accountProfileData.contactNumber, accountProfileData.phoneCode, accountProfileData.postalCode, accountProfileData.firstName, accountProfileData.lastName, accountProfileData.accountManagerName, accountProfileData.accountTypeId, accountProfileData.userId, accountProfileData.userId])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateUserAccountProfile(), [accountProfileData.city, accountProfileData.state, accountProfileData.country, accountProfileData.addressLine1, accountProfileData.addressLine2, accountProfileData.contactNumber, accountProfileData.phoneCode, accountProfileData.postalCode, accountProfileData.firstName, accountProfileData.lastName, accountProfileData.accountManagerName, accountProfileData.accountTypeId, accountProfileData.userId, accountProfileData.userId])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
