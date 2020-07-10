@@ -52,6 +52,10 @@
         {
             "name": "templates",
             "description": "API's related to whatsapp templates"
+        },       
+        {
+            "name": "audience",
+            "description": "API's related to whatsapp audience"
         }
     ],
     "schemes": [
@@ -4268,6 +4272,431 @@
                 },
                 "security": []
             }
+        },
+        "/audience": {
+            "get": {
+                "description": "This api returns list of templates based on filters",
+                "summary": "Get audience list",
+                "tags": [
+                    "audience"
+                ],
+                "operationId": "GetAudienceRecordList",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "phoneNumber",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    },
+                    {
+                        "name": "firstMessageActivation",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    },
+                    {
+                        "name": "segmentId",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    },
+                    {
+                        "name": "channel",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    },
+                    {
+                        "name": "optinSourceId",
+                        "in": "query",
+                        "required": false,
+                        "type": "string",
+                        "description": ""
+                    },
+                    {
+                        "name": "optin",
+                        "in": "query",
+                        "required": false,
+                        "type": "boolean",
+                        "description": ""
+                    }                    
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of all Templates for audience record",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data":  [
+                                  {
+                                      "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
+                                      "phoneNumber": "919820333891",
+                                      "channel": "whatsapp",
+                                      "firstMessage": "2020-07-07T14:48:58.251Z",
+                                      "lastMessage": "2020-07-09T13:02:39.018Z",
+                                      "optin": true,
+                                      "tempOptin": true,
+                                      "optinSource": "direct",
+                                      "segment_name": "Organic Conversation",
+                                      "chatFlowId": null,
+                                      "name": "Ajay",
+                                      "email": "ajay@yopmail.com",
+                                      "gender": "Male",
+                                      "country": "India"
+                                  },
+                                  {
+                                      "audienceId": "b70aeadd-4941-4bda-a4bd-fd5d320e454f",
+                                      "phoneNumber": "+91842490276",
+                                      "channel": "whatsapp",
+                                      "firstMessage": "2020-07-05T14:06:05.000Z",
+                                      "lastMessage": null,
+                                      "optin": true,
+                                      "tempOptin": null,
+                                      "optinSource": "direct",
+                                      "segment_name": "Organic Conversation",
+                                      "chatFlowId": null,
+                                      "name": "Raju",
+                                      "email": "raju@yopmail.com",
+                                      "gender": "Male",
+                                      "country": "India"
+                                  }
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            },
+            "post": {
+                "description": "API to add or update audience\nTo add audience do not pass audienceID to update template pass audience ID along with parameters to update",
+                "summary": "Add update audience",
+                "tags": [
+                    "audience"
+                ],
+                "operationId": "AddUpdateAudienceData",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/AddupdateAudienceRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns Status of audience info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": {
+                                      "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
+                                      "phoneNumber": "919820333891",
+                                      "channel": "whatsapp",
+                                      "optin": true,
+                                      "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
+                                      "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
+                                      "chatFlowId": null,
+                                      "name": "Ajay",
+                                      "email": "ajay@yopmail.com",
+                                      "gender": "Male",
+                                      "country": "India"
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+          }
+        },
+        "/audience/{audienceId}": {
+          "get": {
+                "summary": "Get audience Info",
+                "description": "Use this API to get information of a audience record",
+                "tags": [
+                    "audience"
+                ],
+                "operationId": "GetAudienceRecordById",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "audienceId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of Audience Record"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns info of a audience record",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": {
+                                        "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
+                                        "phoneNumber": "919820333891",
+                                        "channel": "whatsapp",
+                                        "firstMessage": "07/07/2020 02:07:58",
+                                        "lastMessage": "2020-07-07T14:48:58.251Z",
+                                        "optin": false,
+                                        "tempOptin": false,
+                                        "optinSource": null,
+                                        "segment_name": null,
+                                        "chatFlowId": null,
+                                        "name": null,
+                                        "email": null,
+                                        "gender": null,
+                                        "country": null
+                                    }
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
         }
     },
     "definitions": {
@@ -5075,6 +5504,77 @@
                     "type": "string"
                 }
             }
+        },
+        "Audience": {
+            "title": "Audience",
+            "example": {
+                "audienceId": "opt_1"
+            },
+            "type": "object",
+            "properties": {
+                "audienceId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "audienceId"
+            ]
+        },
+        "AddupdateAudienceRequest": {
+            "title": "AddupdateaudienceRequest",
+            "example":{
+              "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
+              "phoneNumber": "919820333891",
+              "channel": "whatsapp",
+              "optin": true,
+              "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
+              "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
+              "chatFlowId": null,
+              "name": "Ajay",
+              "email": "ajay@yopmail.com",
+              "gender": "Male",
+              "country": "India"
+            },
+            "type": "object",
+            "properties": {
+                "audienceId": {
+                    "type": "string"
+                },              
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "optin": {
+                    "type": "boolean"
+                },
+                "optinSourceId": {
+                    "type": "string"
+                },
+                "segmentId": {
+                    "type": "string"
+                },
+                "chatFlowId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "phoneNumber",
+                "channel" 
+            ]
         }
     }
 }

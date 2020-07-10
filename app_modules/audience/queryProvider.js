@@ -10,8 +10,8 @@ const updateAudienceRecord = () => {
   return `UPDATE audience
   SET channel=$3, optin=$4, optin_source_id=$5,
   segment_id=$6, chat_flow_id=$7, "name"=$8, email=$9, gender=$10,
-  country=$11, updated_on = now(),last_message = now()
-  WHERE audience_id=$1 and phone_number=$2`
+  country=$11, updated_by =$12,updated_on = now(),last_message = now()
+  WHERE audience_id=$1 and phone_number=$2 and is_active=true`
 }
 
 const getAudienceRecordList = (columnArray) => {
@@ -19,6 +19,7 @@ const getAudienceRecordList = (columnArray) => {
   let query = `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", optin,
+  (last_message between now()- interval  '24 HOURS' and now()) as "tempOptin",
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId","name",
   email, gender, country
   FROM audience aud
@@ -46,6 +47,7 @@ const getAudienceTableDataWithId = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
   channel, to_char(first_message,'DD/MM/YYYY HH:mm:ss') as "firstMessage",
   last_message as "lastMessage", optin,
+  (last_message between now()- interval  '24 HOURS' and now()) as "tempOptin",
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId","name",
   email, gender, country
   FROM audience aud
@@ -62,7 +64,7 @@ const getAudienceTableDataByPhoneNumber = () => {
   to_char(last_message,'DD/MM/YYYY HH:mm:ss') as "lastMessage", segment_id as "segmentId",
   chat_flow_id as "chatFlowId","name", email, gender, country
   FROM audience
-  where phone_number=$1`
+  where phone_number=$1 and is_active=true`
 }
 
 const getTempOptinStatus = () => {

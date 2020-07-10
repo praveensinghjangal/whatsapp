@@ -22,7 +22,6 @@ class MessgaeHistoryService {
           messageHistoryData.resolve(null)
         } else {
           messageHistoryData.resolve(result.rows)
-          // messageHistoryData.resolve(result.rows[0])
         }
       })
       .catch(err => {
@@ -32,18 +31,9 @@ class MessgaeHistoryService {
     return messageHistoryData.promise
   }
 
-  addMessageHistoryDataService (insertData) {
+  addMessageHistoryDataService (newData) {
     // __logger.info('Add message history service called', insertData, messageHistoryData)
     const messageHistoryDataAdded = q.defer()
-    this.insertMessageHistoryData(insertData)
-      .then(data => messageHistoryDataAdded.resolve(data))
-      .catch(err => messageHistoryDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-    return messageHistoryDataAdded.promise
-  }
-
-  insertMessageHistoryData (newData) {
-    // __logger.info('Inserting new AudienceData>>>>>>>>>>.', newData)
-    const dataInserted = q.defer()
     const messageHistoryData = {
       messageId: newData.messageId,
       serviceProviderId: newData.serviceProviderId,
@@ -61,16 +51,13 @@ class MessgaeHistoryService {
       .then(result => {
         // console.log('Add Result', result)
         if (result && result.rowCount && result.rowCount > 0) {
-          dataInserted.resolve(messageHistoryData)
+          messageHistoryDataAdded.resolve(messageHistoryData)
         } else {
-          dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => {
-        __logger.error('error: ', err)
-        dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return dataInserted.promise
+      .catch(err => messageHistoryDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return messageHistoryDataAdded.promise
   }
 }
 
