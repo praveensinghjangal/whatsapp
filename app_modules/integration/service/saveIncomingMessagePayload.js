@@ -96,7 +96,7 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
       console.log('dataatatatat', data, typeof data)
       if (data) {
         data = JSON.parse(data)
-        return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, payload, fromNumber])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, JSON.stringify(payload), fromNumber])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
       }

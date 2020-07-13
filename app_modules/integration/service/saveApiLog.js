@@ -71,7 +71,7 @@ module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, ap
   values (?,?,?,?,?,?,?)`
   __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId)
   validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
-    .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo]))
+    .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo]))
     .then(result => {
       if (result && result.affectedRows && result.affectedRows > 0) {
         historyStored.resolve(true)

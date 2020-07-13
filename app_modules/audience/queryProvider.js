@@ -45,7 +45,7 @@ const getAudienceRecordList = (columnArray) => {
 
 const getAudienceTableDataWithId = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
-  channel, to_char(first_message,'DD/MM/YYYY HH:mm:ss') as "firstMessage",
+  channel, date_format(first_message,'%d/%m/%Y %H:%i:s%') as "firstMessage",
   last_message as "lastMessage", optin,
   (last_message between now()- interval  '24 HOURS' and now()) as "tempOptin",
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId","name",
@@ -60,8 +60,8 @@ const getAudienceTableDataWithId = () => {
 
 const getAudienceTableDataByPhoneNumber = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
-  channel, to_char(first_message,'DD/MM/YYYY HH:mm:ss') as "firstMessage",
-  to_char(last_message,'DD/MM/YYYY HH:mm:ss') as "lastMessage", segment_id as "segmentId",
+  channel, date_format(first_message,'%d/%m/%Y %H:%i:s%') as "firstMessage",
+  date_format(last_message,'%d/%m/%Y %H:%i:s%') as "lastMessage", segment_id as "segmentId",
   chat_flow_id as "chatFlowId","name", email, gender, country
   FROM audience
   where phone_number=? and is_active=true`

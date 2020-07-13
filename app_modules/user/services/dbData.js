@@ -116,10 +116,10 @@ class UserData {
         // console.log('Qquery Result checkUserExistByUserId', result)
         // if exist throw return true exist
         if (result && result.length === 0) {
-          doesUserIdExist.resolve({ record: result[0], exists: true })
+          doesUserIdExist.resolve({ record: {}, exists: false })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve({ record: result[0], exists: false })
+          doesUserIdExist.resolve({ record: result[0], exists: true })
         }
       })
       .catch(err => {

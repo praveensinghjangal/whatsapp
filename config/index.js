@@ -158,7 +158,8 @@ module.exports = {
     host: process.env.REDIS_HOST,
     no_ready_check: process.env.REDIS_NO_READY_CHECK === 'true',
     auth_pass: process.env.REDIS_AUTH_PASS,
-    uri: 'redis://' + process.env.REDIS_HOST + ':' + process.env.REDIS_PORT + '/' + process.env.REDIS_DB
+    port: process.env.REDIS_PORT,
+    uri: 'redis://' + process.env.REDIS_HOST + ':' + process.env.REDIS_PORT + '/' + process.env.REDIS_DB // not used
   },
   integration: {
     messengerPeople: {
