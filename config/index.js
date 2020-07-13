@@ -136,7 +136,8 @@ module.exports = {
       password: process.env.HW_MYSQL_OPTIONS_PASSWORD,
       database: process.env.HW_MYSQL_OPTIONS_DATABASE,
       acquireTimeout: 0,
-      port: +process.env.HW_MYSQL_OPTIONS_PORT
+      port: +process.env.HW_MYSQL_OPTIONS_PORT,
+      timezone: 'utc'
     }
   },
   postgresql: {

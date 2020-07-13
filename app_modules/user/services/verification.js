@@ -23,7 +23,7 @@ class VerificationService {
       return verificationData.promise
     }
     const query = queryProvider.getVerifiedAndCodeDataByUserId()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, verificationChannel])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [verificationChannel, userId])
       .then(result => {
         if (result && result.length === 0) {
           verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
@@ -78,7 +78,7 @@ class VerificationService {
       return verificationDataUpdated.promise
     }
     const query = queryProvider.updateVerificationCode()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, verificationChannel])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, userId, verificationChannel])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           verificationDataUpdated.resolve({ userId })
@@ -163,7 +163,7 @@ class VerificationService {
       return tokenMarkedConsumed.promise
     }
     const query = queryProvider.setTokenConsumed()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, code, verificationChannel, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, userId, code, verificationChannel])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           tokenMarkedConsumed.resolve({ updated: true })
@@ -185,7 +185,7 @@ class VerificationService {
       tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide verificationChannel of type string' })
       return tokenMarkedConsumed.promise
     }
-    let query = queryProvider.setTokenConsumed()
+    let query = ''
     switch (verificationChannel) {
       case __constants.VERIFICATION_CHANNEL.email.name:
         query = queryProvider.markUserEmailVerified()
