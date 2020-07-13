@@ -56,7 +56,7 @@ const getAudienceRecordList = (req, res) => {
 
   console.log('columnArray', columnArray)
   console.log('valArray', valArray)
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray)
     .then(result => {
       if (result && result.affectedRows && result.affectedRows === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })

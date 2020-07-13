@@ -21,7 +21,7 @@ class templateService {
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
         __logger.info('valResponse', valResponse)
-        return __db.mysql.__query(queryProvider.getMessageTemplateDataByWabaId(), [wabaInformationId])
+        return __db.mysql.query(queryProvider.getMessageTemplateDataByWabaId(), [wabaInformationId])
       })
       .then(result => {
         // if exist throw return true exist

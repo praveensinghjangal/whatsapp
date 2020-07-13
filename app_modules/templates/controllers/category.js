@@ -8,7 +8,7 @@ const queryProvider = require('../queryProvider')
 // Get Template Category
 const getTemplateCategories = (req, res) => {
   __logger.info('Inside getTemplateCategory', req.user.userId)
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategories(), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategories(), [])
     .then(results => {
       // __logger.info('Then 1', results)
       if (results && results.affectedRows && results.affectedRows > 0) {

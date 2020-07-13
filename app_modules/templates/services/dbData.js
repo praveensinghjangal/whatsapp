@@ -16,7 +16,7 @@ class TemplateService {
   getTemplateTableDataAndWabaId (messageTemplateId, userId) {
     __logger.info('inside get template by id service', messageTemplateId)
     const templateData = q.defer()
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
       // console.log('Qquery Result', results)
         if (result && result.affectedRows && result.affectedRows === 0) {
@@ -35,7 +35,7 @@ class TemplateService {
   getTemplatesCount (wabaInformationId) {
     __logger.info('inside get template count service', wabaInformationId)
     const count = q.defer()
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCount(), [wabaInformationId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCount(), [wabaInformationId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows === 0) {
           count.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
@@ -53,7 +53,7 @@ class TemplateService {
   deactivateOldTemplateData (messageTemplateId, userId) {
     const recordDeactivated = q.defer()
     __logger.info('Setting is active false to Template record', messageTemplateId)
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           recordDeactivated.resolve(true)
@@ -94,7 +94,7 @@ class TemplateService {
     _.each(templateData, (val) => queryParam.push(val))
     queryParam.push(userId)
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.addTemplate(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addTemplate(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(templateData)
@@ -152,7 +152,7 @@ class TemplateService {
     _.each(templateData, (val) => queryParam.push(val))
     queryParam.push(userId)
     __logger.info('updateeeeee --->', templateData, queryParam)
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplate(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplate(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(templateData)

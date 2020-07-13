@@ -15,7 +15,7 @@ class MessgaeHistoryService {
   getMessageHistoryTableDataWithId (messageId) {
     __logger.info('inside get message history by id service', typeof messageId)
     const messageHistoryData = q.defer()
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getMessageTableDataWithId(), [messageId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageTableDataWithId(), [messageId])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.affectedRows && result.affectedRows === 0) {
@@ -47,7 +47,7 @@ class MessgaeHistoryService {
     const queryParam = []
     _.each(messageHistoryData, (val) => queryParam.push(val))
     // __logger.info('inserttttttttttttttttttttt->', messageHistoryData, queryParam)
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(), queryParam)
       .then(result => {
         // console.log('Add Result', result)
         if (result && result.affectedRows && result.affectedRows > 0) {

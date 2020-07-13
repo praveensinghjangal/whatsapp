@@ -10,7 +10,7 @@ class TemplateParamValidationService {
   setAllTemplatesInRedis () {
     __logger.info('inside setAllTemplatesInRedis')
     const dataStored = q.defer()
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.setAllTemplatesInRedis(), [])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setAllTemplatesInRedis(), [])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
@@ -40,7 +40,7 @@ class TemplateParamValidationService {
   setTemplatesInRedisForWabaId (wabaId) {
     __logger.info('inside setTemplatesInRedisForWabaId')
     const dataStored = q.defer()
-    __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })

@@ -19,7 +19,7 @@ const getTemplateList = (req, res) => {
     params.push(messageTemplateStatusId)
   }
 
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId), params)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId), params)
     .then(result => {
       if (result && result.affectedRows && result.affectedRows === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
@@ -39,7 +39,7 @@ const getTemplateInfo = (req, res) => {
   const validate = new ValidatonService()
   let finalResult
 
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
     .then(result => {
       __logger.info('then 1')
       if (result && result.affectedRows && result.affectedRows === 0) {

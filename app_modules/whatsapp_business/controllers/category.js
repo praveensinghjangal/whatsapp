@@ -8,7 +8,7 @@ const queryProvider = require('../queryProvider')
 // Get Business Category
 const getBusinessCategory = (req, res) => {
   __logger.info('Inside getBusinessCategory', req.user.userId)
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessCategory(), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessCategory(), [])
     .then(result => {
       __logger.info('Then 1', result)
       if (result && result.affectedRows && result.affectedRows > 0) {

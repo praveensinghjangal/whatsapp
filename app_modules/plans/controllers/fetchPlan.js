@@ -9,7 +9,7 @@ const getAllPlans =
 (req, res) => {
   __logger.info('Get Plan List API Called')
 
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getPlanList(), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPlanList(), [])
     .then(result => {
       if (result && result.affectedRows && result.affectedRows === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })

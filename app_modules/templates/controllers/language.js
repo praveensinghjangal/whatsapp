@@ -8,7 +8,7 @@ const queryProvider = require('../queryProvider')
 // Get Template Languages
 const getTemplateLanguages = (req, res) => {
   __logger.info('Inside getTemplateLanguages', req.user.userId)
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateLanguages(), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateLanguages(), [])
     .then(results => {
       // __logger.info('Then 1', results)
       if (results && results.affectedRows && results.affectedRows > 0) {

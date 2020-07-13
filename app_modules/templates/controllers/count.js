@@ -17,7 +17,7 @@ const getTemplateCount = (req, res) => {
   const templateCountByStatus = []
   let finalCount
 
-  __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountByStatus(), [userId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountByStatus(), [userId])
     .then(data => {
       __logger.info(' then 1')
       return formatAndReturnTemplateCount(data)
@@ -25,7 +25,7 @@ const getTemplateCount = (req, res) => {
     .then(data => {
       __logger.info('then 2')
       templateCountByStatus.push(data)
-      return __db.mysql.__query(__constants.HW_MYSQL_NAME, queryProvider.getTempalteUsedCountByWaba(), [userId])
+      return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTempalteUsedCountByWaba(), [userId])
     })
     .then(data => {
       __logger.info(' then 3', data)
