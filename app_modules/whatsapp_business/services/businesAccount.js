@@ -42,7 +42,10 @@ class businesAccountService {
       })
       .then(result => {
         // if exist throw return true exist
-        if (result && result.affectedRows && result.affectedRows > 0) {
+        if (result && result.length > 0) {
+          result[0].canReceiveSms = result[0].canReceiveSms === 1
+          result[0].canReceiveVoiceCall = result[0].canReceiveVoiceCall === 1
+          result[0].associatedWithIvr = result[0].associatedWithIvr === 1
           doesUserIdExist.resolve({ record: result[0], exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
@@ -127,7 +130,7 @@ class businesAccountService {
       city: businessData.city ? businessData.city : businessOldData.city,
       postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode
     }
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.wabaInformationId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(businessAccountObj)

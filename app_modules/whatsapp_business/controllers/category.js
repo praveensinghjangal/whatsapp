@@ -10,8 +10,8 @@ const getBusinessCategory = (req, res) => {
   __logger.info('Inside getBusinessCategory', req.user.userId)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessCategory(), [])
     .then(result => {
-      __logger.info('Then 1', result)
-      if (result && result.affectedRows && result.affectedRows > 0) {
+      __logger.info('Then 1')
+      if (result && result.length > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
           data: result

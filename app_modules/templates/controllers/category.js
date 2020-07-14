@@ -10,8 +10,8 @@ const getTemplateCategories = (req, res) => {
   __logger.info('Inside getTemplateCategory', req.user.userId)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategories(), [])
     .then(results => {
-      // __logger.info('Then 1', results)
-      if (results && results.affectedRows && results.affectedRows > 0) {
+      __logger.info('Then 1')
+      if (results && results.length > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
           data: results

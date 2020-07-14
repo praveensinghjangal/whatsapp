@@ -7,11 +7,11 @@ const getTemplateList = (messageTemplateStatusId) => {
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true AND wi.waba_information_id = mt.waba_information_id
-      JOIN message_template_category mtc
+      left JOIN message_template_category mtc
         ON mtc.is_active = true and mtc.message_template_category_id = mt.message_template_category_id
-      JOIN message_template_status mts
+      left JOIN message_template_status mts
         ON mts.is_active = true and mts.message_template_status_id = mt.message_template_status_id
-      JOIN message_template_language mtl
+      left JOIN message_template_language mtl
         ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
     WHERE mt.is_active = true and wi.user_id = ?
   `
@@ -46,7 +46,7 @@ const getTemplateInfo = () => {
 }
 
 const addTemplate = () => {
-  return `insert into message_template(message_template_id, waba_information_id, template_name, "type",
+  return `insert into message_template(message_template_id, waba_information_id, template_name, type,
   message_template_category_id, message_template_status_id, message_template_language_id, body_text ,
   header_text, footer_text, media_type, second_language_required, second_message_template_language_id, second_language_body_text ,
   header_type, button_type,button_data, created_by)
@@ -54,7 +54,7 @@ const addTemplate = () => {
 }
 
 const updateTemplate = () => {
-  return `update message_template set template_name =?, "type" =?, message_template_category_id =?,
+  return `update message_template set template_name =?, type =?, message_template_category_id =?,
   message_template_status_id =?,message_template_language_id =?, body_text  =?, header_text =?,
   footer_text =?, media_type =?, second_language_required = ?, second_message_template_language_id = ?,
   second_language_body_text = ?,header_type = ?, button_type = ?,button_data = ?, updated_by =?,
@@ -121,26 +121,13 @@ const getTemplateLanguages = () => {
 
 // Template Count
 const getTemplateCountByStatus = () => {
-  return `select wi.templates_allowed , count(mt.message_template_id ), mts.status_name
-from waba_information wi
-left join message_template mt on wi.waba_information_id = mt.waba_information_id and mt.is_active = true
-left join message_template_status mts on mt.message_template_status_id = mts.message_template_status_id 
-and mts.is_active = true
-where wi.is_active = true and wi.user_id = ?
-group by wi.templates_allowed , mts.status_name`
-
-  // return `select count(mt.message_template_id) as "templateCount",
-  //         mts.status_name  as "statusName"
-  //         from message_template mt
-  //         left join message_template_status mts
-  //         on mt.message_template_status_id  = mts.message_template_status_id
-  //         left join waba_information wi
-  //         on mt.waba_information_id = wi.waba_information_id
-  //         where mt.is_active  = true
-  //         and wi.is_active =true
-  //         and mts.is_active  = true
-  //         and wi.user_id = ?
-  //         group by mts.message_template_status_id`
+  return `select wi.templates_allowed , count(mt.message_template_id ) as "count", mts.status_name
+  from waba_information wi
+  left join message_template mt on wi.waba_information_id = mt.waba_information_id and mt.is_active = true
+  left join message_template_status mts on mt.message_template_status_id = mts.message_template_status_id 
+  and mts.is_active = true
+  where wi.is_active = true and wi.user_id = ?
+  group by wi.templates_allowed , mts.status_name`
 }
 
 const getTempalteAllocatedCountToWaba = () => {
@@ -177,7 +164,7 @@ const getTemplateTableDataAndWabaId = () => {
   return `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
   mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
   mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
-  mt.message_template_language_id as "messageTemplatelanguageId", mt.body_text as "bodyText", mt.header_text as "headerText",
+  mt.message_template_language_id as "messageTemplateLanguageId", mt.body_text as "bodyText", mt.header_text as "headerText",
   mt.footer_text as "footerText",mt.media_type as "mediaType" , mt.second_language_required as "secondLanguageRequired",
   mt.second_message_template_language_id as "secondMessageTemplateLanguageId" ,mt.second_language_body_text as "secondlanguageBodyText",
   mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData"

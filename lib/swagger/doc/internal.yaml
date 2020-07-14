@@ -28,6 +28,8 @@ tags:
     description: Web hook API's provided to our vendors to send incoming messages
   - name: places
     description: 'API''s related to country ,state, city details'
+  - name: plans
+    description: API's related to plans
   - name: WABA
     description: |-
       API's related to whatsapp business account (WABA) information of registered
@@ -1551,6 +1553,74 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
+  /plans:
+    get:
+      description: API to get list of plans available with helo-whatsapp
+      summary: get plans
+      tags:
+        - plans
+      operationId: GetAllPlans
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: List of all plans
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2000
+              msg: Success
+              data:
+                - planId: 6cb80f6d-cdca-4b69-974c-f25bbf95f642
+                  planName: Plan C
+                  planValidity: '30'
+                  planCost: '1000'
+                  planCategory: standard
+                  planBenefits: null
+                - planId: 6e9be178-1414-4d9e-91ca-3eb3c5ef5a99
+                  planName: Plan B
+                  planValidity: '30'
+                  planCost: '1500'
+                  planCategory: standard
+                  planBenefits: null
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
   /business/categories:
     get:
       description: Gets list of business categories

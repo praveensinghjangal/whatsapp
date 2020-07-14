@@ -19,10 +19,11 @@ class TemplateService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
       // console.log('Qquery Result', results)
-        if (result && result.affectedRows && result.affectedRows === 0) {
-          templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
-        } else {
+        if (result && result.length > 0) {
+          result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
           templateData.resolve(result[0])
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
         }
       })
       .catch(err => {
@@ -37,10 +38,10 @@ class TemplateService {
     const count = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCount(), [wabaInformationId])
       .then(result => {
-        if (result && result.affectedRows && result.affectedRows === 0) {
-          count.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
-        } else {
+        if (result && result.length > 0) {
           count.resolve(result[0])
+        } else {
+          count.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
       })
       .catch(err => {
@@ -88,11 +89,12 @@ class TemplateService {
       secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
       headerType: newData.headerType || oldData.headerType,
       buttonType: newData.buttonType || oldData.buttonType,
-      buttonData: newData.buttonData || oldData.buttonData
+      buttonData: newData.buttonData || oldData.buttonData,
+      createdBy: userId
     }
+    if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
-    queryParam.push(userId)
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addTemplate(), queryParam)
       .then(result => {
@@ -130,8 +132,6 @@ class TemplateService {
     const dataUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.MESSAGE_TEMPLATE, oldData.messageTemplateId, userId)
     const templateData = {
-      messageTemplateId: oldData.messageTemplateId,
-      wabaInformationId: oldData.wabaInformationId,
       templateName: newData.templateName || oldData.templateName,
       type: newData.type || oldData.type,
       messageTemplateCategoryId: newData.messageTemplateCategoryId || oldData.messageTemplateCategoryId,
@@ -146,11 +146,14 @@ class TemplateService {
       secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
       headerType: newData.headerType || oldData.headerType,
       buttonType: newData.buttonType || oldData.buttonType,
-      buttonData: newData.buttonData || oldData.buttonData
+      buttonData: newData.buttonData || oldData.buttonData,
+      updatedBy: userId,
+      messageTemplateId: oldData.messageTemplateId,
+      wabaInformationId: oldData.wabaInformationId
     }
+    if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
-    queryParam.push(userId)
     __logger.info('updateeeeee --->', templateData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplate(), queryParam)
       .then(result => {

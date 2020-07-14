@@ -6,6 +6,7 @@ const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const ValidatonService = require('../services/validation')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 
 class AudienceService {
   constructor () {
@@ -18,7 +19,7 @@ class AudienceService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [audienceId])
       .then(result => {
         // console.log('Query Result', result)
-        if (result && result.affectedRows && result.affectedRows === 0) {
+        if (result && result.length === 0) {
           audienceData.resolve(null)
         } else {
           audienceData.resolve(result[0])
@@ -37,7 +38,7 @@ class AudienceService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
       .then(result => {
         // console.log('Query Result', result)
-        if (result && result.affectedRows && result.affectedRows === 0) {
+        if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
           audienceData.resolve(result[0])
@@ -86,6 +87,8 @@ class AudienceService {
   updateAudienceDataService (newData, oldData) {
     // __logger.info('update audience service called', newData, oldData)
     const audienceUpdated = q.defer()
+    saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.user_id)
+
     // console.log('i will updateeeee')
     // this.updateAudience(newData, oldData)
     const audienceData = {
@@ -124,7 +127,7 @@ class AudienceService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTempOptinStatus(), [audienceId])
       .then(result => {
       // console.log('Query Result', result)
-        if (result && result.affectedRows && result.affectedRows === 0) {
+        if (result && result.length === 0) {
           datafetcted.resolve(null)
         } else {
           datafetcted.resolve(result[0])

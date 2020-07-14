@@ -222,8 +222,9 @@ class VerificationService {
       return verificationData.promise
     }
     const query = queryProvider.getVerifiedAndCodeDataByUserIdForBusinessNumber()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, __constants.VERIFICATION_CHANNEL.businessNumber.name])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, [__constants.VERIFICATION_CHANNEL.businessNumber.name, userId])
       .then(result => {
+        console.log('hettttttttttttttttttttttt', result, userId)
         if (result.length === 0) {
           verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {

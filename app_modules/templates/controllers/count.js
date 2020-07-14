@@ -4,6 +4,7 @@ const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const q = require('q')
+const _ = require('lodash')
 
 /*
     Allocated Template - 5 by default
@@ -14,8 +15,7 @@ const q = require('q')
 const getTemplateCount = (req, res) => {
   __logger.info('Get Templates Count API Called')
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const templateCountByStatus = []
-  let finalCount
+  let templateCountByStatus = {}
 
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountByStatus(), [userId])
     .then(data => {
@@ -24,14 +24,13 @@ const getTemplateCount = (req, res) => {
     })
     .then(data => {
       __logger.info('then 2')
-      templateCountByStatus.push(data)
+      templateCountByStatus = data
       return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTempalteUsedCountByWaba(), [userId])
     })
     .then(data => {
       __logger.info(' then 3', data)
-      templateCountByStatus[0].push(data[0])
-      finalCount = templateCountByStatus[0]
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalCount })
+      templateCountByStatus.usedTemplateCount = data[0].usedTemplateCount
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: templateCountByStatus })
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -40,39 +39,36 @@ const getTemplateCount = (req, res) => {
 }
 
 function formatAndReturnTemplateCount (data) {
-  __logger.info('formatAndReturnTemplateCount', data)
+  __logger.info('formatAndReturnTemplateCount')
   const isDone = q.defer()
 
-  const result = []
-  if (data.affectedRows && data.affectedRows === 0) {
+  const result = {}
+  result.statusCount = []
+  if (_.isEmpty(data)) {
     __logger.info('Length-------------------------- 0')
 
     __constants.TEMPLATE_STATUS.forEach(templateStatus => {
-      result.push({
+      result.statusCount.push({
         templateCount: 0,
         statusName: templateStatus
       })
     })
-    result.push({
-      allocatedTemplateCount: data.length
-    })
+    result.allocatedTemplateCount = data.length
   }
 
   if (data && data.length === 1) {
     __logger.info('Length-------------------------- 1')
-    result.push({
-      allocatedTemplateCount: data[0].templates_allowed
-    })
+    result.allocatedTemplateCount = data[0].templates_allowed
     __constants.TEMPLATE_STATUS.forEach(status => {
       __logger.info('Status ', status)
       __logger.info('data[0].status_name ', data[0].status_name)
       if (data[0].status_name !== status) {
-        result.push({
+        result.statusCount.push({
           templateCount: 0,
           statusName: status
         })
       } else {
-        result.push({
+        result.statusCount.push({
           templateCount: data[0].count,
           statusName: status
         })
@@ -82,19 +78,15 @@ function formatAndReturnTemplateCount (data) {
 
   if (data && data.length > 1) {
     __logger.info('Length-------------------------- >1')
-
-    result.push({
-      allocatedTemplateCount: data[0].templates_allowed
-    })
-
+    result.allocatedTemplateCount = data[0].templates_allowed
     data.forEach(record => {
       if (!__constants.TEMPLATE_STATUS.includes(record.status_name)) {
-        result.push({
+        result.statusCount.push({
           templateCount: 0,
           statusName: record.status_name
         })
       } else {
-        result.push({
+        result.statusCount.push({
           templateCount: record.count,
           statusName: record.status_name
         })
@@ -103,7 +95,7 @@ function formatAndReturnTemplateCount (data) {
   }
 
   isDone.resolve(result)
-  __logger.info('Result ', result)
+  __logger.info('Result ')
 
   return isDone.promise
 }

@@ -81,7 +81,7 @@ const PLAN_CATEGORY = {
 }
 
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
-const TEMPLATE_STATUS = ['Approved', 'Rejected']
+const TEMPLATE_STATUS = ['Approved', 'Rejected', 'SendForApproval', 'Incomplete', 'Completed']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
@@ -126,7 +126,8 @@ const ENTITY_NAME = {
   USER_ACCOUNT_TYPE: 'user_account_type',
   USER_ACCOUNT_PROFILE: 'user_account_profile',
   MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
-  USER_AGREEMENT_FILES: 'user_agreement_files'
+  USER_AGREEMENT_FILES: 'user_agreement_files',
+  AUDIENCE: 'audience'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'

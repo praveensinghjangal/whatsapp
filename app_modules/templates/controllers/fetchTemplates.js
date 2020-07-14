@@ -21,7 +21,7 @@ const getTemplateList = (req, res) => {
 
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId), params)
     .then(result => {
-      if (result && result.affectedRows && result.affectedRows === 0) {
+      if (result && result.length === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
@@ -41,8 +41,9 @@ const getTemplateInfo = (req, res) => {
 
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
     .then(result => {
-      __logger.info('then 1')
-      if (result && result.affectedRows && result.affectedRows === 0) {
+      // __logger.info('then 1',result)
+      // console.log('then 1', result, result[0].buttonData, typeof result[0].buttonData)
+      if (result && result.length === 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
         finalResult = result
