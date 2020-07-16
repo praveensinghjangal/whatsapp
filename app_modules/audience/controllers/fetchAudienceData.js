@@ -6,6 +6,8 @@ const ValidatonService = require('../services/validation')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const _ = require('lodash')
+const q = require('q')
+const moment = require('moment')
 
 const getAudienceRecordById = (req, res) => {
   __logger.info('Get Audience Info API Called', req.params)
@@ -14,7 +16,7 @@ const getAudienceRecordById = (req, res) => {
   validate.checkAudienceIdExistService(req.params)
     .then(data => audienceService.getAudienceTableDataWithId(req.params.audienceId))
     .then(result => {
-      __logger.info('then 1', result)
+      __logger.info('then 1')
       if (result) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       } else {
@@ -68,6 +70,33 @@ const getAudienceRecordList = (req, res) => {
       __logger.error('error in create user function: ', err)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
     })
+}
+
+function getOptinStatusByPhoneNumber (phoneNumber) {
+  const dataFetched = q.defer()
+
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber])
+    .then(result => {
+      if (result && result.length === 0) {
+        dataFetched.resolve(null)
+      } else {
+        result[0].optin = result[0].optin === 1
+        result[0].tempOptin = false
+        // console.log('Hours>>>>>>>>>>>>>>>>>.....', moment().diff(moment(result[0].lastMessage), 'hours'))
+
+        if (moment().diff(moment(result[0].lastMessage), 'hours') <= 24) {
+          result[0].tempOptin = true
+        }
+        console.log('Result>>>>>>>>>>>>>>>>>.....', result[0])
+        dataFetched.resolve(result[0])
+      }
+    })
+    .catch(err => {
+      __logger.error('error in get audience by phone number function: ', err)
+      dataFetched.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+
+  return dataFetched.promise
 }
 
 module.exports = {

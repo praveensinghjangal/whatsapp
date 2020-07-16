@@ -87,13 +87,11 @@ class AudienceService {
   updateAudienceDataService (newData, oldData) {
     // __logger.info('update audience service called', newData, oldData)
     const audienceUpdated = q.defer()
-    saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.user_id)
+    saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.userId)
 
     // console.log('i will updateeeee')
     // this.updateAudience(newData, oldData)
     const audienceData = {
-      audienceId: oldData.audienceId,
-      phoneNumber: oldData.phoneNumber,
       channel: newData.channel || oldData.channel,
       optin: typeof newData.optin === 'boolean' ? newData.optin : false,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
@@ -103,7 +101,9 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
-      updatedBy: newData.user_id
+      updatedBy: newData.userId,
+      audienceId: oldData.audienceId,
+      phoneNumber: oldData.phoneNumber
     }
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))

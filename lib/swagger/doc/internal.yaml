@@ -3286,6 +3286,169 @@ paths:
               data: {}
               error: {}
       security: []
+  /audience/optin/segment:
+    get:
+      description: This api returns list of segment
+      summary: Get segment list
+      tags:
+        - audience
+      operationId: GetSegmentData
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: List of all Templates for audience record
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  - segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
+                    segmentName: Organic Conversation
+                  - segmentId: ba7702c0-2b12-4629-b0a3-fb344615eb54
+                    segmentName: Custom Segment Name
+                  - segmentId: c2769786-243b-41f2-81bb-c6ccf96287db
+                    segmentName: test1
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+    post:
+      description: |-
+        API to add or update segment
+        To add segment do not pass segmentId to update segment pass segment ID along with parameters to update
+      summary: Add update segment
+      tags:
+        - audience
+      operationId: AddUpdateSegmentData
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddupdateSegmentRequest'
+      responses:
+        '200':
+          description: Returns Status of segment info completion
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  segmentName: test02
+                  segmentId: f194da3d-0b62-405e-a512-95797f4bcf41
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
 definitions:
   sendrequest:
     title: sendrequest
@@ -3893,3 +4056,16 @@ definitions:
     required:
       - phoneNumber
       - channel
+  AddupdateSegmentRequest:
+    title: AddupdatesegmentRequest
+    example:
+      segmentId: f194da3d-0b62-405e-a512-95797f4bcf41
+      segmentName: test
+    type: object
+    properties:
+      segmentId:
+        type: string
+      segmentName:
+        type: string
+    required:
+      - segmentName

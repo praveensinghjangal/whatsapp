@@ -8,6 +8,11 @@ const authstrategy = require('../../config').authentication.strategy
 const addUpdateAudienceController = require('./controllers/addUpdateAudience')
 const fetchAudienceDataController = require('./controllers/fetchAudienceData')
 
+// Segment Controller
+
+const fetchSegmentController = require('../segment/controllers/fetchSegment')
+const addUpdateSegmentController = require('../segment/controllers/addUpdateSegment')
+
 // Routes
 
 // Audience
@@ -16,5 +21,9 @@ router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy
 // Fetch Audience Data
 router.get('/:audienceId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchAudienceDataController.getAudienceRecordById)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchAudienceDataController.getAudienceRecordList)
+
+// Optin
+router.post('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateSegmentController.addUpdateSegmentData)
+router.get('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchSegmentController.getSegmentData)
 
 module.exports = router
