@@ -5,16 +5,16 @@ const __db = require('../../../lib/db')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const queryProvider = require('../queryProvider')
 
-// Get Business Category
-const getBusinessCategory = (req, res) => {
-  __logger.info('Inside getBusinessCategory', req.user.userId)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessCategory(), [])
-    .then(result => {
+// Get Segment Data
+const getSegmentData = (req, res) => {
+  __logger.info('Inside getSegmentData', req.user.userId)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getSegmentData(), [])
+    .then(results => {
       __logger.info('Then 1')
-      if (result && result.length > 0) {
+      if (results && results.length > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
-          data: result
+          data: results
         })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
@@ -26,4 +26,4 @@ const getBusinessCategory = (req, res) => {
     })
 }
 
-module.exports = { getBusinessCategory }
+module.exports = { getSegmentData }

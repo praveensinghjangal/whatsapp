@@ -13,16 +13,14 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const getAcountProfile = (req, res) => {
   __logger.info('Inside getAcountProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  let queryResult = []
-
-  __db.postgresql.__query(queryProvider.getUserAccountProfile(), [userId])
+  let queryResult = {}
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
       __logger.info('Then 1')
       // __logger.info('Then 1', results)
-      queryResult = results.rows[0]
-
-      if (results && results.rows.length > 0) {
-        return checkAccountProfileCompletionStatus(results.rows[0])
+      if (results && results.length > 0) {
+        queryResult = results[0]
+        return checkAccountProfileCompletionStatus(queryResult)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
@@ -47,8 +45,6 @@ const getAcountProfile = (req, res) => {
 const updateAcountProfile = (req, res) => {
   __logger.info('Inside updateAcountProfile', req.user.user_id)
   const userService = new UserService()
-  let queryResult = []
-
   const validate = new ValidatonService()
   let accountProfileData
 
@@ -60,7 +56,6 @@ const updateAcountProfile = (req, res) => {
       __logger.info('UserId exist check then 1', result.exists)
       if (result.exists) {
         saveHistoryData(result.rows[0], __constants.ENTITY_NAME.USER_ACCOUNT_PROFILE, req.user.user_id, req.user.user_id)
-
         accountProfileData = {
           userId: req.user && req.user.user_id ? req.user.user_id : '0',
           city: req.body.city ? req.body.city : result.rows[0].city,
@@ -76,30 +71,24 @@ const updateAcountProfile = (req, res) => {
           accountManagerName: req.body.accountManagerName ? req.body.accountManagerName : result.rows[0].accountManagerName,
           accountTypeId: req.body.accountTypeId ? req.body.accountTypeId : __constants.ACCOUNT_PLAN_TYPE.Prepaid
         }
-
-        return __db.postgresql.__query(queryProvider.updateUserAccountProfile(), [accountProfileData.city, accountProfileData.state, accountProfileData.country, accountProfileData.addressLine1, accountProfileData.addressLine2, accountProfileData.contactNumber, accountProfileData.phoneCode, accountProfileData.postalCode, accountProfileData.firstName, accountProfileData.lastName, accountProfileData.accountManagerName, accountProfileData.accountTypeId, accountProfileData.userId, accountProfileData.userId])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateUserAccountProfile(), [accountProfileData.city, accountProfileData.state, accountProfileData.country, accountProfileData.addressLine1, accountProfileData.addressLine2, accountProfileData.contactNumber, accountProfileData.phoneCode, accountProfileData.postalCode, accountProfileData.firstName, accountProfileData.lastName, accountProfileData.accountManagerName, accountProfileData.accountTypeId, accountProfileData.userId, accountProfileData.userId])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(result => {
       __logger.info('then 3', result)
-      queryResult = result.rows
-
-      if (result && result.rowCount && result.rowCount > 0) {
+      if (result && result.affectedRows && result.affectedRows > 0) {
         return checkAccountProfileCompletionStatus(accountProfileData)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.PROCESS_FAILED, err: {}, data: {} })
       }
     })
     .then(data => {
-      queryResult.complete = data.complete
-      // queryResult.push(data)
-      __logger.info('queryResult', queryResult)
       __logger.info('data', data)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { complete: queryResult.complete }
+        data: { complete: data.complete }
       })
     })
     .catch(err => {

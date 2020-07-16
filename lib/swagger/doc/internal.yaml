@@ -7,8 +7,8 @@ info:
   contact:
     name: vivaconnect support
     email: support@vivaconnect.co
-host: localhost:3000
-basePath: "/helowhatsapp/api"
+host: 'localhost:3000'
+basePath: /helowhatsapp/api
 tags:
   - name: message
     description: API's to send bulk messages to end user
@@ -28,6 +28,8 @@ tags:
     description: Web hook API's provided to our vendors to send incoming messages
   - name: places
     description: 'API''s related to country ,state, city details'
+  - name: plans
+    description: API's related to plans
   - name: WABA
     description: |-
       API's related to whatsapp business account (WABA) information of registered
@@ -1551,6 +1553,74 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
+  /plans:
+    get:
+      description: API to get list of plans available with helo-whatsapp
+      summary: get plans
+      tags:
+        - plans
+      operationId: GetAllPlans
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: List of all plans
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2000
+              msg: Success
+              data:
+                - planId: 6cb80f6d-cdca-4b69-974c-f25bbf95f642
+                  planName: Plan C
+                  planValidity: '30'
+                  planCost: '1000'
+                  planCategory: standard
+                  planBenefits: null
+                - planId: 6e9be178-1414-4d9e-91ca-3eb3c5ef5a99
+                  planName: Plan B
+                  planValidity: '30'
+                  planCost: '1500'
+                  planCategory: standard
+                  planBenefits: null
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
   /business/categories:
     get:
       description: Gets list of business categories
@@ -2962,37 +3032,41 @@ paths:
               data:
                 type: array
             example:
-              code: 2000
-              msg: Success
-              data:
-                - audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
-                  phoneNumber: '919820333891'
-                  channel: whatsapp
-                  firstMessage: '2020-07-07T14:48:58.251Z'
-                  lastMessage: '2020-07-09T13:02:39.018Z'
-                  optin: true
-                  tempOptin: true
-                  optinSource: direct
-                  segment_name: Organic Conversation
-                  chatFlowId: null
-                  name: Ajay
-                  email: ajay@yopmail.com
-                  gender: Male
-                  country: India
-                - audienceId: b70aeadd-4941-4bda-a4bd-fd5d320e454f
-                  phoneNumber: '+91842490276'
-                  channel: whatsapp
-                  firstMessage: '2020-07-05T14:06:05.000Z'
-                  lastMessage: null
-                  optin: true
-                  tempOptin: null
-                  optinSource: direct
-                  segment_name: Organic Conversation
-                  chatFlowId: null
-                  name: Raju
-                  email: raju@yopmail.com
-                  gender: Male
-                  country: India
+              - code: 2000
+                msg: Success
+                data:
+                  - audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
+                    phoneNumber: '919820333891'
+                    channel: whatsapp
+                    firstMessage: '2020-07-07T14:48:58.251Z'
+                    lastMessage: '2020-07-09T13:02:39.018Z'
+                    optin: true
+                    tempOptin: true
+                    optinSource: direct
+                    segment_name: Organic Conversation
+                    chatFlowId: null
+                    name: Ajay
+                    email: ajay@yopmail.com
+                    gender: Male
+                    country: India
+                  - audienceId: b70aeadd-4941-4bda-a4bd-fd5d320e454f
+                    phoneNumber: '+91842490276'
+                    channel: whatsapp
+                    firstMessage: '2020-07-05T14:06:05.000Z'
+                    lastMessage: null
+                    optin: true
+                    tempOptin: null
+                    optinSource: direct
+                    segment_name: Organic Conversation
+                    chatFlowId: null
+                    name: Raju
+                    email: raju@yopmail.com
+                    gender: Male
+                    country: India
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -3067,6 +3141,10 @@ paths:
                   email: ajay@yopmail.com
                   gender: Male
                   country: India
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3174,6 +3252,169 @@ paths:
                 msg: No record found.
                 data: null
                 error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /audience/optin/segment:
+    get:
+      description: This api returns list of segment
+      summary: Get segment list
+      tags:
+        - audience
+      operationId: GetSegmentData
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: List of all Templates for audience record
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  - segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
+                    segmentName: Organic Conversation
+                  - segmentId: ba7702c0-2b12-4629-b0a3-fb344615eb54
+                    segmentName: Custom Segment Name
+                  - segmentId: c2769786-243b-41f2-81bb-c6ccf96287db
+                    segmentName: test1
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+    post:
+      description: |-
+        API to add or update segment
+        To add segment do not pass segmentId to update segment pass segment ID along with parameters to update
+      summary: Add update segment
+      tags:
+        - audience
+      operationId: AddUpdateSegmentData
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddupdateSegmentRequest'
+      responses:
+        '200':
+          description: Returns Status of segment info completion
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  segmentName: test02
+                  segmentId: f194da3d-0b62-405e-a512-95797f4bcf41
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -3802,6 +4043,8 @@ definitions:
         type: string
       segmentId:
         type: string
+      chatFlowId:
+        type: string
       name:
         type: string
       email:
@@ -3813,3 +4056,16 @@ definitions:
     required:
       - phoneNumber
       - channel
+  AddupdateSegmentRequest:
+    title: AddupdatesegmentRequest
+    example:
+      segmentId: f194da3d-0b62-405e-a512-95797f4bcf41
+      segmentName: test
+    type: object
+    properties:
+      segmentId:
+        type: string
+      segmentName:
+        type: string
+    required:
+      - segmentName

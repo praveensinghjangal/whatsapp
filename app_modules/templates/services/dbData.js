@@ -16,13 +16,14 @@ class TemplateService {
   getTemplateTableDataAndWabaId (messageTemplateId, userId) {
     __logger.info('inside get template by id service', messageTemplateId)
     const templateData = q.defer()
-    __db.postgresql.__query(queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
       // console.log('Qquery Result', results)
-        if (result && result.rows && result.rows.length === 0) {
-          templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
+        if (result && result.length > 0) {
+          result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
+          templateData.resolve(result[0])
         } else {
-          templateData.resolve(result.rows[0])
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
         }
       })
       .catch(err => {
@@ -35,12 +36,12 @@ class TemplateService {
   getTemplatesCount (wabaInformationId) {
     __logger.info('inside get template count service', wabaInformationId)
     const count = q.defer()
-    __db.postgresql.__query(queryProvider.getTemplateCount(), [wabaInformationId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCount(), [wabaInformationId])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
-          count.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+        if (result && result.length > 0) {
+          count.resolve(result[0])
         } else {
-          count.resolve(result.rows[0])
+          count.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
       })
       .catch(err => {
@@ -53,9 +54,9 @@ class TemplateService {
   deactivateOldTemplateData (messageTemplateId, userId) {
     const recordDeactivated = q.defer()
     __logger.info('Setting is active false to Template record', messageTemplateId)
-    __db.postgresql.__query(queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           recordDeactivated.resolve(true)
         } else {
           recordDeactivated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -88,15 +89,16 @@ class TemplateService {
       secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
       headerType: newData.headerType || oldData.headerType,
       buttonType: newData.buttonType || oldData.buttonType,
-      buttonData: newData.buttonData || oldData.buttonData
+      buttonData: newData.buttonData || oldData.buttonData,
+      createdBy: userId
     }
+    if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
-    queryParam.push(userId)
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
-    __db.postgresql.__query(queryProvider.addTemplate(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addTemplate(), queryParam)
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(templateData)
         } else {
           dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -130,8 +132,6 @@ class TemplateService {
     const dataUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.MESSAGE_TEMPLATE, oldData.messageTemplateId, userId)
     const templateData = {
-      messageTemplateId: oldData.messageTemplateId,
-      wabaInformationId: oldData.wabaInformationId,
       templateName: newData.templateName || oldData.templateName,
       type: newData.type || oldData.type,
       messageTemplateCategoryId: newData.messageTemplateCategoryId || oldData.messageTemplateCategoryId,
@@ -146,15 +146,18 @@ class TemplateService {
       secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
       headerType: newData.headerType || oldData.headerType,
       buttonType: newData.buttonType || oldData.buttonType,
-      buttonData: newData.buttonData || oldData.buttonData
+      buttonData: newData.buttonData || oldData.buttonData,
+      updatedBy: userId,
+      messageTemplateId: oldData.messageTemplateId,
+      wabaInformationId: oldData.wabaInformationId
     }
+    if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
-    queryParam.push(userId)
     __logger.info('updateeeeee --->', templateData, queryParam)
-    __db.postgresql.__query(queryProvider.updateTemplate(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplate(), queryParam)
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(templateData)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

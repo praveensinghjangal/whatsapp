@@ -7,6 +7,7 @@ const q = require('q')
 
 const addUpdateAudienceData = (req, res) => {
   __logger.info('add update audience API called', req.body)
+  __logger.info('add update audience API called', req.user)
 
   // /*
   const validate = new ValidatonService()

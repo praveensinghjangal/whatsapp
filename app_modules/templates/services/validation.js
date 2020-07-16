@@ -155,6 +155,7 @@ class validate {
         buttonData: {
           type: 'object',
           required: false,
+          additionalProperties: false,
           properties: {
             quickReply: {
               type: 'array',
@@ -206,9 +207,14 @@ class validate {
 
   isTemplateComplete (request) {
     const isvalid = q.defer()
+    const headereTypeEnum = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+    const buttonTypeEnum = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+    headereTypeEnum.push(null)
+    buttonTypeEnum.push(null)
     if (request && request.type) request.type = request.type.toLowerCase()
     if (request && request.headerType) request.headerType = request.headerType.toLowerCase()
     if (request && request.buttonType) request.buttonType = request.buttonType.toLowerCase()
+    if (request && request.buttonData) request.buttonData = JSON.parse(request.buttonData)
     const schema = {
       id: '/isTemplateComplete',
       type: 'object',
@@ -251,19 +257,16 @@ class validate {
           minLength: 1
         },
         headerText: {
-          type: 'string',
-          required: true,
-          minLength: 1
+          type: [null, 'string'],
+          required: false
         },
         footerText: {
-          type: 'string',
-          required: false,
-          minLength: 1
+          type: [null, 'string'],
+          required: false
         },
         mediaType: {
-          type: 'string',
-          required: true,
-          minLength: 1
+          type: [null, 'string'],
+          required: false
         },
         wabaInformationId: {
           type: 'string',
@@ -276,30 +279,28 @@ class validate {
           minLength: 1
         },
         secondMessageTemplateLanguageId: {
-          type: 'string',
-          required: true,
-          minLength: 1
+          type: ['string', null],
+          required: false
         },
         secondlanguageBodyText: {
-          type: 'string',
-          required: true,
-          minLength: 1
+          type: [null, 'string'],
+          required: false
         },
         headerType: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+          type: [null, 'string'],
+          required: false,
+          enum: headereTypeEnum
         },
         buttonType: {
-          type: 'string',
-          required: true,
+          type: [null, 'string'],
+          required: false,
           minLength: 1,
-          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+          enum: buttonTypeEnum
         },
         buttonData: {
-          type: 'object',
-          required: true,
+          type: [null, 'object'],
+          required: false,
+          additionalProperties: false,
           properties: {
             quickReply: {
               type: 'array',
@@ -341,6 +342,7 @@ class validate {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
+    console.log('errrrrrrrrrrrrrrrrrrrrr', formatedError)
     if (formatedError.length > 0) {
       isvalid.resolve(false)
     } else {

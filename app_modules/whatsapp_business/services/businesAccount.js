@@ -16,9 +16,9 @@ class businesAccountService {
   deactivateWabaRecord (wabaInformationId, userId) {
     const recordDeactivated = q.defer()
     __logger.info('Setting is active false to waba record', wabaInformationId)
-    __db.postgresql.__query(queryProvider.setIsActiveFalseByWabaId(), [wabaInformationId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByWabaId(), [wabaInformationId, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           recordDeactivated.resolve(true)
         } else {
           recordDeactivated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -38,15 +38,18 @@ class businesAccountService {
     this.validate.checkUserIdService({ userId })
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
-        return __db.postgresql.__query(queryProvider.getWabaTableDataByUserId(), [userId])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaTableDataByUserId(), [userId])
       })
       .then(result => {
         // if exist throw return true exist
-        if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve({ record: result.rows[0], exists: true })
+        if (result && result.length > 0) {
+          result[0].canReceiveSms = result[0].canReceiveSms === 1
+          result[0].canReceiveVoiceCall = result[0].canReceiveVoiceCall === 1
+          result[0].associatedWithIvr = result[0].associatedWithIvr === 1
+          doesUserIdExist.resolve({ record: result[0], exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve({ record: result.rows[0], exists: false })
+          doesUserIdExist.resolve({ record: result[0], exists: false })
         }
       })
       .catch(err => {
@@ -82,9 +85,9 @@ class businesAccountService {
       city: businessData.city ? businessData.city : businessOldData.city,
       postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode
     }
-    __db.postgresql.__query(queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(businessAccountObj)
         } else {
           dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -127,9 +130,9 @@ class businesAccountService {
       city: businessData.city ? businessData.city : businessOldData.city,
       postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode
     }
-    __db.postgresql.__query(queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.wabaInformationId, userId])
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(businessAccountObj)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -157,7 +160,7 @@ class businesAccountService {
 
   getBusinessProfileInfo (userId) {
     const businessDataFetched = q.defer()
-    __db.postgresql.__query(queryProvider.getBusinessProfile(), [userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfile(), [userId])
       .then(businessData => businessDataFetched.resolve(businessData))
       .catch(err => {
         __logger.error('error: ', err)

@@ -81,7 +81,7 @@ const PLAN_CATEGORY = {
 }
 
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
-const TEMPLATE_STATUS = ['Approved', 'Rejected']
+const TEMPLATE_STATUS = ['Approved', 'Rejected', 'SendForApproval', 'Incomplete', 'Completed']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const USER_CONFIG_REDIS_TTL = 300
@@ -103,7 +103,7 @@ const MASTER_TABLE = {
   },
   wabaPhoneNoToProviderInfo: {
     name: 'waba_information',
-    columns: ['phone_code || phone_number as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"', 'webhook_post_url as "webhookPostUrl"']
+    columns: ['CONCAT(`phone_code`, `phone_number`) as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"', 'webhook_post_url as "webhookPostUrl"']
   }
 }
 const ENTITY_NAME = {
@@ -126,7 +126,8 @@ const ENTITY_NAME = {
   USER_ACCOUNT_TYPE: 'user_account_type',
   USER_ACCOUNT_PROFILE: 'user_account_profile',
   MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
-  USER_AGREEMENT_FILES: 'user_agreement_files'
+  USER_AGREEMENT_FILES: 'user_agreement_files',
+  AUDIENCE: 'audience'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -166,6 +167,8 @@ const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages'
 }
 
+const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -193,3 +196,4 @@ module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
 module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
 module.exports.DELIVERY_CHANNEL = DELIVERY_CHANNEL
 module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
+module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME

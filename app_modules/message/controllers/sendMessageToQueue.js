@@ -52,9 +52,13 @@ const sendToQueueBulk = (data, providerId) => {
   return q.all(thePromises)
 }
 
-const singleRuleCheck = (data, index) => {
+const singleRuleCheck = (data, wabaPhoneNumber, index) => {
   const isValid = q.defer()
   if (data && data.whatsapp) {
+    if (data.whatsapp.from !== wabaPhoneNumber) {
+      isValid.reject({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
+      return isValid.promise
+    }
     checkIfNoExists(data.whatsapp.from)
       .then(noValRes => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
       .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
@@ -69,11 +73,11 @@ const singleRuleCheck = (data, index) => {
   return isValid.promise
 }
 
-const ruleCheck = data => {
+const ruleCheck = (data, wabaPhoneNumber) => {
   let p = q()
   const thePromises = []
   data.forEach((singleObject, index) => {
-    p = p.then(() => singleRuleCheck(singleObject, index))
+    p = p.then(() => singleRuleCheck(singleObject, wabaPhoneNumber, index))
       .catch(err => err)
     thePromises.push(p)
   })
@@ -83,9 +87,9 @@ const ruleCheck = data => {
 const controller = (req, res) => {
   __logger.info('sendMessageToQueue :: API to send message called')
   const validate = new ValidatonService()
-  if (!req.user.providerId) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+  if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
-    .then(valRes => ruleCheck(req.body))
+    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber))
     .then(isValid => {
       __logger.info('sendMessageToQueue :: Rules checked', isValid, req.body.length)
       const invalidReq = _.filter(isValid, { valid: false })

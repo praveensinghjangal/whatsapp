@@ -16,13 +16,13 @@ class UserData {
 
   getUSerDataByEmail (email) {
     const userDetails = q.defer()
-    __db.postgresql.__query(queryProvider.getUserDetailsByEmail(), [email])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserDetailsByEmail(), [email])
       .then(result => {
-        // console.log('Qquery Result', results)
-        if (result && result.rows && result.rows.length === 0) {
+        // console.log('Qquery Result', result[0])
+        if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
         } else {
-          userDetails.resolve(result.rows)
+          userDetails.resolve(result)
         }
       })
       .catch(err => {
@@ -52,14 +52,14 @@ class UserData {
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
           const accountTypeId = __constants.ACCOUNT_PLAN_TYPE.Prepaid
           const userRole = __constants.USER_ROLE_ID.admin
-          return __db.postgresql.__query(queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId, userRole])
+          return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId, userRole])
         } else {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.USER_EXIST, data: {} })
         }
       })
       .then(result => {
-        // console.log('Qquery Result sign up', result)
-        if (result && result.rowCount && result.rowCount > 0) {
+        console.log('Qquery Result sign up', result)
+        if (result && result.affectedRows && result.affectedRows > 0) {
           userCreated.resolve({ userId })
         } else {
           userCreated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -67,6 +67,7 @@ class UserData {
       })
       .catch(err => {
         __logger.error('error in create user function: ', err)
+        console.log(err)
         if (err.type) return userCreated.reject({ type: err.type, err: err.err })
         userCreated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
@@ -81,14 +82,14 @@ class UserData {
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
         // console.log('Response', valResponse)
-        return __db.postgresql.__query(queryProvider.getUserAccountProfile(), [userId])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
       })
       .then(result => {
         // console.log('Qquery Result checkUserExistByUserId', result)
 
         // if exist throw return true exist
-        if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve({ rows: result.rows, exists: true })
+        if (result && result.length > 0) {
+          doesUserIdExist.resolve({ rows: result, exists: true })
         } else {
           // else return prmoise to continue the insertiono of data
           doesUserIdExist.resolve({ exists: false })
@@ -109,18 +110,16 @@ class UserData {
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
         // console.log('Response', valResponse)
-
-        return __db.postgresql.__query(queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
       })
       .then(result => {
         // console.log('Qquery Result checkUserExistByUserId', result)
-
         // if exist throw return true exist
-        if (result && result.rowCount && result.rowCount > 0) {
-          doesUserIdExist.resolve({ record: result.rows[0], exists: true })
+        if (result && result.length === 0) {
+          doesUserIdExist.resolve({ record: {}, exists: false })
         } else {
           // else return prmoise to continue the insertiono of data
-          doesUserIdExist.resolve({ record: result.rows[0], exists: false })
+          doesUserIdExist.resolve({ record: result[0], exists: true })
         }
       })
       .catch(err => {

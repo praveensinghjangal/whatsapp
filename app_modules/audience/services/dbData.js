@@ -6,6 +6,7 @@ const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const ValidatonService = require('../services/validation')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 
 class AudienceService {
   constructor () {
@@ -15,13 +16,13 @@ class AudienceService {
   getAudienceTableDataWithId (audienceId) {
     __logger.info('inside get audience by id service', typeof audienceId)
     const audienceData = q.defer()
-    __db.postgresql.__query(queryProvider.getAudienceTableDataWithId(), [audienceId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [audienceId])
       .then(result => {
         // console.log('Query Result', result)
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           audienceData.resolve(null)
         } else {
-          audienceData.resolve(result.rows[0])
+          audienceData.resolve(result[0])
         }
       })
       .catch(err => {
@@ -34,13 +35,13 @@ class AudienceService {
   getAudienceTableDataByPhoneNumber (phoneNumber) {
     __logger.info('inside get audience by id service', typeof phoneNumber)
     const audienceData = q.defer()
-    __db.postgresql.__query(queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
       .then(result => {
         // console.log('Query Result', result)
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
-          audienceData.resolve(result.rows[0])
+          audienceData.resolve(result[0])
         }
       })
       .catch(err => {
@@ -70,10 +71,10 @@ class AudienceService {
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
     // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
-    __db.postgresql.__query(queryProvider.addAudienceData(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceData(), queryParam)
       .then(result => {
         // console.log('Add Result', result)
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           audienceDataAdded.resolve(audienceData)
         } else {
           audienceDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -86,11 +87,11 @@ class AudienceService {
   updateAudienceDataService (newData, oldData) {
     // __logger.info('update audience service called', newData, oldData)
     const audienceUpdated = q.defer()
+    saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.userId)
+
     // console.log('i will updateeeee')
     // this.updateAudience(newData, oldData)
     const audienceData = {
-      audienceId: oldData.audienceId,
-      phoneNumber: oldData.phoneNumber,
       channel: newData.channel || oldData.channel,
       optin: typeof newData.optin === 'boolean' ? newData.optin : false,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
@@ -100,16 +101,18 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
-      updatedBy: newData.user_id
+      updatedBy: newData.userId,
+      audienceId: oldData.audienceId,
+      phoneNumber: oldData.phoneNumber
     }
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
     __logger.info('updateeeeee --->', audienceData, queryParam)
     const validate = new ValidatonService()
     validate.checkPhoneNumberExistService(audienceData)
-      .then(data => __db.postgresql.__query(queryProvider.updateAudienceRecord(), queryParam))
+      .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudienceRecord(), queryParam))
       .then(result => {
-        if (result && result.rowCount && result.rowCount > 0) {
+        if (result && result.affectedRows && result.affectedRows > 0) {
           audienceUpdated.resolve(audienceData)
         } else {
           audienceUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -121,13 +124,13 @@ class AudienceService {
 
   getTempOptinStatus (audienceId) {
     const datafetcted = q.defer()
-    __db.postgresql.__query(queryProvider.getTempOptinStatus(), [audienceId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTempOptinStatus(), [audienceId])
       .then(result => {
       // console.log('Query Result', result)
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           datafetcted.resolve(null)
         } else {
-          datafetcted.resolve(result.rows[0])
+          datafetcted.resolve(result[0])
         }
       })
       .catch(err => {

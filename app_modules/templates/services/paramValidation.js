@@ -10,21 +10,21 @@ class TemplateParamValidationService {
   setAllTemplatesInRedis () {
     __logger.info('inside setAllTemplatesInRedis')
     const dataStored = q.defer()
-    __db.postgresql.__query(queryProvider.setAllTemplatesInRedis(), [])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setAllTemplatesInRedis(), [])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
-          return result.rows
+          return result
         }
       })
       .then(dbData => {
         _.each(dbData, singleObj => {
           const dataObject = {
             templateId: singleObj.message_template_id,
-            headerParamCount: (singleObj.header_text.match(/{{\d}}/g) || []).length,
-            bodyParamCount: (singleObj.body_text.match(/{{\d}}/g) || []).length,
-            footerParamCount: (singleObj.footer_text.match(/{{\d}}/g) || []).length,
+            headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
+            bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d}}/g) || []).length : 0,
+            footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d}}/g) || []).length : 0,
             phoneNumber: singleObj.phone_number
           }
           __db.redis.set(dataObject.templateId + '_' + dataObject.phoneNumber, JSON.stringify(dataObject))
@@ -40,21 +40,21 @@ class TemplateParamValidationService {
   setTemplatesInRedisForWabaId (wabaId) {
     __logger.info('inside setTemplatesInRedisForWabaId')
     const dataStored = q.defer()
-    __db.postgresql.__query(queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
       .then(result => {
-        if (result && result.rows && result.rows.length === 0) {
+        if (result && result.length === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
-          return result.rows
+          return result
         }
       })
       .then(dbData => {
         _.each(dbData, singleObj => {
           const dataObject = {
             templateId: singleObj.message_template_id,
-            headerParamCount: (singleObj.header_text.match(/{{\d}}/g) || []).length,
-            bodyParamCount: (singleObj.body_text.match(/{{\d}}/g) || []).length,
-            footerParamCount: (singleObj.footer_text.match(/{{\d}}/g) || []).length,
+            headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
+            bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d}}/g) || []).length : 0,
+            footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d}}/g) || []).length : 0,
             phoneNumber: singleObj.phone_number
           }
           __db.redis.set(dataObject.templateId + '_' + dataObject.phoneNumber, JSON.stringify(dataObject))

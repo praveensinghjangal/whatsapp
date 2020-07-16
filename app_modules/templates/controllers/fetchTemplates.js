@@ -19,12 +19,12 @@ const getTemplateList = (req, res) => {
     params.push(messageTemplateStatusId)
   }
 
-  __db.postgresql.__query(queryProvider.getTemplateList(messageTemplateStatusId), params)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId), params)
     .then(result => {
-      if (result && result.rows && result.rows.length === 0) {
+      if (result && result.length === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result.rows })
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       }
     })
     .catch(err => {
@@ -39,14 +39,15 @@ const getTemplateInfo = (req, res) => {
   const validate = new ValidatonService()
   let finalResult
 
-  __db.postgresql.__query(queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
     .then(result => {
-      __logger.info('then 1')
-      if (result && result.rows && result.rows.length === 0) {
+      // __logger.info('then 1',result)
+      // console.log('then 1', result, result[0].buttonData, typeof result[0].buttonData)
+      if (result && result.length === 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
-        finalResult = result.rows
-        return validate.checkTemplateInfoStatus(result.rows[0])
+        finalResult = result
+        return validate.checkTemplateInfoStatus(result[0])
       }
     })
     .then(data => {

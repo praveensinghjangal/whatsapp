@@ -19,10 +19,10 @@ const getBusinessProfile = (req, res) => {
   businessAccountService.getBusinessProfileInfo(userId)
     .then(results => {
       __logger.info('Then 1')
-      queryResult = results.rows[0]
-      if (results && results.rows.length > 0) {
+      queryResult = results[0]
+      if (results && results.length > 0) {
         const checkCompleteStatus = new CheckInfoCompletionService()
-        return checkCompleteStatus.validateBusinessProfile(results.rows[0])
+        return checkCompleteStatus.validateBusinessProfile(results)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
@@ -183,6 +183,8 @@ function formatFinalStatus (queryResult, result) {
   delete queryResult.canReceiveSms
   delete queryResult.canReceiveVoiceCall
   delete queryResult.associatedWithIvr
+  queryResult.businessManagerVerified = queryResult.businessManagerVerified === 1
+  queryResult.phoneVerified = queryResult.phoneVerified === 1
   finalResult.resolve(queryResult)
   return finalResult.promise
 }

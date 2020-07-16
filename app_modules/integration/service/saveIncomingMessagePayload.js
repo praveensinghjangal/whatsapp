@@ -87,7 +87,7 @@ function postDatatoAudienceTable (inputData) {
 module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) => {
   const payloadStored = q.defer()
   const query = `insert into incoming_message_payload(viva_message_id,service_provider_message_id,service_provider_id,payload,from_number)
-  values ($1,$2,$3,$4,$5)`
+  values (?,?,?,?,?)`
   __logger.info('Inside function to store incoming message in incoming_message_payload table', vivaMessageId, serviceProviderMessageId)
   validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
     .then(valres => __db.redis.get(payload.to))
@@ -96,13 +96,13 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
       console.log('dataatatatat', data, typeof data)
       if (data) {
         data = JSON.parse(data)
-        return __db.postgresql.__query(query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, payload, fromNumber])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, JSON.stringify(payload), fromNumber])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
       }
     })
     .then(result => {
-      if (result && result.rowCount && result.rowCount > 0) {
+      if (result && result.affectedRows && result.affectedRows > 0) {
         payloadStored.resolve(true)
       } else {
         payloadStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

@@ -8,14 +8,13 @@ const queryProvider = require('../queryProvider')
 // Get Account Type
 const getAcountType = (req, res) => {
   __logger.info('Inside getAcountType', req.user)
-  __db.postgresql.__query(queryProvider.getAccountType(), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAccountType(), [])
     .then(results => {
       __logger.info('Then 1', results)
-
-      if (results && results.rows.length > 0) {
+      if (results && results.length > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
-          data: results.rows
+          data: results
         })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })

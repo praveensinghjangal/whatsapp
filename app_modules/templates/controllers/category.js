@@ -8,13 +8,13 @@ const queryProvider = require('../queryProvider')
 // Get Template Category
 const getTemplateCategories = (req, res) => {
   __logger.info('Inside getTemplateCategory', req.user.userId)
-  __db.postgresql.__query(queryProvider.getTemplateCategories(), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategories(), [])
     .then(results => {
-      // __logger.info('Then 1', results)
-      if (results && results.rows.length > 0) {
+      __logger.info('Then 1')
+      if (results && results.length > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
-          data: results.rows
+          data: results
         })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })

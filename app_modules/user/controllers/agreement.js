@@ -43,10 +43,10 @@ const savFileDataInDataBase = (userId, fileName, filePath) => {
   const fileSaved = q.defer()
   const uniqueId = new UniqueId()
   __logger.info('Save file data function ', userId, fileName, filePath)
-  __db.postgresql.__query(queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, userId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, userId])
     .then(result => {
       __logger.info('Save file data function db result ', result)
-      if (result && result.rowCount && result.rowCount > 0) {
+      if (result && result.affectedRows && result.affectedRows > 0) {
         fileSaved.resolve(true)
       } else {
         fileSaved.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -82,12 +82,12 @@ const uploadAgreement = (req, res) => {
 const getAgreement = (req, res) => {
   __logger.info('Inside getAgreement', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  __db.postgresql.__query(queryProvider.getLatestAgreementByUserId(), [userId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getLatestAgreementByUserId(), [userId])
     .then(results => {
       __logger.info('Got result from db 1', results)
-      if (results && results.rows.length > 0) {
-        __logger.info('fileeeeeeeeeeeeeeeeeeee', results.rows[0].file_path)
-        res.download(results.rows[0].file_path)
+      if (results && results.length > 0) {
+        __logger.info('fileeeeeeeeeeeeeeeeeeee', results[0].file_path)
+        res.download(results[0].file_path)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
