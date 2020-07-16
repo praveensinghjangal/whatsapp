@@ -24,7 +24,4 @@ const getMessageHistoryRecordById = (req, res) => {
     })
 }
 
-module.exports = {
-  getMessageHistoryRecordById
-
-}
+module.exports = getMessageHistoryRecordById
