@@ -9,9 +9,9 @@ const addUpdateOptinData = (req, res) => {
   const validate = new ValidatonService()
   const optinService = new OptinService()
   validate.checkAddOptinData(req.body)
-    .then(data => optinService.getOptinDataById(req.body.optinId))
+    .then(data => optinService.getOptinDataById(req.body.optinSourceId))
     .then(optinData => {
-      if (optinData.optinId) {
+      if (optinData.optinSourceId) {
         return optinService.updateOptinData(req.body, optinData)
       } else {
         return optinService.addOptinData(req.body, optinData)

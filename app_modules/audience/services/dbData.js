@@ -142,12 +142,12 @@ class AudienceService {
 
   // Optin Master
 
-  getOptinDataById (optinId) {
+  getOptinDataById (optinSourceId) {
     // __logger.info('inside get segment data by id service', segmentId)
     const optinData = q.defer()
 
-    if (optinId) {
-      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinDataById(), [optinId])
+    if (optinSourceId) {
+      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinDataById(), [optinSourceId])
         .then(result => {
           if (result && result.length > 0) {
             optinData.resolve(result[0])
@@ -169,7 +169,7 @@ class AudienceService {
     // __logger.info('Add Segment service called', newData, oldData)
     const optinDataAdded = q.defer()
     const segmentData = {
-      optinId: this.uniqueId.uuid(),
+      optinSourceId: this.uniqueId.uuid(),
       optinSource: newData.optinSource
     }
     const queryParam = []
@@ -192,7 +192,7 @@ class AudienceService {
 
     const optinntData = {
       optinSource: newData.optinSource || oldData.optinSource,
-      optinId: newData.optinId || oldData.optinId
+      optinSourceId: newData.optinSourceId || oldData.optinSourceId
     }
     const queryParam = []
     _.each(optinntData, (val) => queryParam.push(val))

@@ -208,15 +208,15 @@ class validate {
 
   // Optin Master
 
-  checkOptinId (request) {
+  checkOptinSourceId (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/checkOptinId',
+      id: '/checkOptinSourceId',
       type: 'object',
       required: true,
       additionalProperties: false,
       properties: {
-        optinId: {
+        optinSourceId: {
           type: 'string',
           required: true,
           minLength: 1
@@ -224,7 +224,7 @@ class validate {
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/checkOptinId')
+    v.addSchema(schema, '/checkOptinSourceId')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
@@ -274,7 +274,7 @@ class validate {
       type: 'object',
       required: true,
       properties: {
-        optinId: {
+        optinSourceId: {
           type: 'string',
           required: true,
           minLength: 1
