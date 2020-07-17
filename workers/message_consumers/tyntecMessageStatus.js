@@ -25,6 +25,7 @@ class TyntecConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageData = JSON.parse(mqData.content.toString())
+            let statusData = {}
             // console.log('incoming!!!!!!!!!!!!!!!!!!', messageData)
             const redirectService = new RedirectService()
             const retryCount = messageData.retryCount || 0
@@ -37,7 +38,7 @@ class TyntecConsumer {
                 // console.log('dataatatatat', data, typeof data)
                 if (data) {
                   data = JSON.parse(data)
-                  const statusData = {
+                  statusData = {
                     serviceProviderMessageId: messageData.messageId,
                     serviceProviderId: data.serviceProviderId,
                     deliveryChannel: messageData.deliveryChannel,
@@ -52,9 +53,15 @@ class TyntecConsumer {
                 }
               })
               .then(statusDataAdded => {
-                messageData.messageId = statusDataAdded.messageId
+                statusData.messageId = statusDataAdded.messageId
+                statusData.to = statusData.businessNumber
+                statusData.from = statusData.endConsumerNumber
                 delete messageData.retryCount
-                return redirectService.webhookPost(messageData.to, messageData)
+                delete statusData.serviceProviderId
+                delete statusData.serviceProviderMessageId
+                delete statusData.businessNumber
+                delete statusData.endConsumerNumber
+                return redirectService.webhookPost(messageData.to, statusData)
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
