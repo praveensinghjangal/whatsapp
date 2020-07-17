@@ -205,6 +205,101 @@ class validate {
     }
     return isvalid.promise
   }
+
+  // Optin Master
+
+  checkOptinId (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkOptinId',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        optinId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkOptinId')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  checkAddOptinData (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addOptin',
+      type: 'object',
+      required: true,
+      properties: {
+        optinSource: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/addOptin')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  checkUpdateOptinData (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/updateOptin',
+      type: 'object',
+      required: true,
+      properties: {
+        optinId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        optinSource: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/updateOptin')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

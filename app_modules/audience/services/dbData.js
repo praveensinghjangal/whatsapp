@@ -139,6 +139,76 @@ class AudienceService {
       })
     return datafetcted.promise
   }
+
+  // Optin Master
+
+  getOptinDataById (optinId) {
+    // __logger.info('inside get segment data by id service', segmentId)
+    const optinData = q.defer()
+
+    if (optinId) {
+      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinDataById(), [optinId])
+        .then(result => {
+          if (result && result.length > 0) {
+            optinData.resolve(result[0])
+          } else {
+            optinData.resolve({})
+          }
+        })
+        .catch(err => {
+          __logger.error('error in get segment by id function: ', err)
+          optinData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        })
+    } else {
+      optinData.resolve({})
+    }
+    return optinData.promise
+  }
+
+  addOptinData (newData, oldData) {
+    // __logger.info('Add Segment service called', newData, oldData)
+    const optinDataAdded = q.defer()
+    const segmentData = {
+      optinId: this.uniqueId.uuid(),
+      optinSource: newData.optinSource
+    }
+    const queryParam = []
+    _.each(segmentData, (val) => queryParam.push(val))
+    // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addOptinData(), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          optinDataAdded.resolve(segmentData)
+        } else {
+          optinDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => optinDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return optinDataAdded.promise
+  }
+
+  updateOptinData (newData, oldData) {
+    const optinUpdated = q.defer()
+
+    const optinntData = {
+      optinSource: newData.optinSource || oldData.optinSource,
+      optinId: newData.optinId || oldData.optinId
+    }
+    const queryParam = []
+    _.each(optinntData, (val) => queryParam.push(val))
+    const validate = new ValidatonService()
+    validate.checkUpdateOptinData(optinntData)
+      .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateOptinData(), queryParam))
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          optinUpdated.resolve(optinntData)
+        } else {
+          optinUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => optinUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return optinUpdated.promise
+  }
 }
 
 module.exports = AudienceService
