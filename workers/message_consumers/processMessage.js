@@ -1,12 +1,43 @@
+const moment = require('moment')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const q = require('q')
+const MessageHistoryService = require('../../app_modules/message/services/dbData')
+const RedirectService = require('../../app_modules/integration/service/redirectService')
+
+const saveAndSendMessageStatus = (payload, serviceProviderId) => {
+  const statusSent = q.defer()
+  const messageHistoryService = new MessageHistoryService()
+  const redirectService = new RedirectService()
+  const statusData = {
+    messageId: payload.messageId,
+    serviceProviderId: serviceProviderId,
+    deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+    statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
+    state: __constants.MESSAGE_STATUS.resourceAllocated,
+    endConsumerNumber: payload.to,
+    businessNumber: payload.whatsapp.from
+  }
+  messageHistoryService.addMessageHistoryDataService(statusData)
+    .then(statusDataAdded => {
+      statusData.to = statusData.businessNumber
+      statusData.from = statusData.endConsumerNumber
+      delete statusData.serviceProviderId
+      delete statusData.businessNumber
+      delete statusData.endConsumerNumber
+      return redirectService.webhookPost(statusData.to, statusData)
+    })
+    .then(data => statusSent.resolve(data))
+    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  return statusSent.promise
+}
 
 const sendToRespectiveProviderQueue = (message, queueObj) => {
   const messageRouted = q.defer()
   queueObj.sendToQueue(__constants.MQ[message.config.queueName], JSON.stringify(message))
-    .then(queueResponse => messageRouted.resolve('done!'))
+    .then(queueResponse => saveAndSendMessageStatus(message.payload, message.config.servicProviderId))
+    .then(statusResponse => messageRouted.resolve('done!'))
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise
 }

@@ -170,6 +170,12 @@ const INTERNAL_END_POINTS = {
 
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 
+const MESSAGE_STATUS = {
+  inProcess: 'in process',
+  resourceAllocated: 'resource allocated',
+  forwarded: 'forwarded'
+}
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -198,3 +204,4 @@ module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
 module.exports.DELIVERY_CHANNEL = DELIVERY_CHANNEL
 module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
+module.exports.MESSAGE_STATUS = MESSAGE_STATUS

@@ -1,5 +1,6 @@
 const q = require('q')
 const _ = require('lodash')
+const moment = require('moment')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
@@ -11,6 +12,35 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __db = require('../../../lib/db')
 const __logger = require('../../../lib/logger')
 const templateParamValidationService = new TemplateParamValidationService()
+const MessageHistoryService = require('../services/dbData')
+const RedirectService = require('../../integration/service/redirectService')
+
+const saveAndSendMessageStatus = (payload, serviceProviderId) => {
+  const statusSent = q.defer()
+  const messageHistoryService = new MessageHistoryService()
+  const redirectService = new RedirectService()
+  const statusData = {
+    messageId: payload.messageId,
+    serviceProviderId: serviceProviderId,
+    deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+    statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
+    state: __constants.MESSAGE_STATUS.inProcess,
+    endConsumerNumber: payload.to,
+    businessNumber: payload.whatsapp.from
+  }
+  messageHistoryService.addMessageHistoryDataService(statusData)
+    .then(statusDataAdded => {
+      statusData.to = statusData.businessNumber
+      statusData.from = statusData.endConsumerNumber
+      delete statusData.serviceProviderId
+      delete statusData.businessNumber
+      delete statusData.endConsumerNumber
+      return redirectService.webhookPost(statusData.to, statusData)
+    })
+    .then(data => statusSent.resolve(data))
+    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  return statusSent.promise
+}
 
 const checkIfNoExists = number => {
   const exists = q.defer()
@@ -36,7 +66,8 @@ const sendToQueue = (data, providerId) => {
     payload: data
   }
   rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData))
-    .then(queueResponse => messageSent.resolve({ messageId: data.messageId, acceptedAt: new Date() }))
+    .then(queueResponse => saveAndSendMessageStatus(data, providerId))
+    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, acceptedAt: new Date() }))
     .catch(err => messageSent.reject(err))
   return messageSent.promise
 }
