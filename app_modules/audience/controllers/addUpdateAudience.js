@@ -15,8 +15,8 @@ const addUpdateAudienceData = (req, res) => {
   validate.addAudience(req.body)
     .then(data => audienceService.getAudienceTableDataByPhoneNumber(req.body.phoneNumber))
     .then(audienceData => {
+      req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
       if (audienceData.audienceId) {
-        req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
         return updateAudienceData(req.body, audienceData)
         // return audienceService.updateAudienceDataService(req.body, audienceData)
       } else {
