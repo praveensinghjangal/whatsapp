@@ -224,7 +224,7 @@ class validate {
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/checkWabaId')
+    v.addSchema(schema, '/checkSegmentId')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
