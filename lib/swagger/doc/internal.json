@@ -4436,7 +4436,14 @@
                         "required": false,
                         "type": "boolean",
                         "description": ""
-                    }                    
+                    },
+                    {
+                        "name": "tempOptin",
+                        "in": "query",
+                        "required": false,
+                        "type": "boolean",
+                        "description": ""
+                    } 
                 ],
                 "responses": {
                     "200": {

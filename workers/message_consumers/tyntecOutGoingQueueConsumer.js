@@ -3,6 +3,38 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const integrationService = require('../../app_modules/integration')
 const q = require('q')
+const moment = require('moment')
+const MessageHistoryService = require('../../app_modules/message/services/dbData')
+const RedirectService = require('../../app_modules/integration/service/redirectService')
+
+const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMessageId) => {
+  const statusSent = q.defer()
+  const messageHistoryService = new MessageHistoryService()
+  const redirectService = new RedirectService()
+  const statusData = {
+    messageId: payload.messageId,
+    serviceProviderId: serviceProviderId,
+    serviceProviderMessageId: serviceProviderMessageId,
+    deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+    statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
+    state: __constants.MESSAGE_STATUS.forwarded,
+    endConsumerNumber: payload.to,
+    businessNumber: payload.whatsapp.from
+  }
+  messageHistoryService.addMessageHistoryDataService(statusData)
+    .then(statusDataAdded => {
+      statusData.to = statusData.businessNumber
+      statusData.from = statusData.endConsumerNumber
+      delete statusData.serviceProviderMessageId
+      delete statusData.serviceProviderId
+      delete statusData.businessNumber
+      delete statusData.endConsumerNumber
+      return redirectService.webhookPost(statusData.to, statusData)
+    })
+    .then(data => statusSent.resolve(data))
+    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  return statusSent.promise
+}
 
 const sendToErrorQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -40,11 +72,11 @@ class MessageConsumer {
 
             const messageService = new integrationService.Messaage(messageData.config.servicProviderId)
             messageService.sendMessage(messageData.payload)
+              .then(sendMessageRespose => saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messageId))
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
                 console.log('Error------------------------------->', err)
                 rmqObject.channel[queue].ack(mqDataReceived)
-
                 if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
                   messageData.payload.retryCount--
                   sendToTyntecOutgoingQueue(messageData, rmqObject)

@@ -10,8 +10,8 @@ const fetchAudienceDataController = require('./controllers/fetchAudienceData')
 
 // Segment Controller
 
-const fetchSegmentController = require('../segment/controllers/fetchSegment')
-const addUpdateSegmentController = require('../segment/controllers/addUpdateSegment')
+const fetchSegmentController = require('./controllers/fetchSegment')
+const addUpdateSegmentController = require('./controllers/addUpdateSegment')
 
 // Optin Controller
 
