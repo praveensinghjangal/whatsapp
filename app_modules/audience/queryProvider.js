@@ -81,25 +81,25 @@ const getOptinByPhoneNumber = () => {
 
 // Optin Master
 
-const getOptinData = () => {
+const getOptinSourceData = () => {
   return `SELECT optin_source_id as "optinSourceId", optin_source as "optinSource"
   FROM optin_source
   WHERE is_active= true`
 }
 
-const getOptinDataById = () => {
+const getOptinSourceDataById = () => {
   return `SELECT optin_source_id as "optinSourceId", optin_source as "optinSource"
   FROM optin_source
   WHERE is_active= true and optin_source.optin_source_id = ? `
 }
 
-const addOptinData = () => {
+const addOptinSourceData = () => {
   return `INSERT INTO optin_source
   (optin_source_id, optin_source, created_on, created_by, is_active)
   VALUES(?, ?, CURRENT_TIMESTAMP, 'admin',  1) `
 }
 
-const updateOptinData = () => {
+const updateOptinSourceData = () => {
   return `UPDATE optin_source
   SET optin_source=?, updated_on=CURRENT_TIMESTAMP,
   updated_by='admin'
@@ -139,10 +139,10 @@ module.exports = {
   updateAudienceRecord,
   getTempOptinStatus,
   getOptinByPhoneNumber,
-  getOptinData,
-  getOptinDataById,
-  addOptinData,
-  updateOptinData,
+  getOptinSourceData,
+  getOptinSourceDataById,
+  addOptinSourceData,
+  updateOptinSourceData,
   getSegmentData,
   getSegmentDataById,
   addSegmentData,

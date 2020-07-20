@@ -331,7 +331,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkAddOptinData (request) {
+  checkAddOptinSourceData (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/addOptin',
@@ -360,7 +360,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkUpdateOptinData (request) {
+  checkUpdateOptinSourceData (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/updateOptin',

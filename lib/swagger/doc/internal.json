@@ -5071,7 +5071,7 @@
                 "tags": [
                     "audience"
                 ],
-                "operationId": "GetOptinData",
+                "operationId": "GetOptinSourceData",
                 "deprecated": false,
                 "produces": [
                     "application/json"
@@ -5183,7 +5183,7 @@
                 "tags": [
                     "audience"
                 ],
-                "operationId": "AddUpdateOptinData",
+                "operationId": "AddUpdateOptinSourceData",
                 "deprecated": false,
                 "produces": [
                     "application/json"

@@ -6,9 +6,9 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const queryProvider = require('../queryProvider')
 
 // Get Optin Data
-const getOptinData = (req, res) => {
-  // __logger.info('Inside getOptinData', req.user.userId)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinData(), [])
+const getOptinSourceData = (req, res) => {
+  // __logger.info('Inside getOptinSourceData', req.user.userId)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinSourceData(), [])
     .then(results => {
       __logger.info('Then 1')
       if (results && results.length > 0) {
@@ -26,4 +26,4 @@ const getOptinData = (req, res) => {
     })
 }
 
-module.exports = { getOptinData }
+module.exports = { getOptinSourceData }

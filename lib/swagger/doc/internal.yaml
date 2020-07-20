@@ -3460,7 +3460,7 @@ paths:
       summary: Get optin source list
       tags:
         - audience
-      operationId: GetOptinData
+      operationId: GetOptinSourceData
       deprecated: false
       produces:
         - application/json
@@ -3533,7 +3533,7 @@ paths:
       summary: Add update optin
       tags:
         - audience
-      operationId: AddUpdateOptinData
+      operationId: AddUpdateOptinSourceData
       deprecated: false
       produces:
         - application/json
