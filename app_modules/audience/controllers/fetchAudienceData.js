@@ -9,10 +9,27 @@ const _ = require('lodash')
 const q = require('q')
 const moment = require('moment')
 
+const OptinService = require('../services/optinCheckService')
+
 const getAudienceRecordById = (req, res) => {
   __logger.info('Get Audience Info API Called', req.params)
   const audienceService = new AudienceService()
   const validate = new ValidatonService()
+
+  const result = q.defer()
+  const optinCheckService = new OptinService()
+  getOptinStatusByPhoneNumber('+91842490376')
+    // .then(data => optinCheckService.computeOptinStatus(data))
+    .then(data => {
+      console.log('Result', data)
+      result.resolve(data)
+    })
+    .catch(err => {
+      console.log('Reject', err)
+
+      result.reject(err)
+    })
+
   validate.checkAudienceIdExistService(req.params)
     .then(data => audienceService.getAudienceTableDataWithId(req.params.audienceId))
     .then(result => {
@@ -81,14 +98,15 @@ function getOptinStatusByPhoneNumber (phoneNumber) {
         dataFetched.resolve(null)
       } else {
         result[0].optin = result[0].optin === 1
-        result[0].tempOptin = false
-        // console.log('Hours>>>>>>>>>>>>>>>>>.....', moment().diff(moment(result[0].lastMessage), 'hours'))
 
-        if (moment().diff(moment(result[0].lastMessage), 'hours') <= 24) {
-          result[0].tempOptin = true
-        }
+        const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
+        const expireyTime = moment(result[0].lastMessage).utc().add(24, 'hours').format('YYYY-MM-DD HH:mm:ss')
+        console.log('datatat ===>', expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
+
+        // result[0].tempOptin = moment().diff(moment(result[0].lastMessage), 'hours') <= 24
         console.log('Result>>>>>>>>>>>>>>>>>.....', result[0])
-        dataFetched.resolve(result[0])
+        dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin })
       }
     })
     .catch(err => {
@@ -101,5 +119,6 @@ function getOptinStatusByPhoneNumber (phoneNumber) {
 
 module.exports = {
   getAudienceRecordById,
-  getAudienceRecordList
+  getAudienceRecordList,
+  getOptinStatusByPhoneNumber
 }

@@ -22,7 +22,7 @@ const getAudienceRecordList = (columnArray) => {
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
   email, gender, country
   FROM audience aud
-  left join optin_source osm  on osm.optin_source_master_id  = aud.optin_source_id
+  left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
   left join segment sm  on sm.segment_id  = aud.segment_id
   and sm.is_active  =true
@@ -49,7 +49,7 @@ const getAudienceTableDataWithId = () => {
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
   email, gender, country
   FROM audience aud
-  left join optin_source osm  on osm.optin_source_master_id  = aud.optin_source_id
+  left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
   left join segment sm  on sm.segment_id  = aud.segment_id
   and sm.is_active  =true
