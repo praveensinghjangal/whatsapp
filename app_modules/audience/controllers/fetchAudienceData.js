@@ -33,34 +33,42 @@ const getAudienceRecordById = (req, res) => {
 Not much clarity on veiwALl filter
 */
 const getAudienceRecordList = (req, res) => {
-  __logger.info('Get Audience Record List API Called', req.query)
+  // __logger.info('Get Audience Record List API Called', req.query)
 
   const {
     channel, optin, optinSourceId, tempOptin,
     segmentId, firstMessageActivation, phoneNumber
   } = req.query
 
-  const inputArray = [{ colName: 'aud.channel', value: channel }, { colName: 'aud.optin', value: optin },
-    { colName: 'aud.optin_source_id', value: optinSourceId }, { colName: 'aud.tempOptin', value: tempOptin },
+  const inputArray = [{ colName: 'aud.channel', value: channel },
+    { colName: 'aud.optin_source_id', value: optinSourceId },
     { colName: 'aud.segment_id', value: segmentId },
     { colName: 'aud.first_message', value: firstMessageActivation },
     { colName: 'aud.phone_number', value: phoneNumber }]
+
+  if (optin) {
+    inputArray.push({ colName: 'aud.optin', value: optin == 'true' ? 1 : 0 })
+  }
+
+  if (tempOptin) {
+    inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin == 'true' ? 1 : 0 })
+  }
 
   const columnArray = []
   const valArray = []
 
   _.each(inputArray, function (input) {
-    if (input.value !== undefined && input.value !== null && input.value.trim() !== '') {
+    if (input.value !== undefined && input.value !== null) {
       columnArray.push(input.colName)
       valArray.push(input.value)
     }
   })
+  // console.log('Value arrrrrray??????????????????', typeof optin)
+  // console.log('Value arrrrrray??????????????????', valArray)
 
-  console.log('columnArray', columnArray)
-  console.log('valArray', valArray)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray)
     .then(result => {
-      if (result && result.affectedRows && result.affectedRows === 0) {
+      if (result && result.length === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
