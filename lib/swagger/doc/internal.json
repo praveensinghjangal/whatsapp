@@ -56,7 +56,7 @@
         {
             "name": "templates",
             "description": "API's related to whatsapp templates"
-        },       
+        },
         {
             "name": "audience",
             "description": "API's related to whatsapp audience"
@@ -404,6 +404,254 @@
                         "schema": {
                             "type": "string",
                             "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/chat/v1/messages/tracking": {
+            "post": {
+                "description": "This API is used to store message status",
+                "tags": [
+                    "message"
+                ],
+                "operationId": "save message status",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "Provided by vivaconnect upon signup"
+                    },
+                    {
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/saveMessageStatus"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns message ID",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "dataAdded": true,
+                                    "messageId": "49bdfe01-0503-487f-8b26-67a2b8fafhjgip"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/chat/v1/messages/tracking/{messageId}": {
+            "get": {
+                "summary": "Get Message Journey",
+                "description": "Use this API to get complete journey of a message",
+                "tags": [
+                    "message"
+                ],
+                "operationId": "getMessageStatus",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "Provided by vivaconnect upon signup"
+                    },
+                    {
+                        "name": "messageId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of a Message"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns various stages of message journey",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": [
+                                        {
+                                            "messageId": "49bdfe01-0503-487f-8b26-67a2b8fafhjgip",
+                                            "deliveryChannel": "whatsapp",
+                                            "statusTime": "2020-07-15T13:01:08.000Z",
+                                            "state": "message forwarded",
+                                            "endConsumerNumber": "917666545750",
+                                            "businessNumber": "91808080808"
+                                        },
+                                        {
+                                            "messageId": "49bdfe01-0503-487f-8b26-67a2b8fafhjgip",
+                                            "deliveryChannel": "whatsapp",
+                                            "statusTime": "2020-07-15T13:01:00.000Z",
+                                            "state": "message accepted",
+                                            "endConsumerNumber": "917666545750",
+                                            "businessNumber": "91808080808"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
                         }
                     },
                     "500": {
@@ -1899,14 +2147,91 @@
                 }
             }
         },
-        "/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a": {
+        "/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a": {
             "post": {
                 "summary": "Web hook API for tytntec",
-                "description": "Web hook API for tytntec to receive incoming messages and store\nin queue",
+                "description": "Web hook API for tytntec to receive incoming messages and store in queue",
                 "tags": [
                     "web-hooks"
                 ],
-                "operationId": "sinch/sendDataToQueue",
+                "operationId": "tyntec/sendDataToQueue",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "type": "object",
+                            "example": {
+                                "key": "accepts any json input and pushes to queue"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepts input object and sends to queue",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2002,
+                                "msg": "Request Accepted",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e": {
+            "post": {
+                "summary": "Web hook API for tytntec message Status",
+                "description": "Web hook API for tytntec to receive outgoing messages status and store in queue",
+                "tags": [
+                    "web-hooks"
+                ],
+                "operationId": "tyntec/sendMessageStatusData",
                 "deprecated": false,
                 "produces": [
                     "application/json"
@@ -1978,7 +2303,7 @@
         },
         "/places/states/{stateId}/cities": {
             "get": {
-                "description": "This API will return list of cities based on state ID passed in req url",
+                "description": "This API will return list of cities based on state ID passed in\nreq url",
                 "summary": "get cities by state ID",
                 "tags": [
                     "places"
@@ -2083,7 +2408,7 @@
         },
         "/places/countries/{countryId}/states": {
             "get": {
-                "description": "This API returns list of states based on country id passed in request url",
+                "description": "This API returns list of states based on country id passed in request\nurl",
                 "summary": "Get states list by country ID",
                 "tags": [
                     "places"
@@ -2315,22 +2640,22 @@
                                 "code": 2000,
                                 "msg": "Success",
                                 "data": [
-                                      {
-                                          "planId": "6cb80f6d-cdca-4b69-974c-f25bbf95f642",
-                                          "planName": "Plan C",
-                                          "planValidity": "30",
-                                          "planCost": "1000",
-                                          "planCategory": "standard",
-                                          "planBenefits": null
-                                      },
-                                      {
-                                          "planId": "6e9be178-1414-4d9e-91ca-3eb3c5ef5a99",
-                                          "planName": "Plan B",
-                                          "planValidity": "30",
-                                          "planCost": "1500",
-                                          "planCategory": "standard",
-                                          "planBenefits": null
-                                      }
+                                    {
+                                        "planId": "6cb80f6d-cdca-4b69-974c-f25bbf95f642",
+                                        "planName": "Plan C",
+                                        "planValidity": "30",
+                                        "planCost": "1000",
+                                        "planCategory": "standard",
+                                        "planBenefits": null
+                                    },
+                                    {
+                                        "planId": "6e9be178-1414-4d9e-91ca-3eb3c5ef5a99",
+                                        "planName": "Plan B",
+                                        "planValidity": "30",
+                                        "planCost": "1500",
+                                        "planCategory": "standard",
+                                        "planBenefits": null
+                                    }
                                 ]
                             }
                         }
@@ -2372,7 +2697,7 @@
                 },
                 "security": []
             }
-        },        
+        },
         "/business/categories": {
             "get": {
                 "description": "Gets list of business categories",
@@ -3082,7 +3407,7 @@
                             "example": [
                                 {
                                     "code": 2001,
-                                    "msg": "Please check your registered business phone number for verification code",
+                                    "msg": "Please check your registered business phone number for verification\ncode",
                                     "data": {}
                                 },
                                 {
@@ -4443,7 +4768,7 @@
                         "required": false,
                         "type": "boolean",
                         "description": ""
-                    } 
+                    }
                 ],
                 "responses": {
                     "200": {
@@ -4464,39 +4789,39 @@
                                 {
                                     "code": 2000,
                                     "msg": "Success",
-                                    "data":  [
-                                      {
-                                          "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
-                                          "phoneNumber": "919820333891",
-                                          "channel": "whatsapp",
-                                          "firstMessage": "2020-07-07T14:48:58.251Z",
-                                          "lastMessage": "2020-07-09T13:02:39.018Z",
-                                          "optin": true,
-                                          "tempOptin": true,
-                                          "optinSource": "direct",
-                                          "segment_name": "Organic Conversation",
-                                          "chatFlowId": null,
-                                          "name": "Ajay",
-                                          "email": "ajay@yopmail.com",
-                                          "gender": "Male",
-                                          "country": "India"
-                                      },
-                                      {
-                                          "audienceId": "b70aeadd-4941-4bda-a4bd-fd5d320e454f",
-                                          "phoneNumber": "+91842490276",
-                                          "channel": "whatsapp",
-                                          "firstMessage": "2020-07-05T14:06:05.000Z",
-                                          "lastMessage": null,
-                                          "optin": true,
-                                          "tempOptin": null,
-                                          "optinSource": "direct",
-                                          "segment_name": "Organic Conversation",
-                                          "chatFlowId": null,
-                                          "name": "Raju",
-                                          "email": "raju@yopmail.com",
-                                          "gender": "Male",
-                                          "country": "India"
-                                      }
+                                    "data": [
+                                        {
+                                            "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
+                                            "phoneNumber": "919820333891",
+                                            "channel": "whatsapp",
+                                            "firstMessage": "2020-07-07T14:48:58.251Z",
+                                            "lastMessage": "2020-07-09T13:02:39.018Z",
+                                            "optin": true,
+                                            "tempOptin": true,
+                                            "optinSource": "direct",
+                                            "segment_name": "Organic Conversation",
+                                            "chatFlowId": null,
+                                            "name": "Ajay",
+                                            "email": "ajay@yopmail.com",
+                                            "gender": "Male",
+                                            "country": "India"
+                                        },
+                                        {
+                                            "audienceId": "b70aeadd-4941-4bda-a4bd-fd5d320e454f",
+                                            "phoneNumber": "+91842490276",
+                                            "channel": "whatsapp",
+                                            "firstMessage": "2020-07-05T14:06:05.000Z",
+                                            "lastMessage": null,
+                                            "optin": true,
+                                            "tempOptin": null,
+                                            "optinSource": "direct",
+                                            "segment_name": "Organic Conversation",
+                                            "chatFlowId": null,
+                                            "name": "Raju",
+                                            "email": "raju@yopmail.com",
+                                            "gender": "Male",
+                                            "country": "India"
+                                        }
                                     ]
                                 },
                                 {
@@ -4505,7 +4830,7 @@
                                     "data": null,
                                     "error": {}
                                 }
-                            ] 
+                            ]
                         }
                     },
                     "401": {
@@ -4594,17 +4919,17 @@
                                     "code": 2000,
                                     "msg": "Success",
                                     "data": {
-                                      "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
-                                      "phoneNumber": "919820333891",
-                                      "channel": "whatsapp",
-                                      "optin": true,
-                                      "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
-                                      "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
-                                      "chatFlowId": null,
-                                      "name": "Ajay",
-                                      "email": "ajay@yopmail.com",
-                                      "gender": "Male",
-                                      "country": "India"
+                                        "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
+                                        "phoneNumber": "919820333891",
+                                        "channel": "whatsapp",
+                                        "optin": true,
+                                        "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
+                                        "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
+                                        "chatFlowId": null,
+                                        "name": "Ajay",
+                                        "email": "ajay@yopmail.com",
+                                        "gender": "Male",
+                                        "country": "India"
                                     }
                                 },
                                 {
@@ -4694,10 +5019,10 @@
                     }
                 },
                 "security": []
-          }
+            }
         },
         "/audience/{audienceId}": {
-          "get": {
+            "get": {
                 "summary": "Get audience Info",
                 "description": "Use this API to get information of a audience record",
                 "tags": [
@@ -4834,14 +5159,14 @@
                     "application/json"
                 ],
                 "parameters": [
-                      {
-                          "name": "Authorization",
-                          "in": "header",
-                          "required": true,
-                          "type": "string",
-                          "description": "user can obtain auth token by using login API"
-                      }
-                    ],
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of all Segment for audience record",
@@ -4858,31 +5183,31 @@
                                 }
                             },
                             "example": [
-                                      {
-                                          "code": 2000,
-                                          "msg": "Success",
-                                          "data":  [
-                                                {
-                                                    "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
-                                                    "segmentName": "Organic Conversation"
-                                                },
-                                                {
-                                                    "segmentId": "ba7702c0-2b12-4629-b0a3-fb344615eb54",
-                                                    "segmentName": "Custom Segment Name"
-                                                },
-                                                {
-                                                    "segmentId": "c2769786-243b-41f2-81bb-c6ccf96287db",
-                                                    "segmentName": "test1"
-                                                }
-                                        ]
-                                      },
-                                      {
-                                          "code": 3000,
-                                          "msg": "No record found.",
-                                          "data": null,
-                                          "error": {}
-                                      }
-                            ] 
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": [
+                                        {
+                                            "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
+                                            "segmentName": "Organic Conversation"
+                                        },
+                                        {
+                                            "segmentId": "ba7702c0-2b12-4629-b0a3-fb344615eb54",
+                                            "segmentName": "Custom Segment Name"
+                                        },
+                                        {
+                                            "segmentId": "c2769786-243b-41f2-81bb-c6ccf96287db",
+                                            "segmentName": "test1"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
                         }
                     },
                     "401": {
@@ -5077,14 +5402,14 @@
                     "application/json"
                 ],
                 "parameters": [
-                      {
-                          "name": "Authorization",
-                          "in": "header",
-                          "required": true,
-                          "type": "string",
-                          "description": "user can obtain auth token by using login API"
-                      }
-                    ],
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "List of all optin for audience record",
@@ -5101,43 +5426,43 @@
                                 }
                             },
                             "example": [
-                                      {
-                                          "code": 2000,
-                                          "msg": "Success",
-                                          "data":  [
-                                          {
-                                              "optinId": "154e25f4-44cd-4a48-984d-dbdce569d2c1",
-                                              "optinSource": "form"
-                                          },
-                                          {
-                                              "optinId": "28614254-12c6-4f44-aa3c-20cf9e9589cb",
-                                              "optinSource": "message"
-                                          },
-                                          {
-                                              "optinId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
-                                              "optinSource": "direct"
-                                          },
-                                          {
-                                              "optinId": "7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649",
-                                              "optinSource": "api"
-                                          },
-                                          {
-                                              "optinId": "bc373e00-8ff7-4b38-bf95-7da31d5a2dd3",
-                                              "optinSource": "link"
-                                          },
-                                          {
-                                              "optinId": "f869b918-47d0-4591-8de6-e74bcb219331",
-                                              "optinSource": "upload"
-                                          }
-                                        ]
-                                      },
-                                      {
-                                          "code": 3000,
-                                          "msg": "No record found.",
-                                          "data": null,
-                                          "error": {}
-                                      }
-                            ] 
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": [
+                                        {
+                                            "optinId": "154e25f4-44cd-4a48-984d-dbdce569d2c1",
+                                            "optinSource": "form"
+                                        },
+                                        {
+                                            "optinId": "28614254-12c6-4f44-aa3c-20cf9e9589cb",
+                                            "optinSource": "message"
+                                        },
+                                        {
+                                            "optinId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
+                                            "optinSource": "direct"
+                                        },
+                                        {
+                                            "optinId": "7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649",
+                                            "optinSource": "api"
+                                        },
+                                        {
+                                            "optinId": "bc373e00-8ff7-4b38-bf95-7da31d5a2dd3",
+                                            "optinSource": "link"
+                                        },
+                                        {
+                                            "optinId": "f869b918-47d0-4591-8de6-e74bcb219331",
+                                            "optinSource": "upload"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
                         }
                     },
                     "401": {
@@ -5318,832 +5643,832 @@
                 },
                 "security": []
             }
-        }        
+        }
     },
-      "definitions": {
-          "sendrequest": {
-              "title": "sendrequest",
-              "example": {
-                  "to": "919860245659",
-                  "channels": [
-                      "whatsapp"
-                  ],
-                  "whatsapp": {
-                      "from": "918080800808",
-                      "contentType": "template",
-                      "template": {
-                          "templateId": "opt_1",
-                          "language": {
-                              "policy": "deterministic",
-                              "code": "hi"
-                          },
-                          "components": [
-                              {
-                                  "type": "body",
-                                  "parameters": [
-                                      {
-                                          "type": "text",
-                                          "text": "VivaConnect"
-                                      },
-                                      {
-                                          "type": "text",
-                                          "text": "007"
-                                      },
-                                      {
-                                          "type": "text",
-                                          "text": "2022"
-                                      }
-                                  ]
-                              }
-                          ]
-                      }
-                  }
-              },
-              "type": "object",
-              "properties": {
-                  "to": {
-                      "type": "string"
-                  },
-                  "channels": {
-                      "type": "array",
-                      "items": {
-                          "type": "string"
-                      }
-                  },
-                  "whatsapp": {
-                      "$ref": "#/definitions/Whatsapp"
-                  }
-              },
-              "required": [
-                  "to",
-                  "channels",
-                  "whatsapp"
-              ]
-          },
-          "Whatsapp": {
-              "title": "Whatsapp",
-              "example": {
-                  "from": "918080800808",
-                  "contentType": "template",
-                  "template": {
-                      "templateId": "opt_1",
-                      "language": {
-                          "policy": "deterministic",
-                          "code": "hi"
-                      },
-                      "components": [
-                          {
-                              "type": "body",
-                              "parameters": [
-                                  {
-                                      "type": "text",
-                                      "text": "VivaConnect"
-                                  },
-                                  {
-                                      "type": "text",
-                                      "text": "007"
-                                  },
-                                  {
-                                      "type": "text",
-                                      "text": "2022"
-                                  }
-                              ]
-                          }
-                      ]
-                  }
-              },
-              "type": "object",
-              "properties": {
-                  "from": {
-                      "type": "string"
-                  },
-                  "contentType": {
-                      "type": "string"
-                  },
-                  "template": {
-                      "$ref": "#/definitions/Template"
-                  }
-              },
-              "required": [
-                  "from",
-                  "contentType",
-                  "template"
-              ]
-          },
-          "Template": {
-              "title": "Template",
-              "example": {
-                  "templateId": "opt_1",
-                  "language": {
-                      "policy": "deterministic",
-                      "code": "hi"
-                  },
-                  "components": [
-                      {
-                          "type": "body",
-                          "parameters": [
-                              {
-                                  "type": "text",
-                                  "text": "VivaConnect"
-                              },
-                              {
-                                  "type": "text",
-                                  "text": "007"
-                              },
-                              {
-                                  "type": "text",
-                                  "text": "2022"
-                              }
-                          ]
-                      }
-                  ]
-              },
-              "type": "object",
-              "properties": {
-                  "templateId": {
-                      "type": "string"
-                  },
-                  "language": {
-                      "$ref": "#/definitions/Language"
-                  },
-                  "components": {
-                      "type": "array",
-                      "items": {
-                          "$ref": "#/definitions/Component"
-                      }
-                  }
-              },
-              "required": [
-                  "templateId",
-                  "language",
-                  "components"
-              ]
-          },
-          "Language": {
-              "title": "Language",
-              "example": {
-                  "policy": "deterministic",
-                  "code": "hi"
-              },
-              "type": "object",
-              "properties": {
-                  "policy": {
-                      "type": "string"
-                  },
-                  "code": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "policy",
-                  "code"
-              ]
-          },
-          "Component": {
-              "title": "Component",
-              "example": {
-                  "type": "body",
-                  "parameters": [
-                      {
-                          "type": "text",
-                          "text": "VivaConnect"
-                      },
-                      {
-                          "type": "text",
-                          "text": "007"
-                      },
-                      {
-                          "type": "text",
-                          "text": "2022"
-                      }
-                  ]
-              },
-              "type": "object",
-              "properties": {
-                  "type": {
-                      "type": "string"
-                  },
-                  "parameters": {
-                      "type": "array",
-                      "items": {
-                          "$ref": "#/definitions/Parameter"
-                      }
-                  }
-              },
-              "required": [
-                  "type",
-                  "parameters"
-              ]
-          },
-          "Parameter": {
-              "title": "Parameter",
-              "example": {
-                  "type": "text",
-                  "text": "VivaConnect"
-              },
-              "type": "object",
-              "properties": {
-                  "type": {
-                      "type": "string"
-                  },
-                  "text": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "type",
-                  "text"
-              ]
-          },
-          "updateAccountInfoRequest": {
-              "title": "updateAccountInfoRequest",
-              "example": {
-                  "firstName": "user",
-                  "lastName": "viva",
-                  "city": "Mumbai",
-                  "state": "Maharashtra",
-                  "country": "IN",
-                  "addressLine1": "some street",
-                  "addressLine2": "some lane",
-                  "contactNumber": "1234567890",
-                  "phoneCode": "+91",
-                  "postalCode": "400001"
-              },
-              "type": "object",
-              "properties": {
-                  "firstName": {
-                      "type": "string"
-                  },
-                  "lastName": {
-                      "type": "string"
-                  },
-                  "city": {
-                      "type": "string"
-                  },
-                  "state": {
-                      "type": "string"
-                  },
-                  "country": {
-                      "type": "string"
-                  },
-                  "addressLine1": {
-                      "type": "string"
-                  },
-                  "addressLine2": {
-                      "type": "string"
-                  },
-                  "contactNumber": {
-                      "type": "string"
-                  },
-                  "phoneCode": {
-                      "type": "string"
-                  },
-                  "postalCode": {
-                      "type": "string"
-                  }
-              }
-          },
-          "addBillingDataRequest": {
-              "title": "addBillingDataRequest",
-              "example": {
-                  "city": "Mumbai",
-                  "state": "Maharashtra",
-                  "country": "IN",
-                  "addressLine1": "Test 1",
-                  "addressLine2": "Test 2",
-                  "contactNumber": "1234567890",
-                  "phoneCode": "+91",
-                  "postalCode": "400001",
-                  "gstOrTaxNo": "ABCDE1234F",
-                  "businessName": "Helo-Whatsapp",
-                  "panCard": "ABCDE1234F"
-              },
-              "type": "object",
-              "properties": {
-                  "city": {
-                      "type": "string"
-                  },
-                  "state": {
-                      "type": "string"
-                  },
-                  "country": {
-                      "type": "string"
-                  },
-                  "addressLine1": {
-                      "type": "string"
-                  },
-                  "addressLine2": {
-                      "type": "string"
-                  },
-                  "contactNumber": {
-                      "type": "string"
-                  },
-                  "phoneCode": {
-                      "type": "string"
-                  },
-                  "postalCode": {
-                      "type": "string"
-                  },
-                  "gstOrTaxNo": {
-                      "type": "string"
-                  },
-                  "businessName": {
-                      "type": "string"
-                  },
-                  "panCard": {
-                      "type": "string"
-                  }
-              }
-          },
-          "validateEmailCodeRequest": {
-              "title": "validateEmailCodeRequest",
-              "example": {
-                  "code": 1234
-              },
-              "type": "object",
-              "properties": {
-                  "code": {
-                      "type": "integer",
-                      "format": "int32"
-                  }
-              },
-              "required": [
-                  "code"
-              ]
-          },
-          "validateSmsCodeRequest": {
-              "title": "validateSmsCodeRequest",
-              "example": {
-                  "code": 3167
-              },
-              "type": "object",
-              "properties": {
-                  "code": {
-                      "type": "integer",
-                      "format": "int32"
-                  }
-              },
-              "required": [
-                  "code"
-              ]
-          },
-          "auth/loginrequest": {
-              "title": "auth/loginrequest",
-              "example": {
-                  "email": "user@gmail.com",
-                  "password": "123oneTwo#"
-              },
-              "type": "object",
-              "properties": {
-                  "email": {
-                      "type": "string"
-                  },
-                  "password": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "email",
-                  "password"
-              ]
-          },
-          "signUpRequest": {
-              "title": "signUpRequest",
-              "example": {
-                  "email": "usertwo@gmail.com",
-                  "password": "123oneTw@3",
-                  "tncAccepted": true
-              },
-              "type": "object",
-              "properties": {
-                  "email": {
-                      "type": "string"
-                  },
-                  "password": {
-                      "type": "string"
-                  },
-                  "tncAccepted": {
-                      "type": "boolean"
-                  }
-              },
-              "required": [
-                  "email",
-                  "password",
-                  "tncAccepted"
-              ]
-          },
-          "sinch/sendDataToQueueRequest": {
-              "title": "sinch/sendDataToQueueRequest",
-              "example": {
-                  "type": "whatsapp",
-                  "contacts": [
-                      {
-                          "profile": {
-                              "name": "John Smith"
-                          },
-                          "wa_id": "0732001122"
-                      }
-                  ],
-                  "notifications": [
-                      {
-                          "from": "0732001122",
-                          "to": "sinchbot",
-                          "message_id": "01DPNXZ0WCF9XD19MH84XD0P62",
-                          "message": {
-                              "type": "text",
-                              "body": "Hello bot I want to know something!"
-                          }
-                      }
-                  ]
-              },
-              "type": "object",
-              "properties": {
-                  "type": {
-                      "type": "string"
-                  },
-                  "contacts": {
-                      "type": "array",
-                      "items": {
-                          "$ref": "#/definitions/Contact"
-                      }
-                  },
-                  "notifications": {
-                      "type": "array",
-                      "items": {
-                          "$ref": "#/definitions/Notification"
-                      }
-                  }
-              },
-              "required": [
-                  "type",
-                  "contacts",
-                  "notifications"
-              ]
-          },
-          "Contact": {
-              "title": "Contact",
-              "example": {
-                  "profile": {
-                      "name": "John Smith"
-                  },
-                  "wa_id": "0732001122"
-              },
-              "type": "object",
-              "properties": {
-                  "profile": {
-                      "$ref": "#/definitions/Profile"
-                  },
-                  "wa_id": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "profile",
-                  "wa_id"
-              ]
-          },
-          "Profile": {
-              "title": "Profile",
-              "example": {
-                  "name": "John Smith"
-              },
-              "type": "object",
-              "properties": {
-                  "name": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "name"
-              ]
-          },
-          "Notification": {
-              "title": "Notification",
-              "example": {
-                  "from": "0732001122",
-                  "to": "sinchbot",
-                  "message_id": "01DPNXZ0WCF9XD19MH84XD0P62",
-                  "message": {
-                      "type": "text",
-                      "body": "Hello bot I want to know something!"
-                  }
-              },
-              "type": "object",
-              "properties": {
-                  "from": {
-                      "type": "string"
-                  },
-                  "to": {
-                      "type": "string"
-                  },
-                  "message_id": {
-                      "type": "string"
-                  },
-                  "message": {
-                      "$ref": "#/definitions/Message"
-                  }
-              },
-              "required": [
-                  "from",
-                  "to",
-                  "message_id",
-                  "message"
-              ]
-          },
-          "Message": {
-              "title": "Message",
-              "example": {
-                  "type": "text",
-                  "body": "Hello bot I want to know something!"
-              },
-              "type": "object",
-              "properties": {
-                  "type": {
-                      "type": "string"
-                  },
-                  "body": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "type",
-                  "body"
-              ]
-          },
-          "add/updatebusinessprofilerequest": {
-              "title": "add/updatebusinessprofilerequest",
-              "example": {
-                  "businessName": "vivaconnect",
-                  "whatsappStatus": "available",
-                  "description": "available 24/7",
-                  "address": "some address ",
-                  "country": "IN",
-                  "city": "mumbai",
-                  "state": "maharashtra",
-                  "postalCode": "400001",
-                  "email": "123@gmail.com",
-                  "businessCategoryId": "bda36704-cde5-41c9-b039-e3841fa9229f",
-                  "profilePhotoUrl": "www.google.com/image"
-              },
-              "type": "object",
-              "properties": {
-                  "businessName": {
-                      "type": "string"
-                  },
-                  "whatsappStatus": {
-                      "type": "string"
-                  },
-                  "description": {
-                      "type": "string"
-                  },
-                  "address": {
-                      "type": "string"
-                  },
-                  "country": {
-                      "type": "string"
-                  },
-                  "city": {
-                      "type": "string"
-                  },
-                  "state": {
-                      "type": "string"
-                  },
-                  "postalCode": {
-                      "type": "string"
-                  },
-                  "email": {
-                      "type": "string"
-                  },
-                  "businessCategoryId": {
-                      "type": "string"
-                  },
-                  "profilePhotoUrl": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "businessName"
-              ]
-          },
-          "addupdatebusinessprofilraccessInformationRequest": {
-              "title": "addupdatebusinessprofilraccessInformationRequest",
-              "example": {
-                  "facebookManagerId": "my-manager-id",
-                  "phoneCode": "+91",
-                  "phoneNumber": "123456",
-                  "canReceiveSms": true,
-                  "canReceiveVoiceCall": false,
-                  "associatedWithIvr": false
-              },
-              "type": "object",
-              "properties": {
-                  "facebookManagerId": {
-                      "type": "string"
-                  },
-                  "phoneCode": {
-                      "type": "string"
-                  },
-                  "phoneNumber": {
-                      "type": "string"
-                  },
-                  "canReceiveSms": {
-                      "type": "boolean"
-                  },
-                  "canReceiveVoiceCall": {
-                      "type": "boolean"
-                  },
-                  "associatedWithIvr": {
-                      "type": "boolean"
-                  }
-              },
-              "required": [
-                  "facebookManagerId"
-              ]
-          },
-          "markmanagerverifiedrequest": {
-              "title": "markmanagerverifiedrequest",
-              "example": {
-                  "businessManagerVerified": true
-              },
-              "type": "object",
-              "properties": {
-                  "businessManagerVerified": {
-                      "type": "boolean"
-                  }
-              },
-              "required": [
-                  "businessManagerVerified"
-              ]
-          },
-          "verifiycodeforbusinessnumberrequest": {
-              "title": "verifiycodeforbusinessnumberrequest",
-              "example": {
-                  "code": 5976
-              },
-              "type": "object",
-              "properties": {
-                  "code": {
-                      "type": "integer",
-                      "format": "int32"
-                  }
-              },
-              "required": [
-                  "code"
-              ]
-          },
-          "AddupdatetemplateRequest": {
-              "title": "AddupdatetemplateRequest",
-              "example": {
-                  "messageTemplateId": "9bf57a21-a05c-47f4-82df-jki09v03deb9",
-                  "templateName": "Welcome",
-                  "type": "media message template",
-                  "messageTemplateCategoryId": "b8203a31-e439-4ea4-a270-bd211317d3ff",
-                  "messageTemplateStatusId": "c71a8387-80e0-468b-9ee3-abb5ec328176",
-                  "messageTemplateLanguageId": "57aa7635-5717-4397-8eb6-4799ef3bec05",
-                  "bodyText": "Hi {{1}} welcome to our platform",
-                  "headerText": "",
-                  "footerText": "vivaconnect",
-                  "mediaType": "image",
-                  "secondLanguageRequired": false,
-                  "secondMessageTemplateLanguageId": "cde192b7-c60f-4d2d-8573-dd5af7c9379b",
-                  "secondlanguageBodyText": "Hi {{1}} welcome to our platform",
-                  "headerType": "image",
-                  "buttonType": "Quick Reply",
-                  "buttonData": {
-                      "quickReply": [
-                          "1",
-                          "2",
-                          "3"
-                      ],
-                      "phoneButtonText": "call us",
-                      "phoneNumber": "9876543210",
-                      "websiteButtontext": "oursite.com",
-                      "webAddress": "www.google.com"
-                  }
-              },
-              "type": "object",
-              "properties": {
-                  "messageTemplateId": {
-                      "type": "string"
-                  },
-                  "templateName": {
-                      "type": "string"
-                  },
-                  "type": {
-                      "type": "string",
-                      "enum": [
-                          "Standard Message Template",
-                          "Media Message Template"
-                      ]
-                  },
-                  "messageTemplateCategoryId": {
-                      "type": "string"
-                  },
-                  "messageTemplateStatusId": {
-                      "type": "string"
-                  },
-                  "messageTemplateLanguageId": {
-                      "type": "string"
-                  },
-                  "bodyText": {
-                      "type": "string"
-                  },
-                  "headerText": {
-                      "type": "string"
-                  },
-                  "footerText": {
-                      "type": "string"
-                  },
-                  "mediaType": {
-                      "type": "string"
-                  },
-                  "secondLanguageRequired": {
-                      "type": "boolean"
-                  },
-                  "secondMessageTemplateLanguageId": {
-                      "type": "string"
-                  },
-                  "secondlanguageBodyText": {
-                      "type": "string"
-                  },
-                  "headerType": {
-                      "type": "string",
-                      "enum": [
-                          "Video",
-                          "Pdf",
-                          "Location",
-                          "Text",
-                          "image"
-                      ]
-                  },
-                  "buttonType": {
-                      "type": "string",
-                      "enum": [
-                          "Call To Action",
-                          "Quick Reply"
-                      ]
-                  },
-                  "buttonData": {
-                      "$ref": "#/definitions/ButtonData"
-                  }
-              },
-              "required": [
-                  "templateName"
-              ]
-          },
-          "ButtonData": {
-              "title": "ButtonData",
-              "example": {
-                  "quickReply": [
-                      "1",
-                      "2",
-                      "3"
-                  ],
-                  "phoneButtonText": "call us",
-                  "phoneNumber": "9876543210",
-                  "websiteButtontext": "oursite",
-                  "webAddress": "www.google.com"
-              },
-              "type": "object",
-              "properties": {
-                  "quickReply": {
-                      "type": "array",
-                      "items": {
-                          "type": "string"
-                      }
-                  },
-                  "phoneButtonText": {
-                      "type": "string"
-                  },
-                  "phoneNumber": {
-                      "type": "string"
-                  },
-                  "websiteButtontext": {
-                      "type": "string"
-                  },
-                  "webAddress": {
-                      "type": "string"
-                  }
-              }
-          },
-          "Audience": {
-              "title": "Audience",
-              "example": {
-                  "audienceId": "opt_1"
-              },
-              "type": "object",
-              "properties": {
-                  "audienceId": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "audienceId"
-              ]
-          },
-          "AddupdateAudienceRequest": {
-              "title": "AddupdateaudienceRequest",
-              "example":{
+    "definitions": {
+        "sendrequest": {
+            "title": "sendrequest",
+            "example": {
+                "to": "919860245659",
+                "channels": [
+                    "whatsapp"
+                ],
+                "whatsapp": {
+                    "from": "918080800808",
+                    "contentType": "template",
+                    "template": {
+                        "templateId": "opt_1",
+                        "language": {
+                            "policy": "deterministic",
+                            "code": "hi"
+                        },
+                        "components": [
+                            {
+                                "type": "body",
+                                "parameters": [
+                                    {
+                                        "type": "text",
+                                        "text": "VivaConnect"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "007"
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "2022"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "type": "object",
+            "properties": {
+                "to": {
+                    "type": "string"
+                },
+                "channels": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "whatsapp": {
+                    "$ref": "#/definitions/Whatsapp"
+                }
+            },
+            "required": [
+                "to",
+                "channels",
+                "whatsapp"
+            ]
+        },
+        "Whatsapp": {
+            "title": "Whatsapp",
+            "example": {
+                "from": "918080800808",
+                "contentType": "template",
+                "template": {
+                    "templateId": "opt_1",
+                    "language": {
+                        "policy": "deterministic",
+                        "code": "hi"
+                    },
+                    "components": [
+                        {
+                            "type": "body",
+                            "parameters": [
+                                {
+                                    "type": "text",
+                                    "text": "VivaConnect"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "007"
+                                },
+                                {
+                                    "type": "text",
+                                    "text": "2022"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "contentType": {
+                    "type": "string"
+                },
+                "template": {
+                    "$ref": "#/definitions/Template"
+                }
+            },
+            "required": [
+                "from",
+                "contentType",
+                "template"
+            ]
+        },
+        "Template": {
+            "title": "Template",
+            "example": {
+                "templateId": "opt_1",
+                "language": {
+                    "policy": "deterministic",
+                    "code": "hi"
+                },
+                "components": [
+                    {
+                        "type": "body",
+                        "parameters": [
+                            {
+                                "type": "text",
+                                "text": "VivaConnect"
+                            },
+                            {
+                                "type": "text",
+                                "text": "007"
+                            },
+                            {
+                                "type": "text",
+                                "text": "2022"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "type": "object",
+            "properties": {
+                "templateId": {
+                    "type": "string"
+                },
+                "language": {
+                    "$ref": "#/definitions/Language"
+                },
+                "components": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Component"
+                    }
+                }
+            },
+            "required": [
+                "templateId",
+                "language",
+                "components"
+            ]
+        },
+        "Language": {
+            "title": "Language",
+            "example": {
+                "policy": "deterministic",
+                "code": "hi"
+            },
+            "type": "object",
+            "properties": {
+                "policy": {
+                    "type": "string"
+                },
+                "code": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "policy",
+                "code"
+            ]
+        },
+        "Component": {
+            "title": "Component",
+            "example": {
+                "type": "body",
+                "parameters": [
+                    {
+                        "type": "text",
+                        "text": "VivaConnect"
+                    },
+                    {
+                        "type": "text",
+                        "text": "007"
+                    },
+                    {
+                        "type": "text",
+                        "text": "2022"
+                    }
+                ]
+            },
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "parameters": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Parameter"
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "parameters"
+            ]
+        },
+        "Parameter": {
+            "title": "Parameter",
+            "example": {
+                "type": "text",
+                "text": "VivaConnect"
+            },
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "text": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "text"
+            ]
+        },
+        "updateAccountInfoRequest": {
+            "title": "updateAccountInfoRequest",
+            "example": {
+                "firstName": "user",
+                "lastName": "viva",
+                "city": "Mumbai",
+                "state": "Maharashtra",
+                "country": "IN",
+                "addressLine1": "some street",
+                "addressLine2": "some lane",
+                "contactNumber": "1234567890",
+                "phoneCode": "+91",
+                "postalCode": "400001"
+            },
+            "type": "object",
+            "properties": {
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "addressLine1": {
+                    "type": "string"
+                },
+                "addressLine2": {
+                    "type": "string"
+                },
+                "contactNumber": {
+                    "type": "string"
+                },
+                "phoneCode": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                }
+            }
+        },
+        "addBillingDataRequest": {
+            "title": "addBillingDataRequest",
+            "example": {
+                "city": "Mumbai",
+                "state": "Maharashtra",
+                "country": "IN",
+                "addressLine1": "Test 1",
+                "addressLine2": "Test 2",
+                "contactNumber": "1234567890",
+                "phoneCode": "+91",
+                "postalCode": "400001",
+                "gstOrTaxNo": "ABCDE1234F",
+                "businessName": "Helo-Whatsapp",
+                "panCard": "ABCDE1234F"
+            },
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "addressLine1": {
+                    "type": "string"
+                },
+                "addressLine2": {
+                    "type": "string"
+                },
+                "contactNumber": {
+                    "type": "string"
+                },
+                "phoneCode": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                },
+                "gstOrTaxNo": {
+                    "type": "string"
+                },
+                "businessName": {
+                    "type": "string"
+                },
+                "panCard": {
+                    "type": "string"
+                }
+            }
+        },
+        "validateEmailCodeRequest": {
+            "title": "validateEmailCodeRequest",
+            "example": {
+                "code": 1234
+            },
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            },
+            "required": [
+                "code"
+            ]
+        },
+        "validateSmsCodeRequest": {
+            "title": "validateSmsCodeRequest",
+            "example": {
+                "code": 3167
+            },
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            },
+            "required": [
+                "code"
+            ]
+        },
+        "auth/loginrequest": {
+            "title": "auth/loginrequest",
+            "example": {
+                "email": "user@gmail.com",
+                "password": "123oneTwo#"
+            },
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "email",
+                "password"
+            ]
+        },
+        "signUpRequest": {
+            "title": "signUpRequest",
+            "example": {
+                "email": "usertwo@gmail.com",
+                "password": "123oneTw@3",
+                "tncAccepted": true
+            },
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "tncAccepted": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "email",
+                "password",
+                "tncAccepted"
+            ]
+        },
+        "sinch/sendDataToQueueRequest": {
+            "title": "sinch/sendDataToQueueRequest",
+            "example": {
+                "type": "whatsapp",
+                "contacts": [
+                    {
+                        "profile": {
+                            "name": "John Smith"
+                        },
+                        "wa_id": "0732001122"
+                    }
+                ],
+                "notifications": [
+                    {
+                        "from": "0732001122",
+                        "to": "sinchbot",
+                        "message_id": "01DPNXZ0WCF9XD19MH84XD0P62",
+                        "message": {
+                            "type": "text",
+                            "body": "Hello bot I want to know something!"
+                        }
+                    }
+                ]
+            },
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "contacts": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Contact"
+                    }
+                },
+                "notifications": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Notification"
+                    }
+                }
+            },
+            "required": [
+                "type",
+                "contacts",
+                "notifications"
+            ]
+        },
+        "Contact": {
+            "title": "Contact",
+            "example": {
+                "profile": {
+                    "name": "John Smith"
+                },
+                "wa_id": "0732001122"
+            },
+            "type": "object",
+            "properties": {
+                "profile": {
+                    "$ref": "#/definitions/Profile"
+                },
+                "wa_id": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "profile",
+                "wa_id"
+            ]
+        },
+        "Profile": {
+            "title": "Profile",
+            "example": {
+                "name": "John Smith"
+            },
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name"
+            ]
+        },
+        "Notification": {
+            "title": "Notification",
+            "example": {
+                "from": "0732001122",
+                "to": "sinchbot",
+                "message_id": "01DPNXZ0WCF9XD19MH84XD0P62",
+                "message": {
+                    "type": "text",
+                    "body": "Hello bot I want to know something!"
+                }
+            },
+            "type": "object",
+            "properties": {
+                "from": {
+                    "type": "string"
+                },
+                "to": {
+                    "type": "string"
+                },
+                "message_id": {
+                    "type": "string"
+                },
+                "message": {
+                    "$ref": "#/definitions/Message"
+                }
+            },
+            "required": [
+                "from",
+                "to",
+                "message_id",
+                "message"
+            ]
+        },
+        "Message": {
+            "title": "Message",
+            "example": {
+                "type": "text",
+                "body": "Hello bot I want to know something!"
+            },
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "type",
+                "body"
+            ]
+        },
+        "add/updatebusinessprofilerequest": {
+            "title": "add/updatebusinessprofilerequest",
+            "example": {
+                "businessName": "vivaconnect",
+                "whatsappStatus": "available",
+                "description": "available 24/7",
+                "address": "some address ",
+                "country": "IN",
+                "city": "mumbai",
+                "state": "maharashtra",
+                "postalCode": "400001",
+                "email": "123@gmail.com",
+                "businessCategoryId": "bda36704-cde5-41c9-b039-e3841fa9229f",
+                "profilePhotoUrl": "www.google.com/image"
+            },
+            "type": "object",
+            "properties": {
+                "businessName": {
+                    "type": "string"
+                },
+                "whatsappStatus": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "address": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "postalCode": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "businessCategoryId": {
+                    "type": "string"
+                },
+                "profilePhotoUrl": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "businessName"
+            ]
+        },
+        "addupdatebusinessprofilraccessInformationRequest": {
+            "title": "addupdatebusinessprofilraccessInformationRequest",
+            "example": {
+                "facebookManagerId": "my-manager-id",
+                "phoneCode": "+91",
+                "phoneNumber": "123456",
+                "canReceiveSms": true,
+                "canReceiveVoiceCall": false,
+                "associatedWithIvr": false
+            },
+            "type": "object",
+            "properties": {
+                "facebookManagerId": {
+                    "type": "string"
+                },
+                "phoneCode": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "canReceiveSms": {
+                    "type": "boolean"
+                },
+                "canReceiveVoiceCall": {
+                    "type": "boolean"
+                },
+                "associatedWithIvr": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "facebookManagerId"
+            ]
+        },
+        "markmanagerverifiedrequest": {
+            "title": "markmanagerverifiedrequest",
+            "example": {
+                "businessManagerVerified": true
+            },
+            "type": "object",
+            "properties": {
+                "businessManagerVerified": {
+                    "type": "boolean"
+                }
+            },
+            "required": [
+                "businessManagerVerified"
+            ]
+        },
+        "verifiycodeforbusinessnumberrequest": {
+            "title": "verifiycodeforbusinessnumberrequest",
+            "example": {
+                "code": 5976
+            },
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer",
+                    "format": "int32"
+                }
+            },
+            "required": [
+                "code"
+            ]
+        },
+        "AddupdatetemplateRequest": {
+            "title": "AddupdatetemplateRequest",
+            "example": {
+                "messageTemplateId": "9bf57a21-a05c-47f4-82df-jki09v03deb9",
+                "templateName": "Welcome",
+                "type": "media message template",
+                "messageTemplateCategoryId": "b8203a31-e439-4ea4-a270-bd211317d3ff",
+                "messageTemplateStatusId": "c71a8387-80e0-468b-9ee3-abb5ec328176",
+                "messageTemplateLanguageId": "57aa7635-5717-4397-8eb6-4799ef3bec05",
+                "bodyText": "Hi {{1}} welcome to our platform",
+                "headerText": "",
+                "footerText": "vivaconnect",
+                "mediaType": "image",
+                "secondLanguageRequired": false,
+                "secondMessageTemplateLanguageId": "cde192b7-c60f-4d2d-8573-dd5af7c9379b",
+                "secondlanguageBodyText": "Hi {{1}} welcome to our platform",
+                "headerType": "image",
+                "buttonType": "Quick Reply",
+                "buttonData": {
+                    "quickReply": [
+                        "1",
+                        "2",
+                        "3"
+                    ],
+                    "phoneButtonText": "call us",
+                    "phoneNumber": "9876543210",
+                    "websiteButtontext": "oursite.com",
+                    "webAddress": "www.google.com"
+                }
+            },
+            "type": "object",
+            "properties": {
+                "messageTemplateId": {
+                    "type": "string"
+                },
+                "templateName": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Standard Message Template",
+                        "Media Message Template"
+                    ]
+                },
+                "messageTemplateCategoryId": {
+                    "type": "string"
+                },
+                "messageTemplateStatusId": {
+                    "type": "string"
+                },
+                "messageTemplateLanguageId": {
+                    "type": "string"
+                },
+                "bodyText": {
+                    "type": "string"
+                },
+                "headerText": {
+                    "type": "string"
+                },
+                "footerText": {
+                    "type": "string"
+                },
+                "mediaType": {
+                    "type": "string"
+                },
+                "secondLanguageRequired": {
+                    "type": "boolean"
+                },
+                "secondMessageTemplateLanguageId": {
+                    "type": "string"
+                },
+                "secondlanguageBodyText": {
+                    "type": "string"
+                },
+                "headerType": {
+                    "type": "string",
+                    "enum": [
+                        "Video",
+                        "Pdf",
+                        "Location",
+                        "Text",
+                        "image"
+                    ]
+                },
+                "buttonType": {
+                    "type": "string",
+                    "enum": [
+                        "Call To Action",
+                        "Quick Reply"
+                    ]
+                },
+                "buttonData": {
+                    "$ref": "#/definitions/ButtonData"
+                }
+            },
+            "required": [
+                "templateName"
+            ]
+        },
+        "ButtonData": {
+            "title": "ButtonData",
+            "example": {
+                "quickReply": [
+                    "1",
+                    "2",
+                    "3"
+                ],
+                "phoneButtonText": "call us",
+                "phoneNumber": "9876543210",
+                "websiteButtontext": "oursite",
+                "webAddress": "www.google.com"
+            },
+            "type": "object",
+            "properties": {
+                "quickReply": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "phoneButtonText": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "websiteButtontext": {
+                    "type": "string"
+                },
+                "webAddress": {
+                    "type": "string"
+                }
+            }
+        },
+        "Audience": {
+            "title": "Audience",
+            "example": {
+                "audienceId": "opt_1"
+            },
+            "type": "object",
+            "properties": {
+                "audienceId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "audienceId"
+            ]
+        },
+        "AddupdateAudienceRequest": {
+            "title": "AddupdateaudienceRequest",
+            "example": {
                 "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
                 "phoneNumber": "919820333891",
                 "channel": "whatsapp",
@@ -6155,87 +6480,128 @@
                 "email": "ajay@yopmail.com",
                 "gender": "Male",
                 "country": "India"
-              },
-              "type": "object",
-              "properties": {
-                  "audienceId": {
-                      "type": "string"
-                  },              
-                  "phoneNumber": {
-                      "type": "string"
-                  },
-                  "channel": {
-                      "type": "string"
-                  },
-                  "optin": {
-                      "type": "boolean"
-                  },
-                  "optinSourceId": {
-                      "type": "string"
-                  },
-                  "segmentId": {
-                      "type": "string"
-                  },
-                  "chatFlowId": {
-                      "type": "string"
-                  },
-                  "name": {
-                      "type": "string"
-                  },
-                  "email": {
-                      "type": "string"
-                  },
-                  "gender": {
-                      "type": "string"
-                  },
-                  "country": {
-                      "type": "string"
-                  }
-              },
-              "required": [
-                  "phoneNumber",
-                  "channel" 
-              ]
-          },
-          "AddupdateSegmentRequest": {
-              "title": "AddupdateSegmentRequest",
-              "example":{
+            },
+            "type": "object",
+            "properties": {
+                "audienceId": {
+                    "type": "string"
+                },
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "channel": {
+                    "type": "string"
+                },
+                "optin": {
+                    "type": "boolean"
+                },
+                "optinSourceId": {
+                    "type": "string"
+                },
+                "segmentId": {
+                    "type": "string"
+                },
+                "chatFlowId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "phoneNumber",
+                "channel"
+            ]
+        },
+        "AddupdateSegmentRequest": {
+            "title": "AddupdateSegmentRequest",
+            "example": {
                 "segmentId": "f194da3d-0b62-405e-a512-95797f4bcf41",
                 "segmentName": "test"
-              },
-              "type": "object",
-              "properties": {
-                  "segmentId": {
-                      "type": "string"
-                  },              
-                  "segmentName": {
-                      "type": "string"
-                  },
-
-              },
-              "required": [
-                  "segmentName" 
-              ]
-          },
-          "AddupdateOptinRequest": {
-              "title": "AddupdateOptinRequest",
-              "example":{
+            },
+            "type": "object",
+            "properties": {
+                "segmentId": {
+                    "type": "string"
+                },
+                "segmentName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "segmentName"
+            ]
+        },
+        "AddupdateOptinRequest": {
+            "title": "AddupdateOptinRequest",
+            "example": {
                 "optinId": "f194da3d-0b62-405e-a512-95797f4bcf41",
                 "optinSource": "test"
-              },
-              "type": "object",
-              "properties": {
-                  "optinId": {
-                      "type": "string"
-                  },              
-                  "optinSource": {
-                      "type": "string"
-                  }
-
-              },
-              "required": [
-                  "optinSource" 
-              ]
-          }            
+            },
+            "type": "object",
+            "properties": {
+                "optinId": {
+                    "type": "string"
+                },
+                "optinSource": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "optinSource"
+            ]
+        },
+        "saveMessageStatus": {
+            "title": "saveMessageStatus",
+            "example": {
+                "messageId": "49bdfe01-0503-487f-8b26-67a2b8fafhjgip",
+                "serviceProviderMessageId": "50bdfe01-0503-487f-8b26-67a2b8fafffe",
+                "serviceProviderId": "f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+                "deliveryChannel": "whatsapp",
+                "statusTime": "2020-07-15T13:01:08",
+                "state": "message accepted",
+                "endConsumerNumber": "917666545750",
+                "businessNumber": "91808080808"
+            },
+            "type": "object",
+            "properties": {
+                "messageId": {
+                    "type": "string"
+                },
+                "serviceProviderMessageId": {
+                    "type": "string"
+                },
+                "deliveryChannel": {
+                    "type": "string"
+                },
+                "statusTime": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "endConsumerNumber": {
+                    "type": "string"
+                },
+                "businessNumber": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "statusTime",
+                "state",
+                "endConsumerNumber",
+                "businessNumber"
+            ]
         }
-    }   
+    }
+}

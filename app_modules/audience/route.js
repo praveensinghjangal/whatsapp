@@ -15,8 +15,8 @@ const addUpdateSegmentController = require('./controllers/addUpdateSegment')
 
 // Optin Controller
 
-const fetchOptinController = require('./controllers/fetchOptinMaster')
-const addUpdateOptinController = require('./controllers/addUpdateOptinMaster')
+const fetchOptinController = require('./controllers/fetchOptinSourceMaster')
+const addUpdateOptinController = require('./controllers/addUpdateOptinSourceMaster')
 
 // Routes
 
