@@ -150,7 +150,8 @@ const MQ = {
   mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
   tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
+  tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
+  tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5
@@ -168,6 +169,12 @@ const INTERNAL_END_POINTS = {
 }
 
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
+
+const MESSAGE_STATUS = {
+  inProcess: 'in process',
+  resourceAllocated: 'resource allocated',
+  forwarded: 'forwarded'
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -197,3 +204,4 @@ module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY
 module.exports.DELIVERY_CHANNEL = DELIVERY_CHANNEL
 module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
+module.exports.MESSAGE_STATUS = MESSAGE_STATUS

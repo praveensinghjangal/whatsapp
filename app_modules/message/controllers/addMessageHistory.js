@@ -10,11 +10,11 @@ const addMessageHistoryData = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   validate.addMessageHistory(req.body)
     .then(data => messageHistoryService.addMessageHistoryDataService(req.body))
-    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data }))
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
-module.exports = { addMessageHistoryData }
+module.exports = addMessageHistoryData
