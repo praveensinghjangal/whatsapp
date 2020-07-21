@@ -103,7 +103,7 @@ const MASTER_TABLE = {
   },
   wabaPhoneNoToProviderInfo: {
     name: 'waba_information',
-    columns: ['CONCAT(`phone_code`, `phone_number`) as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"', 'webhook_post_url as "webhookPostUrl"']
+    columns: ['CONCAT(`phone_code`, `phone_number`) as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"', 'webhook_post_url as "webhookPostUrl"', 'optin_text as "optinText"']
   }
 }
 const ENTITY_NAME = {
@@ -165,7 +165,8 @@ const DELIVERY_CHANNEL = {
 }
 
 const INTERNAL_END_POINTS = {
-  sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages'
+  sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
+  addupdateAudience: '/helowhatsapp/api/audience'
 }
 
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'

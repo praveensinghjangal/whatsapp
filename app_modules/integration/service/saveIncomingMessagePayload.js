@@ -5,9 +5,8 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const Validator = require('jsonschema').Validator
-const __config = require('../../../config')
-const request = require('request')
 const v = new Validator()
+const addAudienceAndOptin = require('./audienceAndOptin')
 
 const validateInput = input => {
   const isvalid = q.defer()
@@ -53,37 +52,6 @@ const validateInput = input => {
   return isvalid.promise
 }
 
-function postDatatoAudienceTable (inputData) {
-  const audienceData = q.defer()
-
-  const url = __config.base_url + '/helowhatsapp/api/audience/'
-  // __logger.info('Url>>>>>>>>>>>>>>>>>>>>>>>>', typeof url)
-  console.log('..........................', inputData)
-
-  const audienceDataToBePosted = {
-    phoneNumber: inputData,
-    channel: 'whatsapp'
-
-  }
-  const options = {
-    url,
-    body: audienceDataToBePosted,
-    headers: { Authorization: __config.tyntec.authorization },
-    json: true
-  }
-  // Calling another api for sending messages
-  request.post(options, (err, httpResponse, body) => {
-    if (err) {
-      // __logger.info('err>>>>>>>>>>>>>>>>>>>>>>>>', err)
-      audienceData.reject(err)
-    } else {
-      console.log('Body', body)
-      audienceData.resolve(inputData)
-    }
-  })
-  return audienceData.promise
-}
-
 module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) => {
   const payloadStored = q.defer()
   const query = `insert into incoming_message_payload(viva_message_id,service_provider_message_id,service_provider_id,payload,from_number)
@@ -92,10 +60,10 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
   validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
     .then(valres => __db.redis.get(payload.to))
     .then(data => {
-      postDatatoAudienceTable(fromNumber)
       console.log('dataatatatat', data, typeof data)
       if (data) {
         data = JSON.parse(data)
+        addAudienceAndOptin(payload, data)
         return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, JSON.stringify(payload), fromNumber])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })

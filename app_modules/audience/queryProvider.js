@@ -22,7 +22,7 @@ const getAudienceRecordList = (columnArray) => {
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
   email, gender, country
   FROM audience aud
-  left join optin_source osm  on osm.optin_source_master_id  = aud.optin_source_id
+  left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
   left join segment sm  on sm.segment_id  = aud.segment_id
   and sm.is_active  =true
@@ -44,12 +44,12 @@ const getAudienceRecordList = (columnArray) => {
 
 const getAudienceTableDataWithId = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
-  channel, date_format(first_message,'%d/%m/%Y %H:%i:s%') as "firstMessage",
+  channel, first_message as "firstMessage",
   last_message as "lastMessage", optin,(last_message between now()- interval 24 HOUR and now()) as tempOptin,
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
   email, gender, country
   FROM audience aud
-  left join optin_source osm  on osm.optin_source_master_id  = aud.optin_source_id
+  left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
   left join segment sm  on sm.segment_id  = aud.segment_id
   and sm.is_active  =true
@@ -58,8 +58,8 @@ const getAudienceTableDataWithId = () => {
 
 const getAudienceTableDataByPhoneNumber = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
-  channel, date_format(first_message,'%d/%m/%Y %H:%i:s%') as "firstMessage",
-  date_format(last_message,'%d/%m/%Y %H:%i:s%') as "lastMessage", segment_id as "segmentId",
+  channel, first_message as "firstMessage",
+  last_message as "lastMessage", segment_id as "segmentId",
   chat_flow_id as "chatFlowId",name, email, gender, country,optin
   FROM audience
   where phone_number=? and is_active=true`
@@ -81,25 +81,25 @@ const getOptinByPhoneNumber = () => {
 
 // Optin Master
 
-const getOptinData = () => {
+const getOptinSourceData = () => {
   return `SELECT optin_source_id as "optinSourceId", optin_source as "optinSource"
   FROM optin_source
   WHERE is_active= true`
 }
 
-const getOptinDataById = () => {
+const getOptinSourceDataById = () => {
   return `SELECT optin_source_id as "optinSourceId", optin_source as "optinSource"
   FROM optin_source
   WHERE is_active= true and optin_source.optin_source_id = ? `
 }
 
-const addOptinData = () => {
+const addOptinSourceData = () => {
   return `INSERT INTO optin_source
   (optin_source_id, optin_source, created_on, created_by, is_active)
   VALUES(?, ?, CURRENT_TIMESTAMP, 'admin',  1) `
 }
 
-const updateOptinData = () => {
+const updateOptinSourceData = () => {
   return `UPDATE optin_source
   SET optin_source=?, updated_on=CURRENT_TIMESTAMP,
   updated_by='admin'
@@ -139,10 +139,10 @@ module.exports = {
   updateAudienceRecord,
   getTempOptinStatus,
   getOptinByPhoneNumber,
-  getOptinData,
-  getOptinDataById,
-  addOptinData,
-  updateOptinData,
+  getOptinSourceData,
+  getOptinSourceDataById,
+  addOptinSourceData,
+  updateOptinSourceData,
   getSegmentData,
   getSegmentDataById,
   addSegmentData,

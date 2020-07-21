@@ -213,12 +213,12 @@ class AudienceService {
   }
   // Optin Master
 
-  getOptinDataById (optinSourceId) {
+  getOptinSourceDataById (optinSourceId) {
     // __logger.info('inside get segment data by id service', segmentId)
     const optinData = q.defer()
 
     if (optinSourceId) {
-      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinDataById(), [optinSourceId])
+      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinSourceDataById(), [optinSourceId])
         .then(result => {
           if (result && result.length > 0) {
             optinData.resolve(result[0])
@@ -236,7 +236,7 @@ class AudienceService {
     return optinData.promise
   }
 
-  addOptinData (newData, oldData) {
+  addOptinSourceData (newData, oldData) {
     // __logger.info('Add Segment service called', newData, oldData)
     const optinDataAdded = q.defer()
     const segmentData = {
@@ -246,7 +246,7 @@ class AudienceService {
     const queryParam = []
     _.each(segmentData, (val) => queryParam.push(val))
     // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addOptinData(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addOptinSourceData(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           optinDataAdded.resolve(segmentData)
@@ -258,7 +258,7 @@ class AudienceService {
     return optinDataAdded.promise
   }
 
-  updateOptinData (newData, oldData) {
+  updateOptinSourceData (newData, oldData) {
     const optinUpdated = q.defer()
 
     const optinntData = {
@@ -268,8 +268,8 @@ class AudienceService {
     const queryParam = []
     _.each(optinntData, (val) => queryParam.push(val))
     const validate = new ValidatonService()
-    validate.checkUpdateOptinData(optinntData)
-      .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateOptinData(), queryParam))
+    validate.checkUpdateOptinSourceData(optinntData)
+      .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateOptinSourceData(), queryParam))
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           optinUpdated.resolve(optinntData)

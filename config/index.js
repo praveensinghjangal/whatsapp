@@ -247,7 +247,6 @@ module.exports = {
     receiverNumber: process.env.MOCK_WEBHOOK_RECEIVER_NUMBER.split(','),
     senderNumber: process.env.MOCK_WEBHOOK_SENDER_NUMBER
   },
-  tyntec: {
-    authorization: process.env.TYNTEC_AUTH_TOKEN
-  }
+  internalApiCallToken: process.env.INTERNAL_AUTH_TOKEN,
+  optinMessageSource: process.env.OPTIN_MESSAGE_SOURCE
 }

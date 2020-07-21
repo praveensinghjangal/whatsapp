@@ -154,13 +154,11 @@ class validate {
         },
         optinSourceId: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false
         },
         segmentId: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false
         },
         chatFlowId: {
           type: 'string',
@@ -331,7 +329,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkAddOptinData (request) {
+  checkAddOptinSourceData (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/addOptin',
@@ -360,7 +358,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkUpdateOptinData (request) {
+  checkUpdateOptinSourceData (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/updateOptin',

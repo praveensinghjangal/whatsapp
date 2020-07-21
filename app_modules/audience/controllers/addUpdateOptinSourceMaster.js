@@ -4,17 +4,17 @@ const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 
-const addUpdateOptinData = (req, res) => {
+const addUpdateOptinSourceData = (req, res) => {
   __logger.info('add update segment API called')
   const validate = new ValidatonService()
   const optinService = new OptinService()
-  validate.checkAddOptinData(req.body)
-    .then(data => optinService.getOptinDataById(req.body.optinSourceId))
+  validate.checkAddOptinSourceData(req.body)
+    .then(data => optinService.getOptinSourceDataById(req.body.optinSourceId))
     .then(optinData => {
       if (optinData.optinSourceId) {
-        return optinService.updateOptinData(req.body, optinData)
+        return optinService.updateOptinSourceData(req.body, optinData)
       } else {
-        return optinService.addOptinData(req.body, optinData)
+        return optinService.addOptinSourceData(req.body, optinData)
       }
     })
     .then(data => {
@@ -26,4 +26,4 @@ const addUpdateOptinData = (req, res) => {
     })
 }
 
-module.exports = { addUpdateOptinData }
+module.exports = { addUpdateOptinSourceData }
