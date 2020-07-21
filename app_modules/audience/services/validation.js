@@ -154,13 +154,11 @@ class validate {
         },
         optinSourceId: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false
         },
         segmentId: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false
         },
         chatFlowId: {
           type: 'string',
