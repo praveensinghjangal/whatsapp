@@ -22,6 +22,8 @@ class AudienceService {
         if (result && result.length === 0) {
           audienceData.resolve(null)
         } else {
+          result[0].optin = result[0].optin === 1
+          result[0].tempOptin = result[0].tempOptin === 1
           audienceData.resolve(result[0])
         }
       })
