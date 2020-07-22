@@ -5021,6 +5021,148 @@
                 "security": []
             }
         },
+        "/audience/optin/excel": {
+            "patch": {
+                "description": "API to upload bulk audience data using excel",
+                "summary": "whatsapp excel upload audience data",
+                "tags": [
+                    "audience"
+                ],
+                "operationId": "uploadAudienceData",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "consumes": [
+                    "application/x-www-form-urlencoded",
+                    "multipart/form-data"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "User can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "optinFile",
+                        "in": "formData",
+                        "required": true,
+                        "type": "file",
+                        "description": "excel file with template parameters download sample file using\nthis link https://drive.google.com/file/d/1mKZTv84jgts9MijTp5-5ZUZ80xynD1M2/view?usp=sharing"
+                      
+                    },
+                  {
+                      "$ref": "#/definitions/UploadExcelRequest"
+                  }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns data uploaded via excel",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 2002,
+                                "msg": "Success",
+                                "data": [
+                                      {
+                                          "channel": "whatsapp",
+                                          "optin": true,
+                                          "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
+                                          "segmentId": "a969e894-0317-46ee-95cd-8f56d0b34378",
+                                          "chatFlowId": null,
+                                          "name": "Rakesh",
+                                          "email": "rakesh@yopmail.com",
+                                          "gender": "Male",
+                                          "country": "India",
+                                          "updatedBy": "158988680814912",
+                                          "audienceId": "b80fc22e-bf35-4c5f-a152-4922af3da59d",
+                                          "phoneNumber": "917666545720"
+                                      }
+                                ]
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": {
+                                    "status_code": 400,
+                                    "code": 3032,
+                                    "message": "Expect input in array"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },        
         "/audience/{audienceId}": {
             "get": {
                 "summary": "Get audience Info",
@@ -6602,6 +6744,53 @@
                 "endConsumerNumber",
                 "businessNumber"
             ]
-        }
+        },
+        "UploadExcelRequest":{
+            "title": "UploadExcelRequest",
+            "example": [
+              {  
+                "audienceId": "155fe808-33c7-4377-ac77-2caaab49cc36",
+                "phoneNumber": "911111111111",
+                "channel": "whatsapp",
+                "optin": true,
+                "optinSource": "111",
+                "name": "ABC",
+                "email": "abc@yopmail.com",
+                "gender": "Male",
+                "country": "India"
+              }
+            ],          
+            "type": "array",
+            "items":{
+              "properties": {
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "optinSource": {
+                    "type": "string"
+                },                
+                "name": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "gender": {
+                    "type": "string"
+                },
+                "country": {
+                    "type": "string"
+                }                
+            },
+            "required": [
+                "phoneNumber",
+                "optinSource",
+                "name",
+                "email",
+                "gender",
+                "country"
+            ]
+        }          
     }
+  }
 }
