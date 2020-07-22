@@ -255,5 +255,10 @@ module.exports = {
     status_code: 400,
     code: 3031,
     message: 'Provided WABA number is invalid'
+  },
+  EXPECT_ARRAY: {
+    status_code: 400,
+    code: 3032,
+    message: 'Expect input in array'
   }
 }
