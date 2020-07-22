@@ -47,11 +47,11 @@ const getAudienceRecordList = (req, res) => {
     { colName: 'aud.phone_number', value: phoneNumber }]
 
   if (optin) {
-    inputArray.push({ colName: 'aud.optin', value: optin == 'true' ? 1 : 0 })
+    inputArray.push({ colName: 'aud.optin', value: optin === 'true' ? 1 : 0 })
   }
 
   if (tempOptin) {
-    inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin == 'true' ? 1 : 0 })
+    inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin === 'true' ? 1 : 0 })
   }
 
   const columnArray = []
@@ -71,6 +71,10 @@ const getAudienceRecordList = (req, res) => {
       if (result && result.length === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
+        _.each(result, singleObj => {
+          singleObj.optin = singleObj.optin === 1
+          singleObj.tempOptin = singleObj.tempOptin === 1
+        })
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       }
     })
