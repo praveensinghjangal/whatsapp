@@ -39,7 +39,7 @@ function addAudienceAndOptin (inputPayload, redisData) {
   }
   isOptinMessage(inputPayload.content, redisData.optinText)
     .then(isoptin => {
-      audienceDataToBePosted[0].optin = isoptin
+      if (isoptin) audienceDataToBePosted[0].optin = true
       const options = {
         url,
         body: audienceDataToBePosted,
