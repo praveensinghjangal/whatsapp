@@ -2,15 +2,16 @@ const q = require('q')
 const HttpService = require('./httpService')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const RedisService = require('../../integration/service/redisService')
+const RedisService = require('../../../lib/redis_service/redisService')
 
 class RedirectService {
   webhookPost (wabaNumber, payload) {
     __logger.info('inside webhook post service', payload)
+    __logger.info('inside webhook post service', wabaNumber)
     const redirected = q.defer()
     const http = new HttpService(3000)
     const redisService = new RedisService()
-    redisService.getWabaDataByPhoneNumber()
+    redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
         console.log('dataatatatat', data, typeof data)
         const headers = {

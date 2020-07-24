@@ -5,7 +5,7 @@ const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
-const RedisService = require('../../integration/service/redisService')
+const RedisService = require('../../../lib/redis_service/redisService')
 
 class TemplateParamValidationService {
   setAllTemplatesInRedis () {

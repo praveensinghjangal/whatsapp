@@ -84,7 +84,11 @@ const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
 const TEMPLATE_STATUS = ['Approved', 'Rejected', 'SendForApproval', 'Incomplete', 'Completed']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
-const USER_CONFIG_REDIS_TTL = 300
+const REDIS_TTL = {
+  userConfig: 300,
+  wabaData: 900
+}
+
 const SERVER_TIMEOUT = 20 * 60 * 1000
 const MASTER_TABLE = {
   TEMPLATE: {
@@ -183,7 +187,6 @@ module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
 module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE
 module.exports.USER_ROLE_ID = USER_ROLE_ID
 module.exports.PUBLIC_FOLDER_PATH = PUBLIC_FOLDER_PATH
-module.exports.USER_CONFIG_REDIS_TTL = USER_CONFIG_REDIS_TTL
 module.exports.MYSQL_QUERY = MYSQL_QUERY
 module.exports.APP_NAME = APP_NAME
 module.exports.DB_NAME = DB_NAME
@@ -206,3 +209,4 @@ module.exports.DELIVERY_CHANNEL = DELIVERY_CHANNEL
 module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
 module.exports.MESSAGE_STATUS = MESSAGE_STATUS
+module.exports.REDIS_TTL = REDIS_TTL
