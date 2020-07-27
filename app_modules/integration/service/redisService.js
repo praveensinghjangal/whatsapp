@@ -20,6 +20,23 @@ class RedirectService {
       .catch(err => dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return dataFetched.promise
   }
+
+  getTemplateDataByIdAndPhoneNumber (inputTemplateData) {
+    const dataFetched = q.defer()
+
+    __db.redis.get(inputTemplateData)
+      .then(redisData => {
+        if (redisData) {
+          redisData = JSON.parse(redisData)
+          dataFetched.resolve(redisData)
+        } else {
+          dataFetched.reject({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_ID_NOT_EXISTS, err: {}, data: {} })
+        }
+      })
+      .catch(err => dataFetched.reject(err))
+
+    return dataFetched.promise
+  }
 }
 
 module.exports = RedirectService
