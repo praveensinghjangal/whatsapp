@@ -3,11 +3,10 @@ const _ = require('lodash')
 const __db = require('../../../lib/db')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const addAudienceAndOptin = require('./audienceAndOptin')
-
+const RedisService = require('../../integration/service/redisService')
 const validateInput = input => {
   const isvalid = q.defer()
   const schema = {
@@ -57,17 +56,13 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
   const query = `insert into incoming_message_payload(viva_message_id,service_provider_message_id,service_provider_id,payload,from_number)
   values (?,?,?,?,?)`
   __logger.info('Inside function to store incoming message in incoming_message_payload table', vivaMessageId, serviceProviderMessageId)
+
+  const redisService = new RedisService()
   validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
-    .then(valres => __db.redis.get(payload.to))
+    .then(valres => redisService.getWabaDataByPhoneNumber(payload.to))
     .then(data => {
-      console.log('dataatatatat', data, typeof data)
-      if (data) {
-        data = JSON.parse(data)
-        addAudienceAndOptin(payload, data)
-        return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, JSON.stringify(payload), fromNumber])
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
-      }
+      addAudienceAndOptin(payload, data)
+      return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, JSON.stringify(payload), fromNumber])
     })
     .then(result => {
       if (result && result.affectedRows && result.affectedRows > 0) {
