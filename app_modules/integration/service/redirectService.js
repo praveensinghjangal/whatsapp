@@ -1,28 +1,23 @@
 const q = require('q')
 const HttpService = require('./httpService')
-const __db = require('../../../lib/db')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
+const RedisService = require('../../integration/service/redisService')
 
 class RedirectService {
   webhookPost (wabaNumber, payload) {
     __logger.info('inside webhook post service', payload)
     const redirected = q.defer()
     const http = new HttpService(3000)
-    __db.redis.get(wabaNumber)
+    const redisService = new RedisService()
+    redisService.getWabaDataByPhoneNumber()
       .then(data => {
         console.log('dataatatatat', data, typeof data)
-        if (data) {
-          data = JSON.parse(data)
-          const headers = {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          }
-          return http.Post(payload, 'body', data.webhookPostUrl, headers)
-        } else {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
+        const headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
         }
+        return http.Post(payload, 'body', data.webhookPostUrl, headers)
       })
       .then(apiRes => {
         __logger.info('api ressssssssssssssssss', apiRes.statusCode, apiRes.body)

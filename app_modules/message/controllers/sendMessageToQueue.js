@@ -9,11 +9,11 @@ const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const TemplateParamValidationService = require('../../templates/services/paramValidation')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
-const __db = require('../../../lib/db')
 const __logger = require('../../../lib/logger')
 const templateParamValidationService = new TemplateParamValidationService()
 const MessageHistoryService = require('../services/dbData')
 const RedirectService = require('../../integration/service/redirectService')
+const RedisService = require('../../integration/service/redisService')
 
 const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   const statusSent = q.defer()
@@ -44,14 +44,11 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
 
 const checkIfNoExists = number => {
   const exists = q.defer()
-  __db.redis.get(number)
+  const redisService = new RedisService()
+  redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
-      console.log('datatat', data)
-      if (data) {
-        return exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: {} })
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_NO_INVALID, err: {}, data: {} })
-      }
+      // console.log('datatat', data)
+      return exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: {} })
     })
     .catch(err => exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return exists.promise

@@ -1,11 +1,10 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
-const __db = require('../../../lib/db')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __config = require('../../../config')
 const tyntectConfig = __config.integration.tyntec
 const saveApiLog = require('../service/saveApiLog')
 const __constants = require('../../../config/constants')
+const RedisService = require('../../integration/service/redisService')
 
 class Message {
   constructor () {
@@ -17,22 +16,19 @@ class Message {
     // add validation service same as send msg api
     let spId = ''
     let reqObj = {}
-    __db.redis.get(payload.whatsapp.from)
+    const redisService = new RedisService()
+
+    redisService.getWabaDataByPhoneNumber(payload.whatsapp.from)
       .then(data => {
-        console.log('dataatatatat', data, typeof data)
-        if (data) {
-          data = JSON.parse(data)
-          spId = data.serviceProviderId
-          const headers = {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
-          }
-          reqObj = { headers, payload }
-          return this.http.Post(payload, 'body', tyntectConfig.baseUrl + tyntectConfig.endpoint.sendMessage, headers)
-        } else {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
+        // console.log('dataatatatat', data, typeof data)
+        spId = data.serviceProviderId
+        const headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          apikey: data.apiKey
         }
+        reqObj = { headers, payload }
+        return this.http.Post(payload, 'body', tyntectConfig.baseUrl + tyntectConfig.endpoint.sendMessage, headers)
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes

@@ -4,7 +4,7 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
-const rejectionHandler = require('../../lib/util/rejectionHandler')
+const RedisService = require('../../integration/service/redisService')
 
 const sendToTyntecMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -32,25 +32,21 @@ class TyntecConsumer {
             const messageHistoryService = new MessageHistoryService()
             // console.log('Alteredddddddddddddddddddddddd------', messageData, retryCount)
             __logger.info('tyntec message status QueueConsumer:: messageData received:', messageData)
-
-            __db.redis.get(messageData.to)
+            const redisService = new RedisService()
+            redisService.getWabaDataByPhoneNumber(messageData.to)
               .then(data => {
                 // console.log('dataatatatat', data, typeof data)
-                if (data) {
-                  data = JSON.parse(data)
-                  statusData = {
-                    serviceProviderMessageId: messageData.messageId,
-                    serviceProviderId: data.serviceProviderId,
-                    deliveryChannel: messageData.deliveryChannel,
-                    statusTime: messageData.timestamp,
-                    state: messageData.status,
-                    endConsumerNumber: messageData.from,
-                    businessNumber: messageData.to
-                  }
-                  return messageHistoryService.addMessageHistoryDataService(statusData)
-                } else {
-                  return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
+
+                statusData = {
+                  serviceProviderMessageId: messageData.messageId,
+                  serviceProviderId: data.serviceProviderId,
+                  deliveryChannel: messageData.deliveryChannel,
+                  statusTime: messageData.timestamp,
+                  state: messageData.status,
+                  endConsumerNumber: messageData.from,
+                  businessNumber: messageData.to
                 }
+                return messageHistoryService.addMessageHistoryDataService(statusData)
               })
               .then(statusDataAdded => {
                 statusData.messageId = statusDataAdded.messageId
