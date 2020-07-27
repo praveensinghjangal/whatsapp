@@ -248,5 +248,8 @@ module.exports = {
     senderNumber: process.env.MOCK_WEBHOOK_SENDER_NUMBER
   },
   internalApiCallToken: process.env.INTERNAL_AUTH_TOKEN,
-  optinMessageSource: process.env.OPTIN_MESSAGE_SOURCE
+  optinSource: {
+    message: process.env.OPTIN_MESSAGE_SOURCE,
+    direct: process.env.OPTIN_DIRECT_SOURCE
+  }
 }
