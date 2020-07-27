@@ -30,7 +30,7 @@ function addAudienceAndOptin (inputPayload, redisData) {
   const audienceDataToBePosted = [{
     phoneNumber: inputPayload.from,
     channel: __constants.DELIVERY_CHANNEL.whatsapp,
-    optinSourceId: __config.optinMessageSource,
+    optinSourceId: __config.optinSource.message,
     name: inputPayload.whatsapp && inputPayload.whatsapp.senderName ? inputPayload.whatsapp.senderName : ''
   }]
   if (!audienceDataToBePosted.name) delete audienceDataToBePosted.name

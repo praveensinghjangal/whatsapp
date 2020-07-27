@@ -4,6 +4,7 @@ const moment = require('moment')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
+const __config = require('../../../config')
 const config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
@@ -15,6 +16,34 @@ const templateParamValidationService = new TemplateParamValidationService()
 const MessageHistoryService = require('../services/dbData')
 const RedirectService = require('../../integration/service/redirectService')
 const RedisService = require('../../integration/service/redisService')
+const request = require('request')
+
+const updateAudience = (audienceNumber, audOptin) => {
+  const audUpdated = q.defer()
+  const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
+  const audienceDataToBePosted = [{
+    phoneNumber: audienceNumber,
+    channel: __constants.DELIVERY_CHANNEL.whatsapp,
+    optinSourceId: __config.optinSource.direct,
+    optin: audOptin
+  }]
+  const options = {
+    url,
+    body: audienceDataToBePosted,
+    headers: { Authorization: __config.internalApiCallToken },
+    json: true
+  }
+  // console.log('all options', options)
+  request.post(options, (err, httpResponse, body) => {
+    // console.log('aud update response', body)
+    if (err) {
+      audUpdated.reject(err)
+    } else {
+      audUpdated.resolve(true)
+    }
+  })
+  return audUpdated.promise
+}
 
 const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   const statusSent = q.defer()
@@ -47,7 +76,7 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin) => {
   // console.log('hererereererrerere', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
-    // update audience
+    updateAudience(endUserPhoneNumber, true)
     canSendMessage.resolve(true)
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber)
