@@ -60,6 +60,10 @@
         {
             "name": "audience",
             "description": "API's related to whatsapp audience"
+        },
+        {
+            "name": "message-history",
+            "description": "API's related to whatsapp message history"
         }
     ],
     "schemes": [
@@ -5693,8 +5697,277 @@
                                     "code": 2000,
                                     "msg": "Success",
                                     "data": {
-                                        "segmentName": "test02",
-                                        "segmentId": "f194da3d-0b62-405e-a512-95797f4bcf41"
+                                        "optinSourceId": "71d10746-cdb9-436f-b184-bfb4af2e8785",
+                                        "optinSource": "test01"
+                                    }
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/message-history/{messageId}": {
+            "get": {
+                "description": "get info of a message history by message id",
+                "summary": "get message history info",
+                "tags": [
+                    "message-history"
+                ],
+                "operationId": "getMessageHistoryinfo",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "messageId",
+                        "in": "path",
+                        "required": true,
+                        "type": "string",
+                        "description": "Id of Template"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns info of a sample template",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": [
+                                      {
+                                          "messageId":"49bdfe01-0503-487f-8b26-67a2b8fafffe",
+                                          "serviceProviderId":"f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+                                          "deliveryChannel":"whatsapp",
+                                          "statusTime":"2020-07-07T14:48:58.251Z",
+                                          "state":"message-delivered",
+                                          "endConsumerNumber":"917666545750",
+                                          "businessNumber":"91808080808"
+                                      
+                                      }
+                                    ]
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/message-history": {
+            "post": {
+                "description": "API to add message history\nTo add optin do not pass messageId",
+                "summary": "Add message history",
+                "tags": [
+                    "message-history"
+                ],
+                "operationId": "AddMessageHistoryyData",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/AddMessageHistoryRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns Status of segment info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data":{
+                                      "messageId": "49bdfe01-0503-487f-8b26-67a2b8fafffe",
+                                      "serviceProviderId":"f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+                                      "deliveryChannel": "whatsapp",
+                                      "statusTime": "2020-06-19T14:46:32Z",
+                                      "state": "message-read  ",
+                                      "endConsumerNumber": "917666545750",
+                                      "businessNumber":"918080800808"
                                     }
                                 },
                                 {
@@ -6702,6 +6975,50 @@
                 "optinSource"
             ]
         },
+        "AddMessageHistoryRequest": {
+            "title": "AddMessageHistoryRequest",
+            "example":{
+              "messageId": "49bdfe01-0503-487f-8b26-67a2b8fafffe",
+              "serviceProviderId":"f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+              "deliveryChannel": "whatsapp",
+              "statusTime": "2020-06-19T14:46:32Z",
+              "state": "message-read  ",
+              "endConsumerNumber": "917666545750",
+              "businessNumber":"918080800808"
+            },
+            "type": "object",
+            "properties": {
+                "messageId": {
+                    "type": "string"
+                },              
+                "serviceProviderId": {
+                    "type": "string"
+                },              
+                "deliveryChannel": {
+                    "type": "string"
+                },
+                "statusTime": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "endConsumerNumber": {
+                    "type": "string"
+                },
+                "businessNumber": {
+                    "type": "string"
+                } 
+            },
+            "required": [
+                "messageId",
+                "serviceProviderId",
+                "deliveryChannel",
+                "statusTime",
+                "endConsumerNumber",
+                "businessNumber"
+            ]
+        },
         "saveMessageStatus": {
             "title": "saveMessageStatus",
             "example": {
@@ -6793,4 +7110,4 @@
         }          
     }
   }
-}
+}           
