@@ -48,7 +48,6 @@ function addAudienceAndOptin (inputPayload, redisData) {
       }
       console.log('all options', options)
       request.post(options, (err, httpResponse, body) => {
-        console.log('hereeeeeeeeeeeeeeeeeeeeee', body)
         if (err) {
           audienceData.reject(err)
         } else {
