@@ -10,7 +10,7 @@ class RedirectService {
     const redirected = q.defer()
     const http = new HttpService(3000)
     const redisService = new RedisService()
-    redisService.getWabaDataByPhoneNumber()
+    redisService.getWabaDataByPhoneNumber(payload.to)
       .then(data => {
         console.log('dataatatatat', data, typeof data)
         const headers = {

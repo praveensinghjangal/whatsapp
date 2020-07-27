@@ -43,20 +43,26 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   return statusSent.promise
 }
 
-const checkOptinStaus = (endUserPhoneNumber, templateObj) => {
+const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin) => {
+  // console.log('hererereererrerere', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
-  audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber)
-    .then(data => {
-      if (data.tempOptin) {
-        canSendMessage.resolve(true)
-      } else if (data.optin && templateObj) {
-        canSendMessage.resolve(true)
-      } else { // cannot send message to user make sure you have obtaibed the optin or you have received message form user in last 24 hour
-        canSendMessage.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_SEND_MESSAGE, err: {}, data: {} })
-      }
-    })
-    .catch(err => canSendMessage.reject(err))
-  return canSendMessage.promise
+  if (isOptin && templateObj) {
+    // update audience
+    canSendMessage.resolve(true)
+  } else {
+    audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber)
+      .then(data => {
+        if (data.tempOptin) {
+          canSendMessage.resolve(true)
+        } else if (data.optin && templateObj) {
+          canSendMessage.resolve(true)
+        } else {
+          canSendMessage.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_SEND_MESSAGE, err: {}, data: {} })
+        }
+      })
+      .catch(err => canSendMessage.reject(err))
+    return canSendMessage.promise
+  }
 }
 
 const checkIfNoExists = number => {
@@ -105,12 +111,16 @@ const singleRuleCheck = (data, wabaPhoneNumber, index) => {
       return isValid.promise
     }
     checkIfNoExists(data.whatsapp.from)
-      .then(noValRes => checkOptinStaus(data.to, data.whatsapp.template))
+      .then(noValRes => checkOptinStaus(data.to, data.whatsapp.template, data.isOptin))
       .then(canSendMessage => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
       .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
       .catch(err => {
         err = err || {}
         err.position = index
+        err.code = err.type.code || 0
+        err.message = err.type.message || ''
+        delete err.err
+        delete err.type
         isValid.reject({ valid: false, err })
       })
   } else {

@@ -265,5 +265,10 @@ module.exports = {
     status_code: 400,
     code: 3032,
     message: 'Expect input in array'
+  },
+  CANNOT_SEND_MESSAGE: {
+    status_code: 200,
+    code: 2057,
+    message: 'Cannot send message to user, Make sure you have obtained the optin or you have received message form user in last 24 hours'
   }
 }
