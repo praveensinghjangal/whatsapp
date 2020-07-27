@@ -147,6 +147,26 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1
+        },
+        serviceProviderId: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        apiKey: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        webHookPostUrl: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        optinText: {
+          type: 'string',
+          required: false,
+          minLength: 1
         }
       }
     }

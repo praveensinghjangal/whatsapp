@@ -1983,6 +1983,10 @@ paths:
                 phoneVerified: true
                 city: mumbai
                 postalCode: '400009'
+                serviceProviderName: Tyntec
+                apiKey: test123
+                webhookPostUrl: 'http://localhost:3000/helowhatsapp/message'
+                optinText: Hey
                 businessProfileCompletionStatus: true
                 businessAccessProfileCompletionStatus: true
         '401':
@@ -4333,6 +4337,10 @@ definitions:
       email: 123@gmail.com
       businessCategoryId: bda36704-cde5-41c9-b039-e3841fa9229f
       profilePhotoUrl: www.google.com/image
+      serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
+      apiKey: test123
+      webHookPostUrl: 'http://localhost:3000/helowhatsapp/message'
+      optinText: Hey
     type: object
     properties:
       businessName:
@@ -4356,6 +4364,14 @@ definitions:
       businessCategoryId:
         type: string
       profilePhotoUrl:
+        type: string
+      serviceProviderId:
+        type: string
+      apiKey:
+        type: string
+      webHookPostUrl:
+        type: string
+      optinText:
         type: string
     required:
       - businessName
