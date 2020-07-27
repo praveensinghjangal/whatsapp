@@ -23,7 +23,7 @@ class AudienceService {
           audienceData.resolve(null)
         } else {
           result[0].optin = result[0].optin === 1
-          result[0].tempOptin = result[0].tempOptin === 1
+          // add moment for temp optin
           audienceData.resolve(result[0])
         }
       })
@@ -34,6 +34,7 @@ class AudienceService {
     return audienceData.promise
   }
 
+  // waba
   getAudienceTableDataByPhoneNumber (phoneNumber) {
     __logger.info('inside get audience by id service', typeof phoneNumber)
     const audienceData = q.defer()
@@ -53,6 +54,7 @@ class AudienceService {
     return audienceData.promise
   }
 
+  // waba
   addAudienceDataService (newData, oldData) {
     // __logger.info('Add audience service called', insertData, audienceData)
     const audienceDataAdded = q.defer()
@@ -88,6 +90,7 @@ class AudienceService {
     return audienceDataAdded.promise
   }
 
+  // waba
   updateAudienceDataService (newData, oldData) {
     // __logger.info('update audience service called', newData, oldData)
     const audienceUpdated = q.defer()
@@ -126,26 +129,7 @@ class AudienceService {
     return audienceUpdated.promise
   }
 
-  getTempOptinStatus (audienceId) {
-    const datafetcted = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTempOptinStatus(), [audienceId])
-      .then(result => {
-      // console.log('Query Result', result)
-        if (result && result.length === 0) {
-          datafetcted.resolve(null)
-        } else {
-          datafetcted.resolve(result[0])
-        }
-      })
-      .catch(err => {
-        __logger.error('error in get audience by id function: ', err)
-        datafetcted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return datafetcted.promise
-  }
-
   // segment
-
   getSegmentDataById (segmentId) {
     // __logger.info('inside get segment data by id service', segmentId)
     const segmentData = q.defer()

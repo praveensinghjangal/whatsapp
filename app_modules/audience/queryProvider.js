@@ -65,18 +65,11 @@ const getAudienceTableDataByPhoneNumber = () => {
   where phone_number=? and is_active=true`
 }
 
-const getTempOptinStatus = () => {
-  return `select phone_number, audience_id ,optin from audience aud 
-  where aud.is_active =true 
-  and aud.audience_id =?
-  and  aud.last_message between now()- interval  24 HOUR and now()`
-}
-
 const getOptinByPhoneNumber = () => {
   return `select last_message as "lastMessage" ,optin 
   from audience aud 
-  where aud.is_active =true 
-  and aud.phone_number =?`
+  where aud.is_active = true 
+  and aud.phone_number = ? and waba_phone_number = ?`
 }
 
 // Optin Master
@@ -137,7 +130,6 @@ module.exports = {
   getAudienceTableDataByPhoneNumber,
   addAudienceData,
   updateAudienceRecord,
-  getTempOptinStatus,
   getOptinByPhoneNumber,
   getOptinSourceData,
   getOptinSourceDataById,
