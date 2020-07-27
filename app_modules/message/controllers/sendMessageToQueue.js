@@ -8,6 +8,7 @@ const config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const TemplateParamValidationService = require('../../templates/services/paramValidation')
+const audienceFetchController = require('../../audience/controllers/fetchAudienceData')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __logger = require('../../../lib/logger')
 const templateParamValidationService = new TemplateParamValidationService()
@@ -40,6 +41,22 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
     .then(data => statusSent.resolve(data))
     .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return statusSent.promise
+}
+
+const checkOptinStaus = (endUserPhoneNumber, templateObj) => {
+  const canSendMessage = q.defer()
+  audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber)
+    .then(data => {
+      if (data.tempOptin) {
+        canSendMessage.resolve(true)
+      } else if (data.optin && templateObj) {
+        canSendMessage.resolve(true)
+      } else { // cannot send message to user make sure you have obtaibed the optin or you have received message form user in last 24 hour
+        canSendMessage.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_SEND_MESSAGE, err: {}, data: {} })
+      }
+    })
+    .catch(err => canSendMessage.reject(err))
+  return canSendMessage.promise
 }
 
 const checkIfNoExists = number => {
@@ -88,7 +105,8 @@ const singleRuleCheck = (data, wabaPhoneNumber, index) => {
       return isValid.promise
     }
     checkIfNoExists(data.whatsapp.from)
-      .then(noValRes => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
+      .then(noValRes => checkOptinStaus(data.to, data.whatsapp.template))
+      .then(canSendMessage => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
       .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
       .catch(err => {
         err = err || {}
