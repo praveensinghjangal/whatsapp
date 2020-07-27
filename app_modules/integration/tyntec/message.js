@@ -4,7 +4,7 @@ const __config = require('../../../config')
 const tyntectConfig = __config.integration.tyntec
 const saveApiLog = require('../service/saveApiLog')
 const __constants = require('../../../config/constants')
-const RedisService = require('../../integration/service/redisService')
+const RedisService = require('../../../lib/redis_service/redisService')
 
 class Message {
   constructor () {

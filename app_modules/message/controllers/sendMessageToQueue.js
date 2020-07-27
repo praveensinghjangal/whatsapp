@@ -14,7 +14,7 @@ const __logger = require('../../../lib/logger')
 const templateParamValidationService = new TemplateParamValidationService()
 const MessageHistoryService = require('../services/dbData')
 const RedirectService = require('../../integration/service/redirectService')
-const RedisService = require('../../integration/service/redisService')
+const RedisService = require('../../../lib/redis_service/redisService')
 
 const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   const statusSent = q.defer()
@@ -71,7 +71,7 @@ const checkIfNoExists = number => {
   redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
       // console.log('datatat', data)
-      return exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: {} })
+      exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: {} })
     })
     .catch(err => exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return exists.promise
