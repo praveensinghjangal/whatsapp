@@ -6072,6 +6072,7 @@
                 "channels": [
                     "whatsapp"
                 ],
+                "isOptin":true,
                 "whatsapp": {
                     "from": "918080800808",
                     "contentType": "template",
@@ -6113,6 +6114,9 @@
                     "items": {
                         "type": "string"
                     }
+                },
+                "isOptin":{
+                    "type": "boolean" 
                 },
                 "whatsapp": {
                     "$ref": "#/definitions/Whatsapp"

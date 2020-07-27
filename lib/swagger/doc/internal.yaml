@@ -1,4 +1,4 @@
-sswagger: '2.0'
+swagger: '2.0'
 info:
   description: Helo Whatsapp API documentation
   version: 1.0.0
@@ -1989,8 +1989,8 @@ paths:
                 postalCode: '400009'
                 serviceProviderName: Tyntec
                 apiKey: test123
-                webhookPostUrl: 'http://localhost:3000/helowhatsapp/message'
-                optinText: Hey
+                webhookPostUrl: http://localhost:3000/helowhatsapp/message
+                optinText: hello-viva
                 businessProfileCompletionStatus: true
                 businessAccessProfileCompletionStatus: true
         '401':
@@ -4148,6 +4148,7 @@ definitions:
       to: '919860245659'
       channels:
       - whatsapp
+      isOptin: true
       whatsapp:
         from: '918080800808'
         contentType: template
@@ -4173,6 +4174,8 @@ definitions:
         type: array
         items:
           type: string
+      isOptin:
+        type: boolean
       whatsapp:
         "$ref": "#/definitions/Whatsapp"
     required:
@@ -4527,7 +4530,7 @@ definitions:
       profilePhotoUrl: www.google.com/image
       serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
       apiKey: test123
-      webHookPostUrl: 'http://localhost:3000/helowhatsapp/message'
+      webHookPostUrl: http://localhost:3000/helowhatsapp/message
       optinText: Hey
     type: object
     properties:
