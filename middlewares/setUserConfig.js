@@ -13,7 +13,7 @@ const setDataInRedis = userId => {
     .then(dbData => {
       if (dbData.exists) {
         userData = dbData.rows[0]
-        return __db.redis.setex(userId, JSON.stringify(userData), __constants.USER_CONFIG_REDIS_TTL)
+        return __db.redis.setex(userId, JSON.stringify(userData), __constants.REDIS_TTL.userConfig)
       } else {
         return rejectionHandler('user does not exists')
       }

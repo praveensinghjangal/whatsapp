@@ -81,7 +81,7 @@ const addupdateBusinessAccountInfo = (req, res) => {
 }
 
 // todo : add check if category id exists in master
-const addUpdateBusinessPrfile = (req, res) => {
+const addUpdateBusinessProfile = (req, res) => {
   __logger.info('API TO ADD/UPDATE BUSINESS PROFILE CALLED', req.user.user_id)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
@@ -191,7 +191,7 @@ function formatFinalStatus (queryResult, result) {
 
 module.exports = {
   getBusinessProfile,
-  addUpdateBusinessPrfile,
+  addUpdateBusinessProfile,
   addupdateBusinessAccountInfo,
   markManagerVerified
 }
