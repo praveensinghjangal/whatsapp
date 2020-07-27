@@ -7,22 +7,26 @@ const queryProvider = require('../queryProvider')
 const ValidatonService = require('../services/validation')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
+const moment = require('moment')
 
 class AudienceService {
   constructor () {
     this.uniqueId = new UniqueId()
   }
 
-  getAudienceTableDataWithId (audienceId) {
+  getAudienceTableDataWithId (userId, audienceId) {
     __logger.info('inside get audience by id service', typeof audienceId)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [audienceId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [userId, audienceId])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.length === 0) {
           audienceData.resolve(null)
         } else {
           result[0].optin = result[0].optin === 1
+          const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
+          const expireyTime = moment(result[0].lastMessage).utc().add(24, 'hours').format('YYYY-MM-DD HH:mm:ss')
+          result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
           // add moment for temp optin
           audienceData.resolve(result[0])
         }
@@ -35,10 +39,10 @@ class AudienceService {
   }
 
   // waba
-  getAudienceTableDataByPhoneNumber (phoneNumber) {
+  getAudienceTableDataByPhoneNumber (userId, phoneNumber) {
     __logger.info('inside get audience by id service', typeof phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [userId, phoneNumber])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.length === 0) {
@@ -56,7 +60,7 @@ class AudienceService {
 
   // waba
   addAudienceDataService (newData, oldData) {
-    // __logger.info('Add audience service called', insertData, audienceData)
+    __logger.info('Add audience service called', newData, oldData)
     const audienceDataAdded = q.defer()
     const audienceData = {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
@@ -70,8 +74,8 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
-      createdBy: newData.userId
-
+      createdBy: newData.userId,
+      wabaPhoneNumber: newData.userId
     }
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
@@ -81,6 +85,7 @@ class AudienceService {
         // console.log('Add Result', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete audienceData.createdBy
+          delete audienceData.wabaPhoneNumber
           audienceDataAdded.resolve(audienceData)
         } else {
           audienceDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -109,8 +114,10 @@ class AudienceService {
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
       updatedBy: newData.userId,
+      wabaPhoneNumber: newData.wabaPhoneNumber || oldData.wabaPhoneNumber,
       audienceId: oldData.audienceId,
       phoneNumber: oldData.phoneNumber
+
     }
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))

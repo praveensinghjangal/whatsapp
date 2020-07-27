@@ -14,7 +14,7 @@ const getAudienceRecordById = (req, res) => {
   const audienceService = new AudienceService()
   const validate = new ValidatonService()
   validate.checkAudienceIdExistService(req.params)
-    .then(data => audienceService.getAudienceTableDataWithId(req.params.audienceId))
+    .then(data => audienceService.getAudienceTableDataWithId(req.user.user_id, req.params.audienceId))
     .then(result => {
       __logger.info('then 1')
       if (result) {
@@ -33,7 +33,7 @@ const getAudienceRecordById = (req, res) => {
 Not much clarity on veiwALl filter
 */
 const getAudienceRecordList = (req, res) => {
-  // __logger.info('Get Audience Record List API Called', req.query)
+  __logger.info('Get Audience Record List API Called', req.query)
 
   const {
     channel, optin, optinSourceId, tempOptin,

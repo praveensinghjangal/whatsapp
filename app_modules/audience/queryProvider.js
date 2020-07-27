@@ -2,15 +2,17 @@
 const addAudienceData = () => {
   return `INSERT INTO audience
   (audience_id, phone_number, channel, optin, optin_source_id,
-  segment_id,chat_flow_id, name, email, gender, country,created_by)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`
+  segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,(select CONCAT(phone_code ,phone_number ) 
+  from waba_information 
+  where user_id = ?))`
 }
 
 const updateAudienceRecord = () => {
   return `UPDATE audience
   SET channel=?, optin=?, optin_source_id=?,
   segment_id=?, chat_flow_id=?, name=?, email=?, gender=?,
-  country=?, updated_by =?,updated_on = now(),last_message = now()
+  country=?, updated_by =?,updated_on = now(),last_message = now(), waba_phone_number =?
   WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
@@ -47,7 +49,9 @@ const getAudienceTableDataWithId = () => {
   channel, first_message as "firstMessage",
   last_message as "lastMessage", optin,(last_message between now()- interval 24 HOUR and now()) as tempOptin,
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
-  email, gender, country
+  email, gender, country, (select CONCAT(phone_code ,phone_number ) 
+  from waba_information 
+  where user_id = ?) as "wabaPhoneNumber"
   FROM audience aud
   left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
@@ -60,7 +64,8 @@ const getAudienceTableDataByPhoneNumber = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", segment_id as "segmentId",
-  chat_flow_id as "chatFlowId",name, email, gender, country,optin
+  chat_flow_id as "chatFlowId",name, email, gender, country,optin,(select CONCAT(phone_code ,phone_number ) from waba_information 
+  where user_id = ?) as "wabaPhoneNumber" 
   FROM audience
   where phone_number=? and is_active=true`
 }
