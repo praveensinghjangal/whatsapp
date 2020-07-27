@@ -9,10 +9,27 @@ const _ = require('lodash')
 const q = require('q')
 const moment = require('moment')
 
+const OptinService = require('../services/optinCheckService')
+
 const getAudienceRecordById = (req, res) => {
   __logger.info('Get Audience Info API Called', req.params)
   const audienceService = new AudienceService()
   const validate = new ValidatonService()
+
+  const result = q.defer()
+  const optinCheckService = new OptinService()
+  getOptinStatusByPhoneNumber('+91842490376')
+    // .then(data => optinCheckService.computeOptinStatus(data))
+    .then(data => {
+      console.log('Result', data)
+      result.resolve(data)
+    })
+    .catch(err => {
+      console.log('Reject', err)
+
+      result.reject(err)
+    })
+
   validate.checkAudienceIdExistService(req.params)
     .then(data => audienceService.getAudienceTableDataWithId(req.params.audienceId))
     .then(result => {

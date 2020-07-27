@@ -71,6 +71,10 @@ class validate {
             required: true,
             minLength: 1
           },
+          isOptin: {
+            type: 'boolean',
+            required: false
+          },
           channels: {
             type: 'array',
             required: true,
