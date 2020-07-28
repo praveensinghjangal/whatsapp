@@ -1,16 +1,18 @@
 
 const addAudienceData = () => {
-  return `INSERT INTO audience
+  return `INSERT INTO audience 
   (audience_id, phone_number, channel, optin, optin_source_id,
-  segment_id,chat_flow_id, name, email, gender, country,created_by)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`
+  segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number,first_message,last_message)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,(select CONCAT(wi.phone_code ,wi.phone_number ) 
+  from waba_information wi
+  where user_id = ? and wi.is_active=1),?,?)`
 }
 
 const updateAudienceRecord = () => {
   return `UPDATE audience
   SET channel=?, optin=?, optin_source_id=?,
   segment_id=?, chat_flow_id=?, name=?, email=?, gender=?,
-  country=?, updated_by =?,updated_on = now(),last_message = now()
+  country=?, updated_by =?,updated_on = now(),waba_phone_number =?,first_message = ?, last_message = ? 
   WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
@@ -44,11 +46,11 @@ const getAudienceRecordList = (columnArray) => {
 }
 
 const getAudienceTableDataWithId = () => {
-  return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
+  return `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
-  last_message as "lastMessage", optin,(last_message between now()- interval 24 HOUR and now()) as tempOptin,
+  last_message as "lastMessage", optin, waba_phone_number as "wabaPhoneNumber",
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
-  email, gender, country
+  aud.email, gender, aud.country
   FROM audience aud
   left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
@@ -58,12 +60,13 @@ const getAudienceTableDataWithId = () => {
 }
 
 const getAudienceTableDataByPhoneNumber = () => {
-  return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
+  return `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", segment_id as "segmentId",
-  chat_flow_id as "chatFlowId",name, email, gender, country,optin
-  FROM audience
-  where phone_number=? and is_active=true`
+  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, waba_phone_number as "wabaPhoneNumber"
+  FROM audience aud
+  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = aud.waba_phone_number and wi.is_active = 1 and wi.user_id = ?  
+  where aud.phone_number=? and aud.is_active=1`
 }
 
 const getOptinByPhoneNumber = () => {

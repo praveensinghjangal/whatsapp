@@ -14,6 +14,7 @@ const addUpdateAudienceData = (req, res) => {
 
   processRecordInBulk(req.body, userId)
     .then(data => {
+    //   console.log('Data', data)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => {
@@ -39,13 +40,14 @@ function updateAudienceData (inputData, oldAudienceData) {
 }
 
 const singleRecordProcess = (data, userId) => {
-  // console.log('Singlge Record', data)
+//   console.log('Singlge Record', data)
   const dataSaved = q.defer()
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
-    .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber))
+    .then(data => audienceService.getAudienceTableDataByPhoneNumber(userId, data.phoneNumber))
     .then(audienceData => {
+      console.log('Get Result', audienceData)
       data.userId = userId
       if (audienceData.audienceId) {
         return updateAudienceData(data, audienceData)
