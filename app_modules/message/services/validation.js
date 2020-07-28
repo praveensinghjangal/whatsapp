@@ -379,8 +379,7 @@ class validate {
           minLength: 1
         },
         serviceProviderMessageId: {
-          type: 'string',
-          minLength: 1
+          type: 'string'
         },
         serviceProviderId: {
           type: 'string',
