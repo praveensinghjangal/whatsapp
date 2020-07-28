@@ -42,7 +42,7 @@ class AudienceService {
   getAudienceTableDataByPhoneNumber (userId, phoneNumber) {
     __logger.info('inside get audience by id service', typeof phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [userId,phoneNumber])
       .then(result => {
         console.log('Query Result', result)
         if (result && result.length === 0) {
@@ -60,9 +60,9 @@ class AudienceService {
 
   // waba
   addAudienceDataService (newData, oldData) {
-    __logger.info('Add audience service called', newData, oldData)
+    // __logger.info('Add audience service called', newData, oldData)
     const audienceDataAdded = q.defer()
-    const audienceData = {
+    var audienceData = {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
       phoneNumber: newData.phoneNumber || oldData.phoneNumber,
       channel: newData.channel || oldData.channel,
@@ -77,6 +77,14 @@ class AudienceService {
       createdBy: newData.userId,
       wabaPhoneNumber: newData.userId
     }
+    if (newData.isIncomingMessage) {
+      audienceData.firstMessageValue = this.formatToTimeStamp()
+      audienceData.lastMessageValue = this.formatToTimeStamp()
+    } else {
+      audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
+      audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
+    }
+
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
     // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
@@ -86,6 +94,8 @@ class AudienceService {
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete audienceData.createdBy
           delete audienceData.wabaPhoneNumber
+          delete audienceData.firstMessageValue
+          delete audienceData.lastMessageValue
           audienceDataAdded.resolve(audienceData)
         } else {
           audienceDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -97,13 +107,14 @@ class AudienceService {
 
   // waba
   updateAudienceDataService (newData, oldData) {
-    // __logger.info('update audience service called', newData, oldData)
+    // __logger.info('update audience service called', newData)
+    // __logger.info('update audience service called', oldData)
     const audienceUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.userId)
 
     // console.log('i will updateeeee')
     // this.updateAudience(newData, oldData)
-    const audienceData = {
+    var audienceData = {
       channel: newData.channel || oldData.channel,
       optin: typeof newData.optin === 'boolean' ? newData.optin : false,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
@@ -115,10 +126,22 @@ class AudienceService {
       country: newData.country || oldData.country,
       updatedBy: newData.userId,
       wabaPhoneNumber: newData.wabaPhoneNumber || oldData.wabaPhoneNumber,
+      firstMessageValue: null,
+      lastMessageValue: null,
       audienceId: oldData.audienceId,
       phoneNumber: oldData.phoneNumber
 
     }
+
+    if (newData.isIncomingMessage) {
+      audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : this.formatToTimeStamp()
+      audienceData.lastMessageValue = this.formatToTimeStamp()
+    } else {
+      audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
+      audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
+    }
+
+    // console.log('Audiene Data', audienceData)
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
     __logger.info('updateeeeee --->', audienceData, queryParam)
@@ -127,6 +150,9 @@ class AudienceService {
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudienceRecord(), queryParam))
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
+          delete audienceData.wabaPhoneNumber
+          delete audienceData.firstMessageValue
+          delete audienceData.lastMessageValue
           audienceUpdated.resolve(audienceData)
         } else {
           audienceUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -134,6 +160,14 @@ class AudienceService {
       })
       .catch(err => audienceUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return audienceUpdated.promise
+  }
+
+  formatToTimeStamp (input) {
+    if (input) {
+      return moment(input).utc().format('YYYY-MM-DD HH:mm:ss').toString()
+    } else {
+      return moment().utc().format('YYYY-MM-DD HH:mm:ss').toString()
+    }
   }
 
   // segment
