@@ -46,7 +46,7 @@ class TyntecConsumer {
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber
                 delete statusData.endConsumerNumber
-                return redirectService.webhookPost(messageData.to, statusData)
+                return redirectService.webhookPost(statusData.to, statusData)
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
