@@ -35,15 +35,13 @@ class TyntecConsumer {
               serviceProviderMessageId: messageData.messageId,
               deliveryChannel: messageData.deliveryChannel,
               statusTime: messageData.timestamp,
-              state: messageData.status,
-              endConsumerNumber: messageData.from,
-              businessNumber: messageData.to
+              state: messageData.status
             }
             messageHistoryService.addMessageHistoryDataService(statusData)
               .then(statusDataAdded => {
                 statusData.messageId = statusDataAdded.messageId
-                statusData.to = statusData.businessNumber
-                statusData.from = statusData.endConsumerNumber
+                statusData.to = statusDataAdded.businessNumber
+                statusData.from = statusDataAdded.endConsumerNumber
                 delete messageData.retryCount
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber

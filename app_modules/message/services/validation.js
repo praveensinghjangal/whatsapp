@@ -379,12 +379,12 @@ class validate {
           minLength: 1
         },
         serviceProviderMessageId: {
-          type: 'string'
+          type: 'string',
+          minLength: 1
         },
         serviceProviderId: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false
         },
         deliveryChannel: {
           type: 'string',
@@ -403,13 +403,11 @@ class validate {
         },
         endConsumerNumber: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         businessNumber: {
           type: 'string',
-          required: true,
-          minLength: 1
+          required: false
         }
 
       }

@@ -33,7 +33,7 @@ class MessgaeHistoryService {
       .then(result => {
         console.log('Query Result', result)
         if (result && result.length > 0) {
-          messageHistoryData.resolve({ messageId: result[0].messageId, serviceProviderId: result[0].serviceProviderId })
+          messageHistoryData.resolve({ messageId: result[0].messageId, serviceProviderId: result[0].serviceProviderId, businessNumber: result[0].businessNumber, endConsumerNumber: result[0].endConsumerNumber })
         } else {
           messageHistoryData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
@@ -49,6 +49,8 @@ class MessgaeHistoryService {
     const messageHistoryDataAdded = q.defer()
     const validate = new ValidatonService()
     let msgId = ''
+    let bnNum = ''
+    let ecNum = ''
     __logger.info('Add message history service called', dataObj)
     validate.addMessageHistory(dataObj)
       .then(valres => {
@@ -60,16 +62,18 @@ class MessgaeHistoryService {
       })
       .then(dbData => {
         msgId = dbData.messageId
+        bnNum = dbData.businessNumber ? dbData.businessNumber : dataObj.businessNumber
+        ecNum = dbData.endConsumerNumber ? dbData.endConsumerNumber : dataObj.endConsumerNumber
         const queryParam = []
         const messageHistoryData = {
           messageId: msgId,
           serviceProviderMessageId: dataObj.serviceProviderMessageId,
-          serviceProviderId: dataObj.serviceProviderId || dbData.serviceProviderId,
+          serviceProviderId: dataObj.serviceProviderId ? dataObj.serviceProviderId : dbData.serviceProviderId,
           deliveryChannel: dataObj.deliveryChannel ? dataObj.deliveryChannel : __constants.DELIVERY_CHANNEL.whatsapp,
           statusTime: moment.utc(dataObj.statusTime).format('YYYY-MM-DDTHH:mm:ss'),
           state: dataObj.state,
-          endConsumerNumber: dataObj.endConsumerNumber ? dataObj.endConsumerNumber : null,
-          businessNumber: dataObj.businessNumber ? dataObj.businessNumber : null
+          endConsumerNumber: ecNum,
+          businessNumber: bnNum
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         return queryParam
@@ -78,7 +82,7 @@ class MessgaeHistoryService {
       .then(result => {
         // console.log('Add Result', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
-          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId })
+          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum })
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
