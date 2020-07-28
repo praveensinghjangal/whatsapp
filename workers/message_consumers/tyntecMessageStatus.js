@@ -4,7 +4,7 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
-const RedisService = require('../../integration/service/redisService')
+const RedisService = require('../../lib/redis_service/redisService')
 
 const sendToTyntecMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()

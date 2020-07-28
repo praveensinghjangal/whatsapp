@@ -6,7 +6,7 @@ const __logger = require('../../../lib/logger')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const addAudienceAndOptin = require('./audienceAndOptin')
-const RedisService = require('../../integration/service/redisService')
+const RedisService = require('../../../lib/redis_service/redisService')
 const validateInput = input => {
   const isvalid = q.defer()
   const schema = {
