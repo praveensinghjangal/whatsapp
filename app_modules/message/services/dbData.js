@@ -33,7 +33,7 @@ class MessgaeHistoryService {
       .then(result => {
         console.log('Query Result', result)
         if (result && result.length > 0) {
-          messageHistoryData.resolve(result[0].messageId)
+          messageHistoryData.resolve({ messageId: result[0].messageId, serviceProviderId: result[0].serviceProviderId })
         } else {
           messageHistoryData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
@@ -55,16 +55,16 @@ class MessgaeHistoryService {
         if (!dataObj.messageId) {
           return this.getMessageIdByServiceProviderMsgId(dataObj.serviceProviderMessageId)
         } else {
-          return dataObj.messageId
+          return { messageId: dataObj.messageId }
         }
       })
-      .then(msgIdData => {
-        msgId = msgIdData
+      .then(dbData => {
+        msgId = dbData.messageId
         const queryParam = []
         const messageHistoryData = {
           messageId: msgId,
           serviceProviderMessageId: dataObj.serviceProviderMessageId,
-          serviceProviderId: dataObj.serviceProviderId,
+          serviceProviderId: dataObj.serviceProviderId || dbData.serviceProviderId,
           deliveryChannel: dataObj.deliveryChannel ? dataObj.deliveryChannel : __constants.DELIVERY_CHANNEL.whatsapp,
           statusTime: moment.utc(dataObj.statusTime).format('YYYY-MM-DDTHH:mm:ss'),
           state: dataObj.state,
