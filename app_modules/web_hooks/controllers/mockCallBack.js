@@ -22,15 +22,16 @@ const controller = (req, res) => {
 
     const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
     // __logger.info('Url>>>>>>>>>>>>>>>>>>>>>>>>', typeof url)
-    console.log('..........................', inputData)
     const options = {
       url,
       body: inputData,
       headers: { Authorization: __config.mockWebHook.authorization },
       json: true
     }
+    console.log('..........................', options)
     // Calling another api for sending messages
     request.post(options, (err, httpResponse, body) => {
+      console.log('responseeeeeeeeeeeeeeeeeee', err, body)
       if (err) {
         return res.send(err)
       }

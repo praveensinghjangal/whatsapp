@@ -4,7 +4,6 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
-const RedisService = require('../../lib/redis_service/redisService')
 
 const sendToTyntecMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -32,32 +31,22 @@ class TyntecConsumer {
             const messageHistoryService = new MessageHistoryService()
             // console.log('Alteredddddddddddddddddddddddd------', messageData, retryCount)
             __logger.info('tyntec message status QueueConsumer:: messageData received:', messageData)
-            const redisService = new RedisService()
-            redisService.getWabaDataByPhoneNumber(messageData.to)
-              .then(data => {
-                // console.log('dataatatatat', data, typeof data)
-
-                statusData = {
-                  serviceProviderMessageId: messageData.messageId,
-                  serviceProviderId: data.serviceProviderId,
-                  deliveryChannel: messageData.deliveryChannel,
-                  statusTime: messageData.timestamp,
-                  state: messageData.status,
-                  endConsumerNumber: messageData.from,
-                  businessNumber: messageData.to
-                }
-                return messageHistoryService.addMessageHistoryDataService(statusData)
-              })
+            statusData = {
+              serviceProviderMessageId: messageData.messageId,
+              deliveryChannel: messageData.deliveryChannel,
+              statusTime: messageData.timestamp,
+              state: messageData.status
+            }
+            messageHistoryService.addMessageHistoryDataService(statusData)
               .then(statusDataAdded => {
                 statusData.messageId = statusDataAdded.messageId
-                statusData.to = statusData.businessNumber
-                statusData.from = statusData.endConsumerNumber
+                statusData.to = statusDataAdded.businessNumber
+                statusData.from = statusDataAdded.endConsumerNumber
                 delete messageData.retryCount
-                delete statusData.serviceProviderId
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber
                 delete statusData.endConsumerNumber
-                return redirectService.webhookPost(messageData.to, statusData)
+                return redirectService.webhookPost(statusData.to, statusData)
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {

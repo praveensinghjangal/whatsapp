@@ -15,8 +15,9 @@ const getMessageTableDataWithId = () => {
 }
 
 const getMessageIdByServiceProviderMsgId = () => {
-  return `select message_id as "messageId" from message_history
-            where is_active = 1 and service_provider_message_id = ? limit 1`
+  return `select message_id as "messageId" , service_provider_id as  "serviceProviderId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber" 
+  from message_history
+  where is_active = 1 and service_provider_message_id = ? limit 1`
 }
 
 module.exports = {
