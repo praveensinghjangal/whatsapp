@@ -47,7 +47,7 @@ const getAudienceRecordList = (columnArray) => {
 const getAudienceTableDataWithId = () => {
   return `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
-  last_message as "lastMessage", optin,(last_message between now()- interval 24 HOUR and now()) as tempOptin,
+  last_message as "lastMessage", optin,
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
   email, gender, country, (select CONCAT(phone_code ,phone_number ) 
   from waba_information 
