@@ -9,27 +9,10 @@ const _ = require('lodash')
 const q = require('q')
 const moment = require('moment')
 
-const OptinService = require('../services/optinCheckService')
-
 const getAudienceRecordById = (req, res) => {
   __logger.info('Get Audience Info API Called', req.params)
   const audienceService = new AudienceService()
   const validate = new ValidatonService()
-
-  const result = q.defer()
-  const optinCheckService = new OptinService()
-  getOptinStatusByPhoneNumber('+91842490376')
-    // .then(data => optinCheckService.computeOptinStatus(data))
-    .then(data => {
-      console.log('Result', data)
-      result.resolve(data)
-    })
-    .catch(err => {
-      console.log('Reject', err)
-
-      result.reject(err)
-    })
-
   validate.checkAudienceIdExistService(req.params)
     .then(data => audienceService.getAudienceTableDataWithId(req.params.audienceId))
     .then(result => {
@@ -61,7 +44,8 @@ const getAudienceRecordList = (req, res) => {
     { colName: 'aud.optin_source_id', value: optinSourceId },
     { colName: 'aud.segment_id', value: segmentId },
     { colName: 'aud.first_message', value: firstMessageActivation },
-    { colName: 'aud.phone_number', value: phoneNumber }]
+    { colName: 'aud.phone_number', value: phoneNumber },
+    { colName: 'wi.user_id', value: req.user && req.user.user_id ? req.user.user_id : '0' }]
 
   if (optin) {
     inputArray.push({ colName: 'aud.optin', value: optin === 'true' ? 1 : 0 })
@@ -75,14 +59,11 @@ const getAudienceRecordList = (req, res) => {
   const valArray = []
 
   _.each(inputArray, function (input) {
-    if (input.value !== undefined && input.value !== null) {
+    if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
       columnArray.push(input.colName)
       valArray.push(input.value)
     }
   })
-  // console.log('Value arrrrrray??????????????????', typeof optin)
-  // console.log('Value arrrrrray??????????????????', valArray)
-
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray)
     .then(result => {
       if (result && result.length === 0) {
@@ -101,13 +82,14 @@ const getAudienceRecordList = (req, res) => {
     })
 }
 
-function getOptinStatusByPhoneNumber (phoneNumber) {
+function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
   const dataFetched = q.defer()
 
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber, wabaNumber])
     .then(result => {
+      console.log('optin sssssssssssssssssssssssssss->', result, phoneNumber, wabaNumber)
       if (result && result.length === 0) {
-        dataFetched.resolve(null)
+        dataFetched.resolve({ optin: false, tempOptin: false })
       } else {
         result[0].optin = result[0].optin === 1
 

@@ -72,14 +72,14 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   return statusSent.promise
 }
 
-const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin) => {
+const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber) => {
   // console.log('hererereererrerere', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
     updateAudience(endUserPhoneNumber, true)
     canSendMessage.resolve(true)
   } else {
-    audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber)
+    audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
       .then(data => {
         if (data.tempOptin) {
           canSendMessage.resolve(true)
@@ -140,7 +140,7 @@ const singleRuleCheck = (data, wabaPhoneNumber, index) => {
       return isValid.promise
     }
     checkIfNoExists(data.whatsapp.from)
-      .then(noValRes => checkOptinStaus(data.to, data.whatsapp.template, data.isOptin))
+      .then(noValRes => checkOptinStaus(data.to, data.whatsapp.template, data.isOptin, data.whatsapp.from))
       .then(canSendMessage => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
       .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
       .catch(err => {
