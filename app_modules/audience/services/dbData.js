@@ -17,7 +17,7 @@ class AudienceService {
   getAudienceTableDataWithId (userId, audienceId) {
     __logger.info('inside get audience by id service', typeof audienceId)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [userId, audienceId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [audienceId])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.length === 0) {
@@ -42,9 +42,9 @@ class AudienceService {
   getAudienceTableDataByPhoneNumber (userId, phoneNumber) {
     __logger.info('inside get audience by id service', typeof phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [userId, phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
       .then(result => {
-        // console.log('Query Result', result)
+        console.log('Query Result', result)
         if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
