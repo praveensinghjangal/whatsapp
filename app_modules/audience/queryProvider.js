@@ -18,16 +18,17 @@ const updateAudienceRecord = () => {
 
 const getAudienceRecordList = (columnArray) => {
   // console.log('getAudienceRecoredList', columnArray)
-  let query = `SELECT audience_id as "audienceId", phone_number as "phoneNumber",
+  let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", optin, (last_message between now()- interval 24 HOUR and now()) as tempOptin,
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
-  email, gender, country
+  aud.email, gender, aud.country
   FROM audience aud
   left join optin_source osm  on osm.optin_source_id  = aud.optin_source_id
   and osm.is_active = true
   left join segment sm  on sm.segment_id  = aud.segment_id
   and sm.is_active  =true
+  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = aud.waba_phone_number and wi.is_active = true
   WHERE aud.is_active = true`
 
   columnArray.forEach((element, index) => {
