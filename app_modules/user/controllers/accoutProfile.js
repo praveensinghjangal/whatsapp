@@ -29,7 +29,7 @@ const getAcountProfile = (req, res) => {
     })
     .then(data => {
       queryResult.complete = data.complete
-      __logger.info('queryResult', queryResult)
+      // __logger.info('queryResult', queryResult)
       // __logger.info('data', data)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
@@ -79,7 +79,7 @@ const updateAcountProfile = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('then 3', result)
+      __logger.info('then 3')
       if (result && result.affectedRows && result.affectedRows > 0) {
         return checkAccountProfileCompletionStatus(accountProfileData)
       } else {
@@ -127,7 +127,9 @@ const generateAndUpdateTokenKey = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('queryResult', result)
+      __logger.info('queryResult')
+      delete tokenData.updated_by
+      delete tokenData.user_id
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: tokenData

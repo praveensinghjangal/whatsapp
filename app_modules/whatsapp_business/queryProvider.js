@@ -41,6 +41,12 @@ const getWabaTableDataByUserId = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
+const updateServiceProviderId = () => {
+  return `update waba_information
+  set service_provider_id = ?,updated_on=now(),updated_by=? 
+  WHERE user_id=? and is_active = true`
+}
+
 // Business Verification
 
 const updateBusinessProfileVerificationStatus = () => {
@@ -79,5 +85,6 @@ module.exports = {
   getWabaTableDataByUserId,
   addWabaTableData,
   updateWabaTableData,
-  setIsActiveFalseByWabaId
+  setIsActiveFalseByWabaId,
+  updateServiceProviderId
 }

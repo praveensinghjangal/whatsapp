@@ -7,6 +7,7 @@ const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const RedisService = require('../../../lib/redis_service/redisService')
+const _ = require('lodash')
 
 class businesAccountService {
   constructor () {
@@ -179,6 +180,34 @@ class businesAccountService {
         businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return businessDataFetched.promise
+  }
+
+  updateServiceProviderId (userId, serviceProviderId) {
+    const dataUpdated = q.defer()
+
+    const serviceProviderData = {
+      serviceProviderId: serviceProviderId,
+      updatedBy: userId,
+      userId: userId
+    }
+    const queryParam = []
+    _.each(serviceProviderData, (val) => queryParam.push(val))
+
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateServiceProviderId(), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          delete serviceProviderData.updatedBy
+          delete serviceProviderData.userId
+          dataUpdated.resolve(serviceProviderData)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
   }
 }
 
