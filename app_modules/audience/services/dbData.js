@@ -28,6 +28,7 @@ class AudienceService {
           const expireyTime = moment(result[0].lastMessage).utc().add(24, 'hours').format('YYYY-MM-DD HH:mm:ss')
           result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
           // add moment for temp optin
+          delete result[0].wabaPhoneNumber
           audienceData.resolve(result[0])
         }
       })
@@ -42,9 +43,9 @@ class AudienceService {
   getAudienceTableDataByPhoneNumber (userId, phoneNumber) {
     __logger.info('inside get audience by id service', typeof phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [userId,phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [userId, phoneNumber])
       .then(result => {
-        console.log('Query Result', result)
+        // console.log('Query Result', result)
         if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
