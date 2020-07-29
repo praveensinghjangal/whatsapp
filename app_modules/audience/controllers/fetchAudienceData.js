@@ -16,7 +16,7 @@ const getAudienceRecordById = (req, res) => {
   validate.checkAudienceIdExistService(req.params)
     .then(data => audienceService.getAudienceTableDataWithId(req.user.user_id, req.params.audienceId))
     .then(result => {
-      __logger.info('then 1')
+      __logger.info('then 1', result)
       if (result) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       } else {
@@ -87,7 +87,7 @@ function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
 
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber, wabaNumber])
     .then(result => {
-      console.log('optin sssssssssssssssssssssssssss->', result, phoneNumber, wabaNumber)
+      // console.log('optin sssssssssssssssssssssssssss->', result, phoneNumber, wabaNumber)
       if (result && result.length === 0) {
         dataFetched.resolve({ optin: false, tempOptin: false })
       } else {
@@ -95,11 +95,11 @@ function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
 
         const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
         const expireyTime = moment(result[0].lastMessage).utc().add(24, 'hours').format('YYYY-MM-DD HH:mm:ss')
-        console.log('datatat ===>', expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        // console.log('datatat ===>', expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
         result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
 
         // result[0].tempOptin = moment().diff(moment(result[0].lastMessage), 'hours') <= 24
-        console.log('Result>>>>>>>>>>>>>>>>>.....', result[0])
+        // console.log('Result>>>>>>>>>>>>>>>>>.....', result[0])
         dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin })
       }
     })

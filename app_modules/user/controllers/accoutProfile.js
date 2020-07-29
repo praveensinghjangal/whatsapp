@@ -8,6 +8,8 @@ const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const UniqueId = require('../../../lib/util/uniqueIdGenerator')
+const _ = require('lodash')
 
 // Get Account Profile
 const getAcountProfile = (req, res) => {
@@ -103,4 +105,42 @@ function checkAccountProfileCompletionStatus (data) {
   return checkCompleteStatus.checkAccountProfileStatus(data)
 }
 
-module.exports = { getAcountProfile, updateAcountProfile, checkAccountProfileCompletionStatus }
+const generateAndUpdateTokenKey = (req, res) => {
+  __logger.info('Inside generateAndUpdateTokenKey', req.user.user_id)
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  let tokenData = {}
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
+    .then(result => {
+      __logger.info('Then 1')
+      // __logger.info('Then 1', results)
+      if (result && result.length > 0) {
+        const queryParam = []
+        tokenData = {
+          token_key: new UniqueId().uuid(),
+          updated_by: userId,
+          user_id: userId
+        }
+        _.each(tokenData, (val) => queryParam.push(val))
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTokenInAccountProfile(), queryParam)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
+    .then(result => {
+      __logger.info('queryResult', result)
+      return __util.send(res, {
+        type: __constants.RESPONSE_MESSAGES.SUCCESS,
+        data: tokenData
+      })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = {
+  getAcountProfile,
+  updateAcountProfile,
+  checkAccountProfileCompletionStatus,
+  generateAndUpdateTokenKey
+}
