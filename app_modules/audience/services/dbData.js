@@ -39,12 +39,12 @@ class AudienceService {
   }
 
   // waba
-  getAudienceTableDataByPhoneNumber (userId, phoneNumber) {
-    __logger.info('inside get audience by id service', typeof phoneNumber)
+  getAudienceTableDataByPhoneNumber (phoneNumber) {
+    __logger.info('inside get audience by id service', phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [userId,phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
       .then(result => {
-        console.log('Query Result', result)
+        // console.log('Query Result', result)
         if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
@@ -74,21 +74,26 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
-      createdBy: newData.userId,
-      wabaPhoneNumber: newData.userId
+      createdBy: newData.userId
     }
-    if (newData.isIncomingMessage) {
-      audienceData.firstMessageValue = this.formatToTimeStamp()
-      audienceData.lastMessageValue = this.formatToTimeStamp()
-    } else {
-      audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
-      audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
-    }
-
-    const queryParam = []
-    _.each(audienceData, (val) => queryParam.push(val))
-    // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceData(), queryParam)
+    this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
+      .then(data => {
+        // console.log('WabaNum>>>>>>>>>>>>>>>>>>>>>>>>', data)
+        audienceData.wabaPhoneNumber = data
+        if (newData.isIncomingMessage) {
+          audienceData.firstMessageValue = this.formatToTimeStamp()
+          audienceData.lastMessageValue = this.formatToTimeStamp()
+        } else {
+          audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
+          audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
+        }
+        // __logger.info('audienceData', audienceData)
+      })
+      .then(() => {
+        const queryParam = []
+        _.each(audienceData, (val) => queryParam.push(val))
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceData(), queryParam)
+      })
       .then(result => {
         // console.log('Add Result', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -133,20 +138,25 @@ class AudienceService {
 
     }
 
-    if (newData.isIncomingMessage) {
-      audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : this.formatToTimeStamp()
-      audienceData.lastMessageValue = this.formatToTimeStamp()
-    } else {
-      audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
-      audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
-    }
-
-    // console.log('Audiene Data', audienceData)
     const queryParam = []
-    _.each(audienceData, (val) => queryParam.push(val))
-    __logger.info('updateeeeee --->', audienceData, queryParam)
-    const validate = new ValidatonService()
-    validate.checkPhoneNumberExistService(audienceData)
+
+    this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
+      .then(data => {
+        audienceData.wabaPhoneNumber = data
+        if (newData.isIncomingMessage) {
+          audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : this.formatToTimeStamp()
+          audienceData.lastMessageValue = this.formatToTimeStamp()
+        } else {
+          audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
+          audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
+        }
+      })
+      .then(() => {
+        _.each(audienceData, (val) => queryParam.push(val))
+        __logger.info('updateeeeee --->', audienceData, queryParam)
+        const validate = new ValidatonService()
+        validate.checkPhoneNumberExistService(audienceData)
+      })
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudienceRecord(), queryParam))
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -168,6 +178,45 @@ class AudienceService {
     } else {
       return moment().utc().format('YYYY-MM-DD HH:mm:ss').toString()
     }
+  }
+
+  checkAndReturnWabaNumber (wabaNumber, userId) {
+    // console.log('WabaNumber', wabaNumber)
+    // console.log('UserIId', userId)
+    const wabaNumberData = q.defer()
+    // if present in redis use it
+
+    // else fetch data from db using user Id
+    if (wabaNumber) {
+      // console.log('If')
+      __db.redis.get(wabaNumber)
+        .then(data => {
+          if (data) {
+            data = JSON.parse(data)
+            return data
+          } else {
+            return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromDb(), [userId])
+          }
+        })
+        .then(data => wabaNumberData.resolve(data.id || data[0].wabaPhoneNumber))
+        .catch((err) => {
+          __logger.info('Error ', err)
+          // finalData = null
+          // return finalData
+          wabaNumberData.resolve(null)
+        })
+    } else {
+      // console.log('Else')
+      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromDb(), [userId])
+        .then(data => {
+          wabaNumberData.resolve(data[0].wabaPhoneNumber)
+        })
+        .catch((err) => {
+          __logger.info('Error ', err)
+          wabaNumberData.resolve(null)
+        })
+    }
+    return wabaNumberData.promise
   }
 
   // segment

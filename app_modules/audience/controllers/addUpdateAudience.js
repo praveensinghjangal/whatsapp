@@ -45,7 +45,7 @@ const singleRecordProcess = (data, userId) => {
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
-    .then(data => audienceService.getAudienceTableDataByPhoneNumber(userId, data.phoneNumber))
+    .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber))
     .then(audienceData => {
       console.log('Get Result', audienceData)
       data.userId = userId
@@ -57,7 +57,7 @@ const singleRecordProcess = (data, userId) => {
     })
     .then(data => dataSaved.resolve(data))
     .catch(err => {
-      console.log('Err', err)
+      __logger.info('Err', err)
       dataSaved.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return dataSaved.promise
