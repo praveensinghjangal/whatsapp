@@ -32,7 +32,8 @@ function addAudienceAndOptin (inputPayload, redisData) {
     channel: __constants.DELIVERY_CHANNEL.whatsapp,
     optinSourceId: __config.optinSource.message,
     name: inputPayload.whatsapp && inputPayload.whatsapp.senderName ? inputPayload.whatsapp.senderName : '',
-    isIncomingMessage: true
+    isIncomingMessage: true,
+    wabaPhoneNumber: redisData.id
   }]
   if (!audienceDataToBePosted.name) delete audienceDataToBePosted.name
   if (__config.provider_config[redisData.serviceProviderId].name === 'tyntec') {

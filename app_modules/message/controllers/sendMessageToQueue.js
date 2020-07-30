@@ -18,14 +18,15 @@ const RedirectService = require('../../integration/service/redirectService')
 const RedisService = require('../../../lib/redis_service/redisService')
 const request = require('request')
 
-const updateAudience = (audienceNumber, audOptin) => {
+const updateAudience = (audienceNumber, audOptin, wabaNumber) => {
   const audUpdated = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
   const audienceDataToBePosted = [{
     phoneNumber: audienceNumber,
     channel: __constants.DELIVERY_CHANNEL.whatsapp,
     optinSourceId: __config.optinSource.direct,
-    optin: audOptin
+    optin: audOptin,
+    wabaPhoneNumber: wabaNumber
   }]
   const options = {
     url,
@@ -76,7 +77,7 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber) =
   // console.log('hererereererrerere', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
-    updateAudience(endUserPhoneNumber, true)
+    updateAudience(endUserPhoneNumber, true, wabaNumber)
     canSendMessage.resolve(true)
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
