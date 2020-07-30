@@ -30,7 +30,6 @@ function addAudienceAndOptin (inputPayload, redisData) {
   const audienceDataToBePosted = [{
     phoneNumber: inputPayload.from,
     channel: __constants.DELIVERY_CHANNEL.whatsapp,
-    optinSourceId: __config.optinSource.message,
     name: inputPayload.whatsapp && inputPayload.whatsapp.senderName ? inputPayload.whatsapp.senderName : '',
     isIncomingMessage: true,
     wabaPhoneNumber: redisData.id
@@ -41,7 +40,10 @@ function addAudienceAndOptin (inputPayload, redisData) {
   }
   isOptinMessage(inputPayload.content, redisData.optinText)
     .then(isoptin => {
-      if (isoptin) audienceDataToBePosted[0].optin = true
+      if (isoptin) {
+        audienceDataToBePosted[0].optin = true
+        audienceDataToBePosted[0].optinSourceId = __config.optinSource.message
+      }
       const options = {
         url,
         body: audienceDataToBePosted,

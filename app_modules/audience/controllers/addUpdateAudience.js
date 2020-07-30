@@ -45,7 +45,7 @@ const singleRecordProcess = (data, userId) => {
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
-    .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber))
+    .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber, userId, data.wabaPhoneNumber))
     .then(audienceData => {
       // console.log('Get Result', audienceData)
       data.userId = userId

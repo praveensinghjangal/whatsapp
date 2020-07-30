@@ -40,10 +40,11 @@ class AudienceService {
   }
 
   // waba
-  getAudienceTableDataByPhoneNumber (phoneNumber) {
+  getAudienceTableDataByPhoneNumber (phoneNumber, userId, wabaPhoneNumber) {
     __logger.info('inside get audience by id service', phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
+    const queryFilter = wabaPhoneNumber || userId
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumber])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.length === 0) {
@@ -122,7 +123,7 @@ class AudienceService {
     // this.updateAudience(newData, oldData)
     var audienceData = {
       channel: newData.channel || oldData.channel,
-      optin: typeof newData.optin === 'boolean' ? newData.optin : false,
+      optin: typeof newData.optin === 'boolean' ? newData.optin : oldData.optin,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
       chatFlowId: newData.chatFlowId || oldData.chatFlowId,
