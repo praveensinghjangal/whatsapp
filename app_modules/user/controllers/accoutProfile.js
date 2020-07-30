@@ -29,8 +29,8 @@ const getAcountProfile = (req, res) => {
     })
     .then(data => {
       queryResult.complete = data.complete
-    //   __logger.info('queryResult', queryResult)
-      // __logger.info('data', data)
+      __logger.info('queryResult', queryResult)
+       __logger.info('data', data)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: queryResult
@@ -79,7 +79,7 @@ const updateAcountProfile = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('then 3' )
+      __logger.info('then 3')
       if (result && result.affectedRows && result.affectedRows > 0) {
         return checkAccountProfileCompletionStatus(accountProfileData)
       } else {
@@ -101,7 +101,6 @@ const updateAcountProfile = (req, res) => {
 
 function checkAccountProfileCompletionStatus (data) {
   const checkCompleteStatus = new CheckInfoCompletionService()
-
   return checkCompleteStatus.checkAccountProfileStatus(data)
 }
 
@@ -128,6 +127,8 @@ const generateAndUpdateTokenKey = (req, res) => {
     })
     .then(result => {
       __logger.info('queryResult')
+      delete tokenData.updated_by
+      delete tokenData.user_id
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: tokenData
