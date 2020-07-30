@@ -87,7 +87,8 @@ const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
   userConfig: 300,
-  wabaData: 900
+  wabaData: 900,
+  templateData: 300
 }
 
 const SERVER_TIMEOUT = 20 * 60 * 1000

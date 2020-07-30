@@ -162,6 +162,7 @@ const getMessageTemplateDataByWabaId = () => {
 
 const getTemplateTableDataAndWabaId = () => {
   return `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
+  wi.phone_number as "wabaPhoneNumber",
   mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
   mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
   mt.message_template_language_id as "messageTemplateLanguageId", mt.body_text as "bodyText", mt.header_text as "headerText",
