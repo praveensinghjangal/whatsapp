@@ -40,10 +40,10 @@ class AudienceService {
   }
 
   // waba
-  getAudienceTableDataByPhoneNumber (phoneNumber) {
+  getAudienceTableDataByPhoneNumber (phoneNumber, userId, wabaPhoneNumber) {
     __logger.info('inside get audience by id service', phoneNumber)
     const audienceData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(), [phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(phoneNumber, userId, wabaPhoneNumber), [])
       .then(result => {
         // console.log('Query Result', result)
         if (result && result.length === 0) {
