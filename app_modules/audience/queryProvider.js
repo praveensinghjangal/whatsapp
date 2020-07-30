@@ -3,9 +3,7 @@ const addAudienceData = () => {
   return `INSERT INTO audience 
   (audience_id, phone_number, channel, optin, optin_source_id,
   segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number,first_message,last_message)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,(select CONCAT(wi.phone_code ,wi.phone_number ) 
-  from waba_information wi
-  where user_id = ? and wi.is_active=1),?,?)`
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)`
 }
 
 const updateAudienceRecord = () => {
@@ -65,8 +63,7 @@ const getAudienceTableDataByPhoneNumber = () => {
   last_message as "lastMessage", segment_id as "segmentId",
   chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, waba_phone_number as "wabaPhoneNumber"
   FROM audience aud
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = aud.waba_phone_number and wi.is_active = 1 and wi.user_id = ?  
-  where aud.phone_number=? and aud.is_active=1`
+  where aud.phone_number=? and aud.is_active=true`
 }
 
 const getOptinByPhoneNumber = () => {
@@ -76,6 +73,11 @@ const getOptinByPhoneNumber = () => {
   and aud.phone_number = ? and waba_phone_number = ?`
 }
 
+const getWabaNumberFromDb = () => {
+  return `select CONCAT(wi.phone_code ,wi.phone_number ) as "wabaPhoneNumber"
+  from waba_information wi
+  where user_id = ? and wi.is_active=1`
+}
 // Optin Master
 
 const getOptinSourceData = () => {
@@ -142,5 +144,6 @@ module.exports = {
   getSegmentData,
   getSegmentDataById,
   addSegmentData,
-  updateSegmentData
+  updateSegmentData,
+  getWabaNumberFromDb
 }
