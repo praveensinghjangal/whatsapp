@@ -57,13 +57,28 @@ const getAudienceTableDataWithId = () => {
   WHERE aud.is_active = true and aud.audience_id=?`
 }
 
-const getAudienceTableDataByPhoneNumber = () => {
-  return `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
+const getAudienceTableDataByPhoneNumber = (phoneNumber, userId, wabaPhoneNumber) => {
+  let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", segment_id as "segmentId",
   chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, waba_phone_number as "wabaPhoneNumber"
-  FROM audience aud
-  where aud.phone_number=? and aud.is_active=true`
+  FROM audience aud`
+
+  if (userId) {
+    query = query + ` join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = aud.waba_phone_number 
+    and wi.is_active =true and wi.user_id = '${userId}' `
+  }
+  query = query + 'where'
+
+  if (phoneNumber) {
+    query = query + `  aud.phone_number= '${phoneNumber}' and`
+  }
+  if (wabaPhoneNumber) {
+    query = query + `  aud.waba_phone_number= '${wabaPhoneNumber}' and`
+  }
+  query = query + ' aud.is_active=true'
+
+  return query
 }
 
 const getOptinByPhoneNumber = () => {
