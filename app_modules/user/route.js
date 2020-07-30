@@ -17,6 +17,8 @@ router.post('/auth/login', require('./controllers/login'))
 router.post('/signUp', require('./controllers/signUp'))
 router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name, authstrategy.google.options))
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
+router.post('/authorize', require('./controllers/authorize').authorize)
+
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {
   console.log('redirected', req.user)

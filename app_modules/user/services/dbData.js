@@ -128,6 +128,23 @@ class UserData {
       })
     return doesUserIdExist.promise
   }
+
+  checkIfApiKeyExists (apiKey) {
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromKey(), [apiKey])
+      .then(result => {
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+        } else {
+          userDetails.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get user function: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData

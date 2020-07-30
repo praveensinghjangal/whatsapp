@@ -4,6 +4,18 @@ const UserService = require('../app_modules/user/services/dbData')
 const rejectionHandler = require('../lib/util/rejectionHandler')
 const __util = require('../lib/util')
 const __constants = require('../config/constants')
+const authorize = require('../app_modules/user/controllers/authorize').createAuthTokenByUserId
+
+const getAuthToken = userId => {
+  const token = q.defer()
+  authorize(userId)
+    .then(data => token.resolve(data))
+    .catch(err => {
+      console.log(err)
+      token.resolve('')
+    })
+  return token.promise
+}
 
 const setDataInRedis = userId => {
   const dataSet = q.defer()
@@ -13,10 +25,15 @@ const setDataInRedis = userId => {
     .then(dbData => {
       if (dbData.exists) {
         userData = dbData.rows[0]
-        return __db.redis.setex(userId, JSON.stringify(userData), __constants.REDIS_TTL.userConfig)
+        return getAuthToken(userId)
       } else {
         return rejectionHandler('user does not exists')
       }
+    })
+    .then(token => {
+      userData.authToken = token
+      console.log('data to be set ------->', userData)
+      return __db.redis.setex(userId, JSON.stringify(userData), __constants.REDIS_TTL.userConfig)
     })
     .then(result => dataSet.resolve(userData))
     .catch(err => dataSet.reject(err))

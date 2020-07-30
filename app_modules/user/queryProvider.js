@@ -151,6 +151,11 @@ const getVerifiedAndCodeDataByUserIdForBusinessNumber = () => {
     and wi.is_active = true`
 }
 
+const getUserIdFromKey = () => {
+  return `select user_id as "userId" from users
+  where is_active  = 1 and token_key = ?`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -174,5 +179,6 @@ module.exports = {
   getLatestAgreementByUserId,
   getVerifiedAndCodeDataByUserIdForBusinessNumber,
   markbusinessNumberVerified,
-  updateTokenInAccountProfile
+  updateTokenInAccountProfile,
+  getUserIdFromKey
 }
