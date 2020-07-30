@@ -49,11 +49,9 @@ const formReqBody = excelSingleData => {
 
 const validateSingleReq = excelSingleData => {
   const isValid = q.defer()
-  //   console.log('single validate', excelSingleData)
-
   const errorData = []
   if (!excelSingleData.phoneNumber) errorData.push('please provide "phoneNumber" of type number')
-  if (!excelSingleData.optinSource && typeof excelSingleData.optinSource !== 'string' && typeof excelSingleData.optinSource.length < 1) errorData.push('please provide "optinSource" of type string ')
+  if (!excelSingleData.optinSource && typeof excelSingleData.optinSource !== 'string' && excelSingleData.optinSource < 1) errorData.push('please provide "optinSource" of type string ')
   if (!excelSingleData.name || typeof excelSingleData.name !== 'string' || excelSingleData.name.length < 1) errorData.push('please provide "name" of type string having minimum length 1')
   if (!excelSingleData.email || typeof excelSingleData.email !== 'string' || excelSingleData.email.length < 1) errorData.push('please provide "email" of type string having minimum length 1')
   if (!excelSingleData.gender || typeof excelSingleData.gender !== 'string' || excelSingleData.gender.length < 1) errorData.push('please provide "gender" of type string having minimum length 1')
@@ -68,7 +66,7 @@ const validateSingleReq = excelSingleData => {
     }
   })
 
-  //   console.log('Error Data', errorData)
+  // console.log('Error Data', errorData)
   if (errorData.length > 0) {
     isValid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errorData })
     // return isValid.promise
@@ -80,7 +78,7 @@ const validateSingleReq = excelSingleData => {
 }
 
 const validateAndFormRequestBody = excelData => {
-//   console.log('here to form reqbody and validate', excelData)
+  // console.log('here to form reqbody and validate', excelData)
   let p = q()
   const thePromises = []
   excelData.forEach(singleObject => {
@@ -148,7 +146,7 @@ const uploadAudienceData = (req, res) => {
           if (invalidReq.length > 0) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
           } else {
-            return callAddUpdateAudienceApi(reqBody, process.env.INTERNAL_AUTH_TOKEN)
+            return callAddUpdateAudienceApi(reqBody, req.headers.authorization)
           }
         })
         .then(data => res.send(data))
