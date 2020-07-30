@@ -30,7 +30,7 @@ const getAcountProfile = (req, res) => {
     .then(data => {
       queryResult.complete = data.complete
       __logger.info('queryResult', queryResult)
-       __logger.info('data', data)
+      __logger.info('data', data)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: queryResult
@@ -87,7 +87,7 @@ const updateAcountProfile = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('data' )
+      __logger.info('data')
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: { complete: data.complete }
@@ -139,6 +139,7 @@ const generateAndUpdateTokenKey = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+
 module.exports = {
   getAcountProfile,
   updateAcountProfile,

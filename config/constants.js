@@ -55,7 +55,8 @@ const CUSTOM_CONSTANT = {
     TWO: [126, 94, 124, 92, 123, 125, 91, 93],
     THREE: [96]
   },
-  SESSION_TIME: 86400
+  SESSION_TIME: 86400,
+  AUTH_TOKEN_30_DAYS: 2592000
 }
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },

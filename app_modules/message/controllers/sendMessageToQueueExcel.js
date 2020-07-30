@@ -227,7 +227,7 @@ const controller = (req, res) => {
           if (invalidReq.length > 0) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
           } else {
-            return callSendToQueueApi(reqBody, req.userConfig.tokenKey)
+            return callSendToQueueApi(reqBody, req.userConfig.authToken)
           }
         })
         .then(data => res.send(data))

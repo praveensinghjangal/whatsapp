@@ -189,7 +189,7 @@ module.exports = {
   WABA_ID_NOT_EXISTS: {
     status_code: 200,
     code: 3021,
-    message: 'WABA id does not exists.'
+    message: 'WABA profile does not exists.'
   },
   WABA_PHONE_NUM_NOT_EXISTS: {
     status_code: 200,
