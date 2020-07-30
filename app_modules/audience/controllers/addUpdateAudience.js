@@ -47,7 +47,7 @@ const singleRecordProcess = (data, userId) => {
   validate.addAudience(data)
     .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber))
     .then(audienceData => {
-      console.log('Get Result', audienceData)
+      // console.log('Get Result', audienceData)
       data.userId = userId
       if (audienceData.audienceId) {
         return updateAudienceData(data, audienceData)

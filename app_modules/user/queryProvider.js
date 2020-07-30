@@ -29,6 +29,11 @@ const updateUserAccountProfile = () => {
   contact_number= ?, phone_code= ?, postal_code = ?,first_name= ?,last_name= ?, updated_on=now(),account_manager_name= ?,user_account_type_id= ?,updated_by= ? WHERE user_id= ? and is_active = true`
 }
 
+const updateTokenInAccountProfile = () => {
+  return `update users set token_key = ?, updated_on=now(),updated_by= ? 
+  WHERE user_id= ? and is_active = true`
+}
+
 // Billing Profile
 
 const getBillingProfile = () => {
@@ -168,5 +173,6 @@ module.exports = {
   saveUserAgreement,
   getLatestAgreementByUserId,
   getVerifiedAndCodeDataByUserIdForBusinessNumber,
-  markbusinessNumberVerified
+  markbusinessNumberVerified,
+  updateTokenInAccountProfile
 }

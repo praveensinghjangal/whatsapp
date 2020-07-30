@@ -28,6 +28,7 @@ class AudienceService {
           const expireyTime = moment(result[0].lastMessage).utc().add(24, 'hours').format('YYYY-MM-DD HH:mm:ss')
           result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
           // add moment for temp optin
+          delete result[0].wabaPhoneNumber
           audienceData.resolve(result[0])
         }
       })

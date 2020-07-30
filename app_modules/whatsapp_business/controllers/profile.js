@@ -189,9 +189,36 @@ function formatFinalStatus (queryResult, result) {
   return finalResult.promise
 }
 
+const updateServiceProviderId = (req, res) => {
+  __logger.info('Inside updateServiceProviderId')
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const businessAccountService = new BusinessAccountService()
+  const validationService = new ValidatonService()
+
+  validationService.checkServiceProviderIdService(req.body)
+    .then(data => businessAccountService.getBusinessProfileInfo(userId))
+    .then(results => {
+      __logger.info('Then 1')
+      if (results && results.length > 0) {
+        return businessAccountService.updateServiceProviderId(userId, req.body.serviceProviderId)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
+    .then(result => {
+      __logger.info('Then 3')
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
   addupdateBusinessAccountInfo,
-  markManagerVerified
+  markManagerVerified,
+  updateServiceProviderId
 }
