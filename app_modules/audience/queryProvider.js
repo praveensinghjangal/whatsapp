@@ -61,7 +61,8 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
   let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", segment_id as "segmentId",
-  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, waba_phone_number as "wabaPhoneNumber"
+  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, 
+  waba_phone_number as "wabaPhoneNumber",optin_source_id as "optinSourceId"
   FROM audience aud`
   if (!wabaPhoneNumber) {
     query = query + ` join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = aud.waba_phone_number 

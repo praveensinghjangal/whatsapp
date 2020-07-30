@@ -123,7 +123,7 @@ class AudienceService {
     // this.updateAudience(newData, oldData)
     var audienceData = {
       channel: newData.channel || oldData.channel,
-      optin: typeof newData.optin === 'boolean' ? newData.optin : false,
+      optin: typeof newData.optin === 'boolean' ? newData.optin : oldData.optin,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
       chatFlowId: newData.chatFlowId || oldData.chatFlowId,
