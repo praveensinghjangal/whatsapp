@@ -59,13 +59,13 @@ class MessageConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('processQueueConsumer::Waiting for message...')
+        __logger.info('tynte outgoing queue consumer::Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const mqDataReceived = mqData
             messageData = JSON.parse(mqData.content.toString())
-            __logger.debug('processQueueConsumer::received:', { mqData })
-            __logger.debug('processQueueConsumer:: messageData received:', messageData)
+            __logger.debug('tynte outgoing queue consumer::received:', { mqData })
+            __logger.debug('tynte outgoing queue consumer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
               messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.tyntec
             }
@@ -75,8 +75,7 @@ class MessageConsumer {
               .then(sendMessageRespose => saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messageId))
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
-                console.log('Error------------------------------->', err)
-                rmqObject.channel[queue].ack(mqDataReceived)
+                __logger.error('tynte outgoing queue consumer::error: ', err)
                 if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
                   messageData.payload.retryCount--
                   sendToTyntecOutgoingQueue(messageData, rmqObject)
@@ -84,14 +83,17 @@ class MessageConsumer {
                   messageData.err = err
                   sendToErrorQueue(messageData, rmqObject)
                 }
-                __logger.error('processQueueConsumer::error: ', err)
-                // process.exit(1)
+                rmqObject.channel[queue].ack(mqDataReceived)
               })
           } catch (err) {
-            __logger.error('processQueueConsumer::error while parsing: ', err)
+            __logger.error('tynte outgoing queue consumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
+      })
+      .catch(err => {
+        __logger.error('tynte outgoing queue consumer::error: ', err)
+        process.exit(1)
       })
 
     this.stop_gracefully = function () {

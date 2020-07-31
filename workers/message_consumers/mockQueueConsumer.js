@@ -27,13 +27,13 @@ class MessageConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('processQueueConsumer::Waiting for message...')
+        __logger.info('mock queue consumeeeeeeeer::Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const mqDataReceived = mqData
             messageData = JSON.parse(mqData.content.toString())
-            __logger.debug('processQueueConsumer::received:', { mqData })
-            __logger.debug('processQueueConsumer:: messageData received:', messageData)
+            __logger.debug('mock queue consumeeeeeeeer::received:', { mqData })
+            __logger.debug('mock queue consumeeeeeeeer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
               messageData.payload.retryCount = 5
             }
@@ -43,24 +43,26 @@ class MessageConsumer {
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
                 console.log('Error------------------------------->', err)
-                rmqObject.channel[queue].ack(mqDataReceived)
-
                 if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
                   messageData.payload.retryCount--
-
                   sendToMockProviderQueue(messageData, rmqObject)
                 } else {
                   messageData.err = err
                   sendToErrorQueue(messageData, rmqObject)
                 }
-                __logger.error('processQueueConsumer::error: ', err)
+                rmqObject.channel[queue].ack(mqDataReceived)
+                __logger.error('mock queue consumeeeeeeeer::error: ', err)
                 // process.exit(1)
               })
           } catch (err) {
-            __logger.error('processQueueConsumer::error while parsing: ', err)
+            __logger.error('mock queue consumeeeeeeeer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
+      })
+      .catch(err => {
+        __logger.error('mock queue consumeeeeeeeer::error: ', err)
+        process.exit(1)
       })
 
     this.stop_gracefully = function () {

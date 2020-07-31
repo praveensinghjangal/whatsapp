@@ -56,13 +56,17 @@ class ProcessQueueConsumer {
             __logger.debug('processQueueConsumer::received: messageData', messageData)
             sendToRespectiveProviderQueue(messageData, rmqObject)
               .then(data => rmqObject.channel[queue].ack(mqData))
-              .catch(err => __logger.error('processQueueConsumer::error while routing to queue', err))
+              .catch(err => {
+                __logger.error('processQueueConsumer::error while routing to queue', err)
+                rmqObject.channel[queue].ack(mqData)
+              })
           } catch (err) {
             __logger.error('processQueueConsumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
-      }).catch(err => {
+      })
+      .catch(err => {
         __logger.error('processQueueConsumer::error: ', err)
         process.exit(1)
       })
