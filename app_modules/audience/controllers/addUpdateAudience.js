@@ -78,4 +78,54 @@ const processRecordInBulk = (data, userId) => {
   return q.all(thePromises)
 }
 
-module.exports = { addUpdateAudienceData }
+const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
+  __logger.info('inside markOptinByPhoneNumber', req.body)
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+
+  const input = req.body
+  input.optin = true
+  input.channel = __constants.DELIVERY_CHANNEL.whatsapp
+
+  const validate = new ValidatonService()
+  validate.checkOptinInput(input)
+    .then(data => singleRecordProcess(input, userId))
+    .then(data => {
+      for (var key in data) {
+        // console.log('key', key)
+        if (key !== 'optin' && key !== 'optinSourceId') {
+          delete data[key]
+        }
+      }
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+}
+
+const markOptOutByPhoneNumber = (req, res) => {
+  // __logger.info('inside markOptOutByPhoneNumber', req.body)
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const input = req.body
+  input.channel = __constants.DELIVERY_CHANNEL.whatsapp
+  input.optin = false
+
+  const validate = new ValidatonService()
+  validate.checkPhoneNumberExistService(input)
+    .then(data => singleRecordProcess(input, userId))
+    .then(data => {
+      // console.log('Data', data)
+      for (var key in data) {
+        // console.log('key', key)
+        if (key !== 'optin') {
+          delete data[key]
+        }
+      }
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+}
+
+module.exports = {
+  addUpdateAudienceData,
+  markOptinByPhoneNumberAndAddOptinSource,
+  markOptOutByPhoneNumber
+}

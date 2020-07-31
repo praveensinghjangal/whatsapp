@@ -204,6 +204,48 @@ class validate {
     return isvalid.promise
   }
 
+  checkOptinInput (request) {
+    const isvalid = q.defer()
+
+    const schema = {
+      id: '/checkOptinInput',
+      type: 'object',
+      required: true,
+      properties: {
+        phoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        optinSourceId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        channel: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+
+      }
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/checkOptinInput')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
   // segment
 
   checkSegmentId (request) {

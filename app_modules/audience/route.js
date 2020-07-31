@@ -23,6 +23,8 @@ const addUpdateOptinController = require('./controllers/addUpdateOptinSourceMast
 
 // Audience
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateAudienceController.addUpdateAudienceData)
+router.post('/optin', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateAudienceController.markOptinByPhoneNumberAndAddOptinSource)
+router.patch('/optout', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateAudienceController.markOptOutByPhoneNumber)
 
 // Fetch Audience Data
 router.get('/:audienceId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchAudienceDataController.getAudienceRecordById)
