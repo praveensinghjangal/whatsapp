@@ -165,6 +165,7 @@ class AudienceService {
           delete audienceData.wabaPhoneNumber
           delete audienceData.firstMessageValue
           delete audienceData.lastMessageValue
+          delete audienceData.updatedBy
           audienceUpdated.resolve(audienceData)
         } else {
           audienceUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

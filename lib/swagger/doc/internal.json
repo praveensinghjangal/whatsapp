@@ -6036,6 +6036,291 @@
                 "security": []
             }
         },
+        "/audience/optin": {
+            "post": {
+                "description": "API to update optin\nTo update optinSourceId pass optin source ID along with parameters to update",
+                "summary": "Update optin satus and add optin source id",
+                "tags": [
+                    "audience"
+                ],
+                "operationId": "markOptinByPhoneNumberAndAddOptinSource",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/UpdateOptinStatusAndAddOptinSourceIdRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns Status of segment info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": {
+                                        "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38",
+                                        "optin": true
+                                    }
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },  
+        "/audience/optout": {
+            "patch": {
+                "description": "API to update optin\n by phone Number",
+                "summary": "Update optin satus by phone number",
+                "tags": [
+                    "audience"
+                ],
+                "operationId": "markOptOutByPhoneNumber",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "user can obtain auth token by using login API"
+                    },
+                    {
+                        "name": "Body",
+                        "in": "body",
+                        "required": true,
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/UpdateOptinStatusRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns Status of segment info completion",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": [
+                                {
+                                    "code": 2000,
+                                    "msg": "Success",
+                                    "data": {
+                                        "optin": false
+                                    }
+                                },
+                                {
+                                    "code": 3000,
+                                    "msg": "No record found.",
+                                    "data": null,
+                                    "error": {}
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Returns invalid request error in error array",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "array"
+                                }
+                            },
+                            "example": {
+                                "code": 4000,
+                                "msg": "Invalid request",
+                                "data": null,
+                                "error": [
+                                    "invalid body error here"
+                                ]
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 4001,
+                                "msg": "Unauthorized access.",
+                                "data": null
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },        
         "/message-history/{messageId}": {
             "get": {
                 "description": "get info of a message history by message id",
@@ -7387,6 +7672,41 @@
                 "optinSource"
             ]
         },
+        "UpdateOptinStatusAndAddOptinSourceIdRequest": {
+            "title": "UpdateOptinStatusAndAddOptinSourceIdRequest",
+            "example": {
+                "phoneNumber":"9999999999",
+                "optinSourceId": "5ad4bfa0-4dd1-433b-a88b-ace8197f8c38"
+            },
+            "type": "object",
+            "properties": {
+                "phoneNumber": {
+                    "type": "string"
+                },
+                "optinSourceId": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "optinSourceId",
+                "phoneNumber"
+            ]
+        },        
+        "UpdateOptinStatusRequest": {
+            "title": "UpdateOptinStatusRequest",
+            "example": {
+                "phoneNumber":"9999999999"
+            },
+            "type": "object",
+            "properties": {
+                "phoneNumber": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "phoneNumber"
+            ]
+        },         
         "AddMessageHistoryRequest": {
             "title": "AddMessageHistoryRequest",
             "example":{
