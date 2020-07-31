@@ -44,6 +44,11 @@ module.exports = {
     code: 4031,
     message: 'Invalid file type'
   },
+  INVALID_URL: {
+    status_code: 400,
+    code: 4032,
+    message: 'Invalid request URL'
+  },
   SERVER_ERROR: {
     status_code: 500,
     code: 5000,

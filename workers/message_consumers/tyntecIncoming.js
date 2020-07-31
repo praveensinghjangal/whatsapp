@@ -60,6 +60,10 @@ class TyntecConsumer {
           }
         }, { noAck: false })
       })
+      .catch(err => {
+        __logger.error('tyntec incoming message QueueConsumer::error: ', err)
+        process.exit(1)
+      })
 
     this.stop_gracefully = function () {
       __logger.info('stopping all resources gracefully')
