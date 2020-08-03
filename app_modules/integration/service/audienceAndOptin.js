@@ -50,7 +50,7 @@ function addAudienceAndOptin (inputPayload, redisData) {
         headers: { Authorization: __config.internalApiCallToken },
         json: true
       }
-      console.log('all options', options)
+      // console.log('all options', options)
       request.post(options, (err, httpResponse, body) => {
         if (err) {
           audienceData.reject(err)
