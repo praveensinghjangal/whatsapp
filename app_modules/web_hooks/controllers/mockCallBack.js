@@ -28,7 +28,7 @@ const controller = (req, res) => {
       headers: { Authorization: __config.mockWebHook.authorization },
       json: true
     }
-    console.log('..........................', options)
+    // console.log('..........................', options)
     // Calling another api for sending messages
     request.post(options, (err, httpResponse, body) => {
       console.log('responseeeeeeeeeeeeeeeeeee', err, body)

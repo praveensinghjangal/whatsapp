@@ -129,7 +129,7 @@ const markManagerVerified = (req, res) => {
       }
     })
     .then(data => {
-      console.log('datatatatata', data)
+      // console.log('datatatatata', data)
       if (data) {
         return validate.isAddUpdateBusinessInfoComplete(record)
       } else {

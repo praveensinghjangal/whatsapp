@@ -352,7 +352,7 @@ class validate {
   }
 
   checkTemplateInfoStatus (request) {
-    console.log('Request', request)
+    // console.log('Request', request)
     const isvalid = q.defer()
     if (request && request.type) request.type = request.type.toLowerCase()
     if (request && request.headerType) request.headerType = request.headerType.toLowerCase()

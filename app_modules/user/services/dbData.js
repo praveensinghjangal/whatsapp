@@ -58,7 +58,8 @@ class UserData {
         }
       })
       .then(result => {
-        console.log('Qquery Result sign up', result)
+        // console.log('Qquery Result sign up', result)
+        __logger.info('Qquery Result sign up', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           userCreated.resolve({ userId })
         } else {
