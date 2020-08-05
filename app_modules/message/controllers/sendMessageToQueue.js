@@ -101,7 +101,7 @@ const checkIfNoExists = number => {
   redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
       // console.log('datatat', data)
-      exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: {} })
+      exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: { redisData: data } })
     })
     .catch(err => exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return exists.promise
@@ -115,7 +115,9 @@ const sendToQueue = (data, providerId) => {
     config: config.provider_config[providerId],
     payload: data
   }
-  rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData))
+  const planPriority = data.redisData.planPriority
+  delete data.redisData
+  rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
     .then(queueResponse => saveAndSendMessageStatus(data, providerId))
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, acceptedAt: new Date() }))
     .catch(err => messageSent.reject(err))
@@ -141,7 +143,10 @@ const singleRuleCheck = (data, wabaPhoneNumber, index) => {
       return isValid.promise
     }
     checkIfNoExists(data.whatsapp.from)
-      .then(noValRes => checkOptinStaus(data.to, data.whatsapp.template, data.isOptin, data.whatsapp.from))
+      .then(noValRes => {
+        data.redisData = noValRes.data.redisData || {}
+        return checkOptinStaus(data.to, data.whatsapp.template, data.isOptin, data.whatsapp.from)
+      })
       .then(canSendMessage => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
       .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
       .catch(err => {
