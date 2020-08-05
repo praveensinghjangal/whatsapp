@@ -3,6 +3,8 @@ const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
+const TrimService = require('../../../lib/trimService/trim')
+const trimInput = new TrimService()
 
 class validate {
   login (request) {
@@ -15,7 +17,9 @@ class validate {
         email: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
+
         },
         password: {
           type: 'string',
@@ -51,11 +55,14 @@ class validate {
           required: true,
           unique: true,
           minLength: 1
+          // pattern: __constants.VALIDATOR.email
+
         },
         password: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          trim: true
         },
         tncAccepted: {
           type: 'boolean',
@@ -73,7 +80,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -89,7 +97,9 @@ class validate {
           type: 'string',
           required: true,
           unique: true,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
+
         },
         password: {
           type: 'string',
@@ -117,7 +127,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -146,7 +157,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -188,17 +200,25 @@ class validate {
         contactNumber: {
           type: 'string',
           required: false,
-          minLength: 10
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
         },
         phoneCode: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         postalCode: {
           type: 'string',
           required: false,
-          minLength: 6
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         },
         firstName: {
           type: 'string',
@@ -232,7 +252,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -279,17 +300,25 @@ class validate {
         contactNumber: {
           type: 'string',
           required: false,
-          minLength: 10
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
         },
         phoneCode: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         postalCode: {
           type: 'string',
           required: false,
-          minLength: 6
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         },
         gstOrTaxNo: {
           type: 'string',
@@ -313,7 +342,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -342,7 +372,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }

@@ -3080,7 +3080,7 @@
             },
             "post": {
                 "description": "API to add or update business profile",
-                "summary": "add or update business profil",
+                "summary": "add or update business profile",
                 "tags": [
                     "WABA"
                 ],
@@ -7580,7 +7580,7 @@
         },
         "AddupdateAudienceRequest": {
             "title": "AddupdateaudienceRequest",
-            "example": {
+            "example": [{
                 "audienceId": "c1444136-9b15-4bdb-86c3-c138f5a3a44c",
                 "phoneNumber": "919820333891",
                 "channel": "whatsapp",
@@ -7592,8 +7592,9 @@
                 "email": "ajay@yopmail.com",
                 "gender": "Male",
                 "country": "India"
-            },
-            "type": "object",
+            }],
+            "type": "array",
+            "items":{
             "properties": {
                 "audienceId": {
                     "type": "string"
@@ -7632,7 +7633,9 @@
             "required": [
                 "phoneNumber",
                 "channel"
-            ]
+            ]              
+            }
+
         },
         "AddupdateSegmentRequest": {
             "title": "AddupdateSegmentRequest",

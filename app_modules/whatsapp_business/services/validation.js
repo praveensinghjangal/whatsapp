@@ -3,6 +3,8 @@ const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
+const TrimService = require('../../../lib/trimService/trim')
+const trimInput = new TrimService()
 
 class validate {
   checkUserIdService (request) {
@@ -29,7 +31,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -58,7 +61,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -78,11 +82,19 @@ class validate {
         },
         phoneCode: {
           type: 'string',
-          required: false
+          required: false,
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         phoneNumber: {
           type: 'string',
-          required: false
+          required: false,
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
+
         },
         canReceiveSms: {
           type: 'boolean',
@@ -108,7 +120,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -159,12 +172,17 @@ class validate {
         postalCode: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         },
         email: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
+
         },
         businessCategoryId: {
           type: 'string',
@@ -208,7 +226,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -258,12 +277,17 @@ class validate {
         postalCode: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         },
         email: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
+
         },
         businessCategoryId: {
           type: 'string',
@@ -306,11 +330,19 @@ class validate {
         },
         phoneCode: {
           type: 'string',
-          required: true
+          required: true,
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         phoneNumber: {
           type: 'string',
-          required: true
+          required: true,
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
+
         },
         canReceiveSms: {
           type: 'boolean'
@@ -363,7 +395,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }

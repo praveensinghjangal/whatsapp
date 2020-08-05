@@ -1,6 +1,7 @@
 const q = require('q')
 const _ = require('lodash')
 const Validator = require('jsonschema').Validator
+const __constants = require('../../../config/constants')
 
 const v = new Validator()
 
@@ -22,12 +23,17 @@ class checkCompleteIncomplete {
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
         },
         canReceiveSms: {
           type: 'boolean'
@@ -66,7 +72,9 @@ class checkCompleteIncomplete {
         email: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
+
         },
         businessCategory: {
           type: 'string',
@@ -86,7 +94,10 @@ class checkCompleteIncomplete {
         postalCode: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         }
       }
     }
