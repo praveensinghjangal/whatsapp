@@ -14,6 +14,7 @@ const webHooks = require('../app_modules/web_hooks/route')
 const templates = require('../app_modules/templates/route')
 const plans = require('../app_modules/plans/route')
 const audience = require('../app_modules/audience/route')
+const autoMessageFlow = require('../app_modules/auto_message_flow/route')
 
 module.exports = function (app) {
   // region all api
@@ -43,6 +44,7 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/templates', templates)
   app.use(apiUrlPrefix + '/plans', plans)
   app.use(apiUrlPrefix + '/audience', audience)
+  app.use(apiUrlPrefix + '/automessage', autoMessageFlow)
 
   require('../lib/swagger')(app, '/' + __config.api_prefix + '/api')
 }

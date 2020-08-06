@@ -183,6 +183,10 @@ const MESSAGE_STATUS = {
   forwarded: 'forwarded'
 }
 
+const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
+  defaultMessage: 'defaultMessage'
+}
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -212,3 +216,4 @@ module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
 module.exports.MESSAGE_STATUS = MESSAGE_STATUS
 module.exports.REDIS_TTL = REDIS_TTL
+module.exports.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS
