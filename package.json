@@ -75,6 +75,7 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.2",
+    "rate-limiter-flexible": "^2.1.10",
     "standard": "^14.3.3"
   }
 }

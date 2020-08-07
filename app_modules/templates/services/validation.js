@@ -3,6 +3,8 @@ const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
+const TrimService = require('../../../lib/trimService/trim')
+const trimInput = new TrimService()
 
 class validate {
   checkWabaIdExistService (request) {
@@ -29,7 +31,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -59,7 +62,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -174,7 +178,10 @@ class validate {
             phoneNumber: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 10,
+              maxLength: 10,
+              pattern: __constants.VALIDATOR.number
+
             },
             websiteButtontext: {
               type: 'string',
@@ -200,7 +207,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -319,7 +327,10 @@ class validate {
             phoneNumber: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 10,
+              maxLength: 10,
+              pattern: __constants.VALIDATOR.number
+
             },
             websiteButtontext: {
               type: 'string',
@@ -465,7 +476,10 @@ class validate {
             phoneNumber: {
               type: 'string',
               required: true,
-              minLength: 1
+              minLength: 10,
+              maxLength: 10,
+              pattern: __constants.VALIDATOR.number
+
             },
             websiteButtontext: {
               type: 'string',
@@ -539,7 +553,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }

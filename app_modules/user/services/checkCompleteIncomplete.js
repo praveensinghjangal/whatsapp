@@ -1,7 +1,7 @@
 const q = require('q')
 const _ = require('lodash')
 const Validator = require('jsonschema').Validator
-
+const __constants = require('../../../config/constants')
 const v = new Validator()
 
 class checkCompleteIncomplete {
@@ -42,17 +42,25 @@ class checkCompleteIncomplete {
         contactNumber: {
           type: 'string',
           required: true,
-          minLength: 10
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
         },
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         postalCode: {
           type: 'string',
           required: true,
-          minLength: 6
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         }
       }
     }
@@ -65,7 +73,6 @@ class checkCompleteIncomplete {
     })
 
     if (formatedError.length > 0) {
-      console.log('Formatted Error Acunt profile', formatedError)
       isvalid.resolve({ complete: false, err: formatedError })
     } else {
       isvalid.resolve({ complete: true })
@@ -115,17 +122,25 @@ class checkCompleteIncomplete {
         contactNumber: {
           type: 'string',
           required: true,
-          minLength: 10
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
         },
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 2,
+          maxLength: 2,
+          pattern: __constants.VALIDATOR.number
+
         },
         postalCode: {
           type: 'string',
           required: true,
-          minLength: 6
+          minLength: 6,
+          maxLength: 8,
+          pattern: __constants.VALIDATOR.number
+
         },
         gstOrTaxNo: {
           type: 'string',

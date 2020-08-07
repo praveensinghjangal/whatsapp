@@ -1,4 +1,3 @@
----
 swagger: '2.0'
 info:
   description: Helo Whatsapp API documentation
@@ -8,131 +7,131 @@ info:
   contact:
     name: vivaconnect support
     email: support@vivaconnect.co
-host: localhost:3000
-basePath: "/helowhatsapp/api"
+host: 'localhost:3000'
+basePath: /helowhatsapp/api
 tags:
-- name: message
-  description: API's to send bulk messages to end user
-- name: accountProfile
-  description: API's related to account information of registered user
-- name: businessBillingProfile
-  description: API's related to billing information of registered user
-- name: verification
-  description: email and sms verification of registered user
-- name: agreement
-  description: |-
-    API's related to agreement for using vivaconnect helo-whatsapp platform
-    services
-- name: users
-  description: API's related to login and registration
-- name: web-hooks
-  description: Web hook API's provided to our vendors to send incoming messages
-- name: places
-  description: API's related to country ,state, city details
-- name: plans
-  description: API's related to plans
-- name: WABA
-  description: |-
-    API's related to whatsapp business account (WABA) information of registered
-    user
-- name: templates
-  description: API's related to whatsapp templates
-- name: audience
-  description: API's related to whatsapp audience
-- name: message-history
-  description: API's related to whatsapp message history
+  - name: message
+    description: API's to send bulk messages to end user
+  - name: accountProfile
+    description: API's related to account information of registered user
+  - name: businessBillingProfile
+    description: API's related to billing information of registered user
+  - name: verification
+    description: email and sms verification of registered user
+  - name: agreement
+    description: |-
+      API's related to agreement for using vivaconnect helo-whatsapp platform
+      services
+  - name: users
+    description: API's related to login and registration
+  - name: web-hooks
+    description: Web hook API's provided to our vendors to send incoming messages
+  - name: places
+    description: 'API''s related to country ,state, city details'
+  - name: plans
+    description: API's related to plans
+  - name: WABA
+    description: |-
+      API's related to whatsapp business account (WABA) information of registered
+      user
+  - name: templates
+    description: API's related to whatsapp templates
+  - name: audience
+    description: API's related to whatsapp audience
+  - name: message-history
+    description: API's related to whatsapp message history
 schemes:
-- http
+  - http
 paths:
-  "/chat/v1/messages":
+  /chat/v1/messages:
     post:
       description: |-
         This API is used to send mesages using a channel.
          This API can send single as well as bulk messsages.
       summary: This API is used to send mesages using a channel
       tags:
-      - message
+        - message
       operationId: send
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: Provided by vivaconnect upon signup
-      - name: Body
-        in: body
-        required: true
-        description: Accepts Array of json to send bulk message
-        schema:
-          example:
-          - to: '9112345'
-            channels:
-            - whatsapp
-            whatsapp:
-              from: '9167890'
-              contentType: location
-              location:
-                longitude: 7.4954884
-                latitude: 51.5005765
-          - to: '9112345'
-            channels:
-            - whatsapp
-            whatsapp:
-              from: '9167890'
-              contentType: template
-              template:
-                templateId: welcome
-                language:
-                  policy: deterministic
-                  code: en
-                components:
-                - type: header
-                  parameters:
-                  - type: text
-                    text: Hi!
-                  - type: media
-                    media:
-                      type: document
-                      url: http://www.africau.edu/images/default/sample.pdf
-                - type: body
-                  parameters:
-                  - type: text
-                    text: Hi!
-                  - type: media
-                    media:
-                      type: document
-                      url: http://www.africau.edu/images/default/sample.pdf
-                - type: footer
-                  parameters:
-                  - type: text
-                    text: Hi!
-                  - type: media
-                    media:
-                      type: document
-                      url: http://www.africau.edu/images/default/sample.pdf
-          - to: '9112345'
-            channels:
-            - whatsapp
-            whatsapp:
-              from: '9167890'
-              contentType: media
-              media:
-                type: image
-                url: https://i.ibb.co/kXgjphY/925869358s.png
-                caption: viva connect
-          - to: '9112345'
-            channels:
-            - whatsapp
-            whatsapp:
-              from: '9167890'
-              contentType: text
-              text: hello
-          type: array
-          items:
-            "$ref": "#/definitions/sendrequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: Provided by vivaconnect upon signup
+        - name: Body
+          in: body
+          required: true
+          description: Accepts Array of json to send bulk message
+          schema:
+            example:
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                whatsapp:
+                  from: '9167890'
+                  contentType: location
+                  location:
+                    longitude: 7.4954884
+                    latitude: 51.5005765
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                whatsapp:
+                  from: '9167890'
+                  contentType: template
+                  template:
+                    templateId: welcome
+                    language:
+                      policy: deterministic
+                      code: en
+                    components:
+                      - type: header
+                        parameters:
+                          - type: text
+                            text: Hi!
+                          - type: media
+                            media:
+                              type: document
+                              url: 'http://www.africau.edu/images/default/sample.pdf'
+                      - type: body
+                        parameters:
+                          - type: text
+                            text: Hi!
+                          - type: media
+                            media:
+                              type: document
+                              url: 'http://www.africau.edu/images/default/sample.pdf'
+                      - type: footer
+                        parameters:
+                          - type: text
+                            text: Hi!
+                          - type: media
+                            media:
+                              type: document
+                              url: 'http://www.africau.edu/images/default/sample.pdf'
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                whatsapp:
+                  from: '9167890'
+                  contentType: media
+                  media:
+                    type: image
+                    url: 'https://i.ibb.co/kXgjphY/925869358s.png'
+                    caption: viva connect
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                whatsapp:
+                  from: '9167890'
+                  contentType: text
+                  text: hello
+            type: array
+            items:
+              $ref: '#/definitions/sendrequest'
       responses:
         '200':
           description: Returns message ID
@@ -149,10 +148,10 @@ paths:
               code: 2002
               msg: Request Accepted
               data:
-              - messageId: 9fcb694e-312f-4945-bc62-008b7a8b376f
-                acceptedAt: '2020-07-07T08:33:32.537Z'
-              - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
-                acceptedAt: '2020-07-07T08:33:32.648Z'
+                - messageId: 9fcb694e-312f-4945-bc62-008b7a8b376f
+                  acceptedAt: '2020-07-07T08:33:32.537Z'
+                - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
+                  acceptedAt: '2020-07-07T08:33:32.648Z'
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -169,9 +168,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -197,32 +196,32 @@ paths:
               data: {}
               error: {}
       security: []
-  "/chat/v1/messages/whatsapp/excel":
+  /chat/v1/messages/whatsapp/excel:
     post:
       description: API to send bulk template message using excel
       summary: whatsapp excel send template message
       tags:
-      - message
+        - message
       operationId: whatsappexcelsendmessage
       deprecated: false
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/x-www-form-urlencoded
-      - multipart/form-data
+        - application/x-www-form-urlencoded
+        - multipart/form-data
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: User can obtain auth token by using login API
-      - name: messagefile
-        in: formData
-        required: true
-        type: file
-        description: |-
-          excel file with template parameters download sample file using
-          this link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: User can obtain auth token by using login API
+        - name: messagefile
+          in: formData
+          required: true
+          type: file
+          description: |-
+            excel file with template parameters download sample file using
+            this link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing
       responses:
         '200':
           description: Returns message ID
@@ -239,10 +238,10 @@ paths:
               code: 2002
               msg: Request Accepted
               data:
-              - messageId: 9fcb694e-312f-4945-bc62-008b7a8b376f
-                acceptedAt: '2020-07-07T08:33:32.537Z'
-              - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
-                acceptedAt: '2020-07-07T08:33:32.648Z'
+                - messageId: 9fcb694e-312f-4945-bc62-008b7a8b376f
+                  acceptedAt: '2020-07-07T08:33:32.537Z'
+                - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
+                  acceptedAt: '2020-07-07T08:33:32.648Z'
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -259,9 +258,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -287,27 +286,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/chat/v1/messages/tracking":
+  /chat/v1/messages/tracking:
     post:
       description: This API is used to store message status
       tags:
-      - message
+        - message
       operationId: save message status
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: Provided by vivaconnect upon signup
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/saveMessageStatus"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: Provided by vivaconnect upon signup
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/saveMessageStatus'
       responses:
         '200':
           description: Returns message ID
@@ -342,9 +341,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -370,27 +369,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/chat/v1/messages/tracking/{messageId}":
+  '/chat/v1/messages/tracking/{messageId}':
     get:
       summary: Get Message Journey
       description: Use this API to get complete journey of a message
       tags:
-      - message
+        - message
       operationId: getMessageStatus
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: Provided by vivaconnect upon signup
-      - name: messageId
-        in: path
-        required: true
-        type: string
-        description: Id of a Message
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: Provided by vivaconnect upon signup
+        - name: messageId
+          in: path
+          required: true
+          type: string
+          description: Id of a Message
       responses:
         '200':
           description: Returns various stages of message journey
@@ -403,25 +402,25 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - messageId: 49bdfe01-0503-487f-8b26-67a2b8fafhjgip
-                deliveryChannel: whatsapp
-                statusTime: '2020-07-15T13:01:08.000Z'
-                state: message forwarded
-                endConsumerNumber: '917666545750'
-                businessNumber: '91808080808'
-              - messageId: 49bdfe01-0503-487f-8b26-67a2b8fafhjgip
-                deliveryChannel: whatsapp
-                statusTime: '2020-07-15T13:01:00.000Z'
-                state: message accepted
-                endConsumerNumber: '917666545750'
-                businessNumber: '91808080808'
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - messageId: 49bdfe01-0503-487f-8b26-67a2b8fafhjgip
+                    deliveryChannel: whatsapp
+                    statusTime: '2020-07-15T13:01:08.000Z'
+                    state: message forwarded
+                    endConsumerNumber: '917666545750'
+                    businessNumber: '91808080808'
+                  - messageId: 49bdfe01-0503-487f-8b26-67a2b8fafhjgip
+                    deliveryChannel: whatsapp
+                    statusTime: '2020-07-15T13:01:00.000Z'
+                    state: message accepted
+                    endConsumerNumber: '917666545750'
+                    businessNumber: '91808080808'
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -436,7 +435,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -456,28 +455,28 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/account":
+  /users/account:
     put:
       description: API is used for adding and updating user account info
       summary: add and update user account details
       tags:
-      - accountProfile
+        - accountProfile
       operationId: updateAccountInfo
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/updateAccountInfoRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/updateAccountInfoRequest'
       responses:
         '200':
           description: Returns Status if account info is completed
@@ -511,9 +510,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -543,17 +542,17 @@ paths:
       summary: gets account info
       description: returns account info of user account and completion staus
       tags:
-      - accountProfile
+        - accountProfile
       operationId: getAccountInfo
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: Returns account info and its completition status
@@ -572,14 +571,14 @@ paths:
               data:
                 accountId: '158944412352512'
                 accountManagerName: abc@gmail.com
-                tokenKey: 
+                tokenKey: null
                 email: abc@gmail.com
                 accountType: Prepaid
                 city: '6462'
                 state: '180'
                 country: '6'
-                addressLine1: VIVAPLEX, PLOT NO C 7
-                addressLine2: MIDC ROAD, ANDHERI EAST
+                addressLine1: 'VIVAPLEX, PLOT NO C 7'
+                addressLine2: 'MIDC ROAD, ANDHERI EAST'
                 contactNumber: '90998789999'
                 phoneCode: India
                 postalCode: '400093'
@@ -611,22 +610,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/accountType":
+  /users/accountType:
     get:
       description: APi which returns dropdown of all account type
       summary: dropdown of all account type
       tags:
-      - accountProfile
+        - accountProfile
       operationId: accountType-dropdown
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: Returns dropdown of all account type
@@ -643,12 +642,12 @@ paths:
               code: 2000
               msg: Success
               data:
-              - user_account_type_id: d9718ee1-50a1-4826-b0fa-ad1394308d59
-                type_name: Prepaid
-              - user_account_type_id: eb004696-bcad-4998-adbb-d25fbbd3ad68
-                type_name: Postpaid
-              - user_account_type_id: 570af199-5b7c-4e7f-bc9f-e298d65b6273
-                type_name: Semi Postpaid
+                - user_account_type_id: d9718ee1-50a1-4826-b0fa-ad1394308d59
+                  type_name: Prepaid
+                - user_account_type_id: eb004696-bcad-4998-adbb-d25fbbd3ad68
+                  type_name: Postpaid
+                - user_account_type_id: 570af199-5b7c-4e7f-bc9f-e298d65b6273
+                  type_name: Semi Postpaid
         '401':
           description: Invalid token in header
           headers: {}
@@ -674,28 +673,28 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/account/tokenKey":
+  /users/account/tokenKey:
     put:
       description: API is used for updating user account token key
       summary: update user account token key
       tags:
-      - accountProfile
+        - accountProfile
       operationId: generateAndUpdateTokenKey
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: false
-        description: ''
-        schema:
-          "$ref": "#/definitions/updateAccountTokenKeyRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: false
+          description: ''
+          schema:
+            $ref: '#/definitions/updateAccountTokenKeyRequest'
       responses:
         '200':
           description: Returns token key generated
@@ -729,9 +728,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -757,28 +756,28 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/billing":
+  /users/billing:
     post:
       summary: add or update billing details
       description: add or update billing details
       tags:
-      - businessBillingProfile
+        - businessBillingProfile
       operationId: addBillingData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: API Request Body
-        schema:
-          "$ref": "#/definitions/addBillingDataRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: API Request Body
+          schema:
+            $ref: '#/definitions/addBillingDataRequest'
       responses:
         '200':
           description: Returns Status if billing info is completed
@@ -812,9 +811,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -844,17 +843,17 @@ paths:
       summary: get billing details
       description: gets billing details
       tags:
-      - businessBillingProfile
+        - businessBillingProfile
       operationId: getBillingData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: Returns billing info and its completition status
@@ -878,7 +877,7 @@ paths:
                 addressLine1: Test1
                 addressLine2: Test2
                 contactNumber: '1234567890'
-                phoneCode: "+91"
+                phoneCode: '+91'
                 postalCode: '400001'
                 panCard: ABCDE1234F
                 gstOrTaxNo: ABCDE1234F
@@ -910,22 +909,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/verification/email":
+  /users/verification/email:
     post:
       summary: API to send verification code by email
       description: API to send verification code by email
       tags:
-      - verification
+        - verification
       operationId: sendVerificationCodeByEmail
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: success or already verified response
@@ -939,13 +938,13 @@ paths:
               data:
                 type: object
             example:
-            - code: 2001
-              msg: Please check your registered email for verification code
-              data: {}
-            - code: 3015
-              msg: Email already verified for user
-              data: 
-              error: {}
+              - code: 2001
+                msg: Please check your registered email for verification code
+                data: {}
+              - code: 3015
+                msg: Email already verified for user
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -975,23 +974,23 @@ paths:
       summary: validate code sent on email
       description: validate email code sent on registered email
       tags:
-      - verification
+        - verification
       operationId: validateEmailCode
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/validateEmailCodeRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/validateEmailCodeRequest'
       responses:
         '200':
           description: verification success message
@@ -1024,19 +1023,19 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
           schema:
             example:
-            - Unauthorized
-            - code: 3017
-              msg: Invalid verification code
-              data: 
-              error: {}
+              - Unauthorized
+              - code: 3017
+                msg: Invalid verification code
+                data: null
+                error: {}
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -1056,22 +1055,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/verification/sms":
+  /users/verification/sms:
     post:
       summary: API to send verification code by sms
       description: API to send verification code by sms
       tags:
-      - verification
+        - verification
       operationId: sendVerificationCodeBySms
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: success or already verified response
@@ -1085,13 +1084,13 @@ paths:
               data:
                 type: object
             example:
-            - code: 2001
-              msg: Please check your registered phone number for verification code
-              data: {}
-            - code: 3016
-              msg: Phone number already verified for user
-              data: 
-              error: {}
+              - code: 2001
+                msg: Please check your registered phone number for verification code
+                data: {}
+              - code: 3016
+                msg: Phone number already verified for user
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -1121,23 +1120,23 @@ paths:
       summary: validate code sent on phone number
       description: validate code sent on registered phone number
       tags:
-      - verification
+        - verification
       operationId: validateSmsCode
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/validateSmsCodeRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/validateSmsCodeRequest'
       responses:
         '200':
           description: verification success message
@@ -1170,19 +1169,19 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
           schema:
             example:
-            - Unauthorized
-            - code: 3017
-              msg: Invalid verification code
-              data: 
-              error: {}
+              - Unauthorized
+              - code: 3017
+                msg: Invalid verification code
+                data: null
+                error: {}
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -1202,32 +1201,32 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/agreement":
+  /users/agreement:
     post:
       summary: upload signed agreement
       description: upload signed agreement
       tags:
-      - agreement
+        - agreement
       operationId: uploadagreement
       deprecated: false
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/x-www-form-urlencoded
-      - multipart/form-data
+        - application/x-www-form-urlencoded
+        - multipart/form-data
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: agreement
-        in: formData
-        required: true
-        type: file
-        description: |-
-          Agreement in Pdf format. (download unsigned agreement using GET
-          /user/agreement/generate API)
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: agreement
+          in: formData
+          required: true
+          type: file
+          description: |-
+            Agreement in Pdf format. (download unsigned agreement using GET
+            /user/agreement/generate API)
       responses:
         '200':
           description: verification success message
@@ -1258,18 +1257,18 @@ paths:
               error:
                 type: array
             example:
-            - code: 4000
-              msg: Invalid request
-              data: 
-              error:
-              - invalid body error here
-            - code: 4030
-              msg: Please provide a file
-              data: {}
-            - code: 4031
-              msg: Invalid file type
-              data: {}
-              error: File upload only supports the following filetypes - /pdf/
+              - code: 4000
+                msg: Invalid request
+                data: null
+                error:
+                  - invalid body error here
+              - code: 4030
+                msg: Please provide a file
+                data: {}
+              - code: 4031
+                msg: Invalid file type
+                data: {}
+                error: File upload only supports the following filetypes - /pdf/
         '401':
           description: Invalid token in header
           headers: {}
@@ -1301,17 +1300,17 @@ paths:
         Download signed agreement
         Latest uploaded document wil be download
       tags:
-      - agreement
+        - agreement
       operationId: downloadsignedagreement
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: A pdf file will be downloaded
@@ -1343,21 +1342,21 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/agreement/generate":
+  /users/agreement/generate:
     get:
       summary: generate agreement
       tags:
-      - agreement
+        - agreement
       operationId: generateagreement
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: A pdf file will be downloaded
@@ -1389,23 +1388,23 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/auth/login":
+  /users/auth/login:
     post:
       summary: login API
       description: Login API for logging in and using another API's
       tags:
-      - users
+        - users
       operationId: auth/login
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/auth~1loginrequest"
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/auth~1loginrequest'
       responses:
         '200':
           description: Returns auth token if credentials provided are correct
@@ -1442,9 +1441,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -1459,7 +1458,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -1478,23 +1477,23 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  "/users/signUp":
+  /users/signUp:
     post:
       summary: sign up / create account
       description: API to sign up / create account with viva connect helo-whatsapp
       tags:
-      - users
+        - users
       operationId: signUp
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Body
-        in: body
-        required: true
-        description: JSON Input
-        schema:
-          "$ref": "#/definitions/signUpRequest"
+        - name: Body
+          in: body
+          required: true
+          description: JSON Input
+          schema:
+            $ref: '#/definitions/signUpRequest'
       responses:
         '200':
           description: Returns userId if user is created
@@ -1507,13 +1506,13 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                userId: e3157044-7cc4-4bc1-b510-ba63a3eb65d1
-            - code: 3008
-              msg: user already exists.
-              data: 
+              - code: 2000
+                msg: Success
+                data:
+                  userId: e3157044-7cc4-4bc1-b510-ba63a3eb65d1
+              - code: 3008
+                msg: user already exists.
+                data: null
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -1530,9 +1529,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -1551,26 +1550,25 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  "/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a":
+  /web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a:
     post:
       summary: Web hook API for tytntec
-      description: Web hook API for tytntec to receive incoming messages and store
-        in queue
+      description: Web hook API for tytntec to receive incoming messages and store in queue
       tags:
-      - web-hooks
+        - web-hooks
       operationId: tyntec/sendDataToQueue
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          type: object
-          example:
-            key: accepts any json input and pushes to queue
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            type: object
+            example:
+              key: accepts any json input and pushes to queue
       responses:
         '202':
           description: Accepts input object and sends to queue
@@ -1585,7 +1583,7 @@ paths:
             example:
               code: 2002
               msg: Request Accepted
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -1604,26 +1602,25 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  "/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e":
+  /web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e:
     post:
       summary: Web hook API for tytntec message Status
-      description: Web hook API for tytntec to receive outgoing messages status and
-        store in queue
+      description: Web hook API for tytntec to receive outgoing messages status and store in queue
       tags:
-      - web-hooks
+        - web-hooks
       operationId: tyntec/sendMessageStatusData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          type: object
-          example:
-            key: accepts any json input and pushes to queue
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            type: object
+            example:
+              key: accepts any json input and pushes to queue
       responses:
         '202':
           description: Accepts input object and sends to queue
@@ -1638,7 +1635,7 @@ paths:
             example:
               code: 2002
               msg: Request Accepted
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -1657,29 +1654,29 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  "/places/states/{stateId}/cities":
+  '/places/states/{stateId}/cities':
     get:
       description: |-
         This API will return list of cities based on state ID passed in
         req url
       summary: get cities by state ID
       tags:
-      - places
+        - places
       operationId: getcitiesbystateID
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: stateId
-        in: path
-        required: true
-        type: string
-        description: Id of state returned by /places/countries/states API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: stateId
+          in: path
+          required: true
+          type: string
+          description: Id of state returned by /places/countries/states API
       responses:
         '200':
           description: List of all countries
@@ -1695,16 +1692,16 @@ paths:
               code: 2000
               msg: Success
               data:
-              - id: '2474'
-                name: Achalpur
-                state_id: '22'
-              - id: '2475'
-                name: Aheri
-                state_id: '22'
-              - id: '2476'
-                name: Ahmadnagar Cantonment
-                state_id: '22'
-              - 2880 MORE ...
+                - id: '2474'
+                  name: Achalpur
+                  state_id: '22'
+                - id: '2475'
+                  name: Aheri
+                  state_id: '22'
+                - id: '2476'
+                  name: Ahmadnagar Cantonment
+                  state_id: '22'
+                - 2880 MORE ...
         '401':
           description: Invalid token in header
           headers: {}
@@ -1730,29 +1727,29 @@ paths:
               data: {}
               error: {}
       security: []
-  "/places/countries/{countryId}/states":
+  '/places/countries/{countryId}/states':
     get:
       description: |-
         This API returns list of states based on country id passed in request
         url
       summary: Get states list by country ID
       tags:
-      - places
+        - places
       operationId: GetstateslistbycountryID
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: countryId
-        in: path
-        required: true
-        type: string
-        description: Id of country returned by /places/countries API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: countryId
+          in: path
+          required: true
+          type: string
+          description: Id of country returned by /places/countries API
       responses:
         '200':
           description: List of all countries
@@ -1768,13 +1765,13 @@ paths:
               code: 2000
               msg: Success
               data:
-              - id: '1'
-                name: Andaman and Nicobar Islands
-                country_id: '101'
-              - id: '2'
-                name: Andhra Pradesh
-                country_id: '101'
-              - 39 MORE ...
+                - id: '1'
+                  name: Andaman and Nicobar Islands
+                  country_id: '101'
+                - id: '2'
+                  name: Andhra Pradesh
+                  country_id: '101'
+                - 39 MORE ...
         '401':
           description: Invalid token in header
           headers: {}
@@ -1800,22 +1797,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/places/countries":
+  /places/countries:
     get:
       description: This API returns list of countries
       summary: Get countries list
       tags:
-      - places
+        - places
       operationId: getcountrieslist
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all countries
@@ -1831,15 +1828,15 @@ paths:
               code: 2000
               msg: Success
               data:
-              - id: '100'
-                sortname: IS
-                name: Iceland
-                phonecode: '354'
-              - id: '101'
-                sortname: IN
-                name: India
-                phonecode: '91'
-              - 244 MORE ...
+                - id: '100'
+                  sortname: IS
+                  name: Iceland
+                  phonecode: '354'
+                - id: '101'
+                  sortname: IN
+                  name: India
+                  phonecode: '91'
+                - 244 MORE ...
         '401':
           description: Invalid token in header
           headers: {}
@@ -1864,22 +1861,22 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  "/plans":
+  /plans:
     get:
       description: API to get list of plans available with helo-whatsapp
       summary: get plans
       tags:
-      - plans
+        - plans
       operationId: GetAllPlans
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all plans
@@ -1895,18 +1892,18 @@ paths:
               code: 2000
               msg: Success
               data:
-              - planId: 6cb80f6d-cdca-4b69-974c-f25bbf95f642
-                planName: Plan C
-                planValidity: '30'
-                planCost: '1000'
-                planCategory: standard
-                planBenefits: 
-              - planId: 6e9be178-1414-4d9e-91ca-3eb3c5ef5a99
-                planName: Plan B
-                planValidity: '30'
-                planCost: '1500'
-                planCategory: standard
-                planBenefits: 
+                - planId: 6cb80f6d-cdca-4b69-974c-f25bbf95f642
+                  planName: Plan C
+                  planValidity: '30'
+                  planCost: '1000'
+                  planCategory: standard
+                  planBenefits: null
+                - planId: 6e9be178-1414-4d9e-91ca-3eb3c5ef5a99
+                  planName: Plan B
+                  planValidity: '30'
+                  planCost: '1500'
+                  planCategory: standard
+                  planBenefits: null
         '401':
           description: Invalid token in header
           headers: {}
@@ -1932,22 +1929,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/business/categories":
+  /business/categories:
     get:
       description: Gets list of business categories
       summary: Get business categories
       tags:
-      - WABA
+        - WABA
       operationId: businesscategories
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all business categories
@@ -1963,40 +1960,40 @@ paths:
               code: 2000
               msg: Success
               data:
-              - business_category_id: 860af85d-cbd3-4a16-92ec-05177fce7f59
-                category_name: Automotive
-              - business_category_id: c54ad9f3-2b0f-4009-8020-74224a4b4d61
-                category_name: Beauty, Spa and Salon
-              - business_category_id: e5b61cae-3b98-4006-85a4-8ca481b67530
-                category_name: Clothing and Apparel
-              - business_category_id: 5139294f-4c99-4b4c-a955-be13ef0a623c
-                category_name: Education
-              - business_category_id: b82779e2-3f4f-46e6-813c-7e36481a7c9b
-                category_name: Entertainment
-              - business_category_id: 82675f69-9d91-45de-a4f2-6e4006c149f1
-                category_name: Event Planning and Service
-              - business_category_id: d754dd28-8feb-4795-9ea7-1d060c4dd960
-                category_name: Finance and Banking
-              - business_category_id: aa8497f3-2aa7-4e7e-8dd6-505627a07f91
-                category_name: Food and Grocery
-              - business_category_id: 17d62487-2b17-4e3d-bf59-a43c6fe1021b
-                category_name: Public Service
-              - business_category_id: 23265ebe-b9ba-4ad5-9431-ed84a8575b58
-                category_name: Hotel and Lodging
-              - business_category_id: aa211646-8f6c-4d63-b0d0-a4f81d53b70c
-                category_name: Medical and Health
-              - business_category_id: 45c78d57-8189-4860-8d5f-611b525b30a5
-                category_name: Non-profit
-              - business_category_id: e1314510-030a-430b-a450-b0f4b309e515
-                category_name: Professional Services
-              - business_category_id: 3294f5b9-9110-4e42-af2a-d6afa64dbebb
-                category_name: Shopping and Retail
-              - business_category_id: 812680c7-aa9b-4f4c-a7a1-9bcdee4c9686
-                category_name: Travel and Transportation
-              - business_category_id: 04b35da4-759c-43be-bce9-6ada128b8534
-                category_name: Restaurant
-              - business_category_id: bda36704-cde5-41c9-b039-e3841fa9229f
-                category_name: Other
+                - business_category_id: 860af85d-cbd3-4a16-92ec-05177fce7f59
+                  category_name: Automotive
+                - business_category_id: c54ad9f3-2b0f-4009-8020-74224a4b4d61
+                  category_name: 'Beauty, Spa and Salon'
+                - business_category_id: e5b61cae-3b98-4006-85a4-8ca481b67530
+                  category_name: Clothing and Apparel
+                - business_category_id: 5139294f-4c99-4b4c-a955-be13ef0a623c
+                  category_name: Education
+                - business_category_id: b82779e2-3f4f-46e6-813c-7e36481a7c9b
+                  category_name: Entertainment
+                - business_category_id: 82675f69-9d91-45de-a4f2-6e4006c149f1
+                  category_name: Event Planning and Service
+                - business_category_id: d754dd28-8feb-4795-9ea7-1d060c4dd960
+                  category_name: Finance and Banking
+                - business_category_id: aa8497f3-2aa7-4e7e-8dd6-505627a07f91
+                  category_name: Food and Grocery
+                - business_category_id: 17d62487-2b17-4e3d-bf59-a43c6fe1021b
+                  category_name: Public Service
+                - business_category_id: 23265ebe-b9ba-4ad5-9431-ed84a8575b58
+                  category_name: Hotel and Lodging
+                - business_category_id: aa211646-8f6c-4d63-b0d0-a4f81d53b70c
+                  category_name: Medical and Health
+                - business_category_id: 45c78d57-8189-4860-8d5f-611b525b30a5
+                  category_name: Non-profit
+                - business_category_id: e1314510-030a-430b-a450-b0f4b309e515
+                  category_name: Professional Services
+                - business_category_id: 3294f5b9-9110-4e42-af2a-d6afa64dbebb
+                  category_name: Shopping and Retail
+                - business_category_id: 812680c7-aa9b-4f4c-a7a1-9bcdee4c9686
+                  category_name: Travel and Transportation
+                - business_category_id: 04b35da4-759c-43be-bce9-6ada128b8534
+                  category_name: Restaurant
+                - business_category_id: bda36704-cde5-41c9-b039-e3841fa9229f
+                  category_name: Other
         '401':
           description: Invalid token in header
           headers: {}
@@ -2022,22 +2019,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/business/profile":
+  /business/profile:
     get:
       description: Gets business profile data
       summary: Get business profile
       tags:
-      - WABA
+        - WABA
       operationId: getbusinessprofile
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: business profie data
@@ -2073,7 +2070,7 @@ paths:
                 postalCode: '400009'
                 serviceProviderName: Tyntec
                 apiKey: test123
-                webhookPostUrl: http://localhost:3000/helowhatsapp/message
+                webhookPostUrl: 'http://localhost:3000/helowhatsapp/message'
                 optinText: hello-viva
                 businessProfileCompletionStatus: true
                 businessAccessProfileCompletionStatus: true
@@ -2104,25 +2101,25 @@ paths:
       security: []
     post:
       description: API to add or update business profile
-      summary: add or update business profil
+      summary: add or update business profile
       tags:
-      - WABA
+        - WABA
       operationId: add/updatebusinessprofile
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/add~1updatebusinessprofilerequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/add~1updatebusinessprofilerequest'
       responses:
         '200':
           description: Returns Status of business profile info completion
@@ -2155,9 +2152,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -2172,7 +2169,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -2192,30 +2189,30 @@ paths:
               data: {}
               error: {}
       security: []
-  "/business/profile/accessInformation":
+  /business/profile/accessInformation:
     post:
       description: This api is used to add or update business access information
       summary: Add or update business profile access information
       tags:
-      - WABA
+        - WABA
       operationId: addupdatebusinessprofilraccessInformation
       deprecated: false
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/addupdatebusinessprofilraccessInformationRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/addupdatebusinessprofilraccessInformationRequest'
       responses:
         '200':
           description: Returns Status of business profile info completion
@@ -2248,9 +2245,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -2265,7 +2262,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -2285,28 +2282,28 @@ paths:
               data: {}
               error: {}
       security: []
-  "/business/profile/markManagerVerified":
+  /business/profile/markManagerVerified:
     post:
       summary: mark manager verified
       description: This API marks manager verified
       tags:
-      - WABA
+        - WABA
       operationId: markmanagerverified
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/markmanagerverifiedrequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/markmanagerverifiedrequest'
       responses:
         '200':
           description: Returns Status of business verification completion
@@ -2339,9 +2336,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -2356,7 +2353,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -2376,28 +2373,28 @@ paths:
               data: {}
               error: {}
       security: []
-  "/business/profile/serviceProvider":
+  /business/profile/serviceProvider:
     put:
       description: API is used for updating service provider id
       summary: update service provier id
       tags:
-      - WABA
+        - WABA
       operationId: updateServiceProviderId
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/updateServiceProviderIdRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/updateServiceProviderIdRequest'
       responses:
         '200':
           description: Returns Service Provider Id
@@ -2431,9 +2428,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -2459,32 +2456,32 @@ paths:
               data: {}
               error: {}
       security: []
-  "/business/verification/phoneNumber":
+  /business/verification/phoneNumber:
     post:
       description: Send verification code to verify waba number by sms or voice channel
       summary: Send verification code for business number
       tags:
-      - WABA
+        - WABA
       operationId: sendverificationcodeforbusinessnumber
       deprecated: false
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - name: verificationChannel
-        in: query
-        required: true
-        type: string
-        enum:
-        - sms
-        - voice
-        description: ''
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: verificationChannel
+          in: query
+          required: true
+          type: string
+          enum:
+            - sms
+            - voice
+          description: ''
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: success or already verified response
@@ -2498,15 +2495,15 @@ paths:
               data:
                 type: object
             example:
-            - code: 2001
-              msg: |-
-                Please check your registered business phone number for verification
-                code
-              data: {}
-            - code: 3020
-              msg: Business phone number already verified for WABA
-              data: 
-              error: {}
+              - code: 2001
+                msg: |-
+                  Please check your registered business phone number for verification
+                  code
+                data: {}
+              - code: 3020
+                msg: Business phone number already verified for WABA
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -2523,9 +2520,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -2555,25 +2552,25 @@ paths:
       description: API to verify otp sent to user for business number verififcation
       summary: verifiy code for business number
       tags:
-      - WABA
+        - WABA
       operationId: verifiycodeforbusinessnumber
       deprecated: false
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/verifiycodeforbusinessnumberrequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/verifiycodeforbusinessnumberrequest'
       responses:
         '200':
           description: verification success message
@@ -2606,19 +2603,19 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
           schema:
             example:
-            - Unauthorized
-            - code: 3017
-              msg: Invalid verification code
-              data: 
-              error: {}
+              - Unauthorized
+              - code: 3017
+                msg: Invalid verification code
+                data: null
+                error: {}
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -2638,27 +2635,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates":
+  /templates:
     get:
       description: This api returns list of templates based on filters
       summary: Get template list
       tags:
-      - templates
+        - templates
       operationId: Gettemplatelist
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: messageTemplateStatusId
-        in: query
-        required: false
-        type: string
-        description: ''
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: messageTemplateStatusId
+          in: query
+          required: false
+          type: string
+          description: ''
       responses:
         '200':
           description: List of all Templates for waba account
@@ -2674,20 +2671,20 @@ paths:
               code: 2000
               msg: Success
               data:
-              - messageTemplateId: account_update_1
-                TemplateName: account_update_1
-                type: Standard Message Template
-                categoryName: Account Update
-                statusName: Approved
-                languageName: English
-                mediaType: ''
-              - messageTemplateId: account_update_2
-                TemplateName: account_update_2
-                type: Standard Message Template
-                categoryName: Account Update
-                statusName: Approved
-                languageName: English
-                mediaType: ''
+                - messageTemplateId: account_update_1
+                  TemplateName: account_update_1
+                  type: Standard Message Template
+                  categoryName: Account Update
+                  statusName: Approved
+                  languageName: English
+                  mediaType: ''
+                - messageTemplateId: account_update_2
+                  TemplateName: account_update_2
+                  type: Standard Message Template
+                  categoryName: Account Update
+                  statusName: Approved
+                  languageName: English
+                  mediaType: ''
         '401':
           description: Invalid token in header
           headers: {}
@@ -2719,23 +2716,23 @@ paths:
         To add template do not pass templateID to update template pass template ID along with parameters to update
       summary: Add update template
       tags:
-      - templates
+        - templates
       operationId: Addupdatetemplate
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/AddupdatetemplateRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddupdatetemplateRequest'
       responses:
         '200':
           description: Returns Status of template info completion
@@ -2748,13 +2745,13 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                mediaTemplateComplete: true
-            - code: 3022
-              msg: Maximum number of template allowed for this account has exausted.
-              data: {}
+              - code: 2000
+                msg: Success
+                data:
+                  mediaTemplateComplete: true
+              - code: 3022
+                msg: Maximum number of template allowed for this account has exausted.
+                data: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -2771,9 +2768,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -2788,7 +2785,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -2808,27 +2805,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/{templateId}":
+  '/templates/{templateId}':
     get:
       summary: Get template Info
       description: Use this API to get information of a template
       tags:
-      - templates
+        - templates
       operationId: GettemplateInfo
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: templateId
-        in: path
-        required: true
-        type: string
-        description: Id of Template
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: templateId
+          in: path
+          required: true
+          type: string
+          description: Id of Template
       responses:
         '200':
           description: Returns info of a template
@@ -2841,31 +2838,31 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - messageTemplateId: account_update_1
-                wabaInformationId: f742d535-4161-4a11-b99f-0c97154b720d
-                templateName: account_update_1
-                type: standard message template
-                bodyText: This is to remind you that {{1}} is due by {{2}}.
-                headerText: ''
-                footerText: ''
-                mediaType: ''
-                categoryName: Account Update
-                statusName: Approved
-                languageName: English
-                secondLanguageRequired: false
-                secondLanguageName: 
-                secondlanguageBodyText: 
-                headerType: 
-                buttonType: 
-                buttonData: 
-                mediaTemplateComplete: false
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - messageTemplateId: account_update_1
+                    wabaInformationId: f742d535-4161-4a11-b99f-0c97154b720d
+                    templateName: account_update_1
+                    type: standard message template
+                    bodyText: 'This is to remind you that {{1}} is due by {{2}}.'
+                    headerText: ''
+                    footerText: ''
+                    mediaType: ''
+                    categoryName: Account Update
+                    statusName: Approved
+                    languageName: English
+                    secondLanguageRequired: false
+                    secondLanguageName: null
+                    secondlanguageBodyText: null
+                    headerType: null
+                    buttonType: null
+                    buttonData: null
+                    mediaTemplateComplete: false
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -2880,7 +2877,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -2900,22 +2897,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/languages":
+  /templates/languages:
     get:
       description: API to get list of languages available with helo-whatsapp
       summary: get template languages
       tags:
-      - templates
+        - templates
       operationId: templatelanguagesdropdown
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all languages
@@ -2931,18 +2928,18 @@ paths:
               code: 2000
               msg: Success
               data:
-              - messageTemplateLanguageId: 5de770f6-3fc0-4eca-b9aa-da1653be9ac7
-                languageName: Select Language
-              - messageTemplateLanguageId: 57aa7635-5717-4397-8eb6-4799ef3bec05
-                languageName: English
-              - messageTemplateLanguageId: cde192b7-c60f-4d2d-8573-dd5af7c9379b
-                languageName: Marathi
-              - messageTemplateLanguageId: 8e50adb9-d12f-43f2-968b-7fa19e1fb761
-                languageName: Gujarat
-              - messageTemplateLanguageId: b3c06bd2-7460-4efa-9c72-388e3ecd13da
-                languageName: Punjabi
-              - messageTemplateLanguageId: 21c843cb-37de-4b88-914f-82620505276b
-                languageName: Bengali
+                - messageTemplateLanguageId: 5de770f6-3fc0-4eca-b9aa-da1653be9ac7
+                  languageName: Select Language
+                - messageTemplateLanguageId: 57aa7635-5717-4397-8eb6-4799ef3bec05
+                  languageName: English
+                - messageTemplateLanguageId: cde192b7-c60f-4d2d-8573-dd5af7c9379b
+                  languageName: Marathi
+                - messageTemplateLanguageId: 8e50adb9-d12f-43f2-968b-7fa19e1fb761
+                  languageName: Gujarat
+                - messageTemplateLanguageId: b3c06bd2-7460-4efa-9c72-388e3ecd13da
+                  languageName: Punjabi
+                - messageTemplateLanguageId: 21c843cb-37de-4b88-914f-82620505276b
+                  languageName: Bengali
         '401':
           description: Invalid token in header
           headers: {}
@@ -2968,22 +2965,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/types":
+  /templates/types:
     get:
       description: API to get list of template types available with helo-whatsapp
       summary: Get template types
       tags:
-      - templates
+        - templates
       operationId: templatetypesdropdown
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all languages
@@ -2999,8 +2996,8 @@ paths:
               code: 2000
               msg: Success
               data:
-              - templateType: Standard Message Template
-              - templateType: Media Message Template
+                - templateType: Standard Message Template
+                - templateType: Media Message Template
         '401':
           description: Invalid token in header
           headers: {}
@@ -3026,22 +3023,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/categories":
+  /templates/categories:
     get:
       description: API to get list of template categories available with helo-whatsapp
       summary: get templates categories
       tags:
-      - templates
+        - templates
       operationId: templatescategoriesdropdown
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all languages
@@ -3057,14 +3054,14 @@ paths:
               code: 2000
               msg: Success
               data:
-              - messageTemplateCategoryId: b8203a31-e439-4ea4-a270-bd211317d3ff
-                categoryName: Account Update
-              - messageTemplateCategoryId: 957e4375-3297-42c6-a9a8-6a57fd8e5045
-                categoryName: Alert Update
-              - messageTemplateCategoryId: 15b0c326-2bee-401a-8568-a6e27d8f0af0
-                categoryName: Appointment Update
-              - messageTemplateCategoryId: 6feb234a-4513-486a-8f4a-977dfb6e1597
-                categoryName: Issue Resolution
+                - messageTemplateCategoryId: b8203a31-e439-4ea4-a270-bd211317d3ff
+                  categoryName: Account Update
+                - messageTemplateCategoryId: 957e4375-3297-42c6-a9a8-6a57fd8e5045
+                  categoryName: Alert Update
+                - messageTemplateCategoryId: 15b0c326-2bee-401a-8568-a6e27d8f0af0
+                  categoryName: Appointment Update
+                - messageTemplateCategoryId: 6feb234a-4513-486a-8f4a-977dfb6e1597
+                  categoryName: Issue Resolution
         '401':
           description: Invalid token in header
           headers: {}
@@ -3090,34 +3087,34 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/sample":
+  /templates/sample:
     get:
       description: |-
         API to fetch sample template list based on filters
         currently accepts template name search and category id search
       summary: get sample templates
       tags:
-      - templates
+        - templates
       operationId: getsampletemplates
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: templateName
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: messageTemplateCategoryId
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: templateName
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: messageTemplateCategoryId
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of sample template based on filters
@@ -3133,20 +3130,20 @@ paths:
               code: 2000
               msg: Success
               data:
-              - messageTemplateLibraryId: 1a995366-be23-4d58-9d81-61c1918e88fb
-                templateName: T7
-                type: standard
-                categoryName: Personal Finance Update
-                statusName: Approved
-                languageName: English
-                mediaType: ''
-              - messageTemplateLibraryId: 1be3ae85-a3a6-4684-b575-114ed787a468
-                templateName: T5
-                type: standard
-                categoryName: Issue Resolution
-                statusName: Approved
-                languageName: English
-                mediaType: ''
+                - messageTemplateLibraryId: 1a995366-be23-4d58-9d81-61c1918e88fb
+                  templateName: T7
+                  type: standard
+                  categoryName: Personal Finance Update
+                  statusName: Approved
+                  languageName: English
+                  mediaType: ''
+                - messageTemplateLibraryId: 1be3ae85-a3a6-4684-b575-114ed787a468
+                  templateName: T5
+                  type: standard
+                  categoryName: Issue Resolution
+                  statusName: Approved
+                  languageName: English
+                  mediaType: ''
         '401':
           description: Invalid token in header
           headers: {}
@@ -3172,27 +3169,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/sample/{templateId}":
+  '/templates/sample/{templateId}':
     get:
       description: get info of a sample template by template id
       summary: get sample templates info
       tags:
-      - templates
+        - templates
       operationId: getsampletemplatesinfo
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: templateId
-        in: path
-        required: true
-        type: string
-        description: Id of Template
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: templateId
+          in: path
+          required: true
+          type: string
+          description: Id of Template
       responses:
         '200':
           description: Returns info of a sample template
@@ -3205,23 +3202,23 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - messageTemplateId: 1be3ae85-a3a6-4684-b575-114ed787a468
-                templateName: T5
-                type: standard
-                bodyText: Your {{1}} is pending. Please {{2}} by clicking on {{3}
-                headerText: ''
-                footerText: ''
-                mediaType: ''
-                categoryName: Issue Resolution
-                statusName: Approved
-                languageName: English
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - messageTemplateId: 1be3ae85-a3a6-4684-b575-114ed787a468
+                    templateName: T5
+                    type: standard
+                    bodyText: 'Your {{1}} is pending. Please {{2}} by clicking on {{3}'
+                    headerText: ''
+                    footerText: ''
+                    mediaType: ''
+                    categoryName: Issue Resolution
+                    statusName: Approved
+                    languageName: English
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -3236,7 +3233,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -3256,22 +3253,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/buttonType":
+  /templates/buttonType:
     get:
       summary: get buttonType
       description: get list of all available button types in helo-whatsapp
       tags:
-      - templates
+        - templates
       operationId: getbuttonType
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all available button types
@@ -3287,8 +3284,8 @@ paths:
               code: 2000
               msg: Success
               data:
-              - buttonType: Call To Action
-              - buttonType: Quick Reply
+                - buttonType: Call To Action
+                - buttonType: Quick Reply
         '401':
           description: Invalid token in header
           headers: {}
@@ -3314,22 +3311,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/templates/headerType":
+  /templates/headerType:
     get:
       summary: get header Type
       description: get list of all available header types in helo-whatsapp
       tags:
-      - templates
+        - templates
       operationId: getheaderType
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all available header types
@@ -3345,10 +3342,10 @@ paths:
               code: 2000
               msg: Success
               data:
-              - templateHeaderType: Video
-              - templateHeaderType: Pdf
-              - templateHeaderType: Location
-              - templateHeaderType: Text
+                - templateHeaderType: Video
+                - templateHeaderType: Pdf
+                - templateHeaderType: Location
+                - templateHeaderType: Text
         '401':
           description: Invalid token in header
           headers: {}
@@ -3374,57 +3371,57 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience":
+  /audience:
     get:
       description: This api returns list of templates based on filters
       summary: Get audience list
       tags:
-      - audience
+        - audience
       operationId: GetAudienceRecordList
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: phoneNumber
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: firstMessageActivation
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: segmentId
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: channel
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: optinSourceId
-        in: query
-        required: false
-        type: string
-        description: ''
-      - name: optin
-        in: query
-        required: false
-        type: boolean
-        description: ''
-      - name: tempOptin
-        in: query
-        required: false
-        type: boolean
-        description: ''
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: phoneNumber
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: firstMessageActivation
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: segmentId
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: channel
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: optinSourceId
+          in: query
+          required: false
+          type: string
+          description: ''
+        - name: optin
+          in: query
+          required: false
+          type: boolean
+          description: ''
+        - name: tempOptin
+          in: query
+          required: false
+          type: boolean
+          description: ''
       responses:
         '200':
           description: List of all Templates for audience record
@@ -3437,41 +3434,41 @@ paths:
               data:
                 type: array
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
-                phoneNumber: '919820333891'
-                channel: whatsapp
-                firstMessage: '2020-07-07T14:48:58.251Z'
-                lastMessage: '2020-07-09T13:02:39.018Z'
-                optin: true
-                tempOptin: true
-                optinSource: direct
-                segment_name: Organic Conversation
-                chatFlowId: 
-                name: Ajay
-                email: ajay@yopmail.com
-                gender: Male
-                country: India
-              - audienceId: b70aeadd-4941-4bda-a4bd-fd5d320e454f
-                phoneNumber: "+91842490276"
-                channel: whatsapp
-                firstMessage: '2020-07-05T14:06:05.000Z'
-                lastMessage: 
-                optin: true
-                tempOptin: 
-                optinSource: direct
-                segment_name: Organic Conversation
-                chatFlowId: 
-                name: Raju
-                email: raju@yopmail.com
-                gender: Male
-                country: India
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
+                    phoneNumber: '919820333891'
+                    channel: whatsapp
+                    firstMessage: '2020-07-07T14:48:58.251Z'
+                    lastMessage: '2020-07-09T13:02:39.018Z'
+                    optin: true
+                    tempOptin: true
+                    optinSource: direct
+                    segment_name: Organic Conversation
+                    chatFlowId: null
+                    name: Ajay
+                    email: ajay@yopmail.com
+                    gender: Male
+                    country: India
+                  - audienceId: b70aeadd-4941-4bda-a4bd-fd5d320e454f
+                    phoneNumber: '+91842490276'
+                    channel: whatsapp
+                    firstMessage: '2020-07-05T14:06:05.000Z'
+                    lastMessage: null
+                    optin: true
+                    tempOptin: null
+                    optinSource: direct
+                    segment_name: Organic Conversation
+                    chatFlowId: null
+                    name: Raju
+                    email: raju@yopmail.com
+                    gender: Male
+                    country: India
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -3503,23 +3500,23 @@ paths:
         To add audience do not pass audienceID to update template pass audience ID along with parameters to update
       summary: Add update audience
       tags:
-      - audience
+        - audience
       operationId: AddUpdateAudienceData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/AddupdateAudienceRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddupdateAudienceRequest'
       responses:
         '200':
           description: Returns Status of audience info completion
@@ -3532,24 +3529,24 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
-                phoneNumber: '919820333891'
-                channel: whatsapp
-                optin: true
-                optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
-                segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
-                chatFlowId: 
-                name: Ajay
-                email: ajay@yopmail.com
-                gender: Male
-                country: India
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
+                  phoneNumber: '919820333891'
+                  channel: whatsapp
+                  optin: true
+                  optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
+                  segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
+                  chatFlowId: null
+                  name: Ajay
+                  email: ajay@yopmail.com
+                  gender: Male
+                  country: India
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3566,9 +3563,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -3583,7 +3580,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -3603,33 +3600,33 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience/optin/excel":
+  /audience/optin/excel:
     patch:
       description: API to upload bulk audience data using excel
       summary: whatsapp excel upload audience data
       tags:
-      - audience
+        - audience
       operationId: uploadAudienceData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       consumes:
-      - application/x-www-form-urlencoded
-      - multipart/form-data
+        - application/x-www-form-urlencoded
+        - multipart/form-data
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: User can obtain auth token by using login API
-      - name: optinFile
-        in: formData
-        required: true
-        type: file
-        description: |-
-          excel file with template parameters download sample file using
-          this link https://drive.google.com/file/d/1mKZTv84jgts9MijTp5-5ZUZ80xynD1M2/view?usp=sharing
-      - "$ref": "#/definitions/UploadExcelRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: User can obtain auth token by using login API
+        - name: optinFile
+          in: formData
+          required: true
+          type: file
+          description: |-
+            excel file with template parameters download sample file using
+            this link https://drive.google.com/file/d/1mKZTv84jgts9MijTp5-5ZUZ80xynD1M2/view?usp=sharing
+        - $ref: '#/definitions/UploadExcelRequest'
       responses:
         '200':
           description: Returns data uploaded via excel
@@ -3646,18 +3643,18 @@ paths:
               code: 2002
               msg: Success
               data:
-              - channel: whatsapp
-                optin: true
-                optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
-                segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
-                chatFlowId: 
-                name: Rakesh
-                email: rakesh@yopmail.com
-                gender: Male
-                country: India
-                updatedBy: '158988680814912'
-                audienceId: b80fc22e-bf35-4c5f-a152-4922af3da59d
-                phoneNumber: '917666545720'
+                - channel: whatsapp
+                  optin: true
+                  optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
+                  segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
+                  chatFlowId: null
+                  name: Rakesh
+                  email: rakesh@yopmail.com
+                  gender: Male
+                  country: India
+                  updatedBy: '158988680814912'
+                  audienceId: b80fc22e-bf35-4c5f-a152-4922af3da59d
+                  phoneNumber: '917666545720'
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3674,7 +3671,7 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
                 status_code: 400
                 code: 3032
@@ -3704,27 +3701,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience/{audienceId}":
+  '/audience/{audienceId}':
     get:
       summary: Get audience Info
       description: Use this API to get information of a audience record
       tags:
-      - audience
+        - audience
       operationId: GetAudienceRecordById
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: audienceId
-        in: path
-        required: true
-        type: string
-        description: Id of Audience Record
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: audienceId
+          in: path
+          required: true
+          type: string
+          description: Id of Audience Record
       responses:
         '200':
           description: Returns info of a audience record
@@ -3737,27 +3734,27 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
-                phoneNumber: '919820333891'
-                channel: whatsapp
-                firstMessage: 07/07/2020 02:07:58
-                lastMessage: '2020-07-07T14:48:58.251Z'
-                optin: false
-                tempOptin: false
-                optinSource: 
-                segment_name: 
-                chatFlowId: 
-                name: 
-                email: 
-                gender: 
-                country: 
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
+                  phoneNumber: '919820333891'
+                  channel: whatsapp
+                  firstMessage: '07/07/2020 02:07:58'
+                  lastMessage: '2020-07-07T14:48:58.251Z'
+                  optin: false
+                  tempOptin: false
+                  optinSource: null
+                  segment_name: null
+                  chatFlowId: null
+                  name: null
+                  email: null
+                  gender: null
+                  country: null
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -3772,7 +3769,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -3792,22 +3789,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience/optin/segment":
+  /audience/optin/segment:
     get:
       description: This api returns list of segment
       summary: Get segment list
       tags:
-      - audience
+        - audience
       operationId: GetSegmentData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all Segment for audience record
@@ -3820,19 +3817,19 @@ paths:
               data:
                 type: array
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
-                segmentName: Organic Conversation
-              - segmentId: ba7702c0-2b12-4629-b0a3-fb344615eb54
-                segmentName: Custom Segment Name
-              - segmentId: c2769786-243b-41f2-81bb-c6ccf96287db
-                segmentName: test1
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
+                    segmentName: Organic Conversation
+                  - segmentId: ba7702c0-2b12-4629-b0a3-fb344615eb54
+                    segmentName: Custom Segment Name
+                  - segmentId: c2769786-243b-41f2-81bb-c6ccf96287db
+                    segmentName: test1
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -3864,23 +3861,23 @@ paths:
         To add segment do not pass segmentId to update segment pass segment ID along with parameters to update
       summary: Add update segment
       tags:
-      - audience
+        - audience
       operationId: AddUpdateSegmentData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/AddupdateSegmentRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddupdateSegmentRequest'
       responses:
         '200':
           description: Returns Status of segment info completion
@@ -3893,15 +3890,15 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                segmentName: test02
-                segmentId: f194da3d-0b62-405e-a512-95797f4bcf41
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  segmentName: test02
+                  segmentId: f194da3d-0b62-405e-a512-95797f4bcf41
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3918,9 +3915,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -3935,7 +3932,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -3955,22 +3952,22 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience/optin/source":
+  /audience/optin/source:
     get:
       description: This api returns list of optin
       summary: Get optin source list
       tags:
-      - audience
+        - audience
       operationId: GetOptinSourceData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
       responses:
         '200':
           description: List of all optin for audience record
@@ -3983,25 +3980,25 @@ paths:
               data:
                 type: array
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - optinId: 154e25f4-44cd-4a48-984d-dbdce569d2c1
-                optinSource: form
-              - optinId: 28614254-12c6-4f44-aa3c-20cf9e9589cb
-                optinSource: message
-              - optinId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
-                optinSource: direct
-              - optinId: 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649
-                optinSource: api
-              - optinId: bc373e00-8ff7-4b38-bf95-7da31d5a2dd3
-                optinSource: link
-              - optinId: f869b918-47d0-4591-8de6-e74bcb219331
-                optinSource: upload
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - optinId: 154e25f4-44cd-4a48-984d-dbdce569d2c1
+                    optinSource: form
+                  - optinId: 28614254-12c6-4f44-aa3c-20cf9e9589cb
+                    optinSource: message
+                  - optinId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
+                    optinSource: direct
+                  - optinId: 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649
+                    optinSource: api
+                  - optinId: bc373e00-8ff7-4b38-bf95-7da31d5a2dd3
+                    optinSource: link
+                  - optinId: f869b918-47d0-4591-8de6-e74bcb219331
+                    optinSource: upload
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -4033,23 +4030,23 @@ paths:
         To add optin do not pass optinId to update optin pass optin ID along with parameters to update
       summary: Add update optin
       tags:
-      - audience
+        - audience
       operationId: AddUpdateOptinSourceData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/AddupdateOptinRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddupdateOptinRequest'
       responses:
         '200':
           description: Returns Status of segment info completion
@@ -4062,15 +4059,15 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                optinSourceId: 71d10746-cdb9-436f-b184-bfb4af2e8785
-                optinSource: test01
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  optinSourceId: 71d10746-cdb9-436f-b184-bfb4af2e8785
+                  optinSource: test01
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -4087,9 +4084,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -4104,7 +4101,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -4124,30 +4121,30 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience/optin":
+  /audience/optin:
     post:
       description: |-
         API to update optin
         To update optinSourceId pass optin source ID along with parameters to update
       summary: Update optin satus and add optin source id
       tags:
-      - audience
+        - audience
       operationId: markOptinByPhoneNumberAndAddOptinSource
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/UpdateOptinStatusAndAddOptinSourceIdRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/UpdateOptinStatusAndAddOptinSourceIdRequest'
       responses:
         '200':
           description: Returns Status of segment info completion
@@ -4160,15 +4157,15 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
-                optin: true
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
+                  optin: true
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -4185,9 +4182,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -4202,7 +4199,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -4222,30 +4219,30 @@ paths:
               data: {}
               error: {}
       security: []
-  "/audience/optout":
+  /audience/optout:
     patch:
       description: |-
         API to update optin
          by phone Number
       summary: Update optin satus by phone number
       tags:
-      - audience
+        - audience
       operationId: markOptOutByPhoneNumber
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/UpdateOptinStatusRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/UpdateOptinStatusRequest'
       responses:
         '200':
           description: Returns Status of segment info completion
@@ -4258,14 +4255,14 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                optin: false
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  optin: false
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -4282,9 +4279,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -4299,7 +4296,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -4319,27 +4316,27 @@ paths:
               data: {}
               error: {}
       security: []
-  "/message-history/{messageId}":
+  '/message-history/{messageId}':
     get:
       description: get info of a message history by message id
       summary: get message history info
       tags:
-      - message-history
+        - message-history
       operationId: getMessageHistoryinfo
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: messageId
-        in: path
-        required: true
-        type: string
-        description: Id of Template
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: messageId
+          in: path
+          required: true
+          type: string
+          description: Id of Template
       responses:
         '200':
           description: Returns info of a sample template
@@ -4352,20 +4349,20 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-              - messageId: 49bdfe01-0503-487f-8b26-67a2b8fafffe
-                serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
-                deliveryChannel: whatsapp
-                statusTime: '2020-07-07T14:48:58.251Z'
-                state: message-delivered
-                endConsumerNumber: '917666545750'
-                businessNumber: '91808080808'
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  - messageId: 49bdfe01-0503-487f-8b26-67a2b8fafffe
+                    serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
+                    deliveryChannel: whatsapp
+                    statusTime: '2020-07-07T14:48:58.251Z'
+                    state: message-delivered
+                    endConsumerNumber: '917666545750'
+                    businessNumber: '91808080808'
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '401':
           description: Invalid token in header
           headers: {}
@@ -4380,7 +4377,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -4400,30 +4397,30 @@ paths:
               data: {}
               error: {}
       security: []
-  "/message-history":
+  /message-history:
     post:
       description: |-
         API to add message history
         To add optin do not pass messageId
       summary: Add message history
       tags:
-      - message-history
+        - message-history
       operationId: AddMessageHistoryyData
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Authorization
-        in: header
-        required: true
-        type: string
-        description: user can obtain auth token by using login API
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/AddMessageHistoryRequest"
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/AddMessageHistoryRequest'
       responses:
         '200':
           description: Returns Status of segment info completion
@@ -4436,20 +4433,20 @@ paths:
               data:
                 type: object
             example:
-            - code: 2000
-              msg: Success
-              data:
-                messageId: 49bdfe01-0503-487f-8b26-67a2b8fafffe
-                serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
-                deliveryChannel: whatsapp
-                statusTime: '2020-06-19T14:46:32Z'
-                state: 'message-read  '
-                endConsumerNumber: '917666545750'
-                businessNumber: '918080800808'
-            - code: 3000
-              msg: No record found.
-              data: 
-              error: {}
+              - code: 2000
+                msg: Success
+                data:
+                  messageId: 49bdfe01-0503-487f-8b26-67a2b8fafffe
+                  serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
+                  deliveryChannel: whatsapp
+                  statusTime: '2020-06-19T14:46:32Z'
+                  state: 'message-read  '
+                  endConsumerNumber: '917666545750'
+                  businessNumber: '918080800808'
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -4466,9 +4463,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -4483,7 +4480,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -4503,25 +4500,25 @@ paths:
               data: {}
               error: {}
       security: []
-  "/users/authorize":
+  /users/authorize:
     post:
       summary: Authorize API
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
         Token generated using this API have validity of 30 days.
       tags:
-      - users
+        - users
       operationId: authorize
       deprecated: false
       produces:
-      - application/json
+        - application/json
       parameters:
-      - name: Body
-        in: body
-        required: true
-        description: ''
-        schema:
-          "$ref": "#/definitions/authorizeRequest"
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/authorizeRequest'
       responses:
         '200':
           description: Returns auth token if API key provided is correct
@@ -4554,9 +4551,9 @@ paths:
             example:
               code: 4000
               msg: Invalid request
-              data: 
+              data: null
               error:
-              - invalid body error here
+                - invalid body error here
         '401':
           description: Invalid token in request
           headers: {}
@@ -4571,7 +4568,7 @@ paths:
             example:
               code: 4001
               msg: Unauthorized access.
-              data: 
+              data: null
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -4596,7 +4593,7 @@ definitions:
     example:
       to: '919860245659'
       channels:
-      - whatsapp
+        - whatsapp
       isOptin: true
       whatsapp:
         from: '918080800808'
@@ -4607,14 +4604,14 @@ definitions:
             policy: deterministic
             code: hi
           components:
-          - type: body
-            parameters:
-            - type: text
-              text: VivaConnect
-            - type: text
-              text: '007'
-            - type: text
-              text: '2022'
+            - type: body
+              parameters:
+                - type: text
+                  text: VivaConnect
+                - type: text
+                  text: '007'
+                - type: text
+                  text: '2022'
     type: object
     properties:
       to:
@@ -4626,11 +4623,11 @@ definitions:
       isOptin:
         type: boolean
       whatsapp:
-        "$ref": "#/definitions/Whatsapp"
+        $ref: '#/definitions/Whatsapp'
     required:
-    - to
-    - channels
-    - whatsapp
+      - to
+      - channels
+      - whatsapp
   Whatsapp:
     title: Whatsapp
     example:
@@ -4642,14 +4639,14 @@ definitions:
           policy: deterministic
           code: hi
         components:
-        - type: body
-          parameters:
-          - type: text
-            text: VivaConnect
-          - type: text
-            text: '007'
-          - type: text
-            text: '2022'
+          - type: body
+            parameters:
+              - type: text
+                text: VivaConnect
+              - type: text
+                text: '007'
+              - type: text
+                text: '2022'
     type: object
     properties:
       from:
@@ -4657,11 +4654,11 @@ definitions:
       contentType:
         type: string
       template:
-        "$ref": "#/definitions/Template"
+        $ref: '#/definitions/Template'
     required:
-    - from
-    - contentType
-    - template
+      - from
+      - contentType
+      - template
   Template:
     title: Template
     example:
@@ -4670,28 +4667,28 @@ definitions:
         policy: deterministic
         code: hi
       components:
-      - type: body
-        parameters:
-        - type: text
-          text: VivaConnect
-        - type: text
-          text: '007'
-        - type: text
-          text: '2022'
+        - type: body
+          parameters:
+            - type: text
+              text: VivaConnect
+            - type: text
+              text: '007'
+            - type: text
+              text: '2022'
     type: object
     properties:
       templateId:
         type: string
       language:
-        "$ref": "#/definitions/Language"
+        $ref: '#/definitions/Language'
       components:
         type: array
         items:
-          "$ref": "#/definitions/Component"
+          $ref: '#/definitions/Component'
     required:
-    - templateId
-    - language
-    - components
+      - templateId
+      - language
+      - components
   Language:
     title: Language
     example:
@@ -4704,19 +4701,19 @@ definitions:
       code:
         type: string
     required:
-    - policy
-    - code
+      - policy
+      - code
   Component:
     title: Component
     example:
       type: body
       parameters:
-      - type: text
-        text: VivaConnect
-      - type: text
-        text: '007'
-      - type: text
-        text: '2022'
+        - type: text
+          text: VivaConnect
+        - type: text
+          text: '007'
+        - type: text
+          text: '2022'
     type: object
     properties:
       type:
@@ -4724,10 +4721,10 @@ definitions:
       parameters:
         type: array
         items:
-          "$ref": "#/definitions/Parameter"
+          $ref: '#/definitions/Parameter'
     required:
-    - type
-    - parameters
+      - type
+      - parameters
   Parameter:
     title: Parameter
     example:
@@ -4740,8 +4737,8 @@ definitions:
       text:
         type: string
     required:
-    - type
-    - text
+      - type
+      - text
   updateAccountInfoRequest:
     title: updateAccountInfoRequest
     example:
@@ -4753,7 +4750,7 @@ definitions:
       addressLine1: some street
       addressLine2: some lane
       contactNumber: '1234567890'
-      phoneCode: "+91"
+      phoneCode: '+91'
       postalCode: '400001'
     type: object
     properties:
@@ -4791,7 +4788,7 @@ definitions:
       addressLine1: Test 1
       addressLine2: Test 2
       contactNumber: '1234567890'
-      phoneCode: "+91"
+      phoneCode: '+91'
       postalCode: '400001'
       gstOrTaxNo: ABCDE1234F
       businessName: Helo-Whatsapp
@@ -4830,7 +4827,7 @@ definitions:
         type: integer
         format: int32
     required:
-    - code
+      - code
   validateSmsCodeRequest:
     title: validateSmsCodeRequest
     example:
@@ -4841,12 +4838,12 @@ definitions:
         type: integer
         format: int32
     required:
-    - code
+      - code
   auth/loginrequest:
     title: auth/loginrequest
     example:
       email: user@gmail.com
-      password: 123oneTwo#
+      password: '123oneTwo#'
     type: object
     properties:
       email:
@@ -4854,8 +4851,8 @@ definitions:
       password:
         type: string
     required:
-    - email
-    - password
+      - email
+      - password
   signUpRequest:
     title: signUpRequest
     example:
@@ -4871,24 +4868,24 @@ definitions:
       tncAccepted:
         type: boolean
     required:
-    - email
-    - password
-    - tncAccepted
+      - email
+      - password
+      - tncAccepted
   sinch/sendDataToQueueRequest:
     title: sinch/sendDataToQueueRequest
     example:
       type: whatsapp
       contacts:
-      - profile:
-          name: John Smith
-        wa_id: '0732001122'
+        - profile:
+            name: John Smith
+          wa_id: '0732001122'
       notifications:
-      - from: '0732001122'
-        to: sinchbot
-        message_id: 01DPNXZ0WCF9XD19MH84XD0P62
-        message:
-          type: text
-          body: Hello bot I want to know something!
+        - from: '0732001122'
+          to: sinchbot
+          message_id: 01DPNXZ0WCF9XD19MH84XD0P62
+          message:
+            type: text
+            body: Hello bot I want to know something!
     type: object
     properties:
       type:
@@ -4896,15 +4893,15 @@ definitions:
       contacts:
         type: array
         items:
-          "$ref": "#/definitions/Contact"
+          $ref: '#/definitions/Contact'
       notifications:
         type: array
         items:
-          "$ref": "#/definitions/Notification"
+          $ref: '#/definitions/Notification'
     required:
-    - type
-    - contacts
-    - notifications
+      - type
+      - contacts
+      - notifications
   Contact:
     title: Contact
     example:
@@ -4914,12 +4911,12 @@ definitions:
     type: object
     properties:
       profile:
-        "$ref": "#/definitions/Profile"
+        $ref: '#/definitions/Profile'
       wa_id:
         type: string
     required:
-    - profile
-    - wa_id
+      - profile
+      - wa_id
   Profile:
     title: Profile
     example:
@@ -4929,7 +4926,7 @@ definitions:
       name:
         type: string
     required:
-    - name
+      - name
   Notification:
     title: Notification
     example:
@@ -4948,12 +4945,12 @@ definitions:
       message_id:
         type: string
       message:
-        "$ref": "#/definitions/Message"
+        $ref: '#/definitions/Message'
     required:
-    - from
-    - to
-    - message_id
-    - message
+      - from
+      - to
+      - message_id
+      - message
   Message:
     title: Message
     example:
@@ -4966,8 +4963,8 @@ definitions:
       body:
         type: string
     required:
-    - type
-    - body
+      - type
+      - body
   add/updatebusinessprofilerequest:
     title: add/updatebusinessprofilerequest
     example:
@@ -4984,7 +4981,7 @@ definitions:
       profilePhotoUrl: www.google.com/image
       serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
       apiKey: test123
-      webHookPostUrl: http://localhost:3000/helowhatsapp/message
+      webHookPostUrl: 'http://localhost:3000/helowhatsapp/message'
       optinText: Hey
     type: object
     properties:
@@ -5019,12 +5016,12 @@ definitions:
       optinText:
         type: string
     required:
-    - businessName
+      - businessName
   addupdatebusinessprofilraccessInformationRequest:
     title: addupdatebusinessprofilraccessInformationRequest
     example:
       facebookManagerId: my-manager-id
-      phoneCode: "+91"
+      phoneCode: '+91'
       phoneNumber: '123456'
       canReceiveSms: true
       canReceiveVoiceCall: false
@@ -5044,7 +5041,7 @@ definitions:
       associatedWithIvr:
         type: boolean
     required:
-    - facebookManagerId
+      - facebookManagerId
   markmanagerverifiedrequest:
     title: markmanagerverifiedrequest
     example:
@@ -5054,7 +5051,7 @@ definitions:
       businessManagerVerified:
         type: boolean
     required:
-    - businessManagerVerified
+      - businessManagerVerified
   updateServiceProviderIdRequest:
     title: updateServiceProviderIdRequest
     example:
@@ -5071,7 +5068,7 @@ definitions:
         type: integer
         format: int32
     required:
-    - code
+      - code
   AddupdatetemplateRequest:
     title: AddupdatetemplateRequest
     example:
@@ -5081,20 +5078,20 @@ definitions:
       messageTemplateCategoryId: b8203a31-e439-4ea4-a270-bd211317d3ff
       messageTemplateStatusId: c71a8387-80e0-468b-9ee3-abb5ec328176
       messageTemplateLanguageId: 57aa7635-5717-4397-8eb6-4799ef3bec05
-      bodyText: Hi {{1}} welcome to our platform
+      bodyText: 'Hi {{1}} welcome to our platform'
       headerText: ''
       footerText: vivaconnect
       mediaType: image
       secondLanguageRequired: false
       secondMessageTemplateLanguageId: cde192b7-c60f-4d2d-8573-dd5af7c9379b
-      secondlanguageBodyText: Hi {{1}} welcome to our platform
+      secondlanguageBodyText: 'Hi {{1}} welcome to our platform'
       headerType: image
       buttonType: Quick Reply
       buttonData:
         quickReply:
-        - '1'
-        - '2'
-        - '3'
+          - '1'
+          - '2'
+          - '3'
         phoneButtonText: call us
         phoneNumber: '9876543210'
         websiteButtontext: oursite.com
@@ -5108,8 +5105,8 @@ definitions:
       type:
         type: string
         enum:
-        - Standard Message Template
-        - Media Message Template
+          - Standard Message Template
+          - Media Message Template
       messageTemplateCategoryId:
         type: string
       messageTemplateStatusId:
@@ -5133,27 +5130,27 @@ definitions:
       headerType:
         type: string
         enum:
-        - Video
-        - Pdf
-        - Location
-        - Text
-        - image
+          - Video
+          - Pdf
+          - Location
+          - Text
+          - image
       buttonType:
         type: string
         enum:
-        - Call To Action
-        - Quick Reply
+          - Call To Action
+          - Quick Reply
       buttonData:
-        "$ref": "#/definitions/ButtonData"
+        $ref: '#/definitions/ButtonData'
     required:
-    - templateName
+      - templateName
   ButtonData:
     title: ButtonData
     example:
       quickReply:
-      - '1'
-      - '2'
-      - '3'
+        - '1'
+        - '2'
+        - '3'
       phoneButtonText: call us
       phoneNumber: '9876543210'
       websiteButtontext: oursite
@@ -5181,48 +5178,49 @@ definitions:
       audienceId:
         type: string
     required:
-    - audienceId
+      - audienceId
   AddupdateAudienceRequest:
     title: AddupdateaudienceRequest
     example:
-      audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
-      phoneNumber: '919820333891'
-      channel: whatsapp
-      optin: true
-      optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
-      segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
-      chatFlowId: 
-      name: Ajay
-      email: ajay@yopmail.com
-      gender: Male
-      country: India
-    type: object
-    properties:
-      audienceId:
-        type: string
-      phoneNumber:
-        type: string
-      channel:
-        type: string
-      optin:
-        type: boolean
-      optinSourceId:
-        type: string
-      segmentId:
-        type: string
-      chatFlowId:
-        type: string
-      name:
-        type: string
-      email:
-        type: string
-      gender:
-        type: string
-      country:
-        type: string
-    required:
-    - phoneNumber
-    - channel
+      - audienceId: c1444136-9b15-4bdb-86c3-c138f5a3a44c
+        phoneNumber: '919820333891'
+        channel: whatsapp
+        optin: true
+        optinSourceId: 5ad4bfa0-4dd1-433b-a88b-ace8197f8c38
+        segmentId: a969e894-0317-46ee-95cd-8f56d0b34378
+        chatFlowId: null
+        name: Ajay
+        email: ajay@yopmail.com
+        gender: Male
+        country: India
+    type: array
+    items:
+      properties:
+        audienceId:
+          type: string
+        phoneNumber:
+          type: string
+        channel:
+          type: string
+        optin:
+          type: boolean
+        optinSourceId:
+          type: string
+        segmentId:
+          type: string
+        chatFlowId:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        gender:
+          type: string
+        country:
+          type: string
+      required:
+        - phoneNumber
+        - channel
   AddupdateSegmentRequest:
     title: AddupdateSegmentRequest
     example:
@@ -5235,7 +5233,7 @@ definitions:
       segmentName:
         type: string
     required:
-    - segmentName
+      - segmentName
   AddupdateOptinRequest:
     title: AddupdateOptinRequest
     example:
@@ -5248,7 +5246,7 @@ definitions:
       optinSource:
         type: string
     required:
-    - optinSource
+      - optinSource
   UpdateOptinStatusAndAddOptinSourceIdRequest:
     title: UpdateOptinStatusAndAddOptinSourceIdRequest
     example:
@@ -5261,8 +5259,8 @@ definitions:
       optinSourceId:
         type: string
     required:
-    - optinSourceId
-    - phoneNumber
+      - optinSourceId
+      - phoneNumber
   UpdateOptinStatusRequest:
     title: UpdateOptinStatusRequest
     example:
@@ -5272,7 +5270,7 @@ definitions:
       phoneNumber:
         type: string
     required:
-    - phoneNumber
+      - phoneNumber
   AddMessageHistoryRequest:
     title: AddMessageHistoryRequest
     example:
@@ -5300,12 +5298,12 @@ definitions:
       businessNumber:
         type: string
     required:
-    - messageId
-    - serviceProviderId
-    - deliveryChannel
-    - statusTime
-    - endConsumerNumber
-    - businessNumber
+      - messageId
+      - serviceProviderId
+      - deliveryChannel
+      - statusTime
+      - endConsumerNumber
+      - businessNumber
   saveMessageStatus:
     title: saveMessageStatus
     example:
@@ -5334,22 +5332,22 @@ definitions:
       businessNumber:
         type: string
     required:
-    - statusTime
-    - state
-    - endConsumerNumber
-    - businessNumber
+      - statusTime
+      - state
+      - endConsumerNumber
+      - businessNumber
   UploadExcelRequest:
     title: UploadExcelRequest
     example:
-    - audienceId: 155fe808-33c7-4377-ac77-2caaab49cc36
-      phoneNumber: '911111111111'
-      channel: whatsapp
-      optin: true
-      optinSource: '111'
-      name: ABC
-      email: abc@yopmail.com
-      gender: Male
-      country: India
+      - audienceId: 155fe808-33c7-4377-ac77-2caaab49cc36
+        phoneNumber: '911111111111'
+        channel: whatsapp
+        optin: true
+        optinSource: '111'
+        name: ABC
+        email: abc@yopmail.com
+        gender: Male
+        country: India
     type: array
     items:
       properties:
@@ -5366,12 +5364,12 @@ definitions:
         country:
           type: string
       required:
-      - phoneNumber
-      - optinSource
-      - name
-      - email
-      - gender
-      - country
+        - phoneNumber
+        - optinSource
+        - name
+        - email
+        - gender
+        - country
   authorizeRequest:
     title: Authorize Request
     example:
@@ -5381,4 +5379,4 @@ definitions:
       apiKey:
         type: string
     required:
-    - apiKey
+      - apiKey

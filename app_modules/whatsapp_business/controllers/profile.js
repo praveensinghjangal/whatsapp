@@ -22,7 +22,7 @@ const getBusinessProfile = (req, res) => {
       queryResult = results[0]
       if (results && results.length > 0) {
         const checkCompleteStatus = new CheckInfoCompletionService()
-        return checkCompleteStatus.validateBusinessProfile(results)
+        return checkCompleteStatus.validateBusinessProfile(results[0])
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }

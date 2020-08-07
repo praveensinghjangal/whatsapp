@@ -275,5 +275,10 @@ module.exports = {
     status_code: 200,
     code: 2057,
     message: 'Cannot send message to user, Make sure you have obtained the optin or you have received message form user in last 24 hours'
+  },
+  LIMIT_EXCEEDED: {
+    status_code: 400,
+    code: 3033,
+    message: 'You\'ve exceeded the allowed limit please try again after some time'
   }
 }
