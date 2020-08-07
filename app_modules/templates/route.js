@@ -2,9 +2,6 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/authentication')
 const authstrategy = require('../../config').authentication.strategy
-// const TemplateParamValidationService = require('./services/paramValidation')
-// const templateParamValidationService = new TemplateParamValidationService()
-// templateParamValidationService.setAllTemplatesInRedis()
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
