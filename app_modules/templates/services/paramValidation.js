@@ -8,6 +8,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const RedisService = require('../../../lib/redis_service/redisService')
 
 class TemplateParamValidationService {
+  // not used
   setAllTemplatesInRedis () {
     __logger.info('inside setAllTemplatesInRedis')
     const dataStored = q.defer()
@@ -38,6 +39,7 @@ class TemplateParamValidationService {
     return dataStored.promise
   }
 
+  // not used
   setTemplatesInRedisForWabaId (wabaId) {
     __logger.info('inside setTemplatesInRedisForWabaId')
     const dataStored = q.defer()
