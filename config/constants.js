@@ -183,6 +183,16 @@ const MESSAGE_STATUS = {
   forwarded: 'forwarded'
 }
 
+const VALIDATOR = {
+  email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',
+  password: '',
+  text: '^[a-zA-Z]+$',
+  number: '^[0-9]+$',
+  aplphaNumeric: '^[a-zA-Z0-9]+$',
+  phoneNumber: '^\d{1,10}$',
+  postalCode: '^\d{1,6}$',
+  phoneCode: '^\d{1,2}$'
+}
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -212,3 +222,4 @@ module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
 module.exports.MESSAGE_STATUS = MESSAGE_STATUS
 module.exports.REDIS_TTL = REDIS_TTL
+module.exports.VALIDATOR = VALIDATOR

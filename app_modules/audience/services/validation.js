@@ -3,6 +3,8 @@ const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
+const TrimService = require('../../../lib/trimService/trim')
+const trimInput = new TrimService()
 
 class validate {
   checkAudienceIdExistService (request) {
@@ -29,7 +31,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -44,7 +47,10 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
+
         }
       }
     }
@@ -58,7 +64,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -74,7 +81,9 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
         },
         channel: {
           type: 'string',
@@ -98,12 +107,15 @@ class validate {
         name: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength: 30
+
         },
         email: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
         },
         gender: {
           type: 'string',
@@ -129,7 +141,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -145,12 +158,16 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
+
         },
         channel: {
           type: 'string',
           required: true,
           minLength: 1
+
         },
         optinSourceId: {
           type: 'string',
@@ -168,12 +185,15 @@ class validate {
         name: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength: 30
         },
         email: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
+
         },
         gender: {
           type: 'string',
@@ -199,7 +219,9 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      console.log('Error', formatedError)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -215,7 +237,10 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 10,
+          maxLength: 10,
+          pattern: __constants.VALIDATOR.number
+
         },
         optinSourceId: {
           type: 'string',
@@ -241,7 +266,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -273,7 +299,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -302,7 +329,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -336,7 +364,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -366,7 +395,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -395,7 +425,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -429,7 +460,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
