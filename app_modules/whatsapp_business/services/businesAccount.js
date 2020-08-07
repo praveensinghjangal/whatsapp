@@ -110,8 +110,8 @@ class businesAccountService {
   updateBusinessInfo (userId, businessData, businessOldData) {
     const dataUpdated = q.defer()
     __logger.info('Inputs insertBusinessData userId', userId)
-    __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
-    __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
+    // __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
+    // __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
     saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
     const businessAccountObj = {
       facebookManagerId: typeof businessData.facebookManagerId === 'string' ? businessData.facebookManagerId : businessOldData.facebookManagerId,
