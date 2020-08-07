@@ -3,7 +3,6 @@ const TemplateService = require('../services/dbData')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-
 const RedisService = require('../../../lib/redis_service/redisService')
 
 const addUpdateTemplates = (req, res) => {
