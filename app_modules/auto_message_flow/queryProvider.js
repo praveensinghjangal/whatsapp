@@ -1,11 +1,15 @@
 
-const addMessageHistoryData = (messageId) => {
-  return `INSERT INTO message_history
-  (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number)
-  VALUES (?,?,?,?,?,?,?,?)`
+const getEventDetailsFromIdentifierOrTopic = () => {
+  return `select identifier_text as "identifierText",event, event_data as "eventData", identifier_text_name as identifierTextName , 'i' as "resultOf" from auot_message_flows amf 
+  where is_active = true and waba_phone_number = ?
+  and lower(identifier_text) = ?
+  UNION
+  select identifier_text as "identifierText", event, event_data, identifier_text_name , 't' from auot_message_flows amf 
+  where is_active = true and waba_phone_number = ?
+  and LOWER(flow_topic) = ? and parent_identifier_text is null
+  order by identifierText`
 }
 
 module.exports = {
-  addMessageHistoryData
+  getEventDetailsFromIdentifierOrTopic
 }

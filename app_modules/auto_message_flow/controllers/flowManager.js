@@ -18,7 +18,7 @@ const sendMessage = (from, to, whatsappBody) => {
     whatsapp: whatsappBody
   }
   apiReqBody.whatsapp.from = from
-  console.log('apiiiiiiiiiiiiiiiiiiiiiiiiii', apiReqBody)
+  // console.log('apiiiiiiiiiiiiiiiiiiiiiiiiii', apiReqBody)
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   __logger.info('sendMessageToQueueExcel :: callSendToQueueApi formattedBody>>>>>>>>>>>>>>>>>>>>>>>>', apiReqBody)
   const options = {
@@ -44,7 +44,10 @@ const flowManager = (req, res) => {
   const eventHandler = new EventHandler()
   validate.flowManager(req.body)
     .then(data => messageHandler.getMessageEventAndEventData(req.body))
-    .then(eventDetails => eventHandler[__constants.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS[eventDetails.eventName]](eventDetails.eventData))
+    .then(eventDetails => {
+      const func = __constants.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS[eventDetails.eventName] || 'noEvent'
+      return eventHandler[func](eventDetails.eventData)
+    })
     .then(messageData => sendMessage(req.body.to, req.body.from, messageData))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
     .catch(err => {

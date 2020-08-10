@@ -184,7 +184,10 @@ const MESSAGE_STATUS = {
 }
 
 const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
-  defaultMessage: 'defaultMessage'
+  defaultMessage: 'defaultMessage',
+  showMenu: 'showMenu',
+  predefinedtext: 'predefinedText',
+  noEvent: 'noEvent'
 }
 
 const VALIDATOR = {
@@ -197,6 +200,8 @@ const VALIDATOR = {
   postalCode: '^\d{1,6}$',
   phoneCode: '^\d{1,2}$'
 }
+const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -228,3 +233,4 @@ module.exports.MESSAGE_STATUS = MESSAGE_STATUS
 module.exports.REDIS_TTL = REDIS_TTL
 module.exports.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS
 module.exports.VALIDATOR = VALIDATOR
+module.exports.FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT

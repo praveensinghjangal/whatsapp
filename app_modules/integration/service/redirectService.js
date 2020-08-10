@@ -14,7 +14,6 @@ class RedirectService {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        console.log('dataatatatat', data, typeof data)
         const headers = {
           'Content-Type': 'application/json',
           Accept: 'application/json'
@@ -26,7 +25,7 @@ class RedirectService {
         }
       })
       .then(apiRes => {
-        __logger.info('api ressssssssssssssssss', apiRes.statusCode, apiRes.body)
+        __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode, apiRes.body)
         if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
           redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes.body })
         } else {
