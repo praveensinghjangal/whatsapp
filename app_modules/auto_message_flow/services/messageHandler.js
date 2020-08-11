@@ -1,6 +1,7 @@
 const q = require('q')
 const DbServices = require('./dbData')
 const __constants = require('../../../config/constants')
+
 class MessageHandler {
   getMessageEventAndEventData (body) {
     const eventData = q.defer()
@@ -29,4 +30,5 @@ class MessageHandler {
     return eventData.promise
   }
 }
+
 module.exports = MessageHandler

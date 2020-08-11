@@ -5,20 +5,20 @@ const request = require('request')
 const q = require('q')
 const authorize = require('../../user/controllers/authorize').createAuthTokenByUserId
 const WabaService = require('../../whatsapp_business/services/businesAccount')
-const authToken = {}
+const authTokens = {}
 
 const getAuthToken = wabaNumber => {
-  // console.log('token -------------->', authToken[wabaNumber])
+  // console.log('token -------------->', authTokens[wabaNumber])
   const token = q.defer()
-  if (authToken[wabaNumber]) {
-    token.resolve(authToken[wabaNumber])
+  if (authTokens[wabaNumber]) {
+    token.resolve(authTokens[wabaNumber])
     return token.promise
   }
   const wabaService = new WabaService()
   wabaService.getUserIdFromWabaNumber(wabaNumber)
     .then(userId => authorize(userId))
     .then(data => {
-      authToken[wabaNumber] = data
+      authTokens[wabaNumber] = data
       return token.resolve(data)
     })
     .catch(err => {
@@ -75,9 +75,9 @@ module.exports = (from, to, whatsappBody) => {
       if (data.success) {
         return data.body
       } else {
-        __logger.info('Re setting Waba Number Before>>>>>>>>>>>>>', authToken[from])
-        authToken[from] = ''
-        __logger.info('Re setting Waba Number After >>>>>>>>>>>>>', authToken[from])
+        __logger.info('Re setting Waba Number Before>>>>>>>>>>>>>', authTokens[from])
+        authTokens[from] = ''
+        __logger.info('Re setting Waba Number After >>>>>>>>>>>>>', authTokens[from])
         return sendMessage(from, to, whatsappBody)
       }
     })

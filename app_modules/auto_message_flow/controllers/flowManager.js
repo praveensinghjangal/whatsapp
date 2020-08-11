@@ -4,7 +4,7 @@ const __logger = require('../../../lib/logger')
 const ValidatonService = require('../services/validation')
 const MessageHandler = require('../services/messageHandler')
 const EventHandler = require('../services/eventHandler')
-const sendMessageToConsumer = require('../services/consumerMessageSender')
+const sendMessage = require('../services/sendMessage')
 
 const flowManager = (req, res) => {
   __logger.info('Flow Manager API called', req.body)
@@ -17,7 +17,7 @@ const flowManager = (req, res) => {
       const func = __constants.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS[eventDetails.eventName] || 'noEvent'
       return eventHandler[func](eventDetails.eventData)
     })
-    .then(messageData => sendMessageToConsumer(req.body.to, req.body.from, messageData))
+    .then(messageData => sendMessage(req.body.to, req.body.from, messageData))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
     .catch(err => {
       __logger.error('error: ', err)
