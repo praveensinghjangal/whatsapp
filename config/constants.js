@@ -187,7 +187,8 @@ const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
   defaultMessage: 'defaultMessage',
   showMenu: 'showMenu',
   predefinedtext: 'predefinedText',
-  noEvent: 'noEvent'
+  noEvent: 'noEvent',
+  more: 'moreMenu'
 }
 
 const VALIDATOR = {

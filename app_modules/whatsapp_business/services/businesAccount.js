@@ -209,6 +209,60 @@ class businesAccountService {
       })
     return dataUpdated.promise
   }
+
+  getUserIdFromWabaNumber (wabaNumber) {
+    let phoneCode
+    if (wabaNumber.includes('91')) {
+      phoneCode = wabaNumber.substring(0, 2)
+      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
+    }
+    if (wabaNumber.includes('+91')) {
+      phoneCode = wabaNumber.substring(0, 3)
+      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
+    }
+
+    const businessDataFetched = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromWabaNumber(), [wabaNumber, phoneCode])
+      .then(businessData => {
+        businessDataFetched.resolve(businessData[0].userId)
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return businessDataFetched.promise
+  }
+
+  getWabaDataFromDb (wabaNumber) {
+    __logger.info('Inside getWabaDataFromDb :: ', wabaNumber)
+    const dbData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaData(), [wabaNumber])
+      .then(result => {
+        // console.log('resulttttttttttttttttttttttttttt', result[0], wabaNumber)
+        if (result && result.length === 0) {
+          dbData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
+        } else {
+          dbData.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get getDataFromDb: ', err)
+        dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dbData.promise
+  }
+
+  setWabaDataInRedis (dataObject) {
+    // console.log('datat to set', dataObject)
+    const dataSaved = q.defer()
+    __db.redis.setex(dataObject.id, JSON.stringify(dataObject), __constants.REDIS_TTL.wabaData)
+      .then(data => dataSaved.resolve(dataObject))
+      .catch(err => {
+        __logger.info('setWabaDataInRedis', err)
+        dataSaved.reject(err)
+      })
+    return dataSaved.promise
+  }
 }
 
 module.exports = businesAccountService

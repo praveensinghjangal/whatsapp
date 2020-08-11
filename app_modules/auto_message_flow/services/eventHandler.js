@@ -3,6 +3,7 @@ const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
 const redisService = new RedisService()
 const _ = require('lodash')
+const DbServices = require('./dbData')
 
 class EventHandler {
   defaultMessage (eventData) {
@@ -40,6 +41,21 @@ class EventHandler {
     const predefined = q.defer()
     predefined.resolve({ contentType: 'text', text: 'Uh Oh!, Please try again later' })
     return predefined.promise
+  }
+
+  moreMenu (eventData) {
+    const moreMenu = q.defer()
+    const dbServices = new DbServices()
+    dbServices.getMoreMenuFromParentIdentifier(eventData.wabaNumber, eventData.parentIdentifier)
+      .then(menuData => {
+        let meunuStr = 'Please enter number from the following menu to proceed :'
+        _.each(menuData, singleObj => {
+          meunuStr += '\n' + singleObj.identifierText + ' - ' + singleObj.identifierTextName
+        })
+        moreMenu.resolve({ contentType: 'text', text: meunuStr })
+      })
+      .catch(err => moreMenu.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return moreMenu.promise
   }
 }
 

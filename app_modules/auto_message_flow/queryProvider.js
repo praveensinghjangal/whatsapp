@@ -10,6 +10,14 @@ const getEventDetailsFromIdentifierOrTopic = () => {
   order by identifierText`
 }
 
+const getMoreMenuByParentIdentifier = () => {
+  return `select identifier_text as "identifierText",event, event_data as "eventData", identifier_text_name as identifierTextName
+  from auot_message_flows amf 
+  where is_active = true and waba_phone_number = ?
+  and lower(parent_identifier_text) = ?`
+}
+
 module.exports = {
-  getEventDetailsFromIdentifierOrTopic
+  getEventDetailsFromIdentifierOrTopic,
+  getMoreMenuByParentIdentifier
 }

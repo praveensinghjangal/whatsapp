@@ -1,7 +1,6 @@
 const q = require('q')
 const DbServices = require('./dbData')
 const __constants = require('../../../config/constants')
-
 class MessageHandler {
   getMessageEventAndEventData (body) {
     const eventData = q.defer()
@@ -12,8 +11,9 @@ class MessageHandler {
           if (eventDetails.length > 0) {
             // console.log('lets compute ====>', eventDetails)
             if (eventDetails[0].resultOf === 'i') {
-              const eventDataJson = eventDetails[0].eventData
+              const eventDataJson = eventDetails[0].eventData || {}
               eventDataJson.wabaNumber = body.to
+              eventDataJson.parentIdentifier = body.content.text
               return eventData.resolve({ eventName: eventDetails[0].event, eventData: eventDataJson })
             } else {
               return eventData.resolve({ eventName: 'showMenu', eventData: { wabaNumber: body.to, rows: eventDetails } })
@@ -29,5 +29,4 @@ class MessageHandler {
     return eventData.promise
   }
 }
-
 module.exports = MessageHandler

@@ -32,7 +32,7 @@ const setDataInRedis = userId => {
     })
     .then(token => {
       userData.authToken = token
-      console.log('data to be set ------->', userData)
+      // console.log('data to be set ------->', userData)
       return __db.redis.setex(userId, JSON.stringify(userData), __constants.REDIS_TTL.userConfig)
     })
     .then(result => dataSet.resolve(userData))

@@ -18,6 +18,20 @@ class DbService {
       })
     return eventDetails.promise
   }
+
+  getMoreMenuFromParentIdentifier (wabaNumber, text) {
+    const eventDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMoreMenuByParentIdentifier(), [wabaNumber, text.toLowerCase()])
+      .then(result => {
+        __logger.info('Qquery Result', result)
+        eventDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in get getEventDetailsFromIdentifierOrTopic: ', err)
+        eventDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return eventDetails.promise
+  }
 }
 
 module.exports = DbService
