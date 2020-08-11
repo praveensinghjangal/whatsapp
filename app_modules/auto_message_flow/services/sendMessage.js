@@ -73,15 +73,13 @@ module.exports = (from, to, whatsappBody) => {
     .then(data => {
       __logger.info('Then Send mEssage', data)
       if (data.success) {
-        return data.body
+        return data
       } else {
-        __logger.info('Re setting Waba Number Before>>>>>>>>>>>>>', authTokens[from])
         authTokens[from] = ''
-        __logger.info('Re setting Waba Number After >>>>>>>>>>>>>', authTokens[from])
         return sendMessage(from, to, whatsappBody)
       }
     })
-    .then(data => messageSent.resolve(data.output))
+    .then(data => messageSent.resolve(data.output.data || {}))
     .catch(err => {
       __logger.info('Error ocurred>>>>>>>>>>>>>', err)
       messageSent.reject(err)

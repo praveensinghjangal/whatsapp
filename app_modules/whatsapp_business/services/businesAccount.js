@@ -251,18 +251,6 @@ class businesAccountService {
       })
     return dbData.promise
   }
-
-  setWabaDataInRedis (dataObject) {
-    // console.log('datat to set', dataObject)
-    const dataSaved = q.defer()
-    __db.redis.setex(dataObject.id, JSON.stringify(dataObject), __constants.REDIS_TTL.wabaData)
-      .then(data => dataSaved.resolve(dataObject))
-      .catch(err => {
-        __logger.info('setWabaDataInRedis', err)
-        dataSaved.reject(err)
-      })
-    return dataSaved.promise
-  }
 }
 
 module.exports = businesAccountService
