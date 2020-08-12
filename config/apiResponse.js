@@ -283,7 +283,7 @@ module.exports = {
   },
   FLOW_MANAGER_INVALID_REQUEST: {
     status_code: 200,
-    code: 4000,
+    code: 2000,
     message: 'Invalid request'
   }
 }
