@@ -90,7 +90,6 @@ const REDIS_TTL = {
   wabaData: 900,
   templateData: 300
 }
-
 const SERVER_TIMEOUT = 20 * 60 * 1000
 const MASTER_TABLE = {
   TEMPLATE: {
@@ -149,7 +148,6 @@ const TEMPLATE_BUTTON_TYPE = [{
 }, {
   buttonType: 'Quick Reply'
 }]
-
 const MQ = {
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: 1, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
@@ -165,24 +163,27 @@ const INCOMING_MESSAGE_RETRY = {
 const OUTGOING_MESSAGE_RETRY = {
   tyntec: 5
 }
-
 const DELIVERY_CHANNEL = {
   whatsapp: 'whatsapp'
 }
-
 const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
   addupdateAudience: '/helowhatsapp/api/audience'
 }
-
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
-
 const MESSAGE_STATUS = {
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
   forwarded: 'forwarded'
 }
-
+const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
+  defaultMessage: 'defaultMessage',
+  showMenu: 'showMenu',
+  predefinedtext: 'predefinedText',
+  noEvent: 'noEvent',
+  more: 'moreMenu',
+  postcall: 'postCall'
+}
 const VALIDATOR = {
   email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',
   password: '',
@@ -193,6 +194,9 @@ const VALIDATOR = {
   postalCode: '^\d{1,6}$',
   phoneCode: '^\d{1,2}$'
 }
+const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
+const FLOW_TRANSACTION_INTERVAL = ' interval 5 MINUTE'
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -222,4 +226,7 @@ module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
 module.exports.MESSAGE_STATUS = MESSAGE_STATUS
 module.exports.REDIS_TTL = REDIS_TTL
+module.exports.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS
 module.exports.VALIDATOR = VALIDATOR
+module.exports.FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT
+module.exports.FLOW_TRANSACTION_INTERVAL = FLOW_TRANSACTION_INTERVAL

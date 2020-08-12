@@ -78,6 +78,27 @@ const setIsActiveFalseByWabaId = () => {
           where waba_information_id = ? and is_active = true`
 }
 
+const getUserIdFromWabaNumber = () => {
+  return `select user_id as "userId"
+  from waba_information wi where is_active = 1
+  and wi.phone_number = ? and wi.phone_code = ?`
+}
+
+const getWabaData = () => {
+  return `select CONCAT(wi.phone_code, wi.phone_number) as "id",
+  wi.service_provider_id as "serviceProviderId",
+  wi.api_key as "apiKey",
+  wi.webhook_post_url as "webhookPostUrl",
+  wi.optin_text as "optinText",
+  pd.plan_priority as "planPriority",
+  wi.chatbot_activated as "chatbotActivated",
+  wi.chat_default_message as "chatDefaultMessage"
+  from waba_information wi
+  join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
+  join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
+  where wi.is_active = 1 and wi.phone_number = ?`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -86,5 +107,7 @@ module.exports = {
   addWabaTableData,
   updateWabaTableData,
   setIsActiveFalseByWabaId,
-  updateServiceProviderId
+  updateServiceProviderId,
+  getUserIdFromWabaNumber,
+  getWabaData
 }
