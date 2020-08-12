@@ -17,7 +17,30 @@ const getMoreMenuByParentIdentifier = () => {
   and lower(parent_identifier_text) = ?`
 }
 
+const addEventTransaction = () => {
+  return `insert into auot_message_transaction(auot_message_transcation_id,audience_phone_number,
+  waba_phone_number,identifier_text,message_id,message_text,transaction_status,event_data)
+  values(?,?,?,?,?,?,?,?)`
+}
+
+const getTransactionData = (interval) => {
+  return `select auot_message_transcation_id as "auotMessageTranscationId",message_text as "messageText",event_data as "eventData"
+  from auot_message_transaction amt
+  where transaction_status  = 1
+  and audience_phone_number = ?
+  and waba_phone_number = ?
+  and (created_on between now()- ${interval} and now())`
+}
+const closeEventTransaction = () => {
+  return `update auot_message_transaction 
+  set transaction_status = 0
+  where auot_message_transcation_id  = ?`
+}
+
 module.exports = {
   getEventDetailsFromIdentifierOrTopic,
-  getMoreMenuByParentIdentifier
+  getMoreMenuByParentIdentifier,
+  addEventTransaction,
+  getTransactionData,
+  closeEventTransaction
 }

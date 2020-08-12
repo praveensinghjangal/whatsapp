@@ -15,6 +15,7 @@ class MessageHandler {
               const eventDataJson = eventDetails[0].eventData || {}
               eventDataJson.wabaNumber = body.to
               eventDataJson.parentIdentifier = body.content.text
+              eventDataJson.audiencePhoneNumber = body.from
               return eventData.resolve({ eventName: eventDetails[0].event, eventData: eventDataJson })
             } else {
               return eventData.resolve({ eventName: 'showMenu', eventData: { wabaNumber: body.to, rows: eventDetails } })
