@@ -121,7 +121,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.FLOW_MANAGER_INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }
