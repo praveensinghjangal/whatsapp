@@ -62,7 +62,7 @@ class EventHandler {
   postCall (eventData) {
     const postCalled = q.defer()
     console.log('postCall daataatta-------->', eventData)
-    if (eventData && eventData.requiredKeys.length > 0) {
+    if (eventData && eventData.requiredKeys && eventData.requiredKeys.length > 0) {
       // console.log('hey there start transaction and ask for input of key 1')
       const dbServices = new DbServices()
       eventData.method = 'post'
