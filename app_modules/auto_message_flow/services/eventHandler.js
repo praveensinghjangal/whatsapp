@@ -78,7 +78,7 @@ class EventHandler {
     } else {
       // console.log('call empty post and dont start transaction')
       const transactionHandler = new TransactionHandler()
-      transactionHandler.callPostApi({}, eventData.url, {})
+      transactionHandler.callPostApi({}, eventData.url, eventData.headers)
         .then(apiRes => {
           // console.log('api res ==========================', apiRes.body.text)
           if (apiRes && apiRes.body && apiRes.body.text) {
