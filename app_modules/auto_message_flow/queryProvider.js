@@ -6,7 +6,7 @@ const getEventDetailsFromIdentifierOrTopic = () => {
   UNION
   select identifier_text as "identifierText", event, event_data, identifier_text_name , 't' from auot_message_flows amf 
   where is_active = true and waba_phone_number = ?
-  and LOWER(flow_topic) = ? and parent_identifier_text is null
+  and LOWER(flow_topic) = ? and parent_identifier_text is null and LOWER(event) != 'end'
   order by identifierText`
 }
 
