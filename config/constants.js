@@ -183,7 +183,11 @@ const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
   noEvent: 'noEvent',
   more: 'moreMenu',
   postcall: 'postCall',
-  gettext: 'getText'
+  gettext: 'getText',
+  getimage: 'getImage',
+  getlocation: 'getLocation',
+  getdocument: 'getDocument'
+
 }
 const VALIDATOR = {
   email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',

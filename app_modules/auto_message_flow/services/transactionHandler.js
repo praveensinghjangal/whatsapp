@@ -78,6 +78,93 @@ class TransactionHandler {
     return dataPosted.promise
   }
 
+  formBodyAndCallGetImage (eventData, paramValueArr, that) {
+    const dataPosted = q.defer()
+    // console.log('Lets get Image ===============', eventData, paramValueArr)
+    let queryString = '?'
+    _.each(paramValueArr, (singleparam, index) => {
+      if (index === 0) {
+        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+      } else {
+        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+      }
+    })
+    // console.log('queryyyyyy strrrrrrr ----->', queryString)
+    // eventData.url = 'http://localhost:3003/sampleImage'
+    that.callGetApi(eventData.url + queryString, eventData.headers)
+      .then(apiRes => {
+        // console.log('api res ==========================', apiRes.body.text)
+        if (apiRes && apiRes.body && apiRes.body.url) {
+          dataPosted.resolve({ contentType: 'media', media: { type: 'image', url: apiRes.body.url } })
+        } else {
+          dataPosted.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+        }
+      })
+      .catch(err => {
+        console.log('errrrrrrrrrrrrrrrrrr', err)
+        dataPosted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return dataPosted.promise
+  }
+
+  formBodyAndCallGetLocation (eventData, paramValueArr, that) {
+    const dataPosted = q.defer()
+    // console.log('Lets get Location ===============', eventData, paramValueArr)
+    let queryString = '?'
+    _.each(paramValueArr, (singleparam, index) => {
+      if (index === 0) {
+        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+      } else {
+        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+      }
+    })
+    // console.log('queryyyyyy strrrrrrr ----->', queryString)
+    // eventData.url = 'http://localhost:3003/sampleLocation'
+    that.callGetApi(eventData.url + queryString, eventData.headers)
+      .then(apiRes => {
+        // console.log('api res ==========================', apiRes.body.text)
+        if (apiRes && apiRes.body && apiRes.body.location) {
+          dataPosted.resolve({ contentType: 'location', location: { longitude: apiRes.body.location.longitude, latitude: apiRes.body.location.latitude } })
+        } else {
+          dataPosted.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+        }
+      })
+      .catch(err => {
+        console.log('errrrrrrrrrrrrrrrrrr', err)
+        dataPosted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return dataPosted.promise
+  }
+
+  formBodyAndCallGetDocument (eventData, paramValueArr, that) {
+    const dataPosted = q.defer()
+    // console.log('Lets get Document ===============', eventData, paramValueArr)
+    let queryString = '?'
+    _.each(paramValueArr, (singleparam, index) => {
+      if (index === 0) {
+        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+      } else {
+        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+      }
+    })
+    // console.log('queryyyyyy strrrrrrr ----->', queryString)
+    // eventData.url = 'http://localhost:3003/sampleDocument'
+    that.callGetApi(eventData.url + queryString, eventData.headers)
+      .then(apiRes => {
+        // console.log('api res ==========================', apiRes.body.text)
+        if (apiRes && apiRes.body && apiRes.body.url) {
+          dataPosted.resolve({ contentType: 'media', media: { type: 'document', url: apiRes.body.url } })
+        } else {
+          dataPosted.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+        }
+      })
+      .catch(err => {
+        console.log('errrrrrrrrrrrrrrrrrr', err)
+        dataPosted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return dataPosted.promise
+  }
+
   formBodyAndCallPost (eventData, paramValueArr, that) {
     const dataPosted = q.defer()
     console.log('Lets post ===============', eventData, paramValueArr)
@@ -118,6 +205,15 @@ class TransactionHandler {
         break
       case 'getText':
         func = this.formBodyAndCallGetText
+        break
+      case 'getImage':
+        func = this.formBodyAndCallGetImage
+        break
+      case 'getLocation':
+        func = this.formBodyAndCallGetLocation
+        break
+      case 'getDocument':
+        func = this.formBodyAndCallGetDocument
         break
       default:
         func = this.methodNotFound
