@@ -55,8 +55,6 @@ class validate {
 
   sendMessageToQueue (request) {
     const isvalid = q.defer()
-    // isvalid.resolve(request)
-    // return isvalid.promise
     const schema = {
       id: '/sendMessageToQueue',
       type: 'array',

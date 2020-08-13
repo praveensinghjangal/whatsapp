@@ -184,6 +184,9 @@ const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
   more: 'moreMenu',
   postcall: 'postCall',
   gettext: 'getText',
+  getimage: 'getImage',
+  getlocation: 'getLocation',
+  getdocument: 'getDocument',
   end: 'end'
 }
 const VALIDATOR = {
