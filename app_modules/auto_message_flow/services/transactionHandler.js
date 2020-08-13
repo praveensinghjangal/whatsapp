@@ -43,10 +43,39 @@ class TransactionHandler {
       if (error) {
         deferred.reject(error)
       } else {
-        deferred.resolve(body)
+        deferred.resolve(response)
       }
     })
     return deferred.promise
+  }
+
+  formBodyAndCallGetText (eventData, paramValueArr, that) {
+    const dataPosted = q.defer()
+    console.log('Lets get text ===============', eventData, paramValueArr)
+    let queryString = '?'
+    _.each(paramValueArr, (singleparam, index) => {
+      if (index === 0) {
+        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+      } else {
+        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+      }
+    })
+    console.log('queryyyyyy strrrrrrr ----->', queryString)
+    // eventData.url = 'http://localhost:3003/sampleText'
+    that.callGetApi(eventData.url + queryString, eventData.headers)
+      .then(apiRes => {
+        // console.log('api res ==========================', apiRes.body.text)
+        if (apiRes && apiRes.body && apiRes.body.text) {
+          dataPosted.resolve({ contentType: 'text', text: apiRes.body.text })
+        } else {
+          dataPosted.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+        }
+      })
+      .catch(err => {
+        console.log('errrrrrrrrrrrrrrrrrr', err)
+        dataPosted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return dataPosted.promise
   }
 
   formBodyAndCallPost (eventData, paramValueArr, that) {
@@ -86,6 +115,9 @@ class TransactionHandler {
     switch (transactionDetails[0].eventData.method) {
       case 'post':
         func = this.formBodyAndCallPost
+        break
+      case 'getText':
+        func = this.formBodyAndCallGetText
         break
       default:
         func = this.methodNotFound

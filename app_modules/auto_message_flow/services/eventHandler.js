@@ -91,6 +91,40 @@ class EventHandler {
     }
     return postCalled.promise
   }
+
+  getText (eventData) {
+    const postCalled = q.defer()
+    console.log('get daataatta-------->', eventData)
+    if (eventData && eventData.requiredKeys && eventData.requiredKeys.length > 0) {
+      // console.log('hey there start transaction and ask for input of key 1')
+      const dbServices = new DbServices()
+      eventData.method = 'getText'
+      const eventDetailstoAdd = {
+        audiencePhoneNumber: eventData.audiencePhoneNumber,
+        wabaPhoneNumber: eventData.wabaNumber,
+        identifierText: eventData.parentIdentifier,
+        eventData: eventData
+      }
+      dbServices.addEventTransaction(eventDetailstoAdd)
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    } else {
+      // console.log('call empty post and dont start transaction')
+      const transactionHandler = new TransactionHandler()
+      // eventData.url = 'http://localhost:3003/sampleText'
+      transactionHandler.callGetApi(eventData.url, eventData.headers)
+        .then(apiRes => {
+          // console.log('api res ==========================', apiRes.body.text)
+          if (apiRes && apiRes.body && apiRes.body.text) {
+            postCalled.resolve({ contentType: 'text', text: apiRes.body.text })
+          } else {
+            postCalled.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+          }
+        })
+        .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    }
+    return postCalled.promise
+  }
 }
 
 module.exports = EventHandler
