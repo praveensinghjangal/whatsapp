@@ -48,7 +48,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 10,
-          maxLength: 10,
+          maxLength: 25,
           pattern: __constants.VALIDATOR.number
 
         }
@@ -82,7 +82,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 10,
-          maxLength: 10,
+          maxLength: 25,
           pattern: __constants.VALIDATOR.number
         },
         channel: {
@@ -159,7 +159,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 10,
-          maxLength: 10,
+          maxLength: 25,
           pattern: __constants.VALIDATOR.number
 
         },
@@ -238,7 +238,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 10,
-          maxLength: 10,
+          maxLength: 25,
           pattern: __constants.VALIDATOR.number
 
         },

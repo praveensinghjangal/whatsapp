@@ -5,7 +5,7 @@ const DbServices = require('./dbData')
 const __constants = require('../../../config/constants')
 
 class TransactionHandler {
-  callPostApi (inputRequest, url, headers) {
+  callPostApi (inputRequest, url, headers = {}) {
     console.log('calling API ==============')
     const deferred = q.defer()
     const options = {
@@ -29,7 +29,7 @@ class TransactionHandler {
     return deferred.promise
   }
 
-  callGetApi (url, headers) {
+  callGetApi (url, headers = {}) {
     const deferred = q.defer()
     const options = {
       method: 'GET',
@@ -173,7 +173,7 @@ class TransactionHandler {
       reqBody[eventData.requiredKeys[index]] = singleparam
     })
     console.log('bodyyyyyyyyyyyyyy ----->', reqBody)
-    that.callPostApi(reqBody, eventData.url, {})
+    that.callPostApi(reqBody, eventData.url, eventData.headers)
       .then(apiRes => {
         // console.log('api res ==========================', apiRes.body.text)
         if (apiRes && apiRes.body && apiRes.body.text) {
@@ -270,6 +270,10 @@ class TransactionHandler {
   continueTransaction (inputBody, transactionDetails) {
     const transactionCompleted = q.defer()
     console.log('lets continue ++++++++++++++++')
+    if (inputBody.content && inputBody.content.text && inputBody.content.text === transactionDetails.transactionData[0].eventData.transActionEndingIdentifier) {
+      transactionCompleted.resolve({ nonTransactionalFlow: true })
+      return transactionCompleted.promise
+    }
     this.checkIfMoreParamRequired(transactionDetails, inputBody)
       .then(paramsRes => {
         console.log('params response ----------->', paramsRes)

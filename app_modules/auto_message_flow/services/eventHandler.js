@@ -78,7 +78,7 @@ class EventHandler {
     } else {
       // console.log('call empty post and dont start transaction')
       const transactionHandler = new TransactionHandler()
-      transactionHandler.callPostApi({}, eventData.url, {})
+      transactionHandler.callPostApi({}, eventData.url, eventData.headers)
         .then(apiRes => {
           // console.log('api res ==========================', apiRes.body.text)
           if (apiRes && apiRes.body && apiRes.body.text) {
@@ -226,6 +226,24 @@ class EventHandler {
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     }
     return postCalled.promise
+  }
+
+  end (eventData) {
+    const endTransaction = q.defer()
+    const dbServices = new DbServices()
+    dbServices.getTransactionData(eventData.audiencePhoneNumber, eventData.wabaNumber)
+      .then(transactionDetails => {
+        console.log('dbbbbbbbbbbbbbb====>', transactionDetails)
+        if (!transactionDetails.transactionFound) return { contentType: 'text', text: 'There is no ongoing transaction' }
+        return dbServices.closeTransaction(transactionDetails.transactionData[0].auotMessageTranscationId)
+      })
+      .then(data => {
+        if (data.contentType) return endTransaction.resolve(data)
+        console.log('cancel datatatta', data)
+        endTransaction.resolve({ contentType: 'text', text: 'Thank you, Your request has been cancelled' })
+      })
+      .catch(err => endTransaction.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return endTransaction.promise
   }
 }
 
