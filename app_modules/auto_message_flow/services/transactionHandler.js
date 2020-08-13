@@ -243,7 +243,7 @@ class TransactionHandler {
       identifierText: transactionDetails[0].eventData.parentIdentifier,
       messageId: inputBody.messageId,
       messageText: currentParamValue,
-      eventData: JSON.stringify(transactionDetails[0].eventData)
+      eventData: transactionDetails[0].eventData
     }
     dbServices.addEventTransaction(transactionData)
       .then(eventDetails => paramsSavedAndRequested.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + '\n\nNote : To cancel this transaction anytime enter ' + transactionDetails[0].eventData.transActionEndingIdentifier }))
