@@ -251,5 +251,8 @@ module.exports = {
   optinSource: {
     message: process.env.OPTIN_MESSAGE_SOURCE,
     direct: process.env.OPTIN_DIRECT_SOURCE
+  },
+  chatFlow: {
+    authorization: process.env.CHAT_FLOW_AUTH
   }
 }
