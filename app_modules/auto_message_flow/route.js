@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const chatBotMiddleware = require('../../middlewares/chatFlow')
+const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
 
-router.post('/flow', chatBotMiddleware, require('./controllers/flowManager'))
+router.post('/flow', tokenBasedAuth, require('./controllers/flowManager'))
 
 module.exports = router

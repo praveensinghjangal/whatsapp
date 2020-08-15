@@ -191,7 +191,7 @@ const controller = (req, res) => {
       }
     })
     .then(sendToQueueRes => {
-      __logger.info('sendMessageToQueue :: message sentt to queue', sendToQueueRes)
+      // __logger.info('sendMessageToQueue :: message sentt to queue', sendToQueueRes)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: sendToQueueRes })
     })
     .catch(err => {
