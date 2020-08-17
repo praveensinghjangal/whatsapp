@@ -280,10 +280,5 @@ module.exports = {
     status_code: 400,
     code: 3033,
     message: 'You\'ve exceeded the allowed limit please try again after some time'
-  },
-  FLOW_MANAGER_INVALID_REQUEST: {
-    status_code: 200,
-    code: 2000,
-    message: 'Invalid request'
   }
 }
