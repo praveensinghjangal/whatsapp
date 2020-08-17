@@ -15,7 +15,9 @@ class RedirectService {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        this.callMessageFlow(data, payload)
+        if (payload && payload.content) {
+          this.callMessageFlow(data, payload)
+        }
         const headers = {
           'Content-Type': 'application/json',
           Accept: 'application/json'
@@ -61,7 +63,7 @@ class RedirectService {
           }
         })
     } else {
-      __logger.info('Nothing to do')
+      // __logger.info('Nothing to do')
     }
   }
 }
