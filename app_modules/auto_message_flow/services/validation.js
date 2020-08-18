@@ -153,16 +153,16 @@ class validate {
         },
         eventData: {
           type: 'object',
-          required: true,
+          required: false,
           properties: {
             url: {
               type: 'string',
-              required: true,
+              required: false,
               minLength: 1
             },
             requiredKeys: {
               type: 'array',
-              required: true,
+              required: false,
               minItems: 1,
               items: {
                 type: 'string'
@@ -176,8 +176,8 @@ class validate {
           minLength: 1
         },
         parentIdentifierText: {
-          type: 'string',
-          required: true,
+          type: ['string', null],
+          required: false,
           minLength: 1
         },
         identifierDisplayName: {
@@ -187,14 +187,13 @@ class validate {
         }
       }
     }
+    if (request && request.eventData && request.eventData.requiredKeys && request.eventData.requiredKeys.length > 0) {
+      schema.properties.eventData.properties.url.required = true
+    }
     if (request && request.auotMessageFlowId) {
       schema.properties.identifierText.required = false
       schema.properties.event.required = false
-      schema.properties.eventData.required = false
-      schema.properties.eventData.properties.url.required = false
-      schema.properties.eventData.properties.requiredKeys.required = false
       schema.properties.flowTopic.required = false
-      schema.properties.parentIdentifierText.required = false
       schema.properties.identifierDisplayName.required = false
     }
     const formatedError = []

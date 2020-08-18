@@ -70,11 +70,51 @@ const getIdentifierData = (wabaNumber, columnArray) => {
   return query
 }
 
+const getFlowDataByFlowId = () => {
+  return `select identifier_text as "identifierText" ,event ,event_data as "eventData" ,
+  flow_topic as "flowTopic" ,parent_identifier_text as "parentIdentifierText" ,
+  identifier_text_name as "identifierTextName" 
+  from auot_message_flows 
+  where is_active = 1 and auot_message_flow_id = ?`
+}
+
+const getIdentifierDetailsByIdentifier = () => {
+  return `select auot_message_flow_id as "auotMessageFlowId" ,event ,event_data as "eventData" ,
+  flow_topic as "flowTopic" ,parent_identifier_text as "parentIdentifierText" ,
+  identifier_text_name as "identifierTextName" 
+  from auot_message_flows 
+  where is_active = 1 and LOWER(identifier_text) = ? and waba_phone_number = ?`
+}
+
+const flowTopicExists = () => {
+  return `select count(1) as "flowCount"
+  from auot_message_flows
+  where is_active = 1 
+  and LOWER(flow_topic) = ? 
+  and waba_phone_number = ?`
+}
+
+const addFlow = () => {
+  return `insert into auot_message_flows(auot_message_flow_id,identifier_text,waba_phone_number,event,event_data,flow_topic,parent_identifier_text,identifier_text_name,created_by)
+  values (?,?,?,?,?,?,?,?,?)`
+}
+
+const updateFlow = () => {
+  return `update auot_message_flows 
+  set identifier_text  = ?,event = ?,event_data = ?,flow_topic = ?, parent_identifier_text = ?,identifier_text_name = ?,updated_by = ?,updated_on=CURRENT_TIMESTAMP
+  where is_active = 1 and auot_message_flow_id = ?`
+}
+
 module.exports = {
   getEventDetailsFromIdentifierOrTopic,
   getMoreMenuByParentIdentifier,
   addEventTransaction,
   getTransactionData,
   closeEventTransaction,
-  getIdentifierData
+  getIdentifierData,
+  getFlowDataByFlowId,
+  getIdentifierDetailsByIdentifier,
+  flowTopicExists,
+  addFlow,
+  updateFlow
 }

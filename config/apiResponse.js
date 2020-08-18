@@ -280,5 +280,15 @@ module.exports = {
     status_code: 400,
     code: 3033,
     message: 'You\'ve exceeded the allowed limit please try again after some time'
+  },
+  IDENTIFIER_EXIST: {
+    status_code: 200,
+    code: 3034,
+    message: 'Identifier Text Already Exists.'
+  },
+  PARENT_IDENTIFIER_NOT_EXIST: {
+    status_code: 200,
+    code: 3034,
+    message: 'Parent Identifier Text Does Not Exists.'
   }
 }
