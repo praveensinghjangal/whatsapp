@@ -5,8 +5,8 @@ const __logger = require('../../../lib/logger')
 const ValidatonService = require('../services/validation')
 const MessageHandler = require('../services/messageHandler')
 const EventHandler = require('../services/eventHandler')
-const sendMessage = require('../services/sendMessage')
 const TransactionHandler = require('../services/transactionHandler')
+const sendMessage = require('../services/sendMessage')
 
 const nonTranactionalFlow = (reqBody) => {
   const messageData = q.defer()

@@ -168,7 +168,9 @@ const DELIVERY_CHANNEL = {
 }
 const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
-  addupdateAudience: '/helowhatsapp/api/audience'
+  addupdateAudience: '/helowhatsapp/api/audience',
+  chatFlow: '/helowhatsapp/api/automessage/chat',
+  getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -187,7 +189,9 @@ const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
   getimage: 'getImage',
   getlocation: 'getLocation',
   getdocument: 'getDocument',
-  end: 'end'
+  getvideo: 'getVideo',
+  end: 'end',
+  optinEventHandler: 'optinEventHandler'
 }
 const VALIDATOR = {
   email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',

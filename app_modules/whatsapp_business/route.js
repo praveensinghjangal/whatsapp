@@ -1,6 +1,7 @@
 const express = require('express')
 const authMiddleware = require('../../middlewares/authentication')
 const authstrategy = require('../../config').authentication.strategy
+const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
 const router = express.Router()
 
 // Controller require section
@@ -20,5 +21,6 @@ router.post('/profile/markManagerVerified', authMiddleware.authenticate(authstra
 router.put('/profile/serviceProvider', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.updateServiceProviderId)
 router.post('/verification/phoneNumber', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessVerificationController.generateBusinessNumberVerificationCode)
 router.patch('/verification/phoneNumber', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessVerificationController.validateBusinessNumberVerificationCode)
+router.get('/internal/wabaPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaNumberFromUserId)
 
 module.exports = router

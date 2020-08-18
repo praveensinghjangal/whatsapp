@@ -121,7 +121,121 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.FLOW_MANAGER_INVALID_REQUEST, err: formatedError })
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  addUpdateFlow (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addUpdateFlow',
+      type: 'object',
+      required: true,
+      properties: {
+        auotMessageFlowId: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        identifierText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        event: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: _.keys(__constants.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS)
+        },
+        eventData: {
+          type: 'object',
+          required: false,
+          properties: {
+            url: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            requiredKeys: {
+              type: 'array',
+              required: false,
+              minItems: 1,
+              items: {
+                type: 'string'
+              }
+            }
+          }
+        },
+        flowTopic: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        parentIdentifierText: {
+          type: ['string', null],
+          required: false,
+          minLength: 1
+        },
+        identifierDisplayName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    if (request && request.eventData && request.eventData.requiredKeys && request.eventData.requiredKeys.length > 0) {
+      schema.properties.eventData.properties.url.required = true
+    }
+    if (request && request.auotMessageFlowId) {
+      schema.properties.identifierText.required = false
+      schema.properties.event.required = false
+      schema.properties.flowTopic.required = false
+      schema.properties.identifierDisplayName.required = false
+    }
+    const formatedError = []
+    v.addSchema(schema, '/addUpdateFlow')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  checkWabaNumberExist (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkWabaNumberExist',
+      type: 'object',
+      required: true,
+      properties: {
+        wabaNumber: {
+          type: 'string',
+          required: true,
+          minLength: 10,
+          maxLength: 25,
+          pattern: __constants.VALIDATOR.number
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkWabaNumberExist')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       isvalid.resolve(request)
     }

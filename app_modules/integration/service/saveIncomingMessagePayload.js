@@ -57,13 +57,16 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
   const query = `insert into incoming_message_payload(viva_message_id,service_provider_message_id,service_provider_id,payload,from_number)
   values (?,?,?,?,?)`
   __logger.info('Inside function to store incoming message in incoming_message_payload table', vivaMessageId, serviceProviderMessageId)
-
+  let redisData = {}
   const redisService = new RedisService()
   validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
     .then(valres => redisService.getWabaDataByPhoneNumber(payload.to))
     .then(data => {
-      addAudienceAndOptin(payload, data)
-      return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, data.serviceProviderId, JSON.stringify(payload), fromNumber])
+      redisData = data
+      return addAudienceAndOptin(payload, data)
+    })
+    .then(data => {
+      return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, redisData.serviceProviderId, JSON.stringify(payload), fromNumber])
     })
     .then(result => {
       if (result && result.affectedRows && result.affectedRows > 0) {

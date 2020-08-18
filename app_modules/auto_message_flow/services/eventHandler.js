@@ -228,6 +228,40 @@ class EventHandler {
     return postCalled.promise
   }
 
+  getVideo (eventData) {
+    const postCalled = q.defer()
+    if (eventData && eventData.requiredKeys && eventData.requiredKeys.length > 0) {
+      // console.log('hey there start transaction and ask for input of key 1')
+      const dbServices = new DbServices()
+      eventData.method = 'getVideo'
+      const eventDetailstoAdd = {
+        audiencePhoneNumber: eventData.audiencePhoneNumber,
+        wabaPhoneNumber: eventData.wabaNumber,
+        identifierText: eventData.parentIdentifier,
+        eventData: eventData
+      }
+      dbServices.addEventTransaction(eventDetailstoAdd)
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    } else {
+      // console.log('call empty post and dont start transaction')
+      const transactionHandler = new TransactionHandler()
+      transactionHandler.callGetApi(eventData.url, eventData.headers)
+        .then(apiRes => {
+          if (apiRes && apiRes.body) {
+            postCalled.resolve({ contentType: 'media', media: { type: 'video', url: apiRes.body.url } })
+          } else {
+            postCalled.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+          }
+        })
+        .catch(err => {
+          console.log('Error>>>>>>>>>>>>>>>>>>>>>>...', err)
+          postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        })
+    }
+    return postCalled.promise
+  }
+
   end (eventData) {
     const endTransaction = q.defer()
     const dbServices = new DbServices()
@@ -244,6 +278,12 @@ class EventHandler {
       })
       .catch(err => endTransaction.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return endTransaction.promise
+  }
+
+  optinEventHandler (eventData) {
+    const predefined = q.defer()
+    predefined.resolve({ contentType: 'text', text: 'Thank you for opting in' })
+    return predefined.promise
   }
 }
 
