@@ -53,6 +53,12 @@ class RedirectService {
         Accept: 'application/json',
         Authorization: __config.authTokens[0]
       }
+      if (payload && payload.content && payload.content.text) {
+        payload.content.text = payload.content.text.trim()
+        if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText) {
+          payload.isVavaOptin = true
+        }
+      }
       http.Post(payload, 'body', apiUrl, headers)
         .then(apiRes => {
           // __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode, apiRes.body)

@@ -165,6 +165,34 @@ class TransactionHandler {
     return dataPosted.promise
   }
 
+  formBodyAndCallGetVideo (eventData, paramValueArr, that) {
+    const dataPosted = q.defer()
+    // console.log('Lets get Video ===============', eventData, paramValueArr)
+    let queryString = '?'
+    _.each(paramValueArr, (singleparam, index) => {
+      if (index === 0) {
+        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+      } else {
+        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+      }
+    })
+    // console.log('queryyyyyy strrrrrrr ----->', queryString)
+    that.callGetApi(eventData.url + queryString, eventData.headers)
+      .then(apiRes => {
+        // console.log('api res ==========================', apiRes.body)
+        if (apiRes && apiRes.body && apiRes.body.url) {
+          dataPosted.resolve({ contentType: 'media', media: { type: 'video', url: apiRes.body.url } })
+        } else {
+          dataPosted.resolve({ contentType: 'text', text: 'Thank you, Your request is under process.' })
+        }
+      })
+      .catch(err => {
+        console.log('errrrrrrrrrrrrrrrrrr', err)
+        dataPosted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return dataPosted.promise
+  }
+
   formBodyAndCallPost (eventData, paramValueArr, that) {
     const dataPosted = q.defer()
     console.log('Lets post ===============', eventData, paramValueArr)
@@ -214,6 +242,9 @@ class TransactionHandler {
         break
       case 'getDocument':
         func = this.formBodyAndCallGetDocument
+        break
+      case 'getVideo':
+        func = this.formBodyAndCallGetVideo
         break
       default:
         func = this.methodNotFound

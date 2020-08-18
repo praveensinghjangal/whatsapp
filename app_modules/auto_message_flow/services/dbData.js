@@ -106,6 +106,17 @@ class DbService {
       })
     return transactionClosed.promise
   }
+
+  getIdentifierData (wabaNumber, columnArr, valueArr) {
+    valueArr.unshift(wabaNumber)
+    const getIdentifierData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIdentifierData(wabaNumber, columnArr), valueArr)
+      .then(data => {
+        getIdentifierData.resolve(data)
+      })
+      .catch(err => getIdentifierData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return getIdentifierData.promise
+  }
 }
 
 module.exports = DbService

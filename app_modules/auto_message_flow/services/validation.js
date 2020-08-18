@@ -211,6 +211,37 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkWabaNumberExist (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkWabaNumberExist',
+      type: 'object',
+      required: true,
+      properties: {
+        wabaNumber: {
+          type: 'string',
+          required: true,
+          minLength: 10,
+          maxLength: 25,
+          pattern: __constants.VALIDATOR.number
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkWabaNumberExist')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
