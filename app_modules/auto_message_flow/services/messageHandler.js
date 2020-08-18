@@ -5,6 +5,10 @@ const __constants = require('../../../config/constants')
 class MessageHandler {
   getMessageEventAndEventData (body) {
     const eventData = q.defer()
+    if (body.isVavaOptin) {
+      eventData.resolve({ eventName: 'optinEventHandler', eventData: { wabaNumber: body.to } })
+      return eventData.promise
+    }
     if (body && body.content && body.content.contentType && body.content.contentType.toLowerCase() === 'text' && body.content.text) {
       const dbServices = new DbServices()
       dbServices.getEventDetailsFromIdentifierOrTopic(body.to, body.content.text)

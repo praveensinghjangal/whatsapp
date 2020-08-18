@@ -279,6 +279,12 @@ class EventHandler {
       .catch(err => endTransaction.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return endTransaction.promise
   }
+
+  optinEventHandler (eventData) {
+    const predefined = q.defer()
+    predefined.resolve({ contentType: 'text', text: 'Thank you for opting in' })
+    return predefined.promise
+  }
 }
 
 module.exports = EventHandler
