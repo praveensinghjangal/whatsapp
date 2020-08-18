@@ -32,10 +32,42 @@ const getTransactionData = (interval) => {
   and waba_phone_number = ?
   and (created_on between now()- ${interval} and now())`
 }
+
 const closeEventTransaction = () => {
   return `update auot_message_transaction 
   set transaction_status = 0
   where auot_message_transcation_id  = ?`
+}
+
+const getIdentifierData = (wabaNumber, columnArray) => {
+  // console.log('Column Arrt', columnArray)
+  let query
+  if (wabaNumber) {
+    query = `select auot_message_flow_id as "auotMessageFlowId",identifier_text as "identifierText",event, event_data as "eventData",
+      flow_topic as "flowTopic",parent_identifier_text as "parentIdentifierText",
+      identifier_text_name as identifierTextName
+      from auot_message_flows amf 
+      where is_active = true and waba_phone_number = ?`
+  }
+  if (columnArray.length > 0) {
+    columnArray.forEach((element, index) => {
+      // console.log('Element', element)
+      if (element === 'amf.flow_topic' && !columnArray.includes('amf.parent_identifier_text')) {
+        query += ` AND ${element} = lower(?) AND parent_identifier_text is null`
+      } else if (element === 'amf.flow_topic') {
+        query += ` AND ${element} = lower(?)`
+      } else {
+        query += ` AND ${element} = ?`
+        query += 'order by identifierText'
+      }
+    })
+  }
+  if (!wabaNumber && columnArray <= 0) {
+    query = `select DISTINCT flow_topic as "flowTopic" 
+    from auot_message_flows amf`
+  }
+  // console.log('Query', query)
+  return query
 }
 
 module.exports = {
@@ -43,5 +75,6 @@ module.exports = {
   getMoreMenuByParentIdentifier,
   addEventTransaction,
   getTransactionData,
-  closeEventTransaction
+  closeEventTransaction,
+  getIdentifierData
 }

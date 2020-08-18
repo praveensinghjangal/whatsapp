@@ -169,7 +169,7 @@ const DELIVERY_CHANNEL = {
 const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
   addupdateAudience: '/helowhatsapp/api/audience',
-  chatFlow: '/helowhatsapp/api/automessage/flow'
+  chatFlow: '/helowhatsapp/api/automessage/chat'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -188,6 +188,7 @@ const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
   getimage: 'getImage',
   getlocation: 'getLocation',
   getdocument: 'getDocument',
+  getvideo: 'getVideo',
   end: 'end'
 }
 const VALIDATOR = {
