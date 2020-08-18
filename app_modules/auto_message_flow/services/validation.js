@@ -127,6 +127,90 @@ class validate {
     }
     return isvalid.promise
   }
+
+  addUpdateFlow (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addUpdateFlow',
+      type: 'object',
+      required: true,
+      properties: {
+        auotMessageFlowId: {
+          type: 'string',
+          required: false,
+          minLength: 1
+        },
+        identifierText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        event: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: _.keys(__constants.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS)
+        },
+        eventData: {
+          type: 'object',
+          required: true,
+          properties: {
+            url: {
+              type: 'string',
+              required: true,
+              minLength: 1
+            },
+            requiredKeys: {
+              type: 'array',
+              required: true,
+              minItems: 1,
+              items: {
+                type: 'string'
+              }
+            }
+          }
+        },
+        flowTopic: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        parentIdentifierText: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        identifierDisplayName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    if (request && request.auotMessageFlowId) {
+      schema.properties.identifierText.required = false
+      schema.properties.event.required = false
+      schema.properties.eventData.required = false
+      schema.properties.eventData.properties.url.required = false
+      schema.properties.eventData.properties.requiredKeys.required = false
+      schema.properties.flowTopic.required = false
+      schema.properties.parentIdentifierText.required = false
+      schema.properties.identifierDisplayName.required = false
+    }
+    const formatedError = []
+    v.addSchema(schema, '/addUpdateFlow')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

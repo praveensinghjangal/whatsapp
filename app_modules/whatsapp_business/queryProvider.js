@@ -99,6 +99,12 @@ const getWabaData = () => {
   where wi.is_active = 1 and wi.phone_number = ?`
 }
 
+const getWabaNumberFromUserId = () => {
+  return `SELECT CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber"
+  FROM waba_information wi
+  where wi.user_id = ? and wi.is_active = true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -109,5 +115,6 @@ module.exports = {
   setIsActiveFalseByWabaId,
   updateServiceProviderId,
   getUserIdFromWabaNumber,
-  getWabaData
+  getWabaData,
+  getWabaNumberFromUserId
 }

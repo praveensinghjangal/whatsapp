@@ -251,6 +251,22 @@ class businesAccountService {
       })
     return dbData.promise
   }
+
+  getWabaNumberFromUserId (userId) {
+    const wabaNumber = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromUserId(), [userId])
+      .then(result => {
+        if (result && result.length === 0) {
+          wabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        } else {
+          wabaNumber.resolve(result[0])
+        }
+      }).catch(err => {
+        __logger.error('error::getWabaNumberFromUserId : ', err)
+        wabaNumber.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return wabaNumber.promise
+  }
 }
 
 module.exports = businesAccountService

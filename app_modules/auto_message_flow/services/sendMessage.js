@@ -41,7 +41,7 @@ const sendMessage = (from, to, whatsappBody) => {
         whatsapp: whatsappBody
       }
       apiReqBody.whatsapp.from = from
-      const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
+      const url = __config.wabaPlatformUrl + __constants.INTERNAL_END_POINTS.sendMessageToQueue
       __logger.info('sendMessage :: callsendMessageApi formattedBody>>>>>>>>>>>>>>>>>>>>>>>>', apiReqBody)
       const options = {
         url,
