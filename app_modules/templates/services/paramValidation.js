@@ -78,7 +78,7 @@ class TemplateParamValidationService {
     }
 
     const redisService = new RedisService()
-    redisService.getTemplateDataByIdAndPhoneNumber(templateObject.templateId + '_' + phoneNumber)
+    redisService.getTemplateDataByIdAndPhoneNumber(templateObject.templateId + '___' + phoneNumber)
       .then(redisData => {
         let headerOccurenceCount = 0
         let bodyOccurenceCount = 0
