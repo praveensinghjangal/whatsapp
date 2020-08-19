@@ -169,7 +169,8 @@ const DELIVERY_CHANNEL = {
 const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
   addupdateAudience: '/helowhatsapp/api/audience',
-  chatFlow: '/helowhatsapp/api/automessage/chat'
+  chatFlow: '/helowhatsapp/api/automessage/chat',
+  getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
