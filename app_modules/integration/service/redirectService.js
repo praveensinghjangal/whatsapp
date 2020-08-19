@@ -25,11 +25,14 @@ class RedirectService {
         if (data && data.webhookPostUrl && url.isValid(data.webhookPostUrl)) {
           return http.Post(payload, 'body', data.webhookPostUrl, headers)
         } else {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: null })
+          return { notRedirected: true, type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: null }
         }
       })
       .then(apiRes => {
-        // __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode, apiRes.body)
+        __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode, apiRes.body)
+        if (apiRes.notRedirected) {
+          return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
+        }
         if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
           redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes.body })
         } else {
