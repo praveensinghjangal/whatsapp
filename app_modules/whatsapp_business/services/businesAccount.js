@@ -89,9 +89,12 @@ class businesAccountService {
       serviceProviderId: businessData.serviceProviderId ? businessData.serviceProviderId : businessOldData.serviceProviderId,
       apiKey: businessData.apiKey ? businessData.apiKey : businessOldData.apiKey,
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
-      optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText
+      optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
+      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false
     }
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText])
+
+    this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.insert)
+      .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated]))
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(businessAccountObj)
@@ -116,7 +119,7 @@ class businesAccountService {
     const businessAccountObj = {
       facebookManagerId: typeof businessData.facebookManagerId === 'string' ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
-      phoneNumber: businessData.phoneNumber ? businessData.phoneNumber : businessOldData.phoneNumber,
+      phoneNumber: businessOldData.phoneNumber,
       canReceiveSms: typeof businessData.canReceiveSms === 'boolean' ? businessData.canReceiveSms : businessOldData.canReceiveSms,
       canReceiveVoiceCall: typeof businessData.canReceiveVoiceCall === 'boolean' ? businessData.canReceiveVoiceCall : businessOldData.canReceiveVoiceCall,
       associatedWithIvr: typeof businessData.associatedWithIvr === 'boolean' ? businessData.associatedWithIvr : businessOldData.associatedWithIvr,
@@ -138,14 +141,14 @@ class businesAccountService {
       serviceProviderId: businessData.serviceProviderId ? businessData.serviceProviderId : businessOldData.serviceProviderId,
       apiKey: businessData.apiKey ? businessData.apiKey : businessOldData.apiKey,
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
-      optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText
+      optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
+      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false
     }
-
     const redisService = new RedisService()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.wabaInformationId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.wabaInformationId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          redisService.setDataInRedis(businessAccountObj.phoneNumber)
+          if (businessAccountObj.phoneNumber) redisService.setDataInRedis(businessAccountObj.phoneNumber)
           dataUpdated.resolve(businessAccountObj)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -162,13 +165,30 @@ class businesAccountService {
     const businessDataUpdated = q.defer()
     // this.deactivateWabaRecord(businessOldData.wabaInformationId, businessOldData.userId)
     // .then(data => this.insertBusinessData(businessOldData.userId, businessData, businessOldData))
-    this.updateBusinessInfo(businessOldData.userId, businessData, businessOldData)
-      .then(insertedData => businessDataUpdated.resolve(insertedData))
+    if (businessData.phoneNumber && !businessOldData.phoneNumber) {
+      this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.update)
+        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber))
+        .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData))
+        .then(data => businessDataUpdated.resolve(data))
+        .catch(err => businessDataUpdated.reject(err))
+    } else {
+      this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData)
+        .then(data => businessDataUpdated.resolve(data))
+        .catch(err => businessDataUpdated.reject(err))
+    }
+    return businessDataUpdated.promise
+  }
+
+  processWabaDataUpdation (userId, businessData, businessOldData) {
+    __logger.info('processWabaDataUpdation')
+    const processed = q.defer()
+    this.updateBusinessInfo(userId, businessData, businessOldData)
+      .then(insertedData => processed.resolve(insertedData))
       .catch(err => {
         __logger.error('error: ', err)
-        businessDataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        processed.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return businessDataUpdated.promise
+    return processed.promise
   }
 
   getBusinessProfileInfo (userId) {
@@ -250,6 +270,71 @@ class businesAccountService {
         dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
+  }
+
+  checkWabaNumberAlreadyExist (phoneCode, phoneNumber, userId, tag) {
+    __logger.info('Inside checkWabaNumberAlreadyExist :: ')
+    const dbData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.checkWabaNumberAlreadyExist(), [phoneCode, phoneNumber, userId])
+      .then(result => {
+        if (result && result.length === 0 && tag === __constants.TAG.insert) {
+          dbData.resolve(true)
+        }
+        if (result && result.length === 0 && tag === __constants.TAG.update) {
+          dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: {} })
+        } else {
+          const userIdArr = result.map(el => el.userId)
+          // const phoneCodeArr = result.map(el => el.phoneCode)
+          const phoneNumberArr = result.map(el => el.phoneNumber)
+
+          if (phoneNumberArr.includes(phoneNumber)) {
+            dbData.reject({ type: __constants.RESPONSE_MESSAGES.RECORD_EXIST, data: {}, err: {} })
+          } else if (userIdArr.includes(userId)) {
+            dbData.resolve(true)
+          }
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get getDataFromDb: ', err)
+        dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dbData.promise
+  }
+
+  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber) {
+    /* To do
+       Update all the tables with waba Number
+       currently updating only waba info table
+    */
+    const dataUpdated = q.defer()
+
+    const wabaData = {
+      phoneCode: phoneCode,
+      phoneNumber: phoneNumber,
+      updatedBy: userId,
+      userId: userId
+    }
+
+    const queryParam = []
+    _.each(wabaData, (val) => queryParam.push(val))
+    const validationService = new ValidatonService()
+    validationService.checkPhoneCodeAndPhoneNumberService(wabaData)
+      .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId(), queryParam))
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          delete wabaData.updatedBy
+          delete wabaData.wabaInformationId
+          delete wabaData.userId
+          dataUpdated.resolve(wabaData)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
   }
 
   getWabaNumberFromUserId (userId) {

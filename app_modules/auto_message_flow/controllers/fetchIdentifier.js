@@ -35,14 +35,7 @@ const fetchIdentifier = (req, res) => {
 
   const dbService = new DbService()
   const validate = new ValidatonService()
-  let processed = q
-  if (req.query.flowTopic || req.query.parentIdentfierText) {
-    processed = validate.checkWabaNumberExist(req.body)
-  } else {
-    processed = processed.resolve()
-  }
-
-  processed
+  validate.checkWabaNumberExist(req.body)
     .then(() => dbService.getIdentifierData(wabaNumber, columnArray, valArray))
     .then(data => {
       if (data && data.length > 0) {
