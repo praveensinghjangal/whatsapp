@@ -42,13 +42,10 @@ const closeEventTransaction = () => {
 const getIdentifierData = (wabaNumber, columnArray) => {
   // console.log('Column Arrt', columnArray)
   let query
-  if (wabaNumber) {
-    query = `select auot_message_flow_id as "auotMessageFlowId",identifier_text as "identifierText",event, event_data as "eventData",
-      flow_topic as "flowTopic",parent_identifier_text as "parentIdentifierText",
-      identifier_text_name as identifierTextName
-      from auot_message_flows amf 
-      where is_active = true and waba_phone_number = ?`
-  }
+  query = `select auot_message_flow_id as "auotMessageFlowId",identifier_text as "identifierText",identifier_text_name as "identifierTextName"
+  from auot_message_flows amf 
+  where is_active = true and waba_phone_number = ?`
+
   if (columnArray.length > 0) {
     columnArray.forEach((element, index) => {
       // console.log('Element', element)
@@ -58,13 +55,14 @@ const getIdentifierData = (wabaNumber, columnArray) => {
         query += ` AND ${element} = lower(?)`
       } else {
         query += ` AND ${element} = ?`
-        query += 'order by identifierText'
       }
     })
+    query += ' order by identifierText'
   }
-  if (!wabaNumber && columnArray <= 0) {
+  if (columnArray <= 0) {
     query = `select DISTINCT flow_topic as "flowTopic" 
-    from auot_message_flows amf`
+    from auot_message_flows amf
+    where is_active = true and waba_phone_number = ?`
   }
   // console.log('Query', query)
   return query

@@ -201,6 +201,11 @@ module.exports = {
     code: 3021,
     message: 'WABA phone number does not exists.'
   },
+  WABA_PHONE_NUM_EXISTS: {
+    status_code: 200,
+    code: 3021,
+    message: 'WABA phone number already exists.'
+  },
   AUDIENCE_ID_NOT_EXISTS: {
     status_code: 200,
     code: 3021,

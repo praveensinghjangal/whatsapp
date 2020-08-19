@@ -205,6 +205,11 @@ const VALIDATOR = {
 const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
 const FLOW_TRANSACTION_INTERVAL = ' interval 5 MINUTE'
 
+const TAG = {
+  insert: 'insert',
+  update: 'update'
+}
+
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -238,3 +243,4 @@ module.exports.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = FLOW_MESSAGE_DB_EVENTS_TO
 module.exports.VALIDATOR = VALIDATOR
 module.exports.FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT
 module.exports.FLOW_TRANSACTION_INTERVAL = FLOW_TRANSACTION_INTERVAL
+module.exports.TAG = TAG

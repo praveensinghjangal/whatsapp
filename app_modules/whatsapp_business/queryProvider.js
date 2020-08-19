@@ -15,7 +15,7 @@ const getBusinessProfile = () => {
   wabaprof.status_name as "wabaProfileSetupStatus", business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified", city, postal_code as "postalCode",
   service_provider_name as "serviceProviderName",api_key as "apiKey",
-  webhook_post_url as "webhookPostUrl",optin_text as "optinText"
+  webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated"
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
   LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true
@@ -36,7 +36,7 @@ const getWabaTableDataByUserId = () => {
   business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified",city,postal_code as "postalCode",
   service_provider_id as "serviceProviderId",api_key as "apiKey",
-  webhook_post_url as "webhookPostUrl",optin_text as "optinText"
+  webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated"
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
@@ -58,17 +58,18 @@ const addWabaTableData = () => {
   return `insert into waba_information (facebook_manager_id ,phone_code ,phone_number,can_receive_sms,
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
   country, email, business_category_id ,profile_photo_url , waba_profile_setup_status_id ,business_manager_verified,
-  phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,optin_text)
-  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,
+  optin_text,chatbot_activated)
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateWabaTableData = () => {
-  return `update waba_information  set phone_code =?,phone_number=?,can_receive_sms=?,
+  return `update waba_information set can_receive_sms=?,
   can_receive_voice_call=?, associated_with_ivr=?,business_name =?, state=?,whatsapp_status =?, description=?
   ,address=?,country=?, email=?, business_category_id =?,profile_photo_url =?,
   waba_profile_setup_status_id =?,business_manager_verified=?,phone_verified =?,waba_information_id=?,
   updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?, 
-  service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?
+  service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?,chatbot_activated=?
   where waba_information_id=? and user_id=?`
 }
 
@@ -99,6 +100,19 @@ const getWabaData = () => {
   where wi.is_active = 1 and wi.phone_number = ?`
 }
 
+const updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId = () => {
+  return `update waba_information  set phone_code =?,phone_number=?,
+  updated_by=?,updated_on=now()
+  where user_id=? and is_active = true`
+}
+
+const checkWabaNumberAlreadyExist = () => {
+  return `select phone_number as "phoneNumber",phone_code as "phoneCode", user_id  as "userId"
+  from waba_information wi 
+  where is_active = 1
+  and wi.phone_code=? and wi.phone_number=? or wi.user_id=? and is_active = 1`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -109,5 +123,7 @@ module.exports = {
   setIsActiveFalseByWabaId,
   updateServiceProviderId,
   getUserIdFromWabaNumber,
-  getWabaData
+  getWabaData,
+  checkWabaNumberAlreadyExist,
+  updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId
 }

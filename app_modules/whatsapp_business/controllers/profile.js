@@ -215,10 +215,33 @@ const updateServiceProviderId = (req, res) => {
     })
 }
 
+const updateWabaPhoneNumber = (req, res) => {
+  __logger.info('Inside updateWabaPhoneNumber')
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const businessAccountService = new BusinessAccountService()
+  const validationService = new ValidatonService()
+
+  validationService.checkPhoneCodeAndPhoneNumberService(req.body)
+    .then(data => businessAccountService.checkWabaNumberAlreadyExist(req.body.phoneCode, req.body.phoneNumber, userId))
+    .then(results => {
+      __logger.info('Then 1')
+      return businessAccountService.updateWabaNumberAndPhoneCode(userId, req.body.phoneCode, req.body.phoneNumber, req.body.wabaInformationId)
+    })
+    .then(result => {
+      __logger.info('Then 3', result)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
   addupdateBusinessAccountInfo,
   markManagerVerified,
-  updateServiceProviderId
+  updateServiceProviderId,
+  updateWabaPhoneNumber
 }
