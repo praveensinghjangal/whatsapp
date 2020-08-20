@@ -154,6 +154,24 @@ class DbService {
     return identifierData.promise
   }
 
+  getCancelFlowIdentifierByWabaNumber (wabaNumber) {
+    const flowData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getCancelFlowIdentifierByWabaNumber(), [wabaNumber])
+      .then(result => {
+        __logger.info('getCancelFlowIdentifierByWabaNumber Qquery Result', result)
+        if (result && result.length > 0) {
+          return flowData.resolve({ dataFound: true, identifierText: result })
+        } else {
+          return flowData.resolve({ dataFound: false, identifierText: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get getCancelFlowIdentifierByWabaNumber: ', err)
+        flowData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return flowData.promise
+  }
+
   flowTopicExists (flowTopic, wabaNumber) {
     const exists = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.flowTopicExists(), [flowTopic, wabaNumber])

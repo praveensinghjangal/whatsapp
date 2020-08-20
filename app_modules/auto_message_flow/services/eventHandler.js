@@ -72,8 +72,10 @@ class EventHandler {
         identifierText: eventData.parentIdentifier,
         eventData: eventData
       }
+      const requiredParam = eventData.requiredKeys[0].split('|')[1] || eventData.requiredKeys[0]
+      const cancelStr = eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier : ''
       dbServices.addEventTransaction(eventDetailstoAdd)
-        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr }))
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     } else {
       // console.log('call empty post and dont start transaction')
@@ -105,8 +107,10 @@ class EventHandler {
         identifierText: eventData.parentIdentifier,
         eventData: eventData
       }
+      const requiredParam = eventData.requiredKeys[0].split('|')[1] || eventData.requiredKeys[0]
+      const cancelStr = eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier : ''
       dbServices.addEventTransaction(eventDetailstoAdd)
-        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr }))
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     } else {
       // console.log('call empty post and dont start transaction')
@@ -139,8 +143,10 @@ class EventHandler {
         identifierText: eventData.parentIdentifier,
         eventData: eventData
       }
+      const requiredParam = eventData.requiredKeys[0].split('|')[1] || eventData.requiredKeys[0]
+      const cancelStr = eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier : ''
       dbServices.addEventTransaction(eventDetailstoAdd)
-        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr }))
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     } else {
       // console.log('call empty post and dont start transaction')
@@ -173,8 +179,10 @@ class EventHandler {
         identifierText: eventData.parentIdentifier,
         eventData: eventData
       }
+      const requiredParam = eventData.requiredKeys[0].split('|')[1] || eventData.requiredKeys[0]
+      const cancelStr = eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier : ''
       dbServices.addEventTransaction(eventDetailstoAdd)
-        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr }))
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     } else {
       // console.log('call empty post and dont start transaction')
@@ -207,8 +215,10 @@ class EventHandler {
         identifierText: eventData.parentIdentifier,
         eventData: eventData
       }
+      const requiredParam = eventData.requiredKeys[0].split('|')[1] || eventData.requiredKeys[0]
+      const cancelStr = eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier : ''
       dbServices.addEventTransaction(eventDetailstoAdd)
-        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr }))
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     } else {
       // console.log('call empty post and dont start transaction')
@@ -240,8 +250,10 @@ class EventHandler {
         identifierText: eventData.parentIdentifier,
         eventData: eventData
       }
+      const requiredParam = eventData.requiredKeys[0].split('|')[1] || eventData.requiredKeys[0]
+      const cancelStr = eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier : ''
       dbServices.addEventTransaction(eventDetailstoAdd)
-        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + eventData.requiredKeys[0] + '\n\nNote : To cancel this transaction anytime enter ' + eventData.transActionEndingIdentifier }))
+        .then(eventDetails => postCalled.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr }))
         .catch(err => postCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     } else {
       // console.log('call empty post and dont start transaction')
