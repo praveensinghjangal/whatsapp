@@ -277,7 +277,10 @@ class TransactionHandler {
       eventData: transactionDetails[0].eventData
     }
     dbServices.addEventTransaction(transactionData)
-      .then(eventDetails => paramsSavedAndRequested.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + '\n\nNote : To cancel this transaction anytime enter ' + transactionDetails[0].eventData.transActionEndingIdentifier }))
+      .then(eventDetails => {
+        const cancelStr = transactionDetails[0].eventData.transActionEndingIdentifier ? '\n\nNote : To cancel this transaction anytime enter ' + transactionDetails[0].eventData.transActionEndingIdentifier : ''
+        return paramsSavedAndRequested.resolve({ contentType: 'text', text: 'Please provide ' + requiredParam + cancelStr })
+      })
       .catch(err => paramsSavedAndRequested.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return paramsSavedAndRequested.promise
   }
@@ -293,7 +296,8 @@ class TransactionHandler {
     if (messageTextArr.length === eventData.requiredKeys.length) {
       paramsRequired.resolve({ requireMore: false, messageTextArr })
     } else {
-      paramsRequired.resolve({ requireMore: true, requiredParam: eventData.requiredKeys[messageTextArr.length], currentParamValue: inputBody.content.text })
+      const requiredParam = eventData.requiredKeys[messageTextArr.length].split('|')[1] || eventData.requiredKeys[messageTextArr.length]
+      paramsRequired.resolve({ requireMore: true, requiredParam, currentParamValue: inputBody.content.text })
     }
     return paramsRequired.promise
   }

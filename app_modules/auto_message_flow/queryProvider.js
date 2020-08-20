@@ -103,6 +103,12 @@ const updateFlow = () => {
   where is_active = 1 and auot_message_flow_id = ?`
 }
 
+const getCancelFlowIdentifierByWabaNumber = () => {
+  return `select identifier_text as "identifierText"
+  from auot_message_flows amf 
+  where is_active = 1 and event='end' and waba_phone_number = ?`
+}
+
 module.exports = {
   getEventDetailsFromIdentifierOrTopic,
   getMoreMenuByParentIdentifier,
@@ -114,5 +120,6 @@ module.exports = {
   getIdentifierDetailsByIdentifier,
   flowTopicExists,
   addFlow,
-  updateFlow
+  updateFlow,
+  getCancelFlowIdentifierByWabaNumber
 }
