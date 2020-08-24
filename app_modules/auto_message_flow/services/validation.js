@@ -241,6 +241,39 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkRegex (dataType, minLength, maxLength, text) {
+    const isvalid = q.defer()
+    if (dataType) {
+      dataType = dataType.toLowerCase()
+      console.log('hettttttttttttttttttttttttttt', dataType, minLength, maxLength, text)
+      let regex
+      switch (dataType) {
+        case 'boolean':
+          regex = '^(true|false|1|0)$'
+          break
+        case 'string':
+          regex = `^.{${minLength},${maxLength}}$`
+          break
+        case 'number':
+          regex = `^\\d{${minLength},${maxLength}}$`
+          break
+        default:
+          regex = '^.{1,10000}$'
+      }
+      console.log('herererrer', regex)
+      const testRegex = text.match(new RegExp(regex, 'gi'))
+      console.log('wow-regex ----------------->', regex, testRegex)
+      if (testRegex && testRegex.length > 0) {
+        isvalid.resolve({ invalid: false })
+      } else {
+        isvalid.resolve({ invalid: true })
+      }
+    } else {
+      isvalid.resolve({ invalid: false })
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

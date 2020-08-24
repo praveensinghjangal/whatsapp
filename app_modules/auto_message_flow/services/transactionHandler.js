@@ -3,6 +3,7 @@ const q = require('q')
 const _ = require('lodash')
 const DbServices = require('./dbData')
 const __constants = require('../../../config/constants')
+const ValidatonService = require('./validation')
 
 class TransactionHandler {
   callPostApi (inputRequest, url, headers = {}) {
@@ -54,10 +55,11 @@ class TransactionHandler {
     console.log('Lets get text ===============', eventData, paramValueArr)
     let queryString = '?'
     _.each(paramValueArr, (singleparam, index) => {
+      const requiredParam = eventData.requiredKeys[index].split('|')[0] || eventData.requiredKeys[index]
       if (index === 0) {
-        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += requiredParam + '=' + singleparam
       } else {
-        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += '&' + requiredParam + '=' + singleparam
       }
     })
     console.log('queryyyyyy strrrrrrr ----->', queryString)
@@ -83,10 +85,11 @@ class TransactionHandler {
     // console.log('Lets get Image ===============', eventData, paramValueArr)
     let queryString = '?'
     _.each(paramValueArr, (singleparam, index) => {
+      const requiredParam = eventData.requiredKeys[index].split('|')[0] || eventData.requiredKeys[index]
       if (index === 0) {
-        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += requiredParam + '=' + singleparam
       } else {
-        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += '&' + requiredParam + '=' + singleparam
       }
     })
     // console.log('queryyyyyy strrrrrrr ----->', queryString)
@@ -112,10 +115,11 @@ class TransactionHandler {
     // console.log('Lets get Location ===============', eventData, paramValueArr)
     let queryString = '?'
     _.each(paramValueArr, (singleparam, index) => {
+      const requiredParam = eventData.requiredKeys[index].split('|')[0] || eventData.requiredKeys[index]
       if (index === 0) {
-        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += requiredParam + '=' + singleparam
       } else {
-        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += '&' + requiredParam + '=' + singleparam
       }
     })
     // console.log('queryyyyyy strrrrrrr ----->', queryString)
@@ -141,10 +145,11 @@ class TransactionHandler {
     // console.log('Lets get Document ===============', eventData, paramValueArr)
     let queryString = '?'
     _.each(paramValueArr, (singleparam, index) => {
+      const requiredParam = eventData.requiredKeys[index].split('|')[0] || eventData.requiredKeys[index]
       if (index === 0) {
-        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += requiredParam + '=' + singleparam
       } else {
-        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += '&' + requiredParam + '=' + singleparam
       }
     })
     // console.log('queryyyyyy strrrrrrr ----->', queryString)
@@ -170,13 +175,14 @@ class TransactionHandler {
     // console.log('Lets get Video ===============', eventData, paramValueArr)
     let queryString = '?'
     _.each(paramValueArr, (singleparam, index) => {
+      const requiredParam = eventData.requiredKeys[index].split('|')[0] || eventData.requiredKeys[index]
       if (index === 0) {
-        queryString += [eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += requiredParam + '=' + singleparam
       } else {
-        queryString += '&'[eventData.requiredKeys[index]] + '=' + singleparam
+        queryString += '&' + requiredParam + '=' + singleparam
       }
     })
-    // console.log('queryyyyyy strrrrrrr ----->', queryString)
+    console.log('queryyyyyy strrrrrrr ----->', queryString)
     that.callGetApi(eventData.url + queryString, eventData.headers)
       .then(apiRes => {
         // console.log('api res ==========================', apiRes.body)
@@ -198,7 +204,8 @@ class TransactionHandler {
     console.log('Lets post ===============', eventData, paramValueArr)
     const reqBody = {}
     _.each(paramValueArr, (singleparam, index) => {
-      reqBody[eventData.requiredKeys[index]] = singleparam
+      const requiredParam = eventData.requiredKeys[index].split('|')[0] || eventData.requiredKeys[index]
+      reqBody[requiredParam] = singleparam
     })
     console.log('bodyyyyyyyyyyyyyy ----->', reqBody)
     that.callPostApi(reqBody, eventData.url, eventData.headers)
@@ -287,18 +294,35 @@ class TransactionHandler {
 
   checkIfMoreParamRequired (transactionDetails, inputBody) {
     const paramsRequired = q.defer()
+    const validatonService = new ValidatonService()
     console.log('here ---->', transactionDetails)
     const eventData = transactionDetails.transactionData[0].eventData
     let messageTextArr = _.map(transactionDetails.transactionData, 'messageText')
-    messageTextArr.push(inputBody.content.text)
     messageTextArr = _.without(messageTextArr, null)
-    console.log('here 2 ---->', eventData, messageTextArr, eventData.requiredKeys)
-    if (messageTextArr.length === eventData.requiredKeys.length) {
-      paramsRequired.resolve({ requireMore: false, messageTextArr })
-    } else {
-      const requiredParam = eventData.requiredKeys[messageTextArr.length].split('|')[1] || eventData.requiredKeys[messageTextArr.length]
-      paramsRequired.resolve({ requireMore: true, requiredParam, currentParamValue: inputBody.content.text })
-    }
+    // check regex here
+    console.log('regexxxxxxxxxxxxxxxxx to chk input', messageTextArr, eventData.requiredKeys[messageTextArr.length], inputBody.content.text)
+    const currentInputTextKeyArr = eventData.requiredKeys[messageTextArr.length].split('|')
+    validatonService.checkRegex(currentInputTextKeyArr[2], currentInputTextKeyArr[3], currentInputTextKeyArr[4], inputBody.content.text)
+      .then(data => {
+        console.log('validation reesssssssssssssss', data)
+        // if regex fails form msg body and flag invalid true and handle in then and return data to send message
+        if (!data.invalid) {
+          messageTextArr.push(inputBody.content.text)
+          console.log('here 2 ---->', eventData, messageTextArr, eventData.requiredKeys)
+          if (messageTextArr.length === eventData.requiredKeys.length) {
+            paramsRequired.resolve({ requireMore: false, messageTextArr })
+          } else {
+            const requiredParam = eventData.requiredKeys[messageTextArr.length].split('|')[1] || eventData.requiredKeys[messageTextArr.length]
+            paramsRequired.resolve({ requireMore: true, requiredParam, currentParamValue: inputBody.content.text })
+          }
+        } else {
+          return paramsRequired.resolve({ invalid: true, messageData: { contentType: 'text', text: 'Please provide ' + currentInputTextKeyArr[1] + ' of type ' + currentInputTextKeyArr[2] + ' with minimum length of ' + currentInputTextKeyArr[3] + ' and maximum lenghth of ' + currentInputTextKeyArr[4] } })
+        }
+      })
+      .catch(err => {
+        console.log('errrrrrrrrrr', err)
+        paramsRequired.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return paramsRequired.promise
   }
 
@@ -312,14 +336,19 @@ class TransactionHandler {
     this.checkIfMoreParamRequired(transactionDetails, inputBody)
       .then(paramsRes => {
         console.log('params response ----------->', paramsRes)
-        if (paramsRes && paramsRes.requireMore) {
+        if (paramsRes && paramsRes.invalid) {
+          return paramsRes.messageData
+        } else if (paramsRes && paramsRes.requireMore) {
           return this.saveCurrentParamValueInDbAndRequestNextParam(transactionDetails.transactionData, paramsRes.currentParamValue, paramsRes.requiredParam, inputBody)
         } else {
           return this.callApiAndCloseTransaction(transactionDetails.transactionData, paramsRes.messageTextArr)
         }
       })
       .then(messageData => transactionCompleted.resolve(messageData))
-      .catch(err => transactionCompleted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        console.log('eeeeeeeeeeeeeeee', err)
+        transactionCompleted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return transactionCompleted.promise
   }
 
