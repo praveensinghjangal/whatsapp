@@ -195,7 +195,7 @@ class DbService {
       event: body.event,
       eventData: JSON.stringify(body.eventData) || null,
       flowTopic: body.flowTopic.trim().toLowerCase(),
-      parentIdentifierText: body.parentIdentifierText.trim().toLowerCase(),
+      parentIdentifierText: body.parentIdentifierText === null ? null : body.parentIdentifierText.trim().toLowerCase(),
       identifierTextName: body.identifierDisplayName,
       createdBy: userId
     }
