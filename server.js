@@ -16,7 +16,8 @@ const SERVER_SCRIPTS = {
   mockQueueConsumer: './workers/message_consumers/mockQueueConsumer.js',
   tyntecOutGoingQueueConsumer: './workers/message_consumers/tyntecOutGoingQueueConsumer.js',
   tyntecIncoming: './workers/message_consumers/tyntecIncoming.js',
-  tyntecMessageStatus: './workers/message_consumers/tyntecMessageStatus.js'
+  tyntecMessageStatus: './workers/message_consumers/tyntecMessageStatus.js',
+  retrySendingPayload: './workers/message_consumers/retrySendingPayload.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {
