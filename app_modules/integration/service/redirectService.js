@@ -67,11 +67,11 @@ class RedirectService {
     if (redisData && redisData.chatbotActivated) {
       console.log('Inside if')
       const http = new HttpService(3000)
-      const apiUrl = __config.base_url + __constants.INTERNAL_END_POINTS.chatFlow
+      const apiUrl = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.chatFlow
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: __config.authTokens[0]
+        Authorization: __config.chatAppToken[0]
       }
       if (payload && payload.content && payload.content.text) {
         payload.content.text = payload.content.text.trim()
