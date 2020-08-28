@@ -29,7 +29,7 @@ class RedirectService {
     }
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        if (payload && payload.content) {
+        if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
         const headers = {
