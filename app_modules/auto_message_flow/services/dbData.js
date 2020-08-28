@@ -247,6 +247,25 @@ class DbService {
       })
     return flowUpdated.promise
   }
+
+  deleteFlow (flowId) {
+    __logger.info('deleteFlow ----------->', flowId)
+    const flowUpdated = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.deleteFlow(), [flowId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          __logger.info(result.affectedRows)
+          flowUpdated.resolve(flowId)
+        } else {
+          flowUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error:: deleteFlow : ', err)
+        flowUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return flowUpdated.promise
+  }
 }
 
 module.exports = DbService
