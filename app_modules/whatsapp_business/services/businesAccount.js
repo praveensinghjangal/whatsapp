@@ -240,11 +240,15 @@ class businesAccountService {
       phoneCode = wabaNumber.substring(0, 3)
       wabaNumber = wabaNumber.substring(3, wabaNumber.length)
     }
-
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
-        businessDataFetched.resolve(businessData[0].userId)
+        console.log('BusinessData', businessData)
+        if (businessData.length > 0) {
+          businessDataFetched.resolve(businessData[0].userId)
+        } else {
+          businessDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, err: {} })
+        }
       })
       .catch(err => {
         __logger.error('error: ', err)
@@ -351,6 +355,33 @@ class businesAccountService {
         wabaNumber.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return wabaNumber.promise
+  }
+
+  getUserIdAndTokenKeyByWabaNumber (wabaNumber) {
+    let phoneCode
+    if (wabaNumber.includes('91')) {
+      phoneCode = wabaNumber.substring(0, 2)
+      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
+    }
+    if (wabaNumber.includes('+91')) {
+      phoneCode = wabaNumber.substring(0, 3)
+      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
+    }
+    const businessDataFetched = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdAndTokenKeyByWabaNumber(), [wabaNumber, phoneCode])
+      .then(businessData => {
+        console.log('BusinessData', businessData)
+        if (businessData.length > 0) {
+          businessDataFetched.resolve(businessData[0])
+        } else {
+          businessDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return businessDataFetched.promise
   }
 }
 

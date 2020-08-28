@@ -9,7 +9,6 @@ module.exports = {
   api_prefix: appName,
   port: process.env.PORT,
   base_url: process.env.BASE_URL ? process.env.BASE_URL : 'http://localhost:' + process.env.PORT,
-  wabaPlatformUrl: process.env.WABA_PLATFORM_URL ? process.env.WABA_PLATFORM_URL : 'http://localhost:8459',
   socket_io_port: process.env.SOCKET_IO_PORT,
   archive_db_name: process.env.ARCHIVE_DB_NAME,
   authConfig: {
@@ -253,5 +252,7 @@ module.exports = {
     message: process.env.OPTIN_MESSAGE_SOURCE,
     direct: process.env.OPTIN_DIRECT_SOURCE
   },
-  authTokens: process.env.AUTH_TOKENS.split(',') || []
+  authTokens: process.env.AUTH_TOKENS.split(',') || [],
+  chatAppUrl: process.env.CHAT_APP_URL,
+  chatAppToken: process.env.CHAT_APP_TOKEN
 }
