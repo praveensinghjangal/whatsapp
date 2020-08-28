@@ -9,5 +9,6 @@ router.get('/flow', tokenBasedAuth, require('./controllers/fetchIdentifier'))
 router.post('/flow', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/addUpdateFlow'))
 router.get('/flow/types', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getEventTypes'))
 router.get('/flow/identifier/cancel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getCancelonIdentifiers'))
+router.patch('/flow/identifier/delete', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/deactivateFlowbyflowId'))
 
 module.exports = router

@@ -274,6 +274,35 @@ class validate {
     }
     return isvalid.promise
   }
+
+  deleteFlowData (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/deleteFlowData',
+      type: 'object',
+      required: true,
+      properties: {
+        auotMessageFlowId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/deleteFlowData')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
