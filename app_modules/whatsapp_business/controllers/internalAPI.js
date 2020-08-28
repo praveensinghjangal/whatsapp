@@ -37,13 +37,13 @@ const getWabaDataFromDb = (req, res) => {
     })
 }
 
-const getUserIdFromWabaNumber = (req, res) => {
+const getUserIdAndApiKeyFromWabaNumber = (req, res) => {
   __logger.info('Inside getWabaDataFromDb', req.query.wabaNumber)
   if (!req.query.wabaNumber) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide wabaNumber' })
   }
   const businessAccountService = new BusinessAccountService()
-  businessAccountService.getUserIdFromWabaNumber(req.query.wabaNumber)
+  businessAccountService.getUserIdAndTokenKeyByWabaNumber(req.query.wabaNumber)
     .then(result => {
       __logger.info('Final Result then')
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
@@ -57,5 +57,5 @@ const getUserIdFromWabaNumber = (req, res) => {
 module.exports = {
   getWabaNumberFromUserId,
   getWabaDataFromDb,
-  getUserIdFromWabaNumber
+  getUserIdAndApiKeyFromWabaNumber
 }

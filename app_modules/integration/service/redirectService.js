@@ -71,7 +71,7 @@ class RedirectService {
       const headers = {
         'Content-Type': 'application/json',
         Accept: 'application/json',
-        Authorization: __config.chatAppToken[0]
+        Authorization: __config.chatAppToken
       }
       if (payload && payload.content && payload.content.text) {
         payload.content.text = payload.content.text.trim()

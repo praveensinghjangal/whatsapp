@@ -213,7 +213,7 @@ const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
 const FLOW_TRANSACTION_INTERVAL = ' interval 5 MINUTE'
 
 const CHAT_APP_ENDPOINTS = {
-  chatFlow: '/helowhatsapp/api/automessage/chat'
+  chatFlow: '/helowhatsappchat/api/flowmessage/chat'
 }
 
 const TAG = {

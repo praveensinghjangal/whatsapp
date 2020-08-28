@@ -3862,6 +3862,187 @@
                 "security": []
             }
         },
+        "/business/internal/wabaPhoneNumber": {
+            "get": {
+                "description": "Gets waba number from user id",
+                "summary": "Get waba number from user id",
+                "tags": [
+                    "WABA"
+                ],
+                "operationId": "getWabaNumberFromUserId",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "Token for internal api calling is required here"
+                    },
+                    {
+                        "name": "userId",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "description": "user id needs to be entered here"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Waba Number",
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "wabaPhoneNumber": "918080800808"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },
+        "/business/internal/getUserIdAndApiKeyFromWabaNumber": {
+            "get": {
+                "description": "Gets user id and token key from waba number",
+                "summary": "Gets user id and token key from waba number",
+                "tags": [
+                    "WABA"
+                ],
+                "operationId": "getUserIdAndApiKeyFromWabaNumber",
+                "deprecated": false,
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true,
+                        "type": "string",
+                        "description": "Token for internal api calling is required here"
+                    },
+                    {
+                        "name": "wabaNumber",
+                        "in": "query",
+                        "required": true,
+                        "type": "string",
+                        "description": "wabaNumber needs to be entered here"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": User Id and waba number,
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 2000,
+                                "msg": "Success",
+                                "data": {
+                                    "userId": "158988680814912",
+                                    "apiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InByb3ZpZGVySWQiOiJmMWQ0NDIwMC00YjlkLTQ5MDEtYWU0OS01MDM1ZTBiMTRhNWQiLCJ3YWJhUGhvbmVOdW1iZXIiOiI5MTgwODA4MDA4MDgiLCJzaWduYXR1cmUiOiIzNmJlMThjYy0wNjIyLTRkZjEtOTlhYS00MzM4MzcwYTYwNGMifSwiaWF0IjoxNTkyNTY1Njc2LCJleHAiOjE2MDA2NTIwNzZ9.gM4s7nQ-8rF7bUXGvAqSj2u4YzJsoo3pQPZCMF1qNsE"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid token in header",
+                        "headers": {},
+                        "schema": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    },
+                    "500": {
+                        "description": "in case of some exceptional error",
+                        "headers": {},
+                        "schema": {
+                            "properties": {
+                                "code": {
+                                    "type": "number"
+                                },
+                                "msg": {
+                                    "type": "string"
+                                },
+                                "data": {
+                                    "type": "object"
+                                },
+                                "error": {
+                                    "type": "object"
+                                }
+                            },
+                            "example": {
+                                "code": 5000,
+                                "msg": "Something went wrong. Please try again later.",
+                                "data": {},
+                                "error": {}
+                            }
+                        }
+                    }
+                },
+                "security": []
+            }
+        },         
         "/templates": {
             "get": {
                 "description": "This api returns list of templates based on filters",
