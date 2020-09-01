@@ -176,7 +176,6 @@ const DELIVERY_CHANNEL = {
 const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
   addupdateAudience: '/helowhatsapp/api/audience',
-  chatFlow: '/helowhatsapp/api/automessage/chat',
   getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
@@ -212,6 +211,10 @@ const VALIDATOR = {
 }
 const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
 const FLOW_TRANSACTION_INTERVAL = ' interval 5 MINUTE'
+
+const CHAT_APP_ENDPOINTS = {
+  chatFlow: '/helowhatsappchat/api/flowmessage/chat'
+}
 
 const TAG = {
   insert: 'insert',
@@ -252,3 +255,4 @@ module.exports.VALIDATOR = VALIDATOR
 module.exports.FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT
 module.exports.FLOW_TRANSACTION_INTERVAL = FLOW_TRANSACTION_INTERVAL
 module.exports.TAG = TAG
+module.exports.CHAT_APP_ENDPOINTS = CHAT_APP_ENDPOINTS

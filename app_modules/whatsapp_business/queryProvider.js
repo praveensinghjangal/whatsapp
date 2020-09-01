@@ -119,6 +119,14 @@ const getWabaNumberFromUserId = () => {
   where wi.user_id = ? and wi.is_active = true`
 }
 
+const getUserIdAndTokenKeyByWabaNumber = () => {
+  return `select u.user_id as "userId", u.token_key as "apiKey"
+  from waba_information wi
+  left join users u
+  on wi.user_id = u.user_id and u.is_active=true and wi.is_active=true
+  where wi.phone_number =? and wi.phone_code=?`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -132,5 +140,6 @@ module.exports = {
   getWabaData,
   checkWabaNumberAlreadyExist,
   updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId,
-  getWabaNumberFromUserId
+  getWabaNumberFromUserId,
+  getUserIdAndTokenKeyByWabaNumber
 }

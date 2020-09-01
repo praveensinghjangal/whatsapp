@@ -212,7 +212,11 @@ class AudienceService {
       // console.log('Else')
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromDb(), [userId])
         .then(data => {
-          wabaNumberData.resolve(data[0].wabaPhoneNumber)
+          if (data.length > 0) {
+            wabaNumberData.resolve(data[0].wabaPhoneNumber)
+          } else {
+            wabaNumberData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ACCOUNT_NOT_EXISTS, err: {} })
+          }
         })
         .catch((err) => {
           __logger.info('Error ', err)
