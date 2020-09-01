@@ -14,7 +14,7 @@ const updateAudienceRecord = () => {
   WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
-const getAudienceRecordList = (columnArray) => {
+const getAudienceRecordList = (columnArray, offset, limit) => {
   // console.log('getAudienceRecoredList', columnArray)
   let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
@@ -39,6 +39,10 @@ const getAudienceRecordList = (columnArray) => {
       query += ` AND ${element} = ?`
     }
   })
+  query += ` order by aud.created_on asc limit ${limit} offset ${offset};
+  select count(1) as "totalCount" from audience
+  where is_active = true
+  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = ?)`
   // console.log('Query', query)
   return query
 }
