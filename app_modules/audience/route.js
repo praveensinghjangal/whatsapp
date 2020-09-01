@@ -8,6 +8,7 @@ const authstrategy = require('../../config').authentication.strategy
 const addUpdateAudienceController = require('./controllers/addUpdateAudience')
 const bulkAudienceDataUploadController = require('./controllers/uploadAudienceInBulk')
 const fetchAudienceDataController = require('./controllers/fetchAudienceData')
+const fetchOptinUrlController = require('./controllers/fetchOptinUrl')
 
 // Segment Controller
 
@@ -38,4 +39,6 @@ router.get('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, 
 router.post('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateOptinController.addUpdateOptinSourceData)
 router.get('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchOptinController.getOptinSourceData)
 router.patch('/optin/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), bulkAudienceDataUploadController.uploadAudienceData)
+router.get('/optin/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchOptinUrlController.getOptinUrl)
+
 module.exports = router

@@ -127,6 +127,13 @@ const getUserIdAndTokenKeyByWabaNumber = () => {
   where wi.phone_number =? and wi.phone_code=?`
 }
 
+const getWabaNumberAndOptinTextFromUserId = () => {
+  return `SELECT CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
+  optin_text as "optinText"
+  FROM waba_information wi
+  where wi.user_id = ? and wi.is_active = true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -141,5 +148,6 @@ module.exports = {
   checkWabaNumberAlreadyExist,
   updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId,
   getWabaNumberFromUserId,
-  getUserIdAndTokenKeyByWabaNumber
+  getUserIdAndTokenKeyByWabaNumber,
+  getWabaNumberAndOptinTextFromUserId
 }

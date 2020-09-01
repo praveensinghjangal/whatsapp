@@ -383,6 +383,26 @@ class businesAccountService {
       })
     return businessDataFetched.promise
   }
+
+  getWabaNumberAndOptinTextFromUserId (userId) {
+    __logger.info('getWabaNumberAndOptinTextFromUserId::>>>>>..')
+    const wabaNumberAndOptinTextFetched = q.defer()
+    const validationService = new ValidatonService()
+
+    validationService.checkUserIdService({ userId: userId })
+      .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberAndOptinTextFromUserId(), [userId]))
+      .then(result => {
+        if (result && result.length === 0) {
+          wabaNumberAndOptinTextFetched.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        } else {
+          wabaNumberAndOptinTextFetched.resolve(result[0])
+        }
+      }).catch(err => {
+        __logger.error('error::getWabaNumberAndOptinTextFromUserId : ', err)
+        wabaNumberAndOptinTextFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return wabaNumberAndOptinTextFetched.promise
+  }
 }
 
 module.exports = businesAccountService
