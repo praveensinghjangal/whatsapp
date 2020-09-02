@@ -27,7 +27,7 @@ const sendPasswordTokenByEmail = (token, email, firstName) => {
   return emailSent.promise
 }
 
-const forgotPassword = (req, res) => {
+const forgetPassword = (req, res) => {
   const userService = new UserService()
   const validate = new ValidatonService()
   let firstName = ''
@@ -75,4 +75,4 @@ const resetpassword = (req, res) => {
     })
 }
 
-module.exports = { resetpassword }
+module.exports = { forgetPassword, resetpassword }
