@@ -34,46 +34,48 @@ Not much clarity on veiwALl filter
 */
 const getAudienceRecordList = (req, res) => {
   __logger.info('Get Audience Record List API Called', req.query)
-
+  // if page then int , ItemsPerPage mandatory with type int
+  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const ItemsPerPage = req.query.ItemsPerPage
+  const offset = ItemsPerPage * (requiredPage - 1)
+  __logger.info('Get Offset value', offset)
   const {
     channel, optin, optinSourceId, tempOptin,
     segmentId, firstMessageActivation, phoneNumber
   } = req.query
-
   const inputArray = [{ colName: 'aud.channel', value: channel },
     { colName: 'aud.optin_source_id', value: optinSourceId },
     { colName: 'aud.segment_id', value: segmentId },
     { colName: 'aud.first_message', value: firstMessageActivation },
     { colName: 'aud.phone_number', value: phoneNumber },
-    { colName: 'wi.user_id', value: req.user && req.user.user_id ? req.user.user_id : '0' }]
-
-  if (optin) {
-    inputArray.push({ colName: 'aud.optin', value: optin === 'true' ? 1 : 0 })
-  }
-
-  if (tempOptin) {
-    inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin === 'true' ? 1 : 0 })
-  }
-
+    { colName: 'wi.user_id', value: userId }]
+  if (optin) inputArray.push({ colName: 'aud.optin', value: optin === 'true' ? 1 : 0 })
+  if (tempOptin) inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin === 'true' ? 1 : 0 })
   const columnArray = []
   const valArray = []
-
   _.each(inputArray, function (input) {
     if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
       columnArray.push(input.colName)
       valArray.push(input.value)
     }
   })
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray)
+  valArray.push(userId)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage), valArray)
     .then(result => {
-      if (result && result.length === 0) {
+      if ((result && result.length === 0) || result[0].length === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
-        _.each(result, singleObj => {
+        // console.log('resultresultresultresultresultresult----->', result, result[1][0].totalCount, ItemsPerPage)
+        _.each(result[0], singleObj => {
           singleObj.optin = singleObj.optin === 1
           singleObj.tempOptin = singleObj.tempOptin === 1
         })
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+        const pagination = { totalPage: Math.ceil(result[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
+        console.log('pagination       ----->', pagination)
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
       }
     })
     .catch(err => {
