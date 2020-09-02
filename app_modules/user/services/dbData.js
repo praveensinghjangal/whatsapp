@@ -148,62 +148,128 @@ class UserData {
   }
 
   getPasswordTokenByEmail (email) {
-    const verificationData = q.defer()
+    const passwordTokenData = q.defer()
     if (!email || typeof email !== 'string') {
-      verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email id of type string' })
-      return verificationData.promise
+      passwordTokenData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email id of type string' })
+      return passwordTokenData.promise
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPasswordTokenByEmail(), [email])
       .then(result => {
         if (result && result.length === 0) {
-          verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
+          passwordTokenData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {
-          verificationData.resolve(result[0])
+          passwordTokenData.resolve(result[0])
         }
       })
-      .catch(err => verificationData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
-    return verificationData.promise
+      .catch(err => passwordTokenData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return passwordTokenData.promise
   }
 
   updateExistingPasswordTokens (userId) {
-    const verificationDataUpdated = q.defer()
+    const existingPasswordTokenUpdated = q.defer()
     if (!userId || typeof userId !== 'string') {
-      verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
-      return verificationDataUpdated.promise
+      existingPasswordTokenUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return existingPasswordTokenUpdated.promise
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateExistingPasswordTokens(), [userId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          verificationDataUpdated.resolve({ userId })
+          existingPasswordTokenUpdated.resolve({ user_id: userId })
         } else {
-          verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          existingPasswordTokenUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
-    return verificationDataUpdated.promise
+      .catch(err => existingPasswordTokenUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return existingPasswordTokenUpdated.promise
   }
 
   addPasswordToken (userId, expiresIn) {
-    const verificationDataAdded = q.defer()
+    const passwordTokenAdded = q.defer()
     if (!userId || typeof userId !== 'string') {
-      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
-      return verificationDataAdded.promise
+      passwordTokenAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return passwordTokenAdded.promise
     }
     if (!expiresIn || typeof expiresIn !== 'number') {
-      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide expiresIn of type integer' })
-      return verificationDataAdded.promise
+      passwordTokenAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide expiresIn of type integer' })
+      return passwordTokenAdded.promise
     }
     const token = this.uniqueId.uuid()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addPasswordToken(), [userId, token, expiresIn, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          verificationDataAdded.resolve({ userId, token })
+          passwordTokenAdded.resolve({ userId, token })
         } else {
-          verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          passwordTokenAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
-      .catch(err => verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
-    return verificationDataAdded.promise
+      .catch(err => passwordTokenAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return passwordTokenAdded.promise
+  }
+
+  getTokenDetailsFromToken (token) {
+    const tokenDetails = q.defer()
+    if (!token || typeof token !== 'string') {
+      tokenDetails.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide token of type string' })
+      return tokenDetails.promise
+    }
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTokenDetailsFromToken(), [token])
+      .then(result => {
+        if (result && result.length === 0) {
+          tokenDetails.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_PASS_TOKEN, data: {} })
+        } else {
+          tokenDetails.resolve(result[0])
+        }
+      })
+      .catch(err => tokenDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return tokenDetails.promise
+  }
+
+  updatePassword (userId, newPassword) {
+    const passwordUpdated = q.defer()
+    if (!userId || typeof userId !== 'string') {
+      passwordUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return passwordUpdated.promise
+    }
+    if (!newPassword || typeof newPassword !== 'string') {
+      passwordUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide newPassword of type string' })
+      return passwordUpdated.promise
+    }
+    const passwordSalt = passMgmt.genRandomString(16)
+    const hashPassword = passMgmt.create_hash_of_password(newPassword, passwordSalt).passwordHash
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updatePassword(), [hashPassword, passwordSalt, userId, userId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          passwordUpdated.resolve({ userId })
+        } else {
+          passwordUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => passwordUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return passwordUpdated.promise
+  }
+
+  setPasswordTokeConsumed (token, userId) {
+    const passwordTokenConsumed = q.defer()
+    if (!token || typeof token !== 'string') {
+      passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide token of type string' })
+      return passwordTokenConsumed.promise
+    }
+    if (!userId || typeof userId !== 'string') {
+      passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return passwordTokenConsumed.promise
+    }
+    console.log('here to update ---------->', token, userId)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setPasswordTokeConsumed(), [userId, userId, token])
+      .then(result => {
+        console.log('updated ------------->', result)
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          passwordTokenConsumed.resolve({ token })
+        } else {
+          passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return passwordTokenConsumed.promise
   }
 }
 

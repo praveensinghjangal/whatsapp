@@ -179,6 +179,28 @@ const addPasswordToken = () => {
   (?,?,?,?)`
 }
 
+const getTokenDetailsFromToken = () => {
+  return `select expires_in , user_id, created_on
+  from reset_password_token 
+  where token = ?
+  and is_active = 1
+  and is_consumed = 0`
+}
+
+const updatePassword = () => {
+  return `update users 
+  set hash_password = ?, salt_key = ?, updated_by = ?, updated_on = now()
+  where user_id  = ?
+  and is_active = 1`
+}
+
+const setPasswordTokeConsumed = () => {
+  return `update reset_password_token 
+  set is_consumed = 1, updated_by = ?, updated_on = now()
+  where user_id  = ? and token = ? and is_consumed = false
+  and is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -206,5 +228,8 @@ module.exports = {
   getUserIdFromKey,
   getPasswordTokenByEmail,
   updateExistingPasswordTokens,
-  addPasswordToken
+  addPasswordToken,
+  getTokenDetailsFromToken,
+  updatePassword,
+  setPasswordTokeConsumed
 }

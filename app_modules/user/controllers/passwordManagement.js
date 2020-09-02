@@ -1,4 +1,5 @@
 const q = require('q')
+const moment = require('moment')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
@@ -6,7 +7,8 @@ const UserService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
 const EmailService = require('../../../lib/sendNotifications/email')
 const EmailTemplates = require('../../../lib/sendNotifications/emailTemplates')
-var __config = require('../../../config')
+const __config = require('../../../config')
+const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 const sendPasswordTokenByEmail = (token, email, firstName) => {
   const emailSent = q.defer()
@@ -42,7 +44,7 @@ const forgetPassword = (req, res) => {
         return data
       }
     })
-    .then(data => userService.addPasswordToken(data.userId, __constants.RESET_PASSWORD_TOKEN_EXPIREY_TIME))
+    .then(data => userService.addPasswordToken(data.user_id, __constants.RESET_PASSWORD_TOKEN_EXPIREY_TIME))
     .then(data => sendPasswordTokenByEmail(data.token, req.body.email, firstName))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.EMAIL_FORGET_PASSWORD, data: {} }))
     .catch(err => {
@@ -51,28 +53,28 @@ const forgetPassword = (req, res) => {
     })
 }
 
-const resetpassword = (req, res) => {
+const changePassword = (req, res) => {
   const userService = new UserService()
   const validate = new ValidatonService()
-  let firstName = ''
-  __logger.info('forget password called: ', req.body)
-  validate.forgotPassword(req.body)
-    .then(data => userService.getPasswordTokenByEmail(req.body.email))
+  __logger.info('change password called: ', req.body)
+  validate.changePassword(req.body)
+    .then(data => userService.getTokenDetailsFromToken(req.body.token))
     .then(data => {
-      firstName = data.first_name || ''
-      if (data && data.reset_password_token_id) {
-        return userService.updateExistingPasswordTokens(data.user_id)
+      const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
+      const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+      // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+      if (moment(currentTime).isBefore(expireyTime)) {
+        return userService.updatePassword(data.user_id, req.body.newPassword)
       } else {
-        return data
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_PASS_TOKEN, err: {} })
       }
     })
-    .then(data => userService.addPasswordToken(data.userId, __constants.RESET_PASSWORD_TOKEN_EXPIREY_TIME))
-    .then(data => sendPasswordTokenByEmail(data.token, req.body.email, firstName))
-    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.EMAIL_FORGET_PASSWORD, data: {} }))
+    .then(data => userService.setPasswordTokeConsumed(req.body.token, data.userId))
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
 
-module.exports = { forgetPassword, resetpassword }
+module.exports = { forgetPassword, changePassword }
