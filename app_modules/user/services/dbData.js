@@ -146,6 +146,65 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getPasswordTokenByEmail (email) {
+    const verificationData = q.defer()
+    if (!email || typeof email !== 'string') {
+      verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email id of type string' })
+      return verificationData.promise
+    }
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPasswordTokenByEmail(), [email])
+      .then(result => {
+        if (result && result.length === 0) {
+          verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
+        } else {
+          verificationData.resolve(result[0])
+        }
+      })
+      .catch(err => verificationData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return verificationData.promise
+  }
+
+  updateExistingPasswordTokens (userId) {
+    const verificationDataUpdated = q.defer()
+    if (!userId || typeof userId !== 'string') {
+      verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return verificationDataUpdated.promise
+    }
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateExistingPasswordTokens(), [userId, userId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          verificationDataUpdated.resolve({ userId })
+        } else {
+          verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return verificationDataUpdated.promise
+  }
+
+  addPasswordToken (userId, expiresIn) {
+    const verificationDataAdded = q.defer()
+    if (!userId || typeof userId !== 'string') {
+      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return verificationDataAdded.promise
+    }
+    if (!expiresIn || typeof expiresIn !== 'number') {
+      verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide expiresIn of type integer' })
+      return verificationDataAdded.promise
+    }
+    const token = this.uniqueId.uuid()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addPasswordToken(), [userId, token, expiresIn, userId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          verificationDataAdded.resolve({ userId, token })
+        } else {
+          verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return verificationDataAdded.promise
+  }
 }
 
 module.exports = UserData

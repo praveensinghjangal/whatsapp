@@ -300,5 +300,10 @@ module.exports = {
     status_code: 200,
     code: 3034,
     message: 'Parent Identifier Text Does Not Exists.'
+  },
+  EMAIL_FORGET_PASSWORD: {
+    status_code: 200,
+    code: 2001,
+    message: 'Link to set new password has been sent on your registered email'
   }
 }

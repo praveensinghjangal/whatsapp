@@ -15,6 +15,8 @@ const agreementController = require('./controllers/agreement')
 // User routes
 router.post('/auth/login', require('./controllers/login'))
 router.post('/signUp', require('./controllers/signUp'))
+router.post('/auth/forgetpassword', require('./controllers/passwordManagement').forgotPassword)
+router.post('/auth/resetpassword', require('./controllers/passwordManagement').resetpassword)
 router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name, authstrategy.google.options))
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
 router.post('/authorize', require('./controllers/authorize').authorize)

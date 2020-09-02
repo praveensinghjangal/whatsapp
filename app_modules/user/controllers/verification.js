@@ -60,7 +60,7 @@ const generateSmsVerificationCode = (req, res) => {
     })
     .then(data => verificationService.addVerificationCode(userId, __constants.VERIFICATION_CHANNEL.sms.name, __constants.VERIFICATION_CHANNEL.sms.expiresIn, __constants.VERIFICATION_CHANNEL.sms.codeLength))
     .then(data => verificationService.sendVerificationCodeBySms(data.code, phoneNumber, firstName))
-    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.PHONE_VC, data: {} }))
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.PHONE_VC, data: { code: data.code } }))
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })

@@ -159,6 +159,26 @@ const getUserIdFromKey = () => {
   where is_active  = 1 and token_key = ?`
 }
 
+const getPasswordTokenByEmail = () => {
+  return `select rpt.reset_password_token_id , u.user_id, u.first_name
+  from users u 
+  left join reset_password_token rpt on u.user_id = rpt.user_id and rpt.is_consumed = false and rpt.is_active = true
+  where u.email = ?
+  and u.is_active = true`
+}
+
+const updateExistingPasswordTokens = () => {
+  return `update reset_password_token
+  set is_active = false , updated_by = ?, updated_on = now()
+  where user_id  = ?
+  and is_consumed = false and is_active = true`
+}
+
+const addPasswordToken = () => {
+  return `insert into reset_password_token (user_id,token,expires_in,created_by) values
+  (?,?,?,?)`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -183,5 +203,8 @@ module.exports = {
   getVerifiedAndCodeDataByUserIdForBusinessNumber,
   markbusinessNumberVerified,
   updateTokenInAccountProfile,
-  getUserIdFromKey
+  getUserIdFromKey,
+  getPasswordTokenByEmail,
+  updateExistingPasswordTokens,
+  addPasswordToken
 }

@@ -80,7 +80,7 @@ const PLAN_CATEGORY = {
   standard: 'Standard',
   custom: 'Custom'
 }
-
+const RESET_PASSWORD_TOKEN_EXPIREY_TIME = 3600
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
 const TEMPLATE_STATUS = ['Approved', 'Rejected', 'SendForApproval', 'Incomplete', 'Completed']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
@@ -176,7 +176,8 @@ const DELIVERY_CHANNEL = {
 const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
   addupdateAudience: '/helowhatsapp/api/audience',
-  getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber'
+  getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber',
+  adminPannelResetPassword: '/#/new-password'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -256,3 +257,4 @@ module.exports.FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = FLOW_MESSAGE_SYSTEM_DEFAULT_TE
 module.exports.FLOW_TRANSACTION_INTERVAL = FLOW_TRANSACTION_INTERVAL
 module.exports.TAG = TAG
 module.exports.CHAT_APP_ENDPOINTS = CHAT_APP_ENDPOINTS
+module.exports.RESET_PASSWORD_TOKEN_EXPIREY_TIME = RESET_PASSWORD_TOKEN_EXPIREY_TIME
