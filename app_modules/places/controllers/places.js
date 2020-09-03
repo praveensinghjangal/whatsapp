@@ -8,7 +8,8 @@ const getAllCountries = (req, res) => {
   __logger.info('Inside Get All countries')
 
   try {
-    const countries = csc.getAllCountries()
+    const countries = []
+    countries.push(csc.getAllCountries()[100])
 
     if (countries && countries.length > 0) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: countries })
