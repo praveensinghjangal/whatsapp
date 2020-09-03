@@ -298,7 +298,17 @@ module.exports = {
   },
   PARENT_IDENTIFIER_NOT_EXIST: {
     status_code: 200,
-    code: 3034,
+    code: 3035,
     message: 'Parent Identifier Text Does Not Exists.'
+  },
+  EMAIL_FORGET_PASSWORD: {
+    status_code: 200,
+    code: 2001,
+    message: 'Link to set new password has been sent on your registered email'
+  },
+  INVALID_PASS_TOKEN: {
+    status_code: 200,
+    code: 3036,
+    message: 'Invalid token.'
   }
 }

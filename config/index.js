@@ -239,7 +239,8 @@ module.exports = {
     debug: process.env.EMAIL_PROVIDER_DEBUG === 'true',
     fromEmail: process.env.EMAIL_PROVIDER_FROM_EMAIL,
     subject: {
-      emailVerification: process.env.EMAIL_PROVIDER_SUBJECT_EMAIL_VERIFICATION
+      emailVerification: process.env.EMAIL_PROVIDER_SUBJECT_EMAIL_VERIFICATION,
+      passwordReset: process.env.EMAIL_PROVIDER_SUBJECT_PASSWORD_RESET
     }
   },
   mockWebHook: {
@@ -254,5 +255,6 @@ module.exports = {
   },
   authTokens: process.env.AUTH_TOKENS.split(',') || [],
   chatAppUrl: process.env.CHAT_APP_URL,
-  chatAppToken: process.env.CHAT_APP_TOKEN
+  chatAppToken: process.env.CHAT_APP_TOKEN,
+  adminPannelBaseUrl: process.env.ADMIN_PANNEL_BASE_URL
 }
