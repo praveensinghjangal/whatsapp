@@ -3,6 +3,7 @@ const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const q = require('q')
 
 const queryProvider = require('../queryProvider')
 
@@ -46,6 +47,7 @@ const getTemplateInfo = (req, res) => {
       if (result && result.length === 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
+        result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
         finalResult = result
         return validate.checkTemplateInfoStatus(result[0])
       }
@@ -53,8 +55,9 @@ const getTemplateInfo = (req, res) => {
     .then(data => {
       __logger.info('then 2')
       finalResult[0].mediaTemplateComplete = data.complete
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult })
+      return checksForTemplate(finalResult[0])
     })
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult }))
     .catch(err => {
       __logger.error('error in create user function: ', err)
       return __util.send(res, { type: err.type, err: err.err })
@@ -78,6 +81,37 @@ const getTemplateButtonTypes = (req, res) => {
 
   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.TEMPLATE_BUTTON_TYPE })
 }
+
+const checksForTemplate = (templateData) => {
+  const dataValidated = q.defer()
+  // Checks
+
+  // If Second Lang is not opted deleting the field related to it
+  if (!templateData.secondLanguageRequired) {
+    delete templateData.secondMessageTemplateLanguageId
+    delete templateData.secondLanguageHeaderText
+    delete templateData.secondLanguageBodyText
+    delete templateData.secondLanguageFooterText
+    delete templateData.secondLanguageName
+  }
+
+  // If template type is standard then deleting the header text and footer text
+  if (templateData.type === __constants.TEMPLATE_TYPE[0].templateType.toLowerCase()) {
+    delete templateData.footerText
+    delete templateData.headerText
+    delete templateData.buttonData
+    delete templateData.buttonType
+  }
+
+  // If template type is media then deleting the header text and footer text
+  if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+    delete templateData.headerText
+  }
+
+  dataValidated.resolve(templateData)
+  return dataValidated.promise
+}
+
 module.exports = {
   getTemplateList,
   getTemplateInfo,
