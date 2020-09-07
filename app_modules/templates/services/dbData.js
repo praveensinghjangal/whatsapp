@@ -78,7 +78,7 @@ class TemplateService {
       templateName: newData.templateName || oldData.templateName,
       type: newData.type || oldData.type,
       messageTemplateCategoryId: newData.messageTemplateCategoryId || oldData.messageTemplateCategoryId,
-      messageTemplateStatusId: newData.messageTemplateStatusId || oldData.messageTemplateStatusId,
+      messageTemplateStatusId: newData.messageTemplateStatusId || __constants.TEMPLATE_DEFAULT_STATUS,
       messageTemplateLanguageId: newData.messageTemplateLanguageId || oldData.messageTemplateLanguageId,
       bodyText: newData.bodyText || oldData.bodyText,
       headerText: newData.headerText || oldData.headerText,
@@ -86,13 +86,44 @@ class TemplateService {
       mediaType: newData.mediaType || oldData.mediaType,
       secondLanguageRequired: newData.secondLanguageRequired || oldData.secondLanguageRequired,
       secondMessageTemplateLanguageId: newData.secondMessageTemplateLanguageId || oldData.secondMessageTemplateLanguageId,
-      secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
+      secondLanguageHeaderText: newData.secondLanguageHeaderText || oldData.secondLanguageHeaderText,
+      secondLanguageBodyText: newData.secondLanguageBodyText || oldData.secondLanguageBodyText,
+      secondLanguageFooterText: newData.secondLanguageFooterText || oldData.secondLanguageFooterText,
       headerType: newData.headerType || oldData.headerType,
       buttonType: newData.buttonType || oldData.buttonType,
       buttonData: newData.buttonData || oldData.buttonData,
-      createdBy: userId
+      createdBy: userId,
+      firstLocalizationStatus: __constants.TEMPLATE_DEFAULT_LANGUAGE_STATUS,
+      secondLocalizationStatus: oldData.buttonData
     }
+
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
+
+    // Checks
+    if (templateData.secondLanguageRequired) {
+      templateData.secondLocalizationStatus = __constants.TEMPLATE_DEFAULT_LANGUAGE_STATUS
+    }
+    // If Second Lang is not opted deleting the field related to it
+    if (!templateData.secondLanguageRequired) {
+      templateData.secondMessageTemplateLanguageId = null
+      templateData.secondLanguageHeaderText = null
+      templateData.secondLanguageBodyText = null
+      templateData.secondLanguageFooterText = null
+      templateData.secondLanguageName = null
+    }
+
+    // If template type is standard then deleting the header text footer text and button data
+    if (templateData.type === __constants.TEMPLATE_TYPE[0].templateType.toLowerCase()) {
+      templateData.footerText = null
+      templateData.headerText = null
+      templateData.buttonData = null
+      templateData.buttonType = null
+    }
+
+    // If template type is media then deleting the header text and footer text
+    if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+      templateData.headerText = null
+    }
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
@@ -143,7 +174,9 @@ class TemplateService {
       mediaType: newData.mediaType || oldData.mediaType,
       secondLanguageRequired: typeof newData.secondLanguageRequired === 'boolean' ? newData.secondLanguageRequired : oldData.secondLanguageRequired,
       secondMessageTemplateLanguageId: newData.secondMessageTemplateLanguageId || oldData.secondMessageTemplateLanguageId,
-      secondlanguageBodyText: newData.secondlanguageBodyText || oldData.secondlanguageBodyText,
+      secondLanguageHeaderText: newData.secondLanguageHeaderText || oldData.secondLanguageHeaderText,
+      secondLanguageBodyText: newData.secondLanguageBodyText || oldData.secondLanguageBodyText,
+      secondLanguageFooterText: newData.secondLanguageFooterText || oldData.secondLanguageFooterText,
       headerType: newData.headerType || oldData.headerType,
       buttonType: newData.buttonType || oldData.buttonType,
       buttonData: newData.buttonData || oldData.buttonData,
@@ -152,6 +185,28 @@ class TemplateService {
       wabaInformationId: oldData.wabaInformationId
     }
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
+    // Checks
+    // If Second Lang is not opted deleting the field related to it
+    if (!templateData.secondLanguageRequired) {
+      templateData.secondMessageTemplateLanguageId = null
+      templateData.secondLanguageHeaderText = null
+      templateData.secondLanguageBodyText = null
+      templateData.secondLanguageFooterText = null
+      templateData.secondLanguageName = null
+    }
+
+    // If template type is standard then deleting the header text footer text and button data
+    if (templateData.type === __constants.TEMPLATE_TYPE[0].templateType.toLowerCase()) {
+      templateData.footerText = null
+      templateData.headerText = null
+      templateData.buttonData = null
+      templateData.buttonType = null
+    }
+
+    // If template type is media then deleting the header text and footer text
+    if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+      templateData.headerText = null
+    }
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
     __logger.info('updateeeeee --->', templateData, queryParam)
