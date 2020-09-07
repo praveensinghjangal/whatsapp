@@ -22,7 +22,7 @@ const sendPasswordTokenByEmail = (token, email, firstName) => {
     return emailSent.promise
   }
   const emailService = new EmailService(__config.emailProvider)
-  const url = __config.adminPannelBaseUrl + __constants.INTERNAL_END_POINTS.adminPannelResetPassword + '/' + token
+  const url = __config.adminPannelBaseUrl + __constants.INTERNAL_END_POINTS.adminPannelResetPassword + '?token=' + token
   emailService.sendEmail([email], __config.emailProvider.subject.passwordReset, EmailTemplates.passwordReset(url, firstName))
     .then(data => emailSent.resolve(data))
     .catch(err => emailSent.reject(err))
