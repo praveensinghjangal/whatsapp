@@ -182,6 +182,9 @@ function formatFinalStatus (queryResult, result) {
   const finalResult = q.defer()
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : false
+  queryResult.canReceiveSms = queryResult.canReceiveSms === 1
+  queryResult.canReceiveVoiceCall = queryResult.canReceiveVoiceCall === 1
+  queryResult.associatedWithIvr = queryResult.associatedWithIvr === 1
   queryResult.businessManagerVerified = queryResult.businessManagerVerified === 1
   queryResult.phoneVerified = queryResult.phoneVerified === 1
   finalResult.resolve(queryResult)
