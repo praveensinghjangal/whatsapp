@@ -10,5 +10,6 @@ router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy
 router.post('/whatsapp/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), userConfiMiddleware, require('./controllers/sendMessageToQueueExcel'))
 router.post('/tracking', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/addMessageHistory'))
 router.get('/tracking/:messageId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/fetchMessageHistory'))
-
+router.get('/status/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageStatusCount'))
+router.get('/status/:status/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageStatusList'))
 module.exports = router
