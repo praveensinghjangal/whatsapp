@@ -90,6 +90,43 @@ class MessgaeHistoryService {
       .catch(err => messageHistoryDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return messageHistoryDataAdded.promise
   }
+
+  getMessageCount (userId, startDate, endDate) {
+    const messageStatus = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageStatusCount(), [userId, startDate, endDate, userId, startDate, endDate])
+      .then(result => {
+        if (result && result.length > 0) {
+          __logger.info('dbData---', result)
+          messageStatus.resolve(result)
+        } else {
+          __logger.info('Failed to get Data')
+          messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get message status count function: ', err)
+        messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return messageStatus.promise
+  }
+
+  getMessageStatusList (status, startDate, endDate, ItemsPerPage, offset, userId) {
+    const messageStatus = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageStatusList(), [status, startDate, endDate, userId, startDate, endDate, userId, ItemsPerPage, offset, status, startDate, endDate, userId, startDate, endDate, userId])
+      .then(result => {
+        if (result && result.length > 0) {
+          messageStatus.resolve(result)
+        } else {
+          __logger.info('Failed to get Data')
+          messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get message status list function: ', err)
+        messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return messageStatus.promise
+  }
 }
 
 module.exports = MessgaeHistoryService
