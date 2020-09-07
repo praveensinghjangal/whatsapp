@@ -425,6 +425,55 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkstartDateAndendDate (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkstartDateAndendDate',
+      type: 'object',
+      required: true,
+      properties: {
+        startDate: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.timeStamp
+        },
+        endDate: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.timeStamp,
+          minLength: 1
+        }
+
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkstartDateAndendDate')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      formatedError.push(regexPatternPreetyMessage)
+    })
+    if (formatedError.length > 0) {
+      console.log('Catched', formatedError)
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        console.log('Catched', formatedError)
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

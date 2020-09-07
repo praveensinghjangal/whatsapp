@@ -208,7 +208,8 @@ const VALIDATOR = {
   aplphaNumeric: '^[a-zA-Z0-9]+$',
   phoneNumber: '^\d{1,10}$',
   postalCode: '^\d{1,6}$',
-  phoneCode: '^\d{1,2}$'
+  phoneCode: '^\d{1,2}$',
+  timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$'
 }
 const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
 const FLOW_TRANSACTION_INTERVAL = ' interval 5 MINUTE'
