@@ -12,4 +12,6 @@ router.post('/tracking', authMiddleware.authenticate(authstrategy.jwt.name, auth
 router.get('/tracking/:messageId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/fetchMessageHistory'))
 router.get('/status/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageStatusCount'))
 router.get('/status/:status/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageStatusList'))
+router.get('/transaction', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageIncomingOutgoingCount'))
+router.get('/transaction/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageTransactionStatusList'))
 module.exports = router
