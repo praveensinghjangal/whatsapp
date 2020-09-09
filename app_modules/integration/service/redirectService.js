@@ -32,7 +32,7 @@ class RedirectService {
         if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
-        if (payload && payload.whatsapp && payload.whatsapp.text) {
+        if (payload && payload.whatsapp && payload.whatsapp.text && payload.retryCount === 0) {
           payload.content = { text: payload.whatsapp.text, contentType: 'text' }
           this.callMessageFlow(data, payload)
         }
