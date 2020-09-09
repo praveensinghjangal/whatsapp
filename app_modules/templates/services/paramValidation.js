@@ -118,6 +118,9 @@ class TemplateParamValidationService {
         if (footerParamCount !== redisData.footerParamCount) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.FOOTER_PARAM_MISMATCH, err: {}, data: {} })
         }
+        if (!redisData.approvedLanguages.some(lang => lang.toLowerCase() === templateObject.language.code.toLowerCase())) {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.LANGUAGE_NOT_APPROVED, err: {}, data: {} })
+        }
         return dataStored.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_VALID, data: {} })
       })
       .catch(err => dataStored.reject(err))

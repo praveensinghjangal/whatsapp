@@ -8,9 +8,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
-
-//  Business Profile
-
+const placeIdService = require('../services/getPlacesId')
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   let queryResult = []
@@ -21,6 +19,10 @@ const getBusinessProfile = (req, res) => {
       __logger.info('Then 1')
       queryResult = results[0]
       if (results && results.length > 0) {
+        const idObj = placeIdService(results[0].country, results[0].state, results[0].city)
+        results[0].countryId = idObj.countryId
+        results[0].stateId = idObj.stateId
+        results[0].cityId = idObj.cityId
         const checkCompleteStatus = new CheckInfoCompletionService()
         return checkCompleteStatus.validateBusinessProfile(results[0])
       } else {
@@ -180,9 +182,9 @@ function formatFinalStatus (queryResult, result) {
   const finalResult = q.defer()
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : false
-  delete queryResult.canReceiveSms
-  delete queryResult.canReceiveVoiceCall
-  delete queryResult.associatedWithIvr
+  queryResult.canReceiveSms = queryResult.canReceiveSms === 1
+  queryResult.canReceiveVoiceCall = queryResult.canReceiveVoiceCall === 1
+  queryResult.associatedWithIvr = queryResult.associatedWithIvr === 1
   queryResult.businessManagerVerified = queryResult.businessManagerVerified === 1
   queryResult.phoneVerified = queryResult.phoneVerified === 1
   finalResult.resolve(queryResult)

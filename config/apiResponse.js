@@ -261,6 +261,11 @@ module.exports = {
     code: 3029,
     message: 'Parameters provided in request and parameters required by template footer does not match'
   },
+  LANGUAGE_NOT_APPROVED: {
+    status_code: 400,
+    code: 3037,
+    message: 'Provided language is not approved to be used with this template'
+  },
   TEMPLATE_VALID: {
     status_code: 200,
     code: 2055,
