@@ -693,7 +693,7 @@
             "summary": "Get Message Count",
             "description": "Use this API to get message status count",
             "tags": [
-               "message"
+               "message-history"
             ],
             "operationId": "getMessageCount",
             "deprecated": false,
@@ -819,7 +819,7 @@
             "summary": "Get Message List",
             "description": "Use this API to get message status list",
             "tags": [
-               "message"
+               "message-history"
             ],
             "operationId": "getMessageList",
             "deprecated": false,
