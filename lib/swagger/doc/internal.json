@@ -963,6 +963,289 @@
             "security": []
          }
       },
+      "/chat/v1/messages/transaction": {
+         "get": {
+            "summary": "Get Incoming, Outgoing and Total Message Transaction Count",
+            "description": "Use this API to get incoming, outgoing and total message transaction count",
+            "tags": [
+               "message-history"
+            ],
+            "operationId": "getMessageTransactionCount",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "startDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "startDate needs to be entered here"
+               },
+               {
+                  "name": "endDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "endDate needs to be entered here"
+               },
+               {
+                  "name": "transactionType",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "transactionType to be entered here i.e incoming or outgoing"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns counts of message transaction type",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                            "code": 2000,
+                            "msg": "Success",
+                            "data": {
+                                      "incomingMessageCount": 56,
+                                      "outgoingMessageCount": 63,
+                                      "totalMessageCount": 119
+                                    },
+                           "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/chat/v1/messages/transaction/list": {
+         "get": {
+            "summary": "Get Message Transaction Type List",
+            "description": "Use this API to get message transaction type list",
+            "tags": [
+               "message-history"
+            ],
+            "operationId": "getMessageTransactionTypeList",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "startDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "startDate needs to be entered here"
+               },
+               {
+                  "name": "endDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "endDate needs to be entered here"
+               },
+               {
+                  "name": "transactionType",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "transactionType to be entered here i.e incoming or outgoing"
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter page number here"
+               },
+               {
+                  "name": "ItemsPerPage",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter records per page"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns list of message transaction type",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                            "code": 2000,
+                            "msg": "Success",
+                            "data": {
+                              "rows": [
+                                {
+                                  "messageId": "3764f600-b8ec-4111-b55f-7b8fb286cd0b",
+                                  "time": "2020-09-03T05:25:54.000Z"
+                                },
+                                {
+                                 "messageId": "fdab9945-4c91-465b-a234-1b50b8a5e998",
+                                  "time": "2020-09-03T09:42:25.000Z"
+                                }
+                              ],
+                              "pagination": {
+                                    "totalPage": 56,
+                                    "currentPage": 1
+                              }
+                            },
+                            "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
       "/users/account": {
          "put": {
             "description": "API is used for adding and updating user account info",
