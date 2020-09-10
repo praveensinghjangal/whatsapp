@@ -239,11 +239,56 @@ const updateWabaPhoneNumber = (req, res) => {
     })
 }
 
+const addUpdateOptinMessage = (req, res) => {
+  __logger.info('API TO Add Update Optin Message', req.user.user_id)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  let record
+  validate.addUpdateOptinMessage(req.body)
+    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => {
+      __logger.info('exists ----------------->', data)
+      if (!data.exists) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      } else {
+        record = data.record
+        __logger.info('time to update')
+        // return
+        return validate.isAddUpdateBusinessAccessInfoComplete(record)
+      }
+    })
+    .then(data => {
+      // console.log('datatatatata', data)
+      if (data) {
+        return validate.isAddUpdateBusinessInfoComplete(record)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_ACCESS_INFO_NOT_COMPLETE, err: {}, data: {} })
+      }
+    })
+    .then(data => {
+      if (data) {
+        return businessAccountService.updateBusinessData(req.body, record || {})
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_INFO_NOT_COMPLETE, err: {}, data: {} })
+      }
+    })
+    .then(data => {
+      __logger.info('After Adding Or Updating Optin Message', data)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessVerificationCompletionStatus: true } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
   addupdateBusinessAccountInfo,
   markManagerVerified,
   updateServiceProviderId,
-  updateWabaPhoneNumber
+  updateWabaPhoneNumber,
+  addUpdateOptinMessage
 }
