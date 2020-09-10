@@ -54,15 +54,15 @@ class validate {
           type: 'string',
           required: true,
           unique: true,
-          minLength: 1
-          // pattern: __constants.VALIDATOR.email
-
+          minLength: 1,
+          pattern: __constants.VALIDATOR.email
         },
         password: {
           type: 'string',
           required: true,
           minLength: 1,
-          trim: true
+          trim: true,
+          pattern: __constants.VALIDATOR.password
         },
         tncAccepted: {
           type: 'boolean',
@@ -75,7 +75,13 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
+      if (formatedErr[1].includes('password')) {
+        formatedError.push('Please provide password with atleast 1 Uppercase letter, 1 special character and 2 numbers')
+      } else if (formatedErr[1].includes('email')) {
+        formatedError.push('Please provide valid email address')
+      } else {
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })

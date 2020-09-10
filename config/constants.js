@@ -201,14 +201,14 @@ const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
   optinEventHandler: 'optinEventHandler'
 }
 const VALIDATOR = {
-  email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\.[-a-z0-9_]+)*\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}))(:[0-9]{1,5})?$',
-  password: '',
+  email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\\.[-a-z0-9_]+)*\\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}))(:[0-9]{1,5})?$',
+  password: '^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\\d]){2,})(?=(.*[\\W]){1,})(?!.*\\s).{8,}$',
   text: '^[a-zA-Z]+$',
   number: '^[0-9]+$',
   aplphaNumeric: '^[a-zA-Z0-9]+$',
-  phoneNumber: '^\d{1,10}$',
-  postalCode: '^\d{1,6}$',
-  phoneCode: '^\d{1,2}$',
+  phoneNumber: '^\\d{1,10}$',
+  postalCode: '^\\d{1,6}$',
+  phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$'
 }
 const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
