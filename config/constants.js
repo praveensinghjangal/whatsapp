@@ -91,26 +91,6 @@ const REDIS_TTL = {
   templateData: 300
 }
 const SERVER_TIMEOUT = 20 * 60 * 1000
-const MASTER_TABLE = {
-  TEMPLATE: {
-    messageTemplateCategory: {
-      name: 'message_template_category',
-      columns: ['message_template_category_id as id', 'category_name']
-    },
-    messageTemplateStatus: {
-      name: 'message_template_status',
-      columns: ['message_template_status_id as id', 'status_name']
-    },
-    messageTemplateLanguage: {
-      name: 'message_template_language',
-      columns: ['message_template_language_id as id', 'language_name']
-    }
-  },
-  wabaPhoneNoToProviderInfo: {
-    name: 'waba_information',
-    columns: ['CONCAT(`phone_code`, `phone_number`) as id', 'service_provider_id as "serviceProviderId"', 'api_key as "apiKey"', 'webhook_post_url as "webhookPostUrl"', 'optin_text as "optinText"']
-  }
-}
 const ENTITY_NAME = {
   MESSAGE_TEMPLATE_CATEGORY: 'message_template_category',
   MESSAGE_TEMPLATE_LANGUAGE: 'message_template_language',
@@ -185,21 +165,6 @@ const MESSAGE_STATUS = {
   resourceAllocated: 'resource allocated',
   forwarded: 'forwarded'
 }
-const FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = {
-  defaultMessage: 'defaultMessage',
-  showMenu: 'showMenu',
-  predefinedtext: 'predefinedText',
-  noEvent: 'noEvent',
-  more: 'moreMenu',
-  postcall: 'postCall',
-  gettext: 'getText',
-  getimage: 'getImage',
-  getlocation: 'getLocation',
-  getdocument: 'getDocument',
-  getvideo: 'getVideo',
-  end: 'end',
-  optinEventHandler: 'optinEventHandler'
-}
 const VALIDATOR = {
   email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\\.[-a-z0-9_]+)*\\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}))(:[0-9]{1,5})?$',
   password: '^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\\d]){2,})(?=(.*[\\W]){1,})(?!.*\\s).{8,}$',
@@ -211,18 +176,13 @@ const VALIDATOR = {
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$'
 }
-const FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = 'huh?'
-const FLOW_TRANSACTION_INTERVAL = ' interval 5 MINUTE'
-
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat'
 }
-
 const TAG = {
   insert: 'insert',
   update: 'update'
 }
-
 const TEMPLATE_DEFAULT_LANGUAGE_STATUS = 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1'
 const TEMPLATE_DEFAULT_STATUS = 'd11a8387-80e0-468b-9ee3-abb5eckil980'
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
@@ -243,7 +203,6 @@ module.exports.TEMPLATE_TYPE = TEMPLATE_TYPE
 module.exports.TEMPLATE_HEADER_TYPE = TEMPLATE_HEADER_TYPE
 module.exports.TEMPLATE_BUTTON_TYPE = TEMPLATE_BUTTON_TYPE
 module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID
-module.exports.MASTER_TABLE = MASTER_TABLE
 module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
 module.exports.ENTITY_NAME = ENTITY_NAME
 module.exports.TEMPLATE_HEADER_TYPE = TEMPLATE_HEADER_TYPE
@@ -258,10 +217,7 @@ module.exports.INTERNAL_END_POINTS = INTERNAL_END_POINTS
 module.exports.HW_MYSQL_NAME = HW_MYSQL_NAME
 module.exports.MESSAGE_STATUS = MESSAGE_STATUS
 module.exports.REDIS_TTL = REDIS_TTL
-module.exports.FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS = FLOW_MESSAGE_DB_EVENTS_TO_CODE_EVENTS
 module.exports.VALIDATOR = VALIDATOR
-module.exports.FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT = FLOW_MESSAGE_SYSTEM_DEFAULT_TEXT
-module.exports.FLOW_TRANSACTION_INTERVAL = FLOW_TRANSACTION_INTERVAL
 module.exports.TAG = TAG
 module.exports.CHAT_APP_ENDPOINTS = CHAT_APP_ENDPOINTS
 module.exports.RESET_PASSWORD_TOKEN_EXPIREY_TIME = RESET_PASSWORD_TOKEN_EXPIREY_TIME
