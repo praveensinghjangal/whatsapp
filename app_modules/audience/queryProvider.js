@@ -42,7 +42,7 @@ const getAudienceRecordList = (columnArray, offset, limit) => {
   query += ` order by aud.created_on asc limit ${limit} offset ${offset};
   select count(1) as "totalCount" from audience
   where is_active = true
-  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = ?)`
+  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = ? and is_active = 1)`
   // console.log('Query', query)
   return query
 }
