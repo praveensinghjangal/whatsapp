@@ -157,7 +157,8 @@ const INTERNAL_END_POINTS = {
   sendMessageToQueue: '/helowhatsapp/api/chat/v1/messages',
   addupdateAudience: '/helowhatsapp/api/audience',
   getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber',
-  adminPannelResetPassword: '/#/new-password'
+  addUpdateOptinText: '/helowhatsapp/api/business/profile/optinmessage',
+  businessProfile: '/helowhatsapp/api/business/profile'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -177,7 +178,8 @@ const VALIDATOR = {
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$'
 }
 const CHAT_APP_ENDPOINTS = {
-  chatFlow: '/helowhatsappchat/api/flowmessage/chat'
+  chatFlow: '/helowhatsappchat/api/flowmessage/chat',
+  metadata: '/helowhatsappchat/api/flowmessage/chat/metadata'
 }
 const TAG = {
   insert: 'insert',
@@ -188,6 +190,9 @@ const TEMPLATE_DEFAULT_STATUS = 'd11a8387-80e0-468b-9ee3-abb5eckil980'
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const TEMPLATE_APPROVE_STATUS = '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9'
 const TEMPLATE_PARTIAL_APPROVE_STATUS = '588cff76-d6d1-49a3-8280-8c2c1d99bb81'
+const ADMIN_PANNEL_ENDPOINTS = {
+  adminPannelResetPassword: '/#/new-password'
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -226,3 +231,4 @@ module.exports.TEMPLATE_DEFAULT_STATUS = TEMPLATE_DEFAULT_STATUS
 module.exports.MESSAGE_TRANSACTION_TYPE = MESSAGE_TRANSACTION_TYPE
 module.exports.TEMPLATE_APPROVE_STATUS = TEMPLATE_APPROVE_STATUS
 module.exports.TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_PARTIAL_APPROVE_STATUS
+module.exports.ADMIN_PANNEL_ENDPOINTS = ADMIN_PANNEL_ENDPOINTS
