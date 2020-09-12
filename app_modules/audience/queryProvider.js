@@ -14,9 +14,9 @@ const updateAudienceRecord = () => {
   WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
-const getAudienceRecordList = (columnArray, offset, limit) => {
+const getAudienceRecordList = (columnArray, offset, limit, userId) => {
   // console.log('getAudienceRecoredList', columnArray)
-  let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
+  let query = `SELECT count(1) over() as "totalFilteredRecord", audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", optin, (last_message between now()- interval 24 HOUR and now()) as tempOptin,
   osm.optin_source as "optinSource",sm.segment_name ,chat_flow_id as "chatFlowId",name,
@@ -40,9 +40,9 @@ const getAudienceRecordList = (columnArray, offset, limit) => {
     }
   })
   query += ` order by aud.created_on asc limit ${limit} offset ${offset};
-  select count(1) as "totalCount" from audience
+  select count(1) as "totalRecord" from audience 
   where is_active = true
-  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = ? and is_active = 1)`
+  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = '${userId}' and is_active = 1);`
   // console.log('Query', query)
   return query
 }
