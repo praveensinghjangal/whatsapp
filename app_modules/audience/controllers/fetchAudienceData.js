@@ -62,18 +62,18 @@ const getAudienceRecordList = (req, res) => {
       valArray.push(input.value)
     }
   })
-  valArray.push(userId)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage), valArray)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage, userId), valArray)
     .then(result => {
+      __logger.info('Got audience list from db -->', result)
       if ((result && result.length === 0) || result[0].length === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
-        // console.log('resultresultresultresultresultresult----->', result, result[1][0].totalCount, ItemsPerPage)
+        const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / ItemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
         _.each(result[0], singleObj => {
           singleObj.optin = singleObj.optin === 1
           singleObj.tempOptin = singleObj.tempOptin === 1
+          delete singleObj.totalFilteredRecord
         })
-        const pagination = { totalPage: Math.ceil(result[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
         console.log('pagination       ----->', pagination)
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
       }
