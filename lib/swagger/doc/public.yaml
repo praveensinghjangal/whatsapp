@@ -266,7 +266,7 @@ paths:
   "/audience/optin":
     post:
       description: "API to update optin\nTo update optinSourceId pass optin source
-        ID along with parameters to update\nfollowing are the optin source list\nform\nmessage\napi "
+        ID along with parameters to update\nfollowing are the optin source list :\n1. Captured via any form/check-box/t&c - 154e25f4-44cd-4a48-984d-dbdce569d2c1\n2. When received by direct optin message on Whatsapp - 28614254-12c6-4f44-aa3c-20cf9e9589cb\n3. Optin added using API - 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649"
       summary: Update optin status and add optin source id
       tags:
       - audience
@@ -1136,12 +1136,8 @@ definitions:
   UpdateOptinStatusAndAddOptinSourceIdRequest:
     title: UpdateOptinStatusAndAddOptinSourceIdRequest
     example:
-    - phoneNumber: '9999999999'
+      phoneNumber: '9999999999'
       optinSourceId: 154e25f4-44cd-4a48-984d-dbdce569d2c1
-    - phoneNumber: '9999999999'
-      optinSourceId: 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649
-    - phoneNumber: '9999999999'
-      optinSourceId: bc373e00-8ff7-4b38-bf95-7da31d5a2dd3
     type: object
     properties:
       phoneNumber:
