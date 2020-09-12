@@ -315,5 +315,20 @@ module.exports = {
     status_code: 200,
     code: 3036,
     message: 'Invalid token.'
+  },
+  OPTIN_NOT_SET: {
+    status_code: 200,
+    code: 3038,
+    message: 'optin text not updated.'
+  },
+  META_DATA_NOT_FOUND: {
+    status_code: 200,
+    code: 3039,
+    message: 'chat metadata not found.'
+  },
+  META_DATA_NOT_SET: {
+    status_code: 200,
+    code: 3040,
+    message: 'chat metadata not set.'
   }
 }
