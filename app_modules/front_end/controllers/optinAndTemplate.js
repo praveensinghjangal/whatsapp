@@ -29,7 +29,7 @@ const callSetTemplateId = (templateId, defaultmessageData, authToken) => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
   const inputRequest = {
-    defaultMessage: defaultmessageData,
+    defaultMessage: defaultmessageData || '.',
     templateId: templateId
   }
   const headers = { Authorization: authToken }
