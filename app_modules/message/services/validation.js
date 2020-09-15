@@ -3,6 +3,8 @@ const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
+const TrimService = require('../../../lib/trimService/trim')
+const trimInput = new TrimService()
 // "payload": {
 //     "text": "This is an example response"
 // }
@@ -319,6 +321,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.bulkInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise
@@ -348,6 +351,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise
@@ -421,6 +425,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise
@@ -469,6 +474,7 @@ class validate {
         console.log('Catched', formatedError)
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
+        trimInput.singleInputTrim(request)
         isvalid.resolve(request)
       }
     }
@@ -521,6 +527,7 @@ class validate {
       if (formatedError.length > 0) {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
+        trimInput.singleInputTrim(request)
         isvalid.resolve(request)
       }
     }

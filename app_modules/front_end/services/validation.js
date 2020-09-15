@@ -34,9 +34,9 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      trimInput.singleInputTrim(request)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise
