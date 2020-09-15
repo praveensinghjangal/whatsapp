@@ -38,6 +38,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise
@@ -409,6 +410,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise
@@ -443,6 +445,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(request)
     }
     return isvalid.promise

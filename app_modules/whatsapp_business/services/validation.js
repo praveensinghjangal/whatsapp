@@ -410,6 +410,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.resolve(false)
     } else {
+      trimInput.singleInputTrim(request)
       isvalid.resolve(true)
     }
     return isvalid.promise
