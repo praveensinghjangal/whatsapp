@@ -6,6 +6,7 @@ const queryProvider = require('../queryProvider')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const EmailService = require('../../../lib/sendNotifications/email')
 const EmailTemplates = require('../../../lib/sendNotifications/emailTemplates')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 
 class VerificationService {
   constructor () {
@@ -206,6 +207,8 @@ class VerificationService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
+          const entityName = verificationChannel === __constants.VERIFICATION_CHANNEL.businessNumber.name ? __constants.ENTITY_NAME.WABA_INFORMATION : __constants.ENTITY_NAME.USERS
+          saveHistoryData({ userId, oldChannelUpdatedToTrue: verificationChannel }, entityName, userId, userId)
           tokenMarkedConsumed.resolve({ updated: true })
         } else {
           tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
