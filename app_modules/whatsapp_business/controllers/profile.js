@@ -3,6 +3,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const q = require('q')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const saveHistoryData = require('../../../lib/util/saveDataHistory')
 
 // Services
 const BusinessAccountService = require('../services/businesAccount')
@@ -202,6 +203,7 @@ const updateServiceProviderId = (req, res) => {
     .then(results => {
       __logger.info('Then 1')
       if (results && results.length > 0) {
+        saveHistoryData(results[0], __constants.ENTITY_NAME.WABA_INFORMATION, results[0].wabaInformationId, userId)
         return businessAccountService.updateServiceProviderId(userId, req.body.serviceProviderId)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
