@@ -61,7 +61,9 @@ const CUSTOM_CONSTANT = {
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
   sms: { name: 'sms', expiresIn: 600, codeLength: 4 },
-  businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 }
+  businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 },
+  emailTfa: { name: 'email2fa', expiresIn: 300, codeLength: 6 },
+  smsTfa: { name: 'sms2fa', expiresIn: 300, codeLength: 6 }
 }
 const ACCOUNT_PLAN_TYPE = {
   Prepaid: 'd9718ee1-50a1-4826-b0fa-ad1394308d59',
@@ -112,7 +114,8 @@ const ENTITY_NAME = {
   USER_ACCOUNT_PROFILE: 'user_account_profile',
   MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
   USER_AGREEMENT_FILES: 'user_agreement_files',
-  AUDIENCE: 'audience'
+  AUDIENCE: 'audience',
+  USERS_TFA: 'users_tfa'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -158,7 +161,9 @@ const INTERNAL_END_POINTS = {
   addupdateAudience: '/helowhatsapp/api/audience',
   getWabaNumberByUserId: '/helowhatsapp/api/business/internal/wabaPhoneNumber',
   addUpdateOptinText: '/helowhatsapp/api/business/profile/optinmessage',
-  businessProfile: '/helowhatsapp/api/business/profile'
+  businessProfile: '/helowhatsapp/api/business/profile',
+  sendOtpViaEmail: '/helowhatsapp/api/users/otp/email',
+  sendOtpViaSms: '/helowhatsapp/api/users/otp/sms'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -193,6 +198,11 @@ const TEMPLATE_PARTIAL_APPROVE_STATUS = '588cff76-d6d1-49a3-8280-8c2c1d99bb81'
 const ADMIN_PANNEL_ENDPOINTS = {
   adminPannelResetPassword: '/#/new-password'
 }
+const SMPP_SMS = {
+  senderId: 'SAMPLE'
+}
+const TFA_TYPE_ENUM = ['sms', 'email', 'authenticator']
+const TFA_BACKUP_CODES_AMOUNT = 5
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -232,3 +242,6 @@ module.exports.MESSAGE_TRANSACTION_TYPE = MESSAGE_TRANSACTION_TYPE
 module.exports.TEMPLATE_APPROVE_STATUS = TEMPLATE_APPROVE_STATUS
 module.exports.TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_PARTIAL_APPROVE_STATUS
 module.exports.ADMIN_PANNEL_ENDPOINTS = ADMIN_PANNEL_ENDPOINTS
+module.exports.SMPP_SMS = SMPP_SMS
+module.exports.TFA_TYPE_ENUM = TFA_TYPE_ENUM
+module.exports.TFA_BACKUP_CODES_AMOUNT = TFA_BACKUP_CODES_AMOUNT

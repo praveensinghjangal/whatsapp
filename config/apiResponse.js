@@ -330,5 +330,30 @@ module.exports = {
     status_code: 200,
     code: 3040,
     message: 'chat metadata not set.'
+  },
+  EMAIL_OTP: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check your registered email for one time code'
+  },
+  SMS_OTP: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check your registered phone number for one time code'
+  },
+  TFA_NOT_SETTED_UP: {
+    status_code: 200,
+    code: 3041,
+    message: 'Please Setup 2FA first.'
+  },
+  INVALID_TFA_TYPE: {
+    status_code: 200,
+    code: 3042,
+    message: 'Invalid tfa type.'
+  },
+  TFA_ALREADY_SETTED_UP: {
+    status_code: 200,
+    code: 3041,
+    message: '2FA setup already done'
   }
 }

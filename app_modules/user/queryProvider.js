@@ -1,5 +1,5 @@
 const getUserDetailsByEmail = () => {
-  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name
+  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name,is_tfa_enabled
   from users u
   join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true 
   where lower(u.email) = lower(?) and u.is_active = true`
@@ -201,6 +201,27 @@ const setPasswordTokeConsumed = () => {
   and is_active = true`
 }
 
+const addTfaData = () => {
+  return `insert into users_tfa (users_tfa_id,user_id,authenticator_secret,backup_codes,tfa_type,created_by) values
+  (?,?,?,?,?,?)`
+}
+
+const getTfaData = () => {
+  return `select ut.users_tfa_id as "userTfaId", ut.user_id as "userId", ut.authenticator_secret as "authenticatorSecret",
+  ut.backup_codes as "backupCodes", ut.tfa_type as "tfaType"
+  from users_tfa ut
+  where ut.user_id  = ? and ut.is_active = 1`
+}
+
+const updateTfaData = () => {
+  return `update users_tfa
+  set authenticator_secret= ?,
+  backup_codes= ?,
+  tfa_type= ?,
+  updated_on=now(),updated_by= ?
+  WHERE users_tfa_id = ? and is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -231,5 +252,8 @@ module.exports = {
   addPasswordToken,
   getTokenDetailsFromToken,
   updatePassword,
-  setPasswordTokeConsumed
+  setPasswordTokeConsumed,
+  addTfaData,
+  getTfaData,
+  updateTfaData
 }
