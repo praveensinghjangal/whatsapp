@@ -326,11 +326,17 @@ const validateTFa = (req, res) => {
           tfaType: dbData[0].tempTfaType
         }
         if (newData.tfaType && newData.tfaType === __constants.TFA_TYPE_ENUM[2]) newData.authenticatorSecret = dbData[0].tempAuthenticatorSecret
-        verificationService.updateTfaData(dbData[0].userTfaId, newData, dbData[0], userId)
+        return verificationService.updateTfaData(dbData[0].userTfaId, newData, dbData[0], userId)
+      } else {
+        return data
       }
+    })
+    .then(data => {
       const payload = { user_id: userId }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token } })
+      const outData = { token }
+      if (isTemp) outData.backupCodes = data.backupCodes
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: outData })
     })
     .catch(err => {
       console.log(err.err)
@@ -513,7 +519,7 @@ const validateTempTfaBs = reqBody => {
 const validateTempTFa = (req, res) => {
   req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
   validateTempTfaBs(req.body)
-    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
     .catch(err => {
       console.log(err.err)
       __logger.error('error: ', err)
