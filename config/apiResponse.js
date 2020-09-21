@@ -330,5 +330,50 @@ module.exports = {
     status_code: 200,
     code: 3040,
     message: 'chat metadata not set.'
+  },
+  EMAIL_OTP: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check your registered email for one time code'
+  },
+  SMS_OTP: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check your registered phone number for one time code'
+  },
+  TFA_NOT_SETTED_UP: {
+    status_code: 200,
+    code: 3041,
+    message: 'Please Setup 2FA first.'
+  },
+  INVALID_TFA_TYPE: {
+    status_code: 200,
+    code: 3042,
+    message: 'Invalid tfa type.'
+  },
+  TFA_ALREADY_SETTED_UP: {
+    status_code: 200,
+    code: 3043,
+    message: '2FA setup already done'
+  },
+  QRCODE_GEN_ERR: {
+    status_code: 200,
+    code: 3044,
+    message: 'Unable to generate QRcode'
+  },
+  TEMP_TFA_NOT_FOUND: {
+    status_code: 200,
+    code: 3045,
+    message: 'Authentication method change request not found'
+  },
+  AUTHENTICATOR_QR_GENERATED: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please scan the QRcode or enter the secret key in authenticator app and then enter the OTP received.'
+  },
+  AUTHENTICATOR_CHECK_APP: {
+    status_code: 200,
+    code: 2001,
+    message: 'Please check the authenticator app and then enter the OTP received.'
   }
 }

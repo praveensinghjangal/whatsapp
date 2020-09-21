@@ -3,6 +3,7 @@ const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const UserService = require('../services/dbData')
+const addTempTfaDataBS = require('../controllers/verification').addTempTfaDataBS
 
 const controller = (req, res) => {
   __logger.info('Inside Sign up')
@@ -15,7 +16,11 @@ const controller = (req, res) => {
     })
     .then(data => {
       __logger.info('Then 2', data)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data })
+      return addTempTfaDataBS({ userId: data.userId, tfaType: __constants.TFA_TYPE_ENUM[1] })
+    })
+    .then(data => {
+      delete data.userTfaId
+      return res.send(data)
     })
     .catch(err => {
       __logger.error('error: ', err)

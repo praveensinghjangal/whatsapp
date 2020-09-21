@@ -243,6 +243,10 @@ module.exports = {
       passwordReset: process.env.EMAIL_PROVIDER_SUBJECT_PASSWORD_RESET
     }
   },
+  smppSmsProvider: {
+    apiKey: process.env.SMPP_SMS_PROVIDER_API_KEY,
+    apiUrl: process.env.SMPP_SMS_PROVIDER_API_URL
+  },
   mockWebHook: {
     authorization: process.env.MOCK_WEBHOOK_AUTH,
     receiverNumber: process.env.MOCK_WEBHOOK_RECEIVER_NUMBER.split(','),

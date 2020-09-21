@@ -1,5 +1,5 @@
 const getUserDetailsByEmail = () => {
-  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name
+  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name,is_tfa_enabled
   from users u
   join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true 
   where lower(u.email) = lower(?) and u.is_active = true`
@@ -201,6 +201,38 @@ const setPasswordTokeConsumed = () => {
   and is_active = true`
 }
 
+const getTfaData = () => {
+  return `select ut.users_tfa_id as "userTfaId", ut.user_id as "userId", ut.authenticator_secret as "authenticatorSecret",
+  ut.backup_codes as "backupCodes", ut.tfa_type as "tfaType",temp_authenticator_secret as "tempAuthenticatorSecret",
+  temp_tfa_type as "tempTfaType"
+  from users_tfa ut
+  where ut.user_id  = ? and ut.is_active = 1`
+}
+
+const updateTfaData = () => {
+  return `update users_tfa
+  set authenticator_secret= ?,
+  backup_codes= ?,
+  tfa_type= ?,
+  temp_authenticator_secret = null,
+  temp_tfa_type = null,
+  updated_on=now(),updated_by= ?
+  WHERE users_tfa_id = ? and is_active = true`
+}
+
+const addTempTfaData = () => {
+  return `insert into users_tfa (users_tfa_id,user_id,authenticator_secret,temp_tfa_type,created_by,backup_codes) values
+  (?,?,?,?,?,'[]')`
+}
+
+const updateTempTfaData = () => {
+  return `update users_tfa
+  set temp_authenticator_secret = ?,
+  temp_tfa_type = ?,
+  updated_on=now(),updated_by= ?
+  WHERE users_tfa_id = ? and is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -231,5 +263,9 @@ module.exports = {
   addPasswordToken,
   getTokenDetailsFromToken,
   updatePassword,
-  setPasswordTokeConsumed
+  setPasswordTokeConsumed,
+  getTfaData,
+  updateTfaData,
+  addTempTfaData,
+  updateTempTfaData
 }
