@@ -10,6 +10,8 @@ const SmsService = require('../../../lib/sendNotifications/sms')
 const emailTemplates = require('../../../lib/sendNotifications/emailTemplates')
 const smsTemplates = require('../../../lib/sendNotifications/smsTemplates')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
+const QRCode = require('qrcode')
+const speakeasy = require('speakeasy')
 
 const generateBackupCodes = number => {
   const bc = []
@@ -301,34 +303,6 @@ class VerificationService {
     return smsSent.promise
   }
 
-  addTfaData (userId, tfaType, authenticatorSecret) {
-    const tfaAdded = q.defer()
-    if (!userId || typeof userId !== 'string') {
-      tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
-      return tfaAdded.promise
-    }
-    if (authenticatorSecret && typeof authenticatorSecret !== 'string') {
-      tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide authenticatorSecret of type string' })
-      return tfaAdded.promise
-    }
-    if (!tfaType || typeof tfaType !== 'string' || !__constants.TFA_TYPE_ENUM.includes(tfaType)) {
-      tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please tfaType either of the following : ' + __constants.TFA_TYPE_ENUM.join(', ') })
-      return tfaAdded.promise
-    }
-    const backupCodes = generateBackupCodes(__constants.TFA_BACKUP_CODES_AMOUNT)
-    const userTfaId = this.uniqueId.uuid()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addTfaData(), [userTfaId, userId, authenticatorSecret || null, JSON.stringify(backupCodes), tfaType, userId])
-      .then(result => {
-        if (result && result.affectedRows && result.affectedRows > 0) {
-          tfaAdded.resolve({ userTfaId, backupCodes })
-        } else {
-          tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
-        }
-      })
-      .catch(err => tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
-    return tfaAdded.promise
-  }
-
   getTfaData (userId) {
     const verificationData = q.defer()
     if (!userId || typeof userId !== 'string') {
@@ -368,6 +342,91 @@ class VerificationService {
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
+  }
+
+  addTempTfaData (userId, tfaType, authenticatorSecret) {
+    const tfaAdded = q.defer()
+    if (!userId || typeof userId !== 'string') {
+      tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return tfaAdded.promise
+    }
+    if (authenticatorSecret && typeof authenticatorSecret !== 'string') {
+      tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide authenticatorSecret of type string' })
+      return tfaAdded.promise
+    }
+    if (!tfaType || typeof tfaType !== 'string' || !__constants.TFA_TYPE_ENUM.includes(tfaType)) {
+      tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please tfaType either of the following : ' + __constants.TFA_TYPE_ENUM.join(', ') })
+      return tfaAdded.promise
+    }
+    const userTfaId = this.uniqueId.uuid()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addTempTfaData(), [userTfaId, userId, authenticatorSecret || null, tfaType, userId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          tfaAdded.resolve({ userTfaId })
+        } else {
+          tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return tfaAdded.promise
+  }
+
+  updateTempTfaData (userId, tfaType, authenticatorSecret, oldData) {
+    const dataUpdated = q.defer()
+    // __logger.info('Inputs insertBusinessData userId', userId)
+    if (!userId || typeof userId !== 'string') {
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return dataUpdated.promise
+    }
+    if (authenticatorSecret && typeof authenticatorSecret !== 'string') {
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide authenticatorSecret of type string' })
+      return dataUpdated.promise
+    }
+    if (!tfaType || typeof tfaType !== 'string' || !__constants.TFA_TYPE_ENUM.includes(tfaType)) {
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please tfaType either of the following : ' + __constants.TFA_TYPE_ENUM.join(', ') })
+      return dataUpdated.promise
+    }
+    saveHistoryData(oldData, __constants.ENTITY_NAME.USERS_TFA, oldData.userTfaId, userId)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTempTfaData(), [authenticatorSecret, tfaType, userId, oldData.userTfaId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          dataUpdated.resolve({ userTfaId: oldData.userTfaId })
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        // __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
+  }
+
+  createSecretKey () {
+    const { base32 } = speakeasy.generateSecret({ length: 20 })
+    return base32
+  }
+
+  generateAuthenticatorQrcode (label, secretKey) {
+    const authenticatorData = q.defer()
+    const url = speakeasy.otpauthURL({ secret: secretKey, encoding: 'base32', label })
+    QRCode.toDataURL(url, (err, qrcode) => {
+      if (err) authenticatorData.reject({ type: __constants.RESPONSE_MESSAGES.QRCODE_GEN_ERR, err: err })
+      authenticatorData.resolve({ qrcode, secret: secretKey })
+    })
+    return authenticatorData.promise
+  }
+
+  validateAuthenticatorOtp (secretKey, token) {
+    const isValid = q.defer()
+    isValid.resolve({
+      isAuthenticatorOtpValid: speakeasy.totp.verify({
+        secret: secretKey,
+        encoding: 'base32',
+        token: token
+      })
+    })
+    return isValid.promise
   }
 }
 

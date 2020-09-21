@@ -25,7 +25,6 @@ const controller = (req, res) => {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: null })
       }
       const userData = results[0]
-      console.log('ppppppppppppppppppp', userData)
       if (userData.is_tfa_enabled === 0) {
         const payload = { user_id: userData.user_id }
         const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)

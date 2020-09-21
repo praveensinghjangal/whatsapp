@@ -1,3 +1,4 @@
+const q = require('q')
 const moment = require('moment')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
@@ -8,7 +9,6 @@ const HttpService = require('../../../lib/http_service')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
 const authMiddleware = require('../../../middlewares/authentication')
-const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 
 const generateEmailVerificationCode = (req, res) => {
   const verificationService = new VerificationService()
@@ -196,7 +196,7 @@ const sendOtpCode = (req, res) => {
       if (_.isEmpty(data)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
-      if (!data[0] || !data[0].tfaType) {
+      if (!data[0].tfaType && !data[0].tempTfaType) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
       let url = ''
@@ -207,18 +207,38 @@ const sendOtpCode = (req, res) => {
         case __constants.TFA_TYPE_ENUM[1]:
           url = __config.base_url + __constants.INTERNAL_END_POINTS.sendOtpViaEmail
           break
-        // case  __constants.TFA_TYPE_ENUM[2]:
-        // url = __config.base_url + __constants.INTERNAL_END_POINTS.sendOtpViaSms
-        // break
+        case __constants.TFA_TYPE_ENUM[2]:
+          url = 1
+          break
         default:
           url = null
       }
       console.log('[[[[[[[[[[[[[[[[[[[[', url)
+      if (!url && data[0].tempTfaType) {
+        switch (data[0].tempTfaType) {
+          case __constants.TFA_TYPE_ENUM[0]:
+            url = __config.base_url + __constants.INTERNAL_END_POINTS.sendOtpViaSms
+            break
+          case __constants.TFA_TYPE_ENUM[1]:
+            url = __config.base_url + __constants.INTERNAL_END_POINTS.sendOtpViaEmail
+            break
+          default:
+            url = null
+        }
+      }
       if (!url) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
       }
-      const http = new HttpService(60000)
-      return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0] })
+      if (url === 1) {
+        const outJson = { body: __constants.RESPONSE_MESSAGES.AUTHENTICATOR_CHECK_APP }
+        outJson.body.data = {}
+        outJson.body.error = null
+        delete outJson.body.status_code
+        return outJson
+      } else {
+        const http = new HttpService(60000)
+        return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0] })
+      }
     })
     .then(data => res.send(data.body || {}))
     .catch(err => {
@@ -230,6 +250,8 @@ const sendOtpCode = (req, res) => {
 const validateTFa = (req, res) => {
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
+  let isTemp = false
+  let dbData = {}
   if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
   }
@@ -239,11 +261,12 @@ const validateTFa = (req, res) => {
   let channelName = ''
   verificationService.getTfaData(userId)
     .then(data => {
+      dbData = data
       console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       if (_.isEmpty(data)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
-      if (!data[0] || !data[0].tfaType) {
+      if (!data[0].tfaType && !data[0].tempTfaType) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
       switch (data[0].tfaType) {
@@ -253,29 +276,58 @@ const validateTFa = (req, res) => {
         case __constants.TFA_TYPE_ENUM[1]:
           channelName = __constants.VERIFICATION_CHANNEL.emailTfa.name
           break
-          // case  __constants.TFA_TYPE_ENUM[2]:
-          // url = __constants.VERIFICATION_CHANNEL.authenticatorTfa.name
-          // break
+        case __constants.TFA_TYPE_ENUM[2]:
+          channelName = 1
+          break
         default:
           channelName = null
       }
       console.log('[[[[[[[[[[[[[[[[[[[[', channelName)
+      if (!channelName && data[0].tempTfaType) {
+        isTemp = true
+        switch (data[0].tempTfaType) {
+          case __constants.TFA_TYPE_ENUM[0]:
+            channelName = __constants.VERIFICATION_CHANNEL.smsTfa.name
+            break
+          case __constants.TFA_TYPE_ENUM[1]:
+            channelName = __constants.VERIFICATION_CHANNEL.emailTfa.name
+            break
+          default:
+            channelName = null
+        }
+      }
       if (!channelName) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
       }
-      return verificationService.getCodeDetails(userId, req.body.code, channelName)
-    })
-    .then(data => {
-      const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
-      const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-      // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
-      if (moment(currentTime).isBefore(expireyTime)) {
-        return verificationService.setTokenConsumed(userId, req.body.code, channelName)
+      if (channelName === 1) {
+        return verificationService.validateAuthenticatorOtp(data[0].authenticatorSecret, req.body.code)
       } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, err: {} })
+        return verificationService.getCodeDetails(userId, req.body.code, channelName)
       }
     })
     .then(data => {
+      console.log('heyyyyyyyyyyyyyyyyyy', data)
+      if (data.isAuthenticatorOtpValid) {
+        return data
+      } else {
+        const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
+        const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+        // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        if (moment(currentTime).isBefore(expireyTime)) {
+          return verificationService.setTokenConsumed(userId, req.body.code, channelName)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, err: {} })
+        }
+      }
+    })
+    .then(data => {
+      if (isTemp) {
+        const newData = {
+          tfaType: dbData[0].tempTfaType
+        }
+        if (newData.tfaType && newData.tfaType === __constants.TFA_TYPE_ENUM[2]) newData.authenticatorSecret = dbData[0].tempAuthenticatorSecret
+        verificationService.updateTfaData(dbData[0].userTfaId, newData, dbData[0], userId)
+      }
       const payload = { user_id: userId }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token } })
@@ -287,23 +339,88 @@ const validateTFa = (req, res) => {
     })
 }
 
-const addTfaData = (req, res) => {
+const addTempTfaDataBS = reqBody => {
+  const dataAdded = q.defer()
   const verificationService = new VerificationService()
-  const userId = req.body && req.body.userId ? req.body.userId : '0'
+  const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
+  let dbData = {}
+  let authenticatorSecret = null
   if (!userId || userId === '0') {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
+    return dataAdded.promise
   }
+  if (!reqBody.tfaType || typeof reqBody.tfaType !== 'string' || !__constants.TFA_TYPE_ENUM.includes(reqBody.tfaType)) {
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please tfaType either of the following : ' + __constants.TFA_TYPE_ENUM.join(', ')] })
+    return dataAdded.promise
+  }
+  if (reqBody.tfaType === __constants.TFA_TYPE_ENUM[2]) authenticatorSecret = verificationService.createSecretKey()
   verificationService.getTfaData(userId)
     .then(data => {
+      dbData = data
       console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       if (!_.isEmpty(data)) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_ALREADY_SETTED_UP, data: {} })
+        return verificationService.updateTempTfaData(userId, reqBody.tfaType, authenticatorSecret, data[0])
       }
-      return verificationService.addTfaData(userId, __constants.TFA_TYPE_ENUM[1], null)
+      return verificationService.addTempTfaData(userId, reqBody.tfaType, authenticatorSecret)
     })
     .then(data => {
+      if (_.isEmpty(dbData)) {
+        const outJson = { body: __constants.RESPONSE_MESSAGES.SUCCESS }
+        outJson.body.data = data
+        outJson.body.error = null
+        delete outJson.body.status_code
+        return outJson
+      }
+      let url = ''
+      switch (reqBody.tfaType) {
+        case __constants.TFA_TYPE_ENUM[0]:
+          url = __config.base_url + __constants.INTERNAL_END_POINTS.sendOtpViaSms
+          break
+        case __constants.TFA_TYPE_ENUM[1]:
+          url = __config.base_url + __constants.INTERNAL_END_POINTS.sendOtpViaEmail
+          break
+        case __constants.TFA_TYPE_ENUM[2]:
+          url = 1
+          break
+        default:
+          url = null
+      }
+      console.log('[[[[[[[[[[[[[[[[[[[[', url)
+      if (!url) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
+      }
+      if (url === 1) {
+        return verificationService.generateAuthenticatorQrcode(__constants.TFA_AUTHENTICATOR_LABEL, authenticatorSecret)
+      } else {
+        const http = new HttpService(60000)
+        return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0] })
+      }
+    })
+    .then(data => {
+      if (data && data.qrcode) {
+        const outJson = { body: __constants.RESPONSE_MESSAGES.AUTHENTICATOR_QR_GENERATED }
+        outJson.body.data = data
+        outJson.body.error = null
+        delete outJson.body.status_code
+        return outJson
+      }
+      return data
+    })
+    .then(data => dataAdded.resolve(data.body || {}))
+    .catch(err => {
+      console.log(err.err)
+      __logger.error('error: ', err)
+      return dataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+    })
+  return dataAdded.promise
+}
+
+const addTempTfaData = (req, res) => {
+  req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  addTempTfaDataBS(req.body)
+    .then(data => {
       delete data.userTfaId
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+      return res.send(data)
     })
     .catch(err => {
       console.log(err.err)
@@ -312,28 +429,91 @@ const addTfaData = (req, res) => {
     })
 }
 
-const updateTfa = (req, res) => {
+const validateTempTfaBs = reqBody => {
+  const dataAdded = q.defer()
   const verificationService = new VerificationService()
-  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  if (!req.body.tfaType || typeof req.body.tfaType !== 'string' || !__constants.TFA_TYPE_ENUM.includes(req.body.tfaType)) {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please tfaType either of the following : ' + __constants.TFA_TYPE_ENUM.join(', ')] })
+  const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
+  let channelName = ''
+  let dbData = {}
+  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'number') {
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!userId || userId === '0') {
+    return dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
   }
   verificationService.getTfaData(userId)
     .then(data => {
+      dbData = data
       console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       if (_.isEmpty(data)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
-      const uniqueId = new UniqueId()
-      if (req.body.tfaType && req.body.tfaType === __constants.TFA_TYPE_ENUM[2]) req.body.authenticatorSecret = uniqueId.uuid()
-      return verificationService.updateTfaData(data[0].userTfaId, req.body, data[0], userId)
+      if (!data[0] || !data[0].tempTfaType) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMP_TFA_NOT_FOUND, data: {} })
+      }
+      switch (data[0].tempTfaType) {
+        case __constants.TFA_TYPE_ENUM[0]:
+          channelName = __constants.VERIFICATION_CHANNEL.smsTfa.name
+          break
+        case __constants.TFA_TYPE_ENUM[1]:
+          channelName = __constants.VERIFICATION_CHANNEL.emailTfa.name
+          break
+        case __constants.TFA_TYPE_ENUM[2]:
+          channelName = 1
+          break
+        default:
+          channelName = null
+      }
+      console.log('[[[[[[[[[[[[[[[[[[[[', channelName)
+      if (!channelName) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
+      }
+      if (channelName === 1) {
+        return verificationService.validateAuthenticatorOtp(data[0].tempAuthenticatorSecret, reqBody.code)
+      } else {
+        return verificationService.getCodeDetails(userId, reqBody.code, channelName)
+      }
+    })
+    .then(data => {
+      if (data.isAuthenticatorOtpValid) {
+        return data
+      } else {
+        const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
+        const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
+        // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        if (moment(currentTime).isBefore(expireyTime)) {
+          return verificationService.setTokenConsumed(userId, reqBody.code, channelName)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_VERIFICATION_CODE, err: {} })
+        }
+      }
+    })
+    .then(data => {
+      console.log('code valid lets set temp as permenant', data)
+      const newData = {
+        tfaType: dbData[0].tempTfaType
+      }
+      if (newData.tfaType && newData.tfaType === __constants.TFA_TYPE_ENUM[2]) newData.authenticatorSecret = dbData[0].tempAuthenticatorSecret
+      return verificationService.updateTfaData(dbData[0].userTfaId, newData, dbData[0], userId)
     })
     .then(data => {
       delete data.userTfaId
       delete data.tfaType
       delete data.authenticatorSecret
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+      return dataAdded.resolve(data)
     })
+    .catch(err => {
+      console.log(err.err)
+      __logger.error('error: ', err)
+      return dataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+    })
+  return dataAdded.promise
+}
+
+const validateTempTFa = (req, res) => {
+  req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  validateTempTfaBs(req.body)
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
     .catch(err => {
       console.log(err.err)
       __logger.error('error: ', err)
@@ -350,6 +530,7 @@ module.exports = {
   generateSmsOtpCode,
   sendOtpCode,
   validateTFa,
-  addTfaData,
-  updateTfa
+  addTempTfaData,
+  addTempTfaDataBS,
+  validateTempTFa
 }

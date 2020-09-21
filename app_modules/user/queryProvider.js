@@ -201,14 +201,10 @@ const setPasswordTokeConsumed = () => {
   and is_active = true`
 }
 
-const addTfaData = () => {
-  return `insert into users_tfa (users_tfa_id,user_id,authenticator_secret,backup_codes,tfa_type,created_by) values
-  (?,?,?,?,?,?)`
-}
-
 const getTfaData = () => {
   return `select ut.users_tfa_id as "userTfaId", ut.user_id as "userId", ut.authenticator_secret as "authenticatorSecret",
-  ut.backup_codes as "backupCodes", ut.tfa_type as "tfaType"
+  ut.backup_codes as "backupCodes", ut.tfa_type as "tfaType",temp_authenticator_secret as "tempAuthenticatorSecret",
+  temp_tfa_type as "tempTfaType"
   from users_tfa ut
   where ut.user_id  = ? and ut.is_active = 1`
 }
@@ -218,6 +214,21 @@ const updateTfaData = () => {
   set authenticator_secret= ?,
   backup_codes= ?,
   tfa_type= ?,
+  temp_authenticator_secret = null,
+  temp_tfa_type = null,
+  updated_on=now(),updated_by= ?
+  WHERE users_tfa_id = ? and is_active = true`
+}
+
+const addTempTfaData = () => {
+  return `insert into users_tfa (users_tfa_id,user_id,authenticator_secret,temp_tfa_type,created_by,backup_codes) values
+  (?,?,?,?,?,'[]')`
+}
+
+const updateTempTfaData = () => {
+  return `update users_tfa
+  set temp_authenticator_secret = ?,
+  temp_tfa_type = ?,
   updated_on=now(),updated_by= ?
   WHERE users_tfa_id = ? and is_active = true`
 }
@@ -253,7 +264,8 @@ module.exports = {
   getTokenDetailsFromToken,
   updatePassword,
   setPasswordTokeConsumed,
-  addTfaData,
   getTfaData,
-  updateTfaData
+  updateTfaData,
+  addTempTfaData,
+  updateTempTfaData
 }
