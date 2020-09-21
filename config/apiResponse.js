@@ -375,5 +375,10 @@ module.exports = {
     status_code: 200,
     code: 2001,
     message: 'Please check the authenticator app and then enter the OTP received.'
+  },
+  INVALID_BACKUP_CODE: {
+    status_code: 401,
+    code: 3046,
+    message: 'Invalid backup code'
   }
 }
