@@ -222,9 +222,12 @@ const TAG = {
   insert: 'insert',
   update: 'update'
 }
-
 const TEMPLATE_DEFAULT_LANGUAGE_STATUS = 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1'
 const TEMPLATE_DEFAULT_STATUS = 'd11a8387-80e0-468b-9ee3-abb5eckil980'
+const TYNTEC_ENDPOINTS = {
+  sendMessage: '/chat-api/v2/messages',
+  addTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates'
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -264,3 +267,4 @@ module.exports.CHAT_APP_ENDPOINTS = CHAT_APP_ENDPOINTS
 module.exports.RESET_PASSWORD_TOKEN_EXPIREY_TIME = RESET_PASSWORD_TOKEN_EXPIREY_TIME
 module.exports.TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_DEFAULT_LANGUAGE_STATUS
 module.exports.TEMPLATE_DEFAULT_STATUS = TEMPLATE_DEFAULT_STATUS
+module.exports.TYNTEC_ENDPOINTS = TYNTEC_ENDPOINTS
