@@ -163,7 +163,8 @@ const INTERNAL_END_POINTS = {
   addUpdateOptinText: '/helowhatsapp/api/business/profile/optinmessage',
   businessProfile: '/helowhatsapp/api/business/profile',
   sendOtpViaEmail: '/helowhatsapp/api/users/otp/email',
-  sendOtpViaSms: '/helowhatsapp/api/users/otp/sms'
+  sendOtpViaSms: '/helowhatsapp/api/users/otp/sms',
+  redirectToWameUrl: '/helowhatsapp/api/audience/optin/url/redirect'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
