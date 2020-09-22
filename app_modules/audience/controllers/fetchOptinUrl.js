@@ -14,8 +14,8 @@ const getOptinUrl = (req, res) => {
   wabaService.getWabaNumberAndOptinTextFromUserId(userId)
     .then((data) => {
     //   console.log('Data in getOptinUrl', data)
-      const url = `${__constants.OPTIN_URL}/${data.wabaPhoneNumber}?text=${data.optinText}`
-      return qrCodeService.generateQrcode(url)
+      const url = `${__constants.WA_ME_URL}/${data.wabaPhoneNumber}?text=${data.optinText}`
+      return qrCodeService.generateQrcodeByUrl(url)
     })
     .then((data) => {
       __logger.info('qrCode generated-----', data)
