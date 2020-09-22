@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/authentication')
+const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
 const authstrategy = require('../../config').authentication.strategy
 const userConfiMiddleware = require('../../middlewares/setUserConfig')
 
@@ -60,6 +61,13 @@ router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.
 router.patch('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateEmailVerificationCode)
 router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateSmsVerificationCode)
 router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateSmsVerificationCode)
+router.post('/otp/email', tokenBasedAuth, verificationController.generateEmailOtpCode)
+router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCode)
+router.post('/otp', tokenBasedAuth, verificationController.sendOtpCode)
+router.patch('/otp', tokenBasedAuth, verificationController.validateTFa)
+router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateTempTFa)
+router.patch('/otp/backup', tokenBasedAuth, verificationController.validateBackupCodeAndResetTfa)
+router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.addTempTfaData)
 
 // Account Type
 router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)

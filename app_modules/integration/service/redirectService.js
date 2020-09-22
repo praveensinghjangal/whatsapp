@@ -32,7 +32,7 @@ class RedirectService {
         if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
-        if (payload && payload.whatsapp && payload.whatsapp.text) {
+        if (payload && payload.whatsapp && payload.whatsapp.text && payload.retryCount === 0) {
           payload.content = { text: payload.whatsapp.text, contentType: 'text' }
           this.callMessageFlow(data, payload)
         }
@@ -67,8 +67,13 @@ class RedirectService {
   callMessageFlow (redisData, payload) {
     // if bot flag true then hit or else do nothing
     console.log('Inside callMessageFlow')
-
-    if (redisData && redisData.chatbotActivated) {
+    if (payload && payload.content && payload.content.text) {
+      payload.content.text = payload.content.text.trim()
+      if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText) {
+        payload.isVavaOptin = true
+      }
+    }
+    if ((redisData && redisData.chatbotActivated) || payload.isVavaOptin === true) {
       console.log('Inside if')
       const http = new HttpService(3000)
       const apiUrl = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.chatFlow
@@ -76,12 +81,6 @@ class RedirectService {
         'Content-Type': 'application/json',
         Accept: 'application/json',
         Authorization: __config.chatAppToken
-      }
-      if (payload && payload.content && payload.content.text) {
-        payload.content.text = payload.content.text.trim()
-        if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText) {
-          payload.isVavaOptin = true
-        }
       }
       http.Post(payload, 'body', apiUrl, headers)
         .then(apiRes => {

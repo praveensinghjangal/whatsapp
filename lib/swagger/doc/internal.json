@@ -693,7 +693,7 @@
             "summary": "Get Message Count",
             "description": "Use this API to get message status count",
             "tags": [
-               "message"
+               "message-history"
             ],
             "operationId": "getMessageCount",
             "deprecated": false,
@@ -819,7 +819,7 @@
             "summary": "Get Message List",
             "description": "Use this API to get message status list",
             "tags": [
-               "message"
+               "message-history"
             ],
             "operationId": "getMessageList",
             "deprecated": false,
@@ -901,6 +901,289 @@
                                  "endConsumerNumber": "917666545750"
                               }
                            ]
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/chat/v1/messages/transaction": {
+         "get": {
+            "summary": "Get Incoming, Outgoing and Total Message Transaction Count",
+            "description": "Use this API to get incoming, outgoing and total message transaction count",
+            "tags": [
+               "message-history"
+            ],
+            "operationId": "getMessageTransactionCount",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "startDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "startDate needs to be entered here"
+               },
+               {
+                  "name": "endDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "endDate needs to be entered here"
+               },
+               {
+                  "name": "transactionType",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "transactionType to be entered here i.e incoming or outgoing"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns counts of message transaction type",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                            "code": 2000,
+                            "msg": "Success",
+                            "data": {
+                                      "incomingMessageCount": 56,
+                                      "outgoingMessageCount": 63,
+                                      "totalMessageCount": 119
+                                    },
+                           "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/chat/v1/messages/transaction/list": {
+         "get": {
+            "summary": "Get Message Transaction Type List",
+            "description": "Use this API to get message transaction type list",
+            "tags": [
+               "message-history"
+            ],
+            "operationId": "getMessageTransactionTypeList",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "startDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "startDate needs to be entered here"
+               },
+               {
+                  "name": "endDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "endDate needs to be entered here"
+               },
+               {
+                  "name": "transactionType",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "transactionType to be entered here i.e incoming or outgoing"
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter page number here"
+               },
+               {
+                  "name": "ItemsPerPage",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter records per page"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns list of message transaction type",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                            "code": 2000,
+                            "msg": "Success",
+                            "data": {
+                              "rows": [
+                                {
+                                  "messageId": "3764f600-b8ec-4111-b55f-7b8fb286cd0b",
+                                  "time": "2020-09-03T05:25:54.000Z"
+                                },
+                                {
+                                 "messageId": "fdab9945-4c91-465b-a234-1b50b8a5e998",
+                                  "time": "2020-09-03T09:42:25.000Z"
+                                }
+                              ],
+                              "pagination": {
+                                    "totalPage": 56,
+                                    "currentPage": 1
+                              }
+                            },
+                            "error": null
                         },
                         {
                            "code": 3000,
@@ -6493,7 +6776,7 @@
       },
       "/audience/optin": {
          "post": {
-            "description": "API to update optin\nTo update optinSourceId pass optin source ID along with parameters to update",
+            "description": "API to update optin\nTo update optinSourceId pass optin source\nID along with parameters to update\nfollowing are the optin source list :\n1. Captured via any form/check-box/t&c - 154e25f4-44cd-4a48-984d-dbdce569d2c1\n2. When received by direct optin message on Whatsapp - 28614254-12c6-4f44-aa3c-20cf9e9589cb\n3. Optin added using API - 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649",
             "summary": "Update optin satus and add optin source id",
             "tags": [
                "audience"
@@ -6778,7 +7061,7 @@
       },
       "/audience/optin/url": {
          "get": {
-            "description": "This api returns optin url",
+            "description": "This api returns optin url and qrCode of the url",
             "summary": "Get optin url",
             "tags": [
                "audience"
@@ -6817,17 +7100,106 @@
                            "code": 2000,
                            "msg": "Success",
                            "data": {
-                              "code": 2000,
-                              "msg": "Success",
-                              "data": "https://wa.me/918080800808?text=helloviva1",
+                              "url": "https://wa.me/918080800808?text=helloviva1",
+                              "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATpSURBVO3BQY7YwBEEwcoB///ltI59GoBg71qyKwL/SNWSk6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatGTj4D8JjUTkBs1N0C+UDMBuVHzBpDfpOaLk6pFJ1WLTqoWPVmmZhOQN9RMQCY1k5obIDdAJjUTkBsgk5obNZuAbDqpWnRSteikatGTHwbkDTVvqLlR8waQSc0bQG6AbALyhpqfdFK16KRq0UnVoif/OCBvqLlRMwGZ1ExAJjX/z06qFp1ULTqpWvTkH6dmAjKpmYD8JiCTmgnIpOZfdlK16KRq0UnVoic/TM1/E5AbNROQnwRkk5q/yUnVopOqRSdVi54sA/KbgExqJiCTmgnIpGYCsknNBOQNIH+zk6pFJ1WLTqoWPflIzd8EyBdAboBMaiYgm9T8S06qFp1ULTqpWvTkIyCTmgnIjZoJyBtqJiA3QN5QMwG5UXMDZFJzA2RScwNkUjMBuVHzxUnVopOqRSdVi558pGYCMql5Q80bQDap+QLIpOYNIDdAbtTcqJmAbDqpWnRSteikatGTHwZkUjMBmdRMQCY1k5oJyI2aN4DcAPkCyI2aL4DcqNl0UrXopGrRSdUi/CMfAJnUTEAmNTdAJjWbgExqJiCTmi+A/CY1bwCZ1HxxUrXopGrRSdWiJx+p2aRmAnKjZpOaN4BMaiY1E5BJzQRkUvMGkBs1k5pNJ1WLTqoWnVQtwj+yCMikZgIyqfkCyKTmDSBvqJmATGomIJOaCcikZgIyqXkDyBtqvjipWnRSteikatGTj4C8oeYGyBtqJiCTmhs1N0AmIJOaCcgNkEnNBGRScwNkUvPfdFK16KRq0UnVoie/DMgbaiYgE5BJzQRkUnMDZFLzhpoJyBtqJiA3am7UTEAmNZtOqhadVC06qVr05CM1E5AJyKTmBsgE5CcBmdTcAHlDzRdqJiATkBs1v+mkatFJ1aKTqkX4R34QkEnNBORGzQ2QSc0NkEnNBGRScwPkDTU3QG7U3AB5Q82mk6pFJ1WLTqoWPfkIyKTmDTU3QCY1N0DeADKpuQFyo2aTmgnIjZoJyKTmJ51ULTqpWnRStejJR2pu1NwAuVFzo+YLIF+omYDcqLlR84aav8lJ1aKTqkUnVYueLAMyqblRcwPkRs0XaiYgk5o31NwA2QTkb3JSteikatFJ1SL8I/8wIJOaCciNmgnIG2omIF+oeQPIJjVfnFQtOqladFK16MlHQH6Tmhsgm9TcAJnUTEAmNROQGyCTmjfUTEAmNZtOqhadVC06qVr0ZJmaTUDeUDMBmdTcqLkB8gWQN9RsUvOTTqoWnVQtOqla9OSHAXlDzRtqJiBvAJnUTEAmNROQGzU3QCYgX6iZgExqJiCTmi9OqhadVC06qVr05B8H5EbNBOQGyCYgk5pJzRtAboBMam7UbDqpWnRSteikatGT/3FAJjWb1ExAJjVvAJnU3Ki5ATKpmYBMar44qVp0UrXopGrRkx+m5iepuQEyAXlDzQRkUjOpmYDcqNkEZFIzAZnUbDqpWnRSteikatGTZUB+E5Av1ExAJiA3QG7UfAFkUvM3O6ladFK16KRqEf6RqiUnVYtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVov8AZRdHRop1Cw0AAAAASUVORK5CYII="
+                              },
                               "error": null
-                           }
                         },
                         {
                            "code": 3000,
                            "msg": "No record found.",
                            "data": null,
                            "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/audience/optin/url/redirect/{wabaNumber}": {
+         "get": {
+            "description": "This api redirects to getOptinUrl",
+            "summary": "Redirect to get optin url api",
+            "tags": [
+               "audience"
+            ],
+            "operationId": "RedirectToOptinUrl",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "wabaNumber",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "wabaNumber"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Redirects to getOptinUrl",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "array"
+                        }
+                     },
+                     "example": [
+                        {
+                          "code": 303,
+                          "msg": "Redirected",
+                          "error": null
                         }
                      ]
                   }

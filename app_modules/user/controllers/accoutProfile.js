@@ -108,6 +108,7 @@ const generateAndUpdateTokenKey = (req, res) => {
   __logger.info('Inside generateAndUpdateTokenKey', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let tokenData = {}
+  let dbData = {}
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
     .then(result => {
       __logger.info('Then 1')
@@ -119,6 +120,7 @@ const generateAndUpdateTokenKey = (req, res) => {
           updated_by: userId,
           user_id: userId
         }
+        dbData = result[0]
         _.each(tokenData, (val) => queryParam.push(val))
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTokenInAccountProfile(), queryParam)
       } else {
@@ -129,6 +131,7 @@ const generateAndUpdateTokenKey = (req, res) => {
       __logger.info('queryResult')
       delete tokenData.updated_by
       delete tokenData.user_id
+      saveHistoryData(dbData, __constants.ENTITY_NAME.USERS, dbData.accountId, userId)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: tokenData
