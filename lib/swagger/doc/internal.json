@@ -7061,7 +7061,7 @@
       },
       "/audience/optin/url": {
          "get": {
-            "description": "This api returns optin url",
+            "description": "This api returns optin url and qrCode of the url",
             "summary": "Get optin url",
             "tags": [
                "audience"
@@ -7100,17 +7100,106 @@
                            "code": 2000,
                            "msg": "Success",
                            "data": {
-                              "code": 2000,
-                              "msg": "Success",
-                              "data": "https://wa.me/918080800808?text=helloviva1",
+                              "url": "https://wa.me/918080800808?text=helloviva1",
+                              "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATpSURBVO3BQY7YwBEEwcoB///ltI59GoBg71qyKwL/SNWSk6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatGTj4D8JjUTkBs1N0C+UDMBuVHzBpDfpOaLk6pFJ1WLTqoWPVmmZhOQN9RMQCY1k5obIDdAJjUTkBsgk5obNZuAbDqpWnRSteikatGTHwbkDTVvqLlR8waQSc0bQG6AbALyhpqfdFK16KRq0UnVoif/OCBvqLlRMwGZ1ExAJjX/z06qFp1ULTqpWvTkH6dmAjKpmYD8JiCTmgnIpOZfdlK16KRq0UnVoic/TM1/E5AbNROQnwRkk5q/yUnVopOqRSdVi54sA/KbgExqJiCTmgnIpGYCsknNBOQNIH+zk6pFJ1WLTqoWPflIzd8EyBdAboBMaiYgm9T8S06qFp1ULTqpWvTkIyCTmgnIjZoJyBtqJiA3QN5QMwG5UXMDZFJzA2RScwNkUjMBuVHzxUnVopOqRSdVi558pGYCMql5Q80bQDap+QLIpOYNIDdAbtTcqJmAbDqpWnRSteikatGTHwZkUjMBmdRMQCY1k5oJyI2aN4DcAPkCyI2aL4DcqNl0UrXopGrRSdUi/CMfAJnUTEAmNTdAJjWbgExqJiCTmi+A/CY1bwCZ1HxxUrXopGrRSdWiJx+p2aRmAnKjZpOaN4BMaiY1E5BJzQRkUvMGkBs1k5pNJ1WLTqoWnVQtwj+yCMikZgIyqfkCyKTmDSBvqJmATGomIJOaCcikZgIyqXkDyBtqvjipWnRSteikatGTj4C8oeYGyBtqJiCTmhs1N0AmIJOaCcgNkEnNBGRScwNkUvPfdFK16KRq0UnVoie/DMgbaiYgE5BJzQRkUnMDZFLzhpoJyBtqJiA3am7UTEAmNZtOqhadVC06qVr05CM1E5AJyKTmBsgE5CcBmdTcAHlDzRdqJiATkBs1v+mkatFJ1aKTqkX4R34QkEnNBORGzQ2QSc0NkEnNBGRScwPkDTU3QG7U3AB5Q82mk6pFJ1WLTqoWPfkIyKTmDTU3QCY1N0DeADKpuQFyo2aTmgnIjZoJyKTmJ51ULTqpWnRStejJR2pu1NwAuVFzo+YLIF+omYDcqLlR84aav8lJ1aKTqkUnVYueLAMyqblRcwPkRs0XaiYgk5o31NwA2QTkb3JSteikatFJ1SL8I/8wIJOaCciNmgnIG2omIF+oeQPIJjVfnFQtOqladFK16MlHQH6Tmhsgm9TcAJnUTEAmNROQGyCTmjfUTEAmNZtOqhadVC06qVr0ZJmaTUDeUDMBmdTcqLkB8gWQN9RsUvOTTqoWnVQtOqla9OSHAXlDzRtqJiBvAJnUTEAmNROQGzU3QCYgX6iZgExqJiCTmi9OqhadVC06qVr05B8H5EbNBOQGyCYgk5pJzRtAboBMam7UbDqpWnRSteikatGT/3FAJjWb1ExAJjVvAJnU3Ki5ATKpmYBMar44qVp0UrXopGrRkx+m5iepuQEyAXlDzQRkUjOpmYDcqNkEZFIzAZnUbDqpWnRSteikatGTZUB+E5Av1ExAJiA3QG7UfAFkUvM3O6ladFK16KRqEf6RqiUnVYtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVov8AZRdHRop1Cw0AAAAASUVORK5CYII="
+                              },
                               "error": null
-                           }
                         },
                         {
                            "code": 3000,
                            "msg": "No record found.",
                            "data": null,
                            "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/audience/optin/url/redirect/{wabaNumber}": {
+         "get": {
+            "description": "This api redirects to getOptinUrl",
+            "summary": "Redirect to get optin url api",
+            "tags": [
+               "audience"
+            ],
+            "operationId": "RedirectToOptinUrl",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "wabaNumber",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "wabaNumber"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Redirects to getOptinUrl",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "array"
+                        }
+                     },
+                     "example": [
+                        {
+                          "code": 303,
+                          "msg": "Redirected",
+                          "error": null
                         }
                      ]
                   }

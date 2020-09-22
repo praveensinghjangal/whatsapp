@@ -204,6 +204,7 @@ const SMPP_SMS = {
 const TFA_TYPE_ENUM = ['sms', 'email', 'authenticator']
 const TFA_BACKUP_CODES_AMOUNT = 5
 const TFA_AUTHENTICATOR_LABEL = 'helo-whatsapp'
+const OPTIN_URL = 'https://wa.me'
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -247,3 +248,4 @@ module.exports.SMPP_SMS = SMPP_SMS
 module.exports.TFA_TYPE_ENUM = TFA_TYPE_ENUM
 module.exports.TFA_BACKUP_CODES_AMOUNT = TFA_BACKUP_CODES_AMOUNT
 module.exports.TFA_AUTHENTICATOR_LABEL = TFA_AUTHENTICATOR_LABEL
+module.exports.OPTIN_URL = OPTIN_URL
