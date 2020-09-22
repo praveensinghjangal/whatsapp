@@ -66,6 +66,7 @@ router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCod
 router.post('/otp', tokenBasedAuth, verificationController.sendOtpCode)
 router.patch('/otp', tokenBasedAuth, verificationController.validateTFa)
 router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateTempTFa)
+router.patch('/otp/backup', tokenBasedAuth, verificationController.validateBackupCodeAndResetTfa)
 router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.addTempTfaData)
 
 // Account Type

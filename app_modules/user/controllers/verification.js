@@ -527,6 +527,34 @@ const validateTempTFa = (req, res) => {
     })
 }
 
+const validateBackupCodeAndResetTfa = (req, res) => {
+  const verificationService = new VerificationService()
+  const userId = req.body && req.body.userId ? req.body.userId : '0'
+  if (!req.body || !req.body.backupCode || typeof req.body.backupCode !== 'string') {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide backupCode of type string'] })
+  }
+  if (!userId || userId === '0') {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
+  }
+  verificationService.getTfaData(userId)
+    .then(data => {
+      if (!data[0].backupCodes.includes(req.body.backupCode)) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_BACKUP_CODE, err: {} })
+      }
+      return verificationService.resetTfaData(userId, data[0])
+    })
+    .then(data => {
+      const payload = { user_id: userId }
+      const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token, resetTfaData: true } })
+    })
+    .catch(err => {
+      console.log(err.err)
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+    })
+}
+
 module.exports = {
   generateEmailVerificationCode,
   generateSmsVerificationCode,
@@ -538,5 +566,6 @@ module.exports = {
   validateTFa,
   addTempTfaData,
   addTempTfaDataBS,
-  validateTempTFa
+  validateTempTFa,
+  validateBackupCodeAndResetTfa
 }

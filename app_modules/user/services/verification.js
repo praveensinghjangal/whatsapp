@@ -428,6 +428,29 @@ class VerificationService {
     })
     return isValid.promise
   }
+
+  resetTfaData (userId, oldData) {
+    const dataUpdated = q.defer()
+    // __logger.info('Inputs insertBusinessData userId', userId)
+    if (!userId || typeof userId !== 'string') {
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return dataUpdated.promise
+    }
+    saveHistoryData(oldData, __constants.ENTITY_NAME.USERS_TFA, oldData.userTfaId, userId)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.resetTfaData(), [userId, oldData.userTfaId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          dataUpdated.resolve({ userTfaId: oldData.userTfaId })
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        // __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
+  }
 }
 
 module.exports = VerificationService

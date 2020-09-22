@@ -233,6 +233,17 @@ const updateTempTfaData = () => {
   WHERE users_tfa_id = ? and is_active = true`
 }
 
+const resetTfaData = () => {
+  return `update users_tfa
+  set temp_authenticator_secret = null,
+  temp_tfa_type = null,
+  backup_codes = '[]',
+  tfa_type= null,
+  authenticator_secret = null,
+  updated_on=now(),updated_by= ?
+  WHERE users_tfa_id = ? and is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -267,5 +278,6 @@ module.exports = {
   getTfaData,
   updateTfaData,
   addTempTfaData,
-  updateTempTfaData
+  updateTempTfaData,
+  resetTfaData
 }
