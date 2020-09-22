@@ -8,7 +8,7 @@ const redirectToOptinUrl = (req, res) => {
   redisService.getWabaDataByPhoneNumber(req.params.wabaNumber)
     .then((data) => {
       __logger.info('got Optin text----', data.optinText)
-      res.redirect(`${__constants.OPTIN_URL}/${req.params.wabaNumber}?text=${data.optinText}`)
+      res.redirect(`${__constants.WA_ME_URL}/${req.params.wabaNumber}?text=${data.optinText}`)
     })
     .catch(err => {
       __logger.error('error: ', err)
