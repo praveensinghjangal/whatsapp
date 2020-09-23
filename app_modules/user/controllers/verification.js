@@ -8,7 +8,7 @@ const VerificationService = require('../services/verification')
 const HttpService = require('../../../lib/http_service')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
-const authMiddleware = require('../../../middlewares/authentication')
+const authMiddleware = require('../../../middlewares/auth/authentication')
 
 const generateEmailVerificationCode = (req, res) => {
   const verificationService = new VerificationService()

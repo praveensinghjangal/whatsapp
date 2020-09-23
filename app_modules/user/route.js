@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const authMiddleware = require('../../middlewares/authentication')
-const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
+const authMiddleware = require('../../middlewares/auth/authentication')
+const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 const authstrategy = require('../../config').authentication.strategy
 const userConfiMiddleware = require('../../middlewares/setUserConfig')
-const internalSessionOrTokenAuth = require('../../middlewares/internalSessionOrTokenAuth')
-const bearerTokenAuth = require('../../middlewares/bearerTokenAuth')
+const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
+const bearerTokenAuth = require('../../middlewares/auth/bearerTokenAuth')
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')

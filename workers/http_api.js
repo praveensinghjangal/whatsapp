@@ -15,7 +15,7 @@ const __util = require('../lib/util')
 const __config = require('../config')
 const __constants = require('../config/constants')
 const helmet = require('helmet')
-const authMiddleware = require('../middlewares/authentication')
+const authMiddleware = require('../middlewares/auth/authentication')
 
 class httpApiWorker {
   constructor () {

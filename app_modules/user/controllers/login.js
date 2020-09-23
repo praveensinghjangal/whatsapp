@@ -3,7 +3,7 @@ const __util = require('../../../lib/util')
 const passMgmt = require('../../../lib/util/password_mgmt')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const authMiddleware = require('../../../middlewares/authentication')
+const authMiddleware = require('../../../middlewares/auth/authentication')
 const UserService = require('../services/dbData')
 
 const controller = (req, res) => {

@@ -1,6 +1,6 @@
-const authTokens = require('../config/index').authTokens
+const authTokens = require('../../config/index').authTokens
 const authMiddleware = require('./authentication')
-const authstrategy = require('../config').authentication.strategy
+const authstrategy = require('../../config').authentication.strategy
 
 module.exports = (req, res, next) => {
   if (req.headers.authorization && authTokens.includes(req.headers.authorization)) {

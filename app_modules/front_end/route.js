@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const authMiddleware = require('../../middlewares/authentication')
+const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 
 router.post('/addUpdateOptinMessageAndTemplate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/optinAndTemplate').post)

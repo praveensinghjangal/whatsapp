@@ -2,7 +2,7 @@ const q = require('q')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const authMiddleware = require('../../../middlewares/authentication')
+const authMiddleware = require('../../../middlewares/auth/authentication')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // Services
