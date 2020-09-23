@@ -5145,6 +5145,14 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: |-
+          user needs to enter base64 encoded email and password
+          Email & Password needs to be encoded in the following manner : 'email:password'
+          format for header value : <Bearer<space>base64EncodedTextOfEmailAndPassword>
       - name: Body
         in: body
         required: true

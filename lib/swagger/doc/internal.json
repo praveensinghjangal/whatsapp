@@ -7523,6 +7523,13 @@
                "application/json"
             ],
             "parameters": [
+                {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user needs to enter base64 encoded email and password\nEmail & Password needs to be encoded in the following manner : 'email:password'\nformat for header value : <Bearer<space>base64EncodedTextOfEmailAndPassword>"
+               },
                {
                   "name": "Body",
                   "in": "body",
