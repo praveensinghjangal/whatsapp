@@ -3,13 +3,11 @@ swagger: '2.0'
 info:
   description: Helo Whatsapp API documentation
   version: 1.0.0
-  title: 'Helo Whatsapp             '
+  title: 'Helo Whatsapp'
   termsOfService: ''
   contact:
     name: vivaconnect support
     email: support@vivaconnect.co
-host: localhost:3000
-basePath: "/helowhatsapp/api"
 tags:
 - name: message
   description: API's to send bulk messages to end user
@@ -46,9 +44,10 @@ schemes:
 paths:
   "/chat/v1/messages":
     post:
+      isPublic: true
       description: |-
         This API is used to send mesages using a channel.
-         This API can send single as well as bulk messsages.
+        This API can send single as well as bulk messsages.
       summary: This API is used to send mesages using a channel
       tags:
       - message
@@ -372,8 +371,11 @@ paths:
       security: []
   "/chat/v1/messages/tracking/{messageId}":
     get:
+      isPublic: true
       summary: Get Message Journey
-      description: Use this API to get complete journey of a message
+      description: |-
+        Use this API to get complete journey of a message
+        You need to pass messageId in path
       tags:
       - message
       operationId: getMessageStatus
@@ -3140,7 +3142,17 @@ paths:
       security: []
   "/templates":
     get:
-      description: This api returns list of templates based on filters
+      isPublic: true
+      description: |-
+        This api returns list of templates based on filters
+        following are the list of template status :
+        Approved
+        DELETE_PENDING
+        Request Initiated
+        SUBMITTED
+        Rejected
+        REQUESTED
+        PENDING
       summary: Get template list
       tags:
       - templates
@@ -3214,6 +3226,7 @@ paths:
               error: {}
       security: []
     post:
+      isPublic: true
       description: |-
         API to add or update template
         To add template do not pass templateID to update template pass template ID along with parameters to update
@@ -3876,7 +3889,9 @@ paths:
       security: []
   "/audience":
     get:
-      description: This api returns list of templates based on filters
+      isPublic: true
+      description: "This api returns list of templates based on filters\nfollowing\nare
+        the list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin"
       summary: Get audience list
       tags:
       - audience
@@ -3998,6 +4013,7 @@ paths:
               error: {}
       security: []
     post:
+      isPublic: true
       description: |-
         API to add or update audience
         To add audience do not pass audienceID to update template pass audience ID along with parameters to update
@@ -4206,8 +4222,11 @@ paths:
       security: []
   "/audience/{audienceId}":
     get:
+      isPublic: true
       summary: Get audience Info
-      description: Use this API to get information of a audience record
+      description: |-
+        Use this API to get information of a audience record
+        pass audienceId in path
       tags:
       - audience
       operationId: GetAudienceRecordById
@@ -4626,6 +4645,7 @@ paths:
       security: []
   "/audience/optin":
     post:
+      isPublic: true
       description: |-
         API to update optin
         To update optinSourceId pass optin source
@@ -5134,6 +5154,7 @@ paths:
       security: []
   "/users/authorize":
     post:
+      isPublic: true
       summary: Authorize API
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -5145,6 +5166,15 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: |-
+          User needs to enter base64 encoded email and password,
+          Email & Password needs to be encoded in the following manner : 'email:password',
+          format for header value : "Bearer[SPACE]base64EncodedTextOfEmailAndPassword",
+          example for header value : "Bearer MTIxQGdtYWlsLmFiY2Q=".
       - name: Body
         in: body
         required: true
