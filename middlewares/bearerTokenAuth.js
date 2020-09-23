@@ -9,7 +9,8 @@ module.exports = (req, res, next) => {
   __logger.info('Bearer token---', req.headers.authorization)
   if (req.headers && req.headers.authorization) {
     const base64 = new Base64()
-    let str = base64.decode(req.headers.authorization.split(' ')[1])
+    const encodedText = req.headers.authorization.split(' ')[1] || ''
+    let str = base64.decode(encodedText)
     str = str.split(':')
     const url = __config.base_url + __constants.INTERNAL_END_POINTS.userLogin
     const http = new HttpService(60000)

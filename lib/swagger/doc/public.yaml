@@ -26,7 +26,7 @@ paths:
     post:
       description: |-
         This API is used to send mesages using a channel.
-         This API can send single as well as bulk messsages.
+        This API can send single as well as bulk messsages.
       summary: This API is used to send mesages using a channel
       tags:
       - message
