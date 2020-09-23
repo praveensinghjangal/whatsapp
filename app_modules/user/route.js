@@ -5,6 +5,8 @@ const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
 const authstrategy = require('../../config').authentication.strategy
 const userConfiMiddleware = require('../../middlewares/setUserConfig')
 const internalSessionOrTokenAuth = require('../../middlewares/internalSessionOrTokenAuth')
+const bearerTokenAuth = require('../../middlewares/bearerTokenAuth')
+
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
 const accountTypeController = require('./controllers/accountType')
@@ -20,7 +22,7 @@ router.post('/auth/forgetpassword', require('./controllers/passwordManagement').
 router.post('/auth/changepassword', require('./controllers/passwordManagement').changePassword)
 router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name, authstrategy.google.options))
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
-router.post('/authorize', require('./controllers/authorize').authorize)
+router.post('/authorize', bearerTokenAuth, require('./controllers/authorize').authorize)
 
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {

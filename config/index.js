@@ -177,10 +177,8 @@ module.exports = {
       }
     },
     tyntec: {
-      baseUrl: 'https://api.tyntec.com',
-      endpoint: {
-        sendMessage: '/chat-api/v2/messages'
-      }
+      baseUrl: process.env.TYNTEC_BASE_URL,
+      accountId: process.env.TYNTEC_ACCOUNT_ID
     }
   },
   authentication: {
