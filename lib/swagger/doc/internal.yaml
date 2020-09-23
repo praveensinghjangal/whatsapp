@@ -46,6 +46,7 @@ schemes:
 paths:
   "/chat/v1/messages":
     post:
+      isPublic: true
       description: |-
         This API is used to send mesages using a channel.
          This API can send single as well as bulk messsages.
