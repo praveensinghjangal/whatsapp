@@ -26,7 +26,7 @@ paths:
     post:
       description: |-
         This API is used to send mesages using a channel.
-         This API can send single as well as bulk messsages.
+        This API can send single as well as bulk messsages.
       summary: This API is used to send mesages using a channel
       tags:
       - message
@@ -265,8 +265,14 @@ paths:
       security: []
   "/audience/optin":
     post:
-      description: "API to update optin\nTo update optinSourceId pass optin source
-        ID along with parameters to update\nfollowing are the optin source list :\n1. Captured via any form/check-box/t&c - 154e25f4-44cd-4a48-984d-dbdce569d2c1\n2. When received by direct optin message on Whatsapp - 28614254-12c6-4f44-aa3c-20cf9e9589cb\n3. Optin added using API - 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649"
+      description: |-
+        API to update optin
+        To update optinSourceId pass optin source
+        ID along with parameters to update
+        following are the optin source list :
+        1. Captured via any form/check-box/t&c - 154e25f4-44cd-4a48-984d-dbdce569d2c1
+        2. When received by direct optin message on Whatsapp - 28614254-12c6-4f44-aa3c-20cf9e9589cb
+        3. Optin added using API - 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649
       summary: Update optin status and add optin source id
       tags:
       - audience
@@ -452,8 +458,8 @@ paths:
       security: []
   "/audience":
     get:
-      description: "This api returns list of templates based on filters\nfollowing
-        are the list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin"
+      description: "This api returns list of templates based on filters\nfollowing\nare
+        the list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin"
       summary: Get audience list
       tags:
       - audience
@@ -872,6 +878,13 @@ paths:
       produces:
       - application/json
       parameters:
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: |-
+          user needs to enter encoded email and password
+          format Bearer email:password
       - name: Body
         in: body
         required: true

@@ -3,15 +3,13 @@
    "info": {
       "description": "Helo Whatsapp API documentation",
       "version": "1.0.0",
-      "title": "Helo Whatsapp             ",
+      "title": "Helo Whatsapp",
       "termsOfService": "",
       "contact": {
          "name": "vivaconnect support",
          "email": "support@vivaconnect.co"
       }
    },
-   "host": "localhost:3000",
-   "basePath": "/helowhatsapp/api",
    "tags": [
       {
          "name": "message",
@@ -72,7 +70,8 @@
    "paths": {
       "/chat/v1/messages": {
          "post": {
-            "description": "This API is used to send mesages using a channel.\n This API can send single as well as bulk messsages.",
+            "isPublic": true,
+            "description": "This API is used to send mesages using a channel.\nThis API can send single as well as bulk messsages.",
             "summary": "This API is used to send mesages using a channel",
             "tags": [
                "message"
@@ -563,8 +562,9 @@
       },
       "/chat/v1/messages/tracking/{messageId}": {
          "get": {
+            "isPublic": true,
             "summary": "Get Message Journey",
-            "description": "Use this API to get complete journey of a message",
+            "description": "Use this API to get complete journey of a message\nYou need to pass messageId in path",
             "tags": [
                "message"
             ],
@@ -966,7 +966,7 @@
       "/chat/v1/messages/transaction": {
          "get": {
             "summary": "Get Incoming, Outgoing and Total Message Transaction Count",
-            "description": "Use this API to get incoming, outgoing and total message transaction count",
+            "description": "Use this API to get incoming, outgoing and total message transaction\ncount",
             "tags": [
                "message-history"
             ],
@@ -1022,13 +1022,13 @@
                      },
                      "example": [
                         {
-                            "code": 2000,
-                            "msg": "Success",
-                            "data": {
-                                      "incomingMessageCount": 56,
-                                      "outgoingMessageCount": 63,
-                                      "totalMessageCount": 119
-                                    },
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "incomingMessageCount": 56,
+                              "outgoingMessageCount": 63,
+                              "totalMessageCount": 119
+                           },
                            "error": null
                         },
                         {
@@ -1165,25 +1165,25 @@
                      },
                      "example": [
                         {
-                            "code": 2000,
-                            "msg": "Success",
-                            "data": {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
                               "rows": [
-                                {
-                                  "messageId": "3764f600-b8ec-4111-b55f-7b8fb286cd0b",
-                                  "time": "2020-09-03T05:25:54.000Z"
-                                },
-                                {
-                                 "messageId": "fdab9945-4c91-465b-a234-1b50b8a5e998",
-                                  "time": "2020-09-03T09:42:25.000Z"
-                                }
+                                 {
+                                    "messageId": "3764f600-b8ec-4111-b55f-7b8fb286cd0b",
+                                    "time": "2020-09-03T05:25:54.000Z"
+                                 },
+                                 {
+                                    "messageId": "fdab9945-4c91-465b-a234-1b50b8a5e998",
+                                    "time": "2020-09-03T09:42:25.000Z"
+                                 }
                               ],
                               "pagination": {
-                                    "totalPage": 56,
-                                    "currentPage": 1
+                                 "totalPage": 56,
+                                 "currentPage": 1
                               }
-                            },
-                            "error": null
+                           },
+                           "error": null
                         },
                         {
                            "code": 3000,
@@ -2833,7 +2833,7 @@
       "/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a": {
          "post": {
             "summary": "Web hook API for tytntec",
-            "description": "Web hook API for tytntec to receive incoming messages and store in queue",
+            "description": "Web hook API for tytntec to receive incoming messages and store\nin queue",
             "tags": [
                "web-hooks"
             ],
@@ -2910,7 +2910,7 @@
       "/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e": {
          "post": {
             "summary": "Web hook API for tytntec message Status",
-            "description": "Web hook API for tytntec to receive outgoing messages status and store in queue",
+            "description": "Web hook API for tytntec to receive outgoing messages status and\nstore in queue",
             "tags": [
                "web-hooks"
             ],
@@ -4603,7 +4603,8 @@
       },
       "/templates": {
          "get": {
-            "description": "This api returns list of templates based on filters",
+            "isPublic": true,
+            "description": "This api returns list of templates based on filters\nfollowing are the list of template status :\nApproved\nDELETE_PENDING\nRequest Initiated\nSUBMITTED\nRejected\nREQUESTED\nPENDING",
             "summary": "Get template list",
             "tags": [
                "templates"
@@ -4708,6 +4709,7 @@
             "security": []
          },
          "post": {
+            "isPublic": true,
             "description": "API to add or update template\nTo add template do not pass templateID to update template pass template ID along with parameters to update",
             "summary": "Add update template",
             "tags": [
@@ -5691,7 +5693,8 @@
       },
       "/audience": {
          "get": {
-            "description": "This api returns list of templates based on filters",
+            "isPublic": true,
+            "description": "This api returns list of templates based on filters\nfollowing\nare\nthe list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin",
             "summary": "Get audience list",
             "tags": [
                "audience"
@@ -5860,6 +5863,7 @@
             "security": []
          },
          "post": {
+            "isPublic": true,
             "description": "API to add or update audience\nTo add audience do not pass audienceID to update template pass audience ID along with parameters to update",
             "summary": "Add update audience",
             "tags": [
@@ -6153,8 +6157,9 @@
       },
       "/audience/{audienceId}": {
          "get": {
+            "isPublic": true,
             "summary": "Get audience Info",
-            "description": "Use this API to get information of a audience record",
+            "description": "Use this API to get information of a audience record\npass audienceId in path",
             "tags": [
                "audience"
             ],
@@ -6776,6 +6781,7 @@
       },
       "/audience/optin": {
          "post": {
+            "isPublic": true,
             "description": "API to update optin\nTo update optinSourceId pass optin source\nID along with parameters to update\nfollowing are the optin source list :\n1. Captured via any form/check-box/t&c - 154e25f4-44cd-4a48-984d-dbdce569d2c1\n2. When received by direct optin message on Whatsapp - 28614254-12c6-4f44-aa3c-20cf9e9589cb\n3. Optin added using API - 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649",
             "summary": "Update optin satus and add optin source id",
             "tags": [
@@ -7102,8 +7108,8 @@
                            "data": {
                               "url": "https://wa.me/918080800808?text=helloviva1",
                               "qrCode": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJQAAACUCAYAAAB1PADUAAAAAklEQVR4AewaftIAAATpSURBVO3BQY7YwBEEwcoB///ltI59GoBg71qyKwL/SNWSk6pFJ1WLTqoWnVQtOqladFK16KRq0UnVopOqRSdVi06qFp1ULTqpWnRSteikatGTj4D8JjUTkBs1N0C+UDMBuVHzBpDfpOaLk6pFJ1WLTqoWPVmmZhOQN9RMQCY1k5obIDdAJjUTkBsgk5obNZuAbDqpWnRSteikatGTHwbkDTVvqLlR8waQSc0bQG6AbALyhpqfdFK16KRq0UnVoif/OCBvqLlRMwGZ1ExAJjX/z06qFp1ULTqpWvTkH6dmAjKpmYD8JiCTmgnIpOZfdlK16KRq0UnVoic/TM1/E5AbNROQnwRkk5q/yUnVopOqRSdVi54sA/KbgExqJiCTmgnIpGYCsknNBOQNIH+zk6pFJ1WLTqoWPflIzd8EyBdAboBMaiYgm9T8S06qFp1ULTqpWvTkIyCTmgnIjZoJyBtqJiA3QN5QMwG5UXMDZFJzA2RScwNkUjMBuVHzxUnVopOqRSdVi558pGYCMql5Q80bQDap+QLIpOYNIDdAbtTcqJmAbDqpWnRSteikatGTHwZkUjMBmdRMQCY1k5oJyI2aN4DcAPkCyI2aL4DcqNl0UrXopGrRSdUi/CMfAJnUTEAmNTdAJjWbgExqJiCTmi+A/CY1bwCZ1HxxUrXopGrRSdWiJx+p2aRmAnKjZpOaN4BMaiY1E5BJzQRkUvMGkBs1k5pNJ1WLTqoWnVQtwj+yCMikZgIyqfkCyKTmDSBvqJmATGomIJOaCcikZgIyqXkDyBtqvjipWnRSteikatGTj4C8oeYGyBtqJiCTmhs1N0AmIJOaCcgNkEnNBGRScwNkUvPfdFK16KRq0UnVoie/DMgbaiYgE5BJzQRkUnMDZFLzhpoJyBtqJiA3am7UTEAmNZtOqhadVC06qVr05CM1E5AJyKTmBsgE5CcBmdTcAHlDzRdqJiATkBs1v+mkatFJ1aKTqkX4R34QkEnNBORGzQ2QSc0NkEnNBGRScwPkDTU3QG7U3AB5Q82mk6pFJ1WLTqoWPfkIyKTmDTU3QCY1N0DeADKpuQFyo2aTmgnIjZoJyKTmJ51ULTqpWnRStejJR2pu1NwAuVFzo+YLIF+omYDcqLlR84aav8lJ1aKTqkUnVYueLAMyqblRcwPkRs0XaiYgk5o31NwA2QTkb3JSteikatFJ1SL8I/8wIJOaCciNmgnIG2omIF+oeQPIJjVfnFQtOqladFK16MlHQH6Tmhsgm9TcAJnUTEAmNROQGyCTmjfUTEAmNZtOqhadVC06qVr0ZJmaTUDeUDMBmdTcqLkB8gWQN9RsUvOTTqoWnVQtOqla9OSHAXlDzRtqJiBvAJnUTEAmNROQGzU3QCYgX6iZgExqJiCTmi9OqhadVC06qVr05B8H5EbNBOQGyCYgk5pJzRtAboBMam7UbDqpWnRSteikatGT/3FAJjWb1ExAJjVvAJnU3Ki5ATKpmYBMar44qVp0UrXopGrRkx+m5iepuQEyAXlDzQRkUjOpmYDcqNkEZFIzAZnUbDqpWnRSteikatGTZUB+E5Av1ExAJiA3QG7UfAFkUvM3O6ladFK16KRqEf6RqiUnVYtOqhadVC06qVp0UrXopGrRSdWik6pFJ1WLTqoWnVQtOqladFK16KRq0UnVov8AZRdHRop1Cw0AAAAASUVORK5CYII="
-                              },
-                              "error": null
+                           },
+                           "error": null
                         },
                         {
                            "code": 3000,
@@ -7197,9 +7203,9 @@
                      },
                      "example": [
                         {
-                          "code": 303,
-                          "msg": "Redirected",
-                          "error": null
+                           "code": 303,
+                           "msg": "Redirected",
+                           "error": null
                         }
                      ]
                   }
@@ -7512,6 +7518,7 @@
       },
       "/users/authorize": {
          "post": {
+            "isPublic": true,
             "summary": "Authorize API",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -7523,6 +7530,13 @@
                "application/json"
             ],
             "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
                {
                   "name": "Body",
                   "in": "body",
