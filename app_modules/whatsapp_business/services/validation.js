@@ -247,8 +247,7 @@ class validate {
         },
         webHookPostUrl: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         optinText: {
           type: 'string',
