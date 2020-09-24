@@ -28,9 +28,9 @@ const controller = (req, res) => {
       if (userData.is_tfa_enabled === 0) {
         const payload = { user_id: userData.user_id }
         const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token: token, emailVerifiedStatus: results[0].email_verified === 1, phoneVerifiedStatus: results[0].phone_verified === 1, tncAccepted: results[0].tnc_accepted === 1, role: results[0].role_name } })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token: token, emailVerifiedStatus: results[0].email_verified === 1, phoneVerifiedStatus: results[0].phone_verified === 1, tncAccepted: results[0].tnc_accepted === 1, role: results[0].role_name, tfaType: results[0].tfa_type } })
       } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { emailVerifiedStatus: results[0].email_verified === 1, phoneVerifiedStatus: results[0].phone_verified === 1, tncAccepted: results[0].tnc_accepted === 1, role: results[0].role_name, userId: userData.user_id } })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { emailVerifiedStatus: results[0].email_verified === 1, phoneVerifiedStatus: results[0].phone_verified === 1, tncAccepted: results[0].tnc_accepted === 1, role: results[0].role_name, userId: userData.user_id, tfaType: results[0].tfa_type } })
       }
     })
     .catch(err => {

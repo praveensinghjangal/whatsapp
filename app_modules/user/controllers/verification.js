@@ -230,7 +230,7 @@ const sendOtpCode = (req, res) => {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
       }
       if (url === 1) {
-        const outJson = { body: __constants.RESPONSE_MESSAGES.AUTHENTICATOR_CHECK_APP }
+        const outJson = { body: { code: __constants.RESPONSE_MESSAGES.AUTHENTICATOR_CHECK_APP.code, msg: __constants.RESPONSE_MESSAGES.AUTHENTICATOR_CHECK_APP.message } }
         outJson.body.data = {}
         outJson.body.error = null
         delete outJson.body.status_code

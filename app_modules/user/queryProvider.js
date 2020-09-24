@@ -1,7 +1,8 @@
 const getUserDetailsByEmail = () => {
-  return `select user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name,is_tfa_enabled
+  return `select u.user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name,is_tfa_enabled,ut.tfa_type
   from users u
   join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true 
+  left join users_tfa ut on u.user_id = ut.user_id and ut.is_active = true
   where lower(u.email) = lower(?) and u.is_active = true`
 }
 
