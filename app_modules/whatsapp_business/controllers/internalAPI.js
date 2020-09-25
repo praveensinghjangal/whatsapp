@@ -2,7 +2,6 @@ const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const BusinessAccountService = require('../services/businesAccount')
-const authMiddleware = require('../../../middlewares/authentication')
 
 const getWabaNumberFromUserId = (req, res) => {
   if (!req.query.userId) {

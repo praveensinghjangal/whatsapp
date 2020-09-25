@@ -1,7 +1,7 @@
 const express = require('express')
-const authMiddleware = require('../../middlewares/authentication')
+const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
-const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
+const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 const router = express.Router()
 
 // Controller require section

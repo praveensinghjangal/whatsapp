@@ -177,8 +177,7 @@ module.exports = {
       }
     },
     tyntec: {
-      baseUrl: process.env.TYNTEC_BASE_URL,
-      accountId: process.env.TYNTEC_ACCOUNT_ID
+      baseUrl: process.env.TYNTEC_BASE_URL
     }
   },
   authentication: {

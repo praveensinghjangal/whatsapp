@@ -1,10 +1,11 @@
 const express = require('express')
 const router = express.Router()
-const authMiddleware = require('../../middlewares/authentication')
-const tokenBasedAuth = require('../../middlewares/tokenBasedAuth')
+const authMiddleware = require('../../middlewares/auth/authentication')
+const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 const authstrategy = require('../../config').authentication.strategy
 const userConfiMiddleware = require('../../middlewares/setUserConfig')
-const bearerTokenAuth = require('../../middlewares/bearerTokenAuth')
+const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
+const bearerTokenAuth = require('../../middlewares/auth/bearerTokenAuth')
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
@@ -64,10 +65,10 @@ router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.na
 router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateSmsVerificationCode)
 router.post('/otp/email', tokenBasedAuth, verificationController.generateEmailOtpCode)
 router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCode)
-router.post('/otp', verificationController.sendOtpCode)
-router.patch('/otp', verificationController.validateTFa)
+router.post('/otp', internalSessionOrTokenAuth, verificationController.sendOtpCode)
+router.patch('/otp', internalSessionOrTokenAuth, verificationController.validateTFa)
 router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateTempTFa)
-router.patch('/otp/backup', tokenBasedAuth, verificationController.validateBackupCodeAndResetTfa)
+router.patch('/otp/backup', internalSessionOrTokenAuth, verificationController.validateBackupCodeAndResetTfa)
 router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.addTempTfaData)
 
 // Account Type

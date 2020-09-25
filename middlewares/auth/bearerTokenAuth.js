@@ -1,9 +1,9 @@
-const __util = require('../lib/util')
-const __constants = require('../config/constants')
-const { Base64 } = require('../lib/util/encodeDecode')
-const HttpService = require('../lib/http_service')
-const __config = require('../config')
-const __logger = require('../lib/logger')
+const __util = require('../../lib/util')
+const __constants = require('../../config/constants')
+const { Base64 } = require('../../lib/util/encodeDecode')
+const HttpService = require('../../lib/http_service')
+const __config = require('../../config')
+const __logger = require('../../lib/logger')
 
 module.exports = (req, res, next) => {
   __logger.info('Bearer token---', req.headers.authorization)

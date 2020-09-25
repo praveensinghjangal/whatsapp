@@ -1,5 +1,5 @@
 const express = require('express')
-const authMiddleware = require('../../middlewares/authentication')
+const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const router = express.Router()
 

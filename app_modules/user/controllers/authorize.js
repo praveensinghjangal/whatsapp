@@ -2,7 +2,7 @@ const q = require('q')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const authMiddleware = require('../../../middlewares/authentication')
+const authMiddleware = require('../../../middlewares/auth/authentication')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // Services
@@ -26,7 +26,7 @@ const createAuthTokenByUserId = userId => {
           wabaPhoneNumber: businessData.record.phoneCode.split('+').join('') + businessData.record.phoneNumber,
           signature: new UniqueId().uuid()
         }
-        const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.AUTH_TOKEN_30_DAYS)
+        const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.AUTH_TOKEN_30_MINS)
         return authToken.resolve(token)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {}, data: {} })
