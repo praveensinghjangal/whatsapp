@@ -70,7 +70,7 @@
    "paths": {
       "/chat/v1/messages": {
          "post": {
-            "isPublic": true,
+            "isPublic": false,
             "description": "This API is used to send mesages using a channel.\nThis API can send single as well as bulk messsages.",
             "summary": "This API is used to send mesages using a channel",
             "tags": [
@@ -562,7 +562,7 @@
       },
       "/chat/v1/messages/tracking/{messageId}": {
          "get": {
-            "isPublic": true,
+            "isPublic": false,
             "summary": "Get Message Journey",
             "description": "Use this API to get complete journey of a message\nYou need to pass messageId in path",
             "tags": [
@@ -4603,7 +4603,7 @@
       },
       "/templates": {
          "get": {
-            "isPublic": true,
+            "isPublic": false,
             "description": "This api returns list of templates based on filters\nfollowing are the list of template status :\nApproved\nDELETE_PENDING\nRequest Initiated\nSUBMITTED\nRejected\nREQUESTED\nPENDING",
             "summary": "Get template list",
             "tags": [
@@ -4709,7 +4709,7 @@
             "security": []
          },
          "post": {
-            "isPublic": true,
+            "isPublic": false,
             "description": "API to add or update template\nTo add template do not pass templateID to update template pass template ID along with parameters to update",
             "summary": "Add update template",
             "tags": [
