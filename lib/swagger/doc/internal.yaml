@@ -3,7 +3,7 @@ swagger: '2.0'
 info:
   description: Helo Whatsapp API documentation
   version: 1.0.0
-  title: 'Helo Whatsapp'
+  title: Helo Whatsapp
   termsOfService: ''
   contact:
     name: vivaconnect support
@@ -44,7 +44,7 @@ schemes:
 paths:
   "/chat/v1/messages":
     post:
-      isPublic: true
+      isPublic: false
       description: |-
         This API is used to send mesages using a channel.
         This API can send single as well as bulk messsages.
@@ -371,7 +371,7 @@ paths:
       security: []
   "/chat/v1/messages/tracking/{messageId}":
     get:
-      isPublic: true
+      isPublic: false
       summary: Get Message Journey
       description: |-
         Use this API to get complete journey of a message
@@ -644,7 +644,8 @@ paths:
   "/chat/v1/messages/transaction":
     get:
       summary: Get Incoming, Outgoing and Total Message Transaction Count
-      description: Use this API to get incoming, outgoing and total message transaction
+      description: |-
+        Use this API to get incoming, outgoing and total message transaction
         count
       tags:
       - message-history
@@ -1931,7 +1932,8 @@ paths:
   "/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a":
     post:
       summary: Web hook API for tytntec
-      description: Web hook API for tytntec to receive incoming messages and store
+      description: |-
+        Web hook API for tytntec to receive incoming messages and store
         in queue
       tags:
       - web-hooks
@@ -1984,7 +1986,8 @@ paths:
   "/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e":
     post:
       summary: Web hook API for tytntec message Status
-      description: Web hook API for tytntec to receive outgoing messages status and
+      description: |-
+        Web hook API for tytntec to receive outgoing messages status and
         store in queue
       tags:
       - web-hooks
@@ -3142,7 +3145,7 @@ paths:
       security: []
   "/templates":
     get:
-      isPublic: true
+      isPublic: false
       description: |-
         This api returns list of templates based on filters
         following are the list of template status :
@@ -3226,7 +3229,7 @@ paths:
               error: {}
       security: []
     post:
-      isPublic: true
+      isPublic: false
       description: |-
         API to add or update template
         To add template do not pass templateID to update template pass template ID along with parameters to update
@@ -3890,8 +3893,8 @@ paths:
   "/audience":
     get:
       isPublic: true
-      description: "This api returns list of templates based on filters\nfollowing\nare
-        the list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin"
+      description: "This api returns list of templates based on filters\nfollowing\nare\nthe
+        list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin"
       summary: Get audience list
       tags:
       - audience
