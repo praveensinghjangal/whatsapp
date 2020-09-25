@@ -20,7 +20,10 @@ const addUpdateTemplates = (req, res) => {
         return templateService.addTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
       }
     })
-    .then(data => validate.isTemplateComplete(data))
+    .then(data => {
+      console.log('integration dataaaaaaaaaaaaaaaaaaaaaaaa -->', data)
+      return validate.isTemplateComplete(data)
+    })
     .then(data => {
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)

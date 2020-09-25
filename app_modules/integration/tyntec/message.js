@@ -28,7 +28,7 @@ class Message {
           apikey: data.apiKey
         }
         reqObj = { headers, payload }
-        return this.http.Post(payload, 'body', tyntectConfig.baseUrl + tyntectConfig.endpoint.sendMessage, headers)
+        return this.http.Post(payload, 'body', tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.sendMessage, headers)
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes

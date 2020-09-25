@@ -13,4 +13,13 @@ class Messaage {
   sendMessage (payload) { return this.message.sendMessage(payload) }
 }
 
-module.exports = { Messaage }
+class Template {
+  constructor (providerId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.template = new providers[this.providerName].Template()
+  }
+
+  addTemplate (data, wabaNumber) { return this.template.addTemplate(data, wabaNumber) }
+}
+
+module.exports = { Messaage, Template }
