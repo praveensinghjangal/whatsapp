@@ -16,12 +16,17 @@ const getAcountProfile = (req, res) => {
   __logger.info('Inside getAcountProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let queryResult = {}
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId, userId])
     .then(results => {
       __logger.info('Then 1')
       // __logger.info('Then 1', results)
       if (results && results.length > 0) {
         queryResult = results[0]
+        if (queryResult && typeof queryResult.isAgreementUploaded === 'string' && queryResult.isAgreementUploaded.length > 0 && queryResult.isAgreementUploaded.trim() !== '') {
+          queryResult.isAgreementUploaded = true
+        } else {
+          queryResult.isAgreementUploaded = false
+        }
         return checkAccountProfileCompletionStatus(queryResult)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
