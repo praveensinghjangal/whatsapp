@@ -22,11 +22,7 @@ const getAcountProfile = (req, res) => {
       // __logger.info('Then 1', results)
       if (results && results.length > 0) {
         queryResult = results[0]
-        if (queryResult && typeof queryResult.isAgreementUploaded === 'string' && queryResult.isAgreementUploaded.length > 0 && queryResult.isAgreementUploaded.trim() !== '') {
-          queryResult.isAgreementUploaded = true
-        } else {
-          queryResult.isAgreementUploaded = false
-        }
+        queryResult.isAgreementUploaded = !!(queryResult && queryResult.isAgreementUploaded)
         return checkAccountProfileCompletionStatus(queryResult)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
