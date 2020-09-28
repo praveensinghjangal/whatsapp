@@ -197,7 +197,9 @@ const TEMPLATE_DEFAULT_LANGUAGE_STATUS = 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1'
 const TEMPLATE_DEFAULT_STATUS = 'd11a8387-80e0-468b-9ee3-abb5eckil980'
 const TYNTEC_ENDPOINTS = {
   sendMessage: '/chat-api/v2/messages',
-  addTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates'
+  addTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
+  getTemplateList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
+  getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const TEMPLATE_APPROVE_STATUS = '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9'

@@ -20,6 +20,10 @@ class Template {
   }
 
   addTemplate (data, wabaNumber) { return this.template.addTemplate(data, wabaNumber) }
+
+  getTemplateList (wabaNumber) { return this.template.getTemplateList(wabaNumber) }
+
+  getTemplateInfo (wabaNumber, templateId) { return this.template.getTemplateInfo(wabaNumber, templateId) }
 }
 
 module.exports = { Messaage, Template }
