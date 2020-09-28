@@ -212,6 +212,11 @@ const TFA_TYPE_ENUM = ['sms', 'email', 'authenticator']
 const TFA_BACKUP_CODES_AMOUNT = 5
 const TFA_AUTHENTICATOR_LABEL = 'helo-whatsapp'
 const WA_ME_URL = 'https://wa.me'
+const TFA_TYPE_DISPLAYNAME = {
+  [TFA_TYPE_ENUM[0]]: 'Phone Number',
+  [TFA_TYPE_ENUM[1]]: 'Email Address',
+  [TFA_TYPE_ENUM[2]]: 'Authenticator App'
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -257,3 +262,4 @@ module.exports.TFA_TYPE_ENUM = TFA_TYPE_ENUM
 module.exports.TFA_BACKUP_CODES_AMOUNT = TFA_BACKUP_CODES_AMOUNT
 module.exports.TFA_AUTHENTICATOR_LABEL = TFA_AUTHENTICATOR_LABEL
 module.exports.WA_ME_URL = WA_ME_URL
+module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME

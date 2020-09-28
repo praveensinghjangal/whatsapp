@@ -23,6 +23,7 @@ const getAcountProfile = (req, res) => {
       if (results && results.length > 0) {
         queryResult = results[0]
         queryResult.isAgreementUploaded = !!(queryResult && queryResult.userAgreementFilesId)
+        if (queryResult.tfaType) queryResult.tfaType = __constants.TFA_TYPE_DISPLAYNAME[queryResult.tfaType]
         return checkAccountProfileCompletionStatus(queryResult)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
