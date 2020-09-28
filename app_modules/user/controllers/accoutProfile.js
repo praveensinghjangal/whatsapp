@@ -16,7 +16,7 @@ const getAcountProfile = (req, res) => {
   __logger.info('Inside getAcountProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let queryResult = {}
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId, userId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
       __logger.info('Then 1')
       // __logger.info('Then 1', results)
