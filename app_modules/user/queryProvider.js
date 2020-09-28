@@ -23,7 +23,7 @@ const getUserAccountProfile = () => {
   type_name as "accountType" ,city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2",
   contact_number as "contactNumber",phone_code as "phoneCode", postal_code as "postalCode", first_name as "firstName",
   last_name as "lastName",tps, phone_verified as "phoneVerified", email_verified as "emailVerified", ut.tfa_type as "tfaType",
-  uaf.user_agreement_files_id  as "isAgreementUploaded"
+  uaf.user_agreement_files_id  as "userAgreementFilesId"
   from users u
   left join user_agreement_files uaf on u.user_id = uaf.user_id and uaf.is_active = true
   left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
