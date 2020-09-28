@@ -25,13 +25,13 @@ const controller = (req, res) => {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: null })
       }
       const userData = results[0]
-      if (userData && userData.tfa_type) userData.tfa_type = __constants.TFA_TYPE_DISPLAYNAME[userData.tfa_type]
+      if (userData && userData.tfa_type) userData.tfa_type_display_name = __constants.TFA_TYPE_DISPLAYNAME[userData.tfa_type]
       if (userData.is_tfa_enabled === 0) {
         const payload = { user_id: userData.user_id }
         const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token: token, emailVerifiedStatus: userData.email_verified === 1, phoneVerifiedStatus: userData.phone_verified === 1, tncAccepted: userData.tnc_accepted === 1, role: userData.role_name, tfaType: userData.tfa_type } })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token: token, emailVerifiedStatus: userData.email_verified === 1, phoneVerifiedStatus: userData.phone_verified === 1, tncAccepted: userData.tnc_accepted === 1, role: userData.role_name, tfaType: userData.tfa_type, tfaTypeDisplayName: userData.tfa_type_display_name } })
       } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { emailVerifiedStatus: userData.email_verified === 1, phoneVerifiedStatus: userData.phone_verified === 1, tncAccepted: userData.tnc_accepted === 1, role: userData.role_name, userId: userData.user_id, tfaType: userData.tfa_type } })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { emailVerifiedStatus: userData.email_verified === 1, phoneVerifiedStatus: userData.phone_verified === 1, tncAccepted: userData.tnc_accepted === 1, role: userData.role_name, userId: userData.user_id, tfaType: userData.tfa_type, tfaTypeDisplayName: userData.tfa_type_display_name } })
       }
     })
     .catch(err => {
