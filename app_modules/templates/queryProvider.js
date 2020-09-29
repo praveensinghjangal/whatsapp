@@ -122,7 +122,8 @@ const getTemplateCategories = () => {
 const getTemplateLanguages = () => {
   return `select message_template_language_id as "messageTemplateLanguageId", language_name as "languageName"
     from message_template_language 
-    WHERE is_active = true`
+    WHERE is_active = true
+    order by display_rank asc`
 }
 
 // Template Count
