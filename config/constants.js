@@ -85,7 +85,7 @@ const PLAN_CATEGORY = {
 }
 const RESET_PASSWORD_TOKEN_EXPIREY_TIME = 3600
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
-const TEMPLATE_STATUS = ['Approved', 'Rejected', 'SendForApproval', 'Incomplete', 'Completed']
+const TEMPLATE_STATUS = ['DELETE_PENDING', 'Rejected', 'Approved', 'Send For Approval', 'REQUESTED', 'SUBMIT_FAILED', 'Partial Approval', 'Incomplete', 'DELETED', 'PENDING', 'SUBMITTED', 'Completed', 'Request Initiated']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
@@ -172,7 +172,12 @@ const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
-  forwarded: 'forwarded'
+  forwarded: 'forwarded',
+  deleted: 'deleted',
+  seen: 'seen',
+  delivered: 'delivered',
+  accepted: 'accepted',
+  failed: 'failed'
 }
 const VALIDATOR = {
   email: '^(([^<>()\\[\\]\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
