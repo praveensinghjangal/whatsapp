@@ -380,5 +380,10 @@ module.exports = {
     status_code: 401,
     code: 3046,
     message: 'Invalid backup code'
+  },
+  ERROR_CALLING_PROVIDER: {
+    status_code: 500,
+    code: 5001,
+    message: 'Something went wrong. Please try again later.'
   }
 }

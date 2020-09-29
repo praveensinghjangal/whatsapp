@@ -29,6 +29,14 @@ router.get('/sample/:id', authMiddleware.authenticate(authstrategy.jwt.name, aut
 router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLibraryController.getSampleTemplateList)
 
 // Fetch Templates
+router.get('/inttest', (req, res) => {
+  const integrationService = require('../../app_modules/integration')
+  const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+  // templateService.getTemplateList(req.headers.wabanumber)
+  templateService.getTemplateInfo(req.headers.wabanumber, req.body.templateId)
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
+})
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateTemplateController.addUpdateTemplates)
 router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateHeaderTypes)
 router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateButtonTypes)

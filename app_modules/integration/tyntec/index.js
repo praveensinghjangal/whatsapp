@@ -1,2 +1,3 @@
 const Messaage = require('./message')
-module.exports = { Messaage }
+const Template = require('./template')
+module.exports = { Messaage, Template }
