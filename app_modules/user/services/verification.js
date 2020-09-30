@@ -133,7 +133,7 @@ class VerificationService {
       return smsSent.promise
     }
     const smsService = new SmsService()
-    smsService.smppSend(smsTemplates.phoneVerification(code, firstName), phoneNumber)
+    smsService.webcpSend(smsTemplates.phoneVerification(code, firstName), phoneNumber)
       .then(data => smsSent.resolve(data))
       .catch(err => smsSent.reject(err))
     return smsSent.promise
@@ -297,7 +297,7 @@ class VerificationService {
       return smsSent.promise
     }
     const smsService = new SmsService()
-    smsService.smppSend(smsTemplates.smsTfa(code, firstName), phoneNumber)
+    smsService.webcpSend(smsTemplates.smsTfa(code, firstName), phoneNumber)
       .then(data => smsSent.resolve(data))
       .catch(err => smsSent.reject(err))
     return smsSent.promise

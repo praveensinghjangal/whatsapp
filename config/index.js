@@ -240,9 +240,13 @@ module.exports = {
       passwordReset: process.env.EMAIL_PROVIDER_SUBJECT_PASSWORD_RESET
     }
   },
-  smppSmsProvider: {
-    apiKey: process.env.SMPP_SMS_PROVIDER_API_KEY,
-    apiUrl: process.env.SMPP_SMS_PROVIDER_API_URL
+  webcpSmsProvider: {
+    sendSms: process.env.WEBCP_SMS_PROVIDER_SEND_SMS === 'true',
+    apiUrl: process.env.WEBCP_SMS_PROVIDER_API_URL,
+    username: process.env.WEBCP_SMS_PROVIDER_USERNAME,
+    password: process.env.WEBCP_SMS_PROVIDER_PASSWORD,
+    senderId: process.env.WEBCP_SMS_PROVIDER_SENDER_ID,
+    cdmaHeader: process.env.WEBCP_SMS_PROVIDER_CDMA_HEADER
   },
   mockWebHook: {
     authorization: process.env.MOCK_WEBHOOK_AUTH,
