@@ -104,9 +104,9 @@ const checksForTemplate = (templateData) => {
   }
 
   // If template type is media then deleting the header text and footer text
-  if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
-    delete templateData.headerText
-  }
+  // if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+  //   delete templateData.headerText
+  // }
 
   dataValidated.resolve(templateData)
   return dataValidated.promise

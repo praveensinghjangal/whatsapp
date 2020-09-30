@@ -139,7 +139,7 @@ class validate {
           required: false,
           minLength: 1
         },
-        secondlanguageBodyText: {
+        secondLanguageBodyText: {
           type: 'string',
           required: false,
           minLength: 1
@@ -290,7 +290,7 @@ class validate {
           type: ['string', null],
           required: false
         },
-        secondlanguageBodyText: {
+        secondLanguageBodyText: {
           type: [null, 'string'],
           required: false
         },
@@ -438,7 +438,7 @@ class validate {
           required: true,
           minLength: 1
         },
-        secondlanguageBodyText: {
+        secondLanguageBodyText: {
           type: 'string',
           required: true,
           minLength: 1
