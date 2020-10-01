@@ -252,8 +252,11 @@ const validateTFa = (req, res) => {
   const userId = req.body && req.body.userId ? req.body.userId : '0'
   let isTemp = false
   let dbData = {}
-  if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
+  if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!req.body.code.match(__constants.VALIDATOR.number)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
   }
   if (!userId || userId === '0') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
@@ -441,8 +444,11 @@ const validateTempTfaBs = reqBody => {
   const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
   let channelName = ''
   let dbData = {}
-  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'number') {
+  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'string') {
     dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!reqBody.code.match(__constants.VALIDATOR.number)) {
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided is not valid'] })
   }
   if (!userId || userId === '0') {
     return dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
