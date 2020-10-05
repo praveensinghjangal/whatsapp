@@ -101,8 +101,11 @@ const validateEmailVerificationCode = (req, res) => {
 const validateSmsVerificationCode = (req, res) => {
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
+  if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!req.body.code.match(__constants.VALIDATOR.number)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
   }
   verificationService.getCodeDetails(userId, req.body.code, __constants.VERIFICATION_CHANNEL.sms.name)
     .then(data => {
