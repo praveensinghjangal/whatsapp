@@ -345,7 +345,11 @@ const validateTFa = (req, res) => {
       return userService.checkUserIdExistsForAccountProfile(userId)
     })
     .then(userData => {
-      const payload = { user_id: userId, serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '' }
+      const payload = {
+        user_id: userId,
+        serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
+        wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : ''
+      }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       const outData = { token }
       if (isTemp) {
@@ -567,7 +571,11 @@ const validateBackupCodeAndResetTfa = (req, res) => {
       return userService.checkUserIdExistsForAccountProfile(userId)
     })
     .then(userData => {
-      const payload = { user_id: userId, serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '' }
+      const payload = {
+        user_id: userId,
+        serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
+        wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : ''
+      }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token, resetTfaData: true } })
     })
