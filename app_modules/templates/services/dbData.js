@@ -121,9 +121,9 @@ class TemplateService {
     }
 
     // If template type is media then deleting the header text and footer text
-    if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
-      templateData.headerText = null
-    }
+    // if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+    //   templateData.headerText = null
+    // }
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
@@ -159,7 +159,7 @@ class TemplateService {
   }
 
   updateTemplate (newData, oldData, userId) {
-    __logger.info('Updating template')
+    __logger.info('Updating template', newData)
     const dataUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.MESSAGE_TEMPLATE, oldData.messageTemplateId, userId)
     const templateData = {
@@ -204,9 +204,9 @@ class TemplateService {
     }
 
     // If template type is media then deleting the header text and footer text
-    if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
-      templateData.headerText = null
-    }
+    // if (templateData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+    //   templateData.headerText = null
+    // }
     const queryParam = []
     _.each(templateData, (val) => queryParam.push(val))
     __logger.info('updateeeeee --->', templateData, queryParam)

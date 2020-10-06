@@ -85,7 +85,7 @@ const PLAN_CATEGORY = {
 }
 const RESET_PASSWORD_TOKEN_EXPIREY_TIME = 3600
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
-const TEMPLATE_STATUS = ['Approved', 'Rejected', 'SendForApproval', 'Incomplete', 'Completed']
+const TEMPLATE_STATUS = ['DELETE_PENDING', 'Rejected', 'Approved', 'Send For Approval', 'REQUESTED', 'SUBMIT_FAILED', 'Partial Approval', 'Incomplete', 'DELETED', 'PENDING', 'SUBMITTED', 'Completed', 'Request Initiated']
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
@@ -172,10 +172,15 @@ const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
-  forwarded: 'forwarded'
+  forwarded: 'forwarded',
+  deleted: 'deleted',
+  seen: 'seen',
+  delivered: 'delivered',
+  accepted: 'accepted',
+  failed: 'failed'
 }
 const VALIDATOR = {
-  email: '^[-a-z0-9~!$%^&*_=+}{\'?]+(\\.[-a-z0-9~!$%^&*_=+}{\'?]+)*@([a-z0-9_][-a-z0-9_]*(\\.[-a-z0-9_]+)*\\.(aero|arpa|biz|com|coop|edu|gov|info|int|mil|museum|name|net|org|pro|travel|mobi|[a-z][a-z])|([0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}))(:[0-9]{1,5})?$',
+  email: '^(([^<>()\\[\\]\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
   password: '^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\\d]){2,})(?=(.*[\\W]){1,})(?!.*\\s).{8,}$',
   text: '^[a-zA-Z]+$',
   number: '^[0-9]+$',
@@ -209,13 +214,15 @@ const TEMPLATE_PARTIAL_APPROVE_STATUS = '588cff76-d6d1-49a3-8280-8c2c1d99bb81'
 const ADMIN_PANNEL_ENDPOINTS = {
   adminPannelResetPassword: '/#/new-password'
 }
-const SMPP_SMS = {
-  senderId: 'SAMPLE'
-}
 const TFA_TYPE_ENUM = ['sms', 'email', 'authenticator']
 const TFA_BACKUP_CODES_AMOUNT = 5
 const TFA_AUTHENTICATOR_LABEL = 'helo-whatsapp'
 const WA_ME_URL = 'https://wa.me'
+const TFA_TYPE_DISPLAYNAME = {
+  [TFA_TYPE_ENUM[0]]: 'Phone Number',
+  [TFA_TYPE_ENUM[1]]: 'Email Address',
+  [TFA_TYPE_ENUM[2]]: 'Authenticator App'
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -256,8 +263,8 @@ module.exports.MESSAGE_TRANSACTION_TYPE = MESSAGE_TRANSACTION_TYPE
 module.exports.TEMPLATE_APPROVE_STATUS = TEMPLATE_APPROVE_STATUS
 module.exports.TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_PARTIAL_APPROVE_STATUS
 module.exports.ADMIN_PANNEL_ENDPOINTS = ADMIN_PANNEL_ENDPOINTS
-module.exports.SMPP_SMS = SMPP_SMS
 module.exports.TFA_TYPE_ENUM = TFA_TYPE_ENUM
 module.exports.TFA_BACKUP_CODES_AMOUNT = TFA_BACKUP_CODES_AMOUNT
 module.exports.TFA_AUTHENTICATOR_LABEL = TFA_AUTHENTICATOR_LABEL
 module.exports.WA_ME_URL = WA_ME_URL
+module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME

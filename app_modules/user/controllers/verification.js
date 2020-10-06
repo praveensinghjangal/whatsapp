@@ -9,6 +9,7 @@ const HttpService = require('../../../lib/http_service')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
 const authMiddleware = require('../../../middlewares/auth/authentication')
+const UserService = require('../services/dbData')
 
 const generateEmailVerificationCode = (req, res) => {
   const verificationService = new VerificationService()
@@ -101,8 +102,11 @@ const validateEmailVerificationCode = (req, res) => {
 const validateSmsVerificationCode = (req, res) => {
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
+  if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!req.body.code.match(__constants.VALIDATOR.number)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
   }
   verificationService.getCodeDetails(userId, req.body.code, __constants.VERIFICATION_CHANNEL.sms.name)
     .then(data => {
@@ -250,10 +254,14 @@ const sendOtpCode = (req, res) => {
 const validateTFa = (req, res) => {
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
+  let backupData = {}
   let isTemp = false
   let dbData = {}
-  if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
+  if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!req.body.code.match(__constants.VALIDATOR.number)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
   }
   if (!userId || userId === '0') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
@@ -332,10 +340,18 @@ const validateTFa = (req, res) => {
       }
     })
     .then(data => {
-      const payload = { user_id: userId }
+      backupData = data
+      const userService = new UserService()
+      return userService.checkUserIdExistsForAccountProfile(userId)
+    })
+    .then(userData => {
+      const payload = { user_id: userId, serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '' }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       const outData = { token }
-      if (isTemp) outData.backupCodes = data.backupCodes
+      if (isTemp) {
+        verificationService.markChannelVerified(userId, __constants.VERIFICATION_CHANNEL.email.name)
+        outData.backupCodes = backupData.backupCodes
+      }
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: outData })
     })
     .catch(err => {
@@ -441,8 +457,11 @@ const validateTempTfaBs = reqBody => {
   const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
   let channelName = ''
   let dbData = {}
-  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'number') {
+  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'string') {
     dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+  }
+  if (!reqBody.code.match(__constants.VALIDATOR.number)) {
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided is not valid'] })
   }
   if (!userId || userId === '0') {
     return dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
@@ -544,7 +563,11 @@ const validateBackupCodeAndResetTfa = (req, res) => {
       return verificationService.resetTfaData(userId, data[0])
     })
     .then(data => {
-      const payload = { user_id: userId }
+      const userService = new UserService()
+      return userService.checkUserIdExistsForAccountProfile(userId)
+    })
+    .then(userData => {
+      const payload = { user_id: userId, serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '' }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token, resetTfaData: true } })
     })

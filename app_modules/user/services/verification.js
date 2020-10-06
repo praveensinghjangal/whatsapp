@@ -133,7 +133,7 @@ class VerificationService {
       return smsSent.promise
     }
     const smsService = new SmsService()
-    smsService.smppSend(smsTemplates.phoneVerification(code, firstName), phoneNumber)
+    smsService.webcpSend(smsTemplates.phoneVerification(code, firstName), phoneNumber)
       .then(data => smsSent.resolve(data))
       .catch(err => smsSent.reject(err))
     return smsSent.promise
@@ -145,8 +145,12 @@ class VerificationService {
       codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return codeData.promise
     }
-    if (!code || typeof code !== 'number') {
+    if (!code || typeof code !== 'string') {
       codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      return codeData.promise
+    }
+    if (!code.match(__constants.VALIDATOR.number)) {
+      codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Code provided is not valid' })
       return codeData.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
@@ -172,8 +176,12 @@ class VerificationService {
       tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return tokenMarkedConsumed.promise
     }
-    if (!code || typeof code !== 'number') {
+    if (!code || typeof code !== 'string') {
       tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
+      return tokenMarkedConsumed.promise
+    }
+    if (!code.match(__constants.VALIDATOR.number)) {
+      tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Code provided is not valid' })
       return tokenMarkedConsumed.promise
     }
     if (!verificationChannel || typeof verificationChannel !== 'string') {
@@ -297,7 +305,7 @@ class VerificationService {
       return smsSent.promise
     }
     const smsService = new SmsService()
-    smsService.smppSend(smsTemplates.smsTfa(code, firstName), phoneNumber)
+    smsService.webcpSend(smsTemplates.smsTfa(code, firstName), phoneNumber)
       .then(data => smsSent.resolve(data))
       .catch(err => smsSent.reject(err))
     return smsSent.promise
