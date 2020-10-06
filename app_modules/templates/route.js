@@ -32,8 +32,10 @@ router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstr
 router.get('/inttest', (req, res) => {
   const integrationService = require('../../app_modules/integration')
   const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+  // const templateService = new integrationService.WabaAccount('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
   // templateService.getTemplateList(req.headers.wabanumber)
   templateService.getTemplateInfo(req.headers.wabanumber, req.body.templateId)
+  // templateService.getAcccountInfo(req.headers.wabanumber)
     .then(data => res.send(data))
     .catch(err => res.send(err))
 })

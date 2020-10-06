@@ -4,12 +4,13 @@ const __logger = require('../../../lib/logger')
 const q = require('q')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
-
+const multer = require('multer')
 // Services
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const placeIdService = require('../services/getPlacesId')
+const integrationService = require('../../../app_modules/integration')
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   let queryResult = []
@@ -285,6 +286,54 @@ const addUpdateOptinMessage = (req, res) => {
     })
 }
 
+const filter = function (req, file, cb) {
+  var filetypes = /(jpe?g|png)$/i
+  let fileExt = file.originalname.split('.')
+  fileExt = fileExt[fileExt.length - 1]
+  var extname = filetypes.test(fileExt.toLowerCase())
+  __logger.info('file mime type filter  -->', extname, fileExt)
+  if (extname) {
+    return cb(null, true)
+  } else {
+    const err = { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'File upload only supports the following filetypes - jpg, jpeg, png' }
+    cb(err)
+  }
+}
+
+const upload = multer({
+  fileFilter: filter
+}).array('profilePicture', 1)
+
+const updateProfilePic = (req, res) => {
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const businessAccountService = new BusinessAccountService()
+  __logger.info('RTRT', req.headers.authorization, req.user.user_id)
+  upload(req, res, function (err, data) {
+    __logger.info('Hello ----------->', data, err)
+    if (err) return res.send(err)
+    if (!req.files || (req.files && !req.files[0])) {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
+    } else {
+      __logger.info('filessssss', req.files)
+      const wabaAccountService = new integrationService.WabaAccount(req.user.serviceProviderId)
+      businessAccountService.checkUserIdExist(userId)
+        .then(results => {
+          __logger.info('got result', results.record)
+          if (results && results.record !== '') {
+            return wabaAccountService.updateProfilePic(results.record.phoneCode.concat(results.record.phoneNumber), req.files[0].buffer)
+          } else {
+            return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+          }
+        })
+        .then(accountData => __util.send(res, accountData))
+        .catch(err => {
+          __logger.error('error: ', err)
+          return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+        })
+    }
+  })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -292,5 +341,6 @@ module.exports = {
   markManagerVerified,
   updateServiceProviderId,
   updateWabaPhoneNumber,
-  addUpdateOptinMessage
+  addUpdateOptinMessage,
+  updateProfilePic
 }
