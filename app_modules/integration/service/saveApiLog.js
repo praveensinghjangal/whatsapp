@@ -67,7 +67,7 @@ const validateInput = input => {
 
 module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo) => {
   const historyStored = q.defer()
-  const query = `insert into service_provider_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number)
+  const query = `insert into service_provider_message_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number)
   values (?,?,?,?,?,?,?)`
   __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId)
   validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
