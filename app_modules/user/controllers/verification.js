@@ -9,6 +9,7 @@ const HttpService = require('../../../lib/http_service')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
 const authMiddleware = require('../../../middlewares/auth/authentication')
+const UserService = require('../services/dbData')
 
 const generateEmailVerificationCode = (req, res) => {
   const verificationService = new VerificationService()
@@ -253,6 +254,7 @@ const sendOtpCode = (req, res) => {
 const validateTFa = (req, res) => {
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
+  let backupData = {}
   let isTemp = false
   let dbData = {}
   if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
@@ -338,12 +340,17 @@ const validateTFa = (req, res) => {
       }
     })
     .then(data => {
-      const payload = { user_id: userId }
+      backupData = data
+      const userService = new UserService()
+      return userService.checkUserIdExistsForAccountProfile(userId)
+    })
+    .then(userData => {
+      const payload = { user_id: userId, serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '' }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       const outData = { token }
       if (isTemp) {
         verificationService.markChannelVerified(userId, __constants.VERIFICATION_CHANNEL.email.name)
-        outData.backupCodes = data.backupCodes
+        outData.backupCodes = backupData.backupCodes
       }
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: outData })
     })
@@ -556,7 +563,11 @@ const validateBackupCodeAndResetTfa = (req, res) => {
       return verificationService.resetTfaData(userId, data[0])
     })
     .then(data => {
-      const payload = { user_id: userId }
+      const userService = new UserService()
+      return userService.checkUserIdExistsForAccountProfile(userId)
+    })
+    .then(userData => {
+      const payload = { user_id: userId, serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '' }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token, resetTfaData: true } })
     })

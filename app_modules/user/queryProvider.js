@@ -1,7 +1,10 @@
+// todo : remove waba dependency
 const getUserDetailsByEmail = () => {
-  return `select u.user_id, hash_password,salt_key, email_verified, phone_verified, tnc_accepted,role_name,is_tfa_enabled,ut.tfa_type
+  return `select u.user_id, hash_password,salt_key, email_verified, u.phone_verified, tnc_accepted,role_name,
+  is_tfa_enabled,ut.tfa_type,wi.service_provider_id 
   from users u
   join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true 
+  left join waba_information wi on wi.user_id = u.user_id and wi.is_active = true
   left join users_tfa ut on u.user_id = ut.user_id and ut.is_active = true
   where lower(u.email) = lower(?) and u.is_active = true`
 }
@@ -19,15 +22,16 @@ const getUserDetailsByUserIdForAccountProfile = () => {
 }
 
 const getUserAccountProfile = () => {
-  return `select u.user_id as "accountId",email as "accountManagerName",token_key as "tokenKey",email,
-  type_name as "accountType" ,city, state, country, address_line_1 as "addressLine1",address_line_2 as "addressLine2",
-  contact_number as "contactNumber",phone_code as "phoneCode", postal_code as "postalCode", first_name as "firstName",
-  last_name as "lastName",tps, phone_verified as "phoneVerified", email_verified as "emailVerified", ut.tfa_type as "tfaType",
-  uaf.user_agreement_files_id  as "userAgreementFilesId"
+  return `select u.user_id as "accountId",u.email as "accountManagerName",token_key as "tokenKey",u.email,
+  type_name as "accountType" ,u.city, u.state, u.country, u.address_line_1 as "addressLine1",u.address_line_2 as "addressLine2",
+  u.contact_number as "contactNumber",u.phone_code as "phoneCode", u.postal_code as "postalCode", u.first_name as "firstName",
+  u.last_name as "lastName",u.tps, u.phone_verified as "phoneVerified", u.email_verified as "emailVerified", ut.tfa_type as "tfaType",
+  uaf.user_agreement_files_id  as "userAgreementFilesId",wi.service_provider_id as "serviceProviderId"
   from users u
-  left join user_agreement_files uaf on u.user_id = uaf.user_id and uaf.is_active = true
+  left join user_agreement_files uaf on u.user_id = uaf.user_id and uaf.user_agreement_files_id = (SELECT user_agreement_files_id from user_agreement_files where is_active = 1 and user_id = u.user_id order by created_on desc limit 1) and uaf.is_active = true
   left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
   left join users_tfa ut on u.user_id = ut.user_id and ut.is_active = true
+  left join waba_information wi on wi.user_id = u.user_id and wi.is_active = true
   WHERE u.user_id = ? and u.is_active = true`
 }
 
