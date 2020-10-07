@@ -3,13 +3,13 @@ const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const tyntectConfig = __config.integration.tyntec
 const __constants = require('../../../config/constants')
-// const saveMessageApiLog = require('../service/saveMessageApiLog')
-// const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
+const DataMapper = require('./dataMapper')
 
 class Template {
   constructor () {
     this.http = new HttpService(60000)
+    this.dataMapper = new DataMapper()
   }
 
   // when this service will be called we will call waba to get phone number to use here in redis

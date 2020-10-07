@@ -385,5 +385,10 @@ module.exports = {
     status_code: 500,
     code: 5005,
     message: 'Something went wrong. Please try again later.'
+  },
+  CATEGORY_MAPPING_NOT_FOUND: {
+    status_code: 500,
+    code: 3047,
+    message: 'Some error occured'
   }
 }

@@ -97,6 +97,17 @@ class InternalClass {
     return valid.promise
   }
 
+  buttonDataPresent (td) {
+    const valid = q.defer()
+    const buttonTypeArr = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+    if (td.buttonType && buttonTypeArr.includes(td.buttonType.toLowerCase()) && (!td.buttonData || _.isEmpty(td.buttonData))) {
+      valid.reject('please provide button data of type json')
+      return valid.promise
+    }
+    valid.resolve(true)
+    return valid.promise
+  }
+
   bodyTextVarMatchInBothLang (td) {
     const valid = q.defer()
     const firstLangBodyVarCount = td.bodyText ? (td.bodyText.match(/{{\d}}/g) || []).length : 0
@@ -118,9 +129,12 @@ class InternalClass {
     }
     const firstLangFooterVarCount = td.footerText ? (td.footerText.match(/{{\d}}/g) || []).length : 0
     const secondLangFooterVarCount = td.secondLanguageFooterText ? (td.secondLanguageFooterText.match(/{{\d}}/g) || []).length : 0
-    console.log('header var match', firstLangFooterVarCount, secondLangFooterVarCount)
-    if (td.secondLanguageRequired && firstLangFooterVarCount !== secondLangFooterVarCount) {
-      valid.reject('Variable in both language footer does not match')
+    if (firstLangFooterVarCount > 0) {
+      valid.reject('Variable not allowed in footer')
+      return valid.promise
+    }
+    if (td.secondLanguageRequired && td.footerText && secondLangFooterVarCount > 0) {
+      valid.reject('Variable not allowed in second language footer')
       return valid.promise
     }
     valid.resolve(true)
@@ -230,6 +244,7 @@ class InternalClass {
       .then(data => this.textPresentForSecondLanguageHeaderTypeTextAndVarMatchInBothLang(dbDatemplateData))
       .then(data => this.textPresentForSecondLanguageFooterAndVarMatchInBothLang(dbDatemplateData))
       .then(data => this.bodyTextVarMatchInBothLang(dbDatemplateData))
+      .then(data => this.buttonDataPresent(dbDatemplateData))
       .then(data => this.callToActionButtonValid(dbDatemplateData))
       .then(data => this.quickReplyButtonValid(dbDatemplateData))
       .then(result => valid.resolve(result))

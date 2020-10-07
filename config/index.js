@@ -125,6 +125,10 @@ module.exports = {
       servicProviderId: process.env.SERVICE_PROVIDER_ID_DEMO
     }
   },
+  service_provider_id: {
+    tyntec: process.env.SERVICE_PROVIDER_ID_TYNTEC,
+    demo: process.env.SERVICE_PROVIDER_ID_DEMO
+  },
   helo_whatsapp_mysql: {
     init: process.env.HW_MYSQL_INIT === 'true',
     name: __constants.HW_MYSQL_NAME,

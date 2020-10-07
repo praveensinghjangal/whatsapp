@@ -121,11 +121,14 @@ const ENTITY_NAME = {
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
 }, {
-  templateHeaderType: 'Pdf'
+  templateHeaderType: 'Document'
 }, {
   templateHeaderType: 'Location'
 }, {
   templateHeaderType: 'Text'
+},
+{
+  templateHeaderType: 'Image'
 }]
 const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Call To Action'
