@@ -73,7 +73,7 @@ class TemplateService {
     __logger.info('Inserting new template')
     const dataInserted = q.defer()
     const templateData = {
-      messageTemplateId: oldData.messageTemplateId || this.uniqueId.uuid(),
+      messageTemplateId: oldData && oldData.messageTemplateId ? oldData.messageTemplateId : this.uniqueId.uuid().split('-').join('_'),
       wabaInformationId: oldData.wabaInformationId,
       templateName: newData.templateName || oldData.templateName,
       type: newData.type || oldData.type,
