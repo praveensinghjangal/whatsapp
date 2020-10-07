@@ -223,6 +223,10 @@ const TFA_TYPE_DISPLAYNAME = {
   [TFA_TYPE_ENUM[1]]: 'Email Address',
   [TFA_TYPE_ENUM[2]]: 'Authenticator App'
 }
+const TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = {
+  singleButtonLength: 20,
+  arrayLength: 3
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -268,3 +272,4 @@ module.exports.TFA_BACKUP_CODES_AMOUNT = TFA_BACKUP_CODES_AMOUNT
 module.exports.TFA_AUTHENTICATOR_LABEL = TFA_AUTHENTICATOR_LABEL
 module.exports.WA_ME_URL = WA_ME_URL
 module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME
+module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH

@@ -19,6 +19,18 @@ class InternalClass {
         valid.reject('please provide atleast one quick reply text')
         return valid.promise
       }
+      if (td.buttonData.quickReply && td.buttonData.quickReply.length > __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.arrayLength) {
+        valid.reject(`quick reply buttons limit of ${__constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.arrayLength} exeeded`)
+        return valid.promise
+      }
+      let isQRConInvalid = false
+      _.each(td.buttonData.quickReply, str => {
+        if (isQRConInvalid || typeof str !== 'string' || str.length > __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.singleButtonLength) isQRConInvalid = true
+      })
+      if (isQRConInvalid) {
+        valid.reject('quick reply button data invalid, please makle sure it is string with maximum length of ' + __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.singleButtonLength)
+        return valid.promise
+      }
       if (td.secondLanguageRequired && !td.buttonData.secondLanguageQuickReply) {
         valid.reject('please provide quick reply text for second language')
         return valid.promise
@@ -29,6 +41,18 @@ class InternalClass {
       }
       if (td.secondLanguageRequired && td.buttonData.secondLanguageQuickReply && td.buttonData.secondLanguageQuickReply.length === 0) {
         valid.reject('please provide the same amount of second language quick reply text as there in quick reply text')
+        return valid.promise
+      }
+      if (td.buttonData.secondLanguageQuickReply && td.buttonData.secondLanguageQuickReply.length > __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.arrayLength) {
+        valid.reject(`second language quick reply buttons limit of ${__constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.arrayLength} exeeded`)
+        return valid.promise
+      }
+      let isSLQRConInvalid = false
+      _.each(td.buttonData.secondLanguageQuickReply, str => {
+        if (isSLQRConInvalid || typeof str !== 'string' || str.length > __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.singleButtonLength) isSLQRConInvalid = true
+      })
+      if (isSLQRConInvalid) {
+        valid.reject('second language quick reply button data invalid, please makle sure it is string with maximum length of ' + __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.singleButtonLength)
         return valid.promise
       }
       if (td.secondLanguageRequired && td.buttonData.secondLanguageQuickReply.length !== td.buttonData.quickReply.length) {
