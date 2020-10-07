@@ -146,7 +146,6 @@ const MQ = {
   delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
   delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
   retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
-
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5
@@ -188,7 +187,8 @@ const VALIDATOR = {
   phoneNumber: '^\\d{1,10}$',
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
-  timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$'
+  timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
+  aplphaNumericWithUnderscore: '^[a-z0-9_]+$'
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',

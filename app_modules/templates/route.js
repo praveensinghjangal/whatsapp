@@ -30,10 +30,12 @@ router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstr
 
 // Fetch Templates
 router.get('/inttest', (req, res) => {
-  const integrationService = require('../../app_modules/integration')
-  const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+  // const integrationService = require('../../app_modules/integration')
+  // const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
   // templateService.getTemplateList(req.headers.wabanumber)
-  templateService.getTemplateInfo(req.headers.wabanumber, req.body.templateId)
+  const RuleEngine = require('./services/ruleEngine')
+  const ruleEngine = new RuleEngine()
+  ruleEngine.addTemplate(req.body)
     .then(data => res.send(data))
     .catch(err => res.send(err))
 })
