@@ -208,15 +208,15 @@ const upload = multer({
 const controller = (req, res) => {
   __logger.info('sendMessageToQueueExcel :: API to send message called', req.userConfig)
   if (!req.userConfig || !req.userConfig.tokenKey) {
-    return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} }))
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   }
   upload(req, res, function (err, data) {
     if (err) {
       __logger.error('sendMessageToQueueExcel :: file upload API error', err)
-      return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} })
     }
     if (!req.files || (req.files && !req.files[0])) {
-      return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
       __logger.info('sendMessageToQueueExcel :: file uploaded')
       convertToJson(req.files)
@@ -233,7 +233,7 @@ const controller = (req, res) => {
         .then(data => res.send(data))
         .catch(err => {
           __logger.error('sendMessageToQueueExcel :: file upload API error', err)
-          res.send(__util.send(res, { type: err.type, err: err.err }))
+          __util.send(res, { type: err.type, err: err.err })
         })
     }
   })

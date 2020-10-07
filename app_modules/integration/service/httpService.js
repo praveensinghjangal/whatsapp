@@ -1,5 +1,7 @@
 const request = require('request')
 const q = require('q')
+const __logger = require('../../../lib/logger')
+const saveApiLog = require('../../integration/service/saveApiLog')
 class HttpRequest {
   constructor (timeout) {
     this.timeInSeconds = timeout || 3 * 60 * 60 * 1000 // hour * minutes * seconds * miliseconds
@@ -19,7 +21,7 @@ class HttpRequest {
     request(options, (error, response, body) => {
       // console.log('pppppppppppppppppppp', response.statusCode)
       if (error) {
-        console.log('errrrrrrrrrrrrr', error)
+        __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -28,7 +30,7 @@ class HttpRequest {
     return deferred.promise
   }
 
-  Get (url, headers) {
+  Get (url, headers, serviceProviderId) {
     const deferred = q.defer()
     const options = {
       method: 'GET',
@@ -39,9 +41,11 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
+      const url = options.url.split('/').slice(3).join('/')
       if (error) {
         deferred.reject(error)
       } else {
+        saveApiLog(serviceProviderId, url, options, response)
         deferred.resolve(body)
       }
     })
@@ -62,10 +66,34 @@ class HttpRequest {
     request(options, (error, response, body) => {
     // console.log('pppppppppppppppppppp', response)
       if (error) {
-        console.log('errrrrrrrrrrrrr', error)
+        __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
         deferred.resolve(body)
+      }
+    })
+    return deferred.promise
+  }
+
+  Put (inputRequest, inputReqType, url, headers, isJson, serviceProviderId) {
+    const deferred = q.defer()
+    const options = {
+      method: 'PUT',
+      url: url,
+      timeout: this.timeInSeconds,
+      headers: headers,
+      [inputReqType]: inputRequest,
+      json: isJson,
+      rejectUnauthorized: false
+    }
+    request(options, (error, response, body) => {
+      const url = options.url.split('/').slice(3).join('/')
+      if (error) {
+        __logger.error('errrrrrrrrrrrrr', error)
+        deferred.reject(error)
+      } else {
+        saveApiLog(serviceProviderId, url, options, response)
+        deferred.resolve(response)
       }
     })
     return deferred.promise

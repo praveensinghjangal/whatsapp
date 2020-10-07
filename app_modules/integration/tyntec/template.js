@@ -3,7 +3,7 @@ const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const tyntectConfig = __config.integration.tyntec
 const __constants = require('../../../config/constants')
-// const saveApiLog = require('../service/saveApiLog')
+// const saveMessageApiLog = require('../service/saveMessageApiLog')
 // const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
 
@@ -42,7 +42,7 @@ class Template {
             Accept: 'application/json',
             apikey: data.apiKey
           }
-          return this.http.Get(url, headers)
+          return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((templateData) => {
           if (templateData && templateData.constructor.name.toLowerCase() === 'array') {
@@ -77,7 +77,7 @@ class Template {
             Accept: 'application/json',
             apikey: data.apiKey
           }
-          return this.http.Get(url, headers)
+          return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((templateData) => {
           if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {

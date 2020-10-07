@@ -383,7 +383,7 @@ module.exports = {
   },
   ERROR_CALLING_PROVIDER: {
     status_code: 500,
-    code: 5001,
+    code: 5005,
     message: 'Something went wrong. Please try again later.'
   }
 }

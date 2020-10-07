@@ -204,7 +204,9 @@ const TYNTEC_ENDPOINTS = {
   sendMessage: '/chat-api/v2/messages',
   addTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
   getTemplateList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
-  getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId'
+  getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
+  getAccountInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId',
+  updateProfilePic: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/logo'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const TEMPLATE_APPROVE_STATUS = '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9'
