@@ -7,7 +7,7 @@ class HttpRequest {
     this.timeInSeconds = timeout || 3 * 60 * 60 * 1000 // hour * minutes * seconds * miliseconds
   }
 
-  Post (inputRequest, inputReqType, url, headers) {
+  Post (inputRequest, inputReqType, url, headers, serviceProviderId) {
     const deferred = q.defer()
     const options = {
       method: 'POST',
@@ -20,6 +20,8 @@ class HttpRequest {
     }
     request(options, (error, response, body) => {
       // console.log('pppppppppppppppppppp', response.statusCode)
+      const url = options.url.split('/').slice(3).join('/')
+      saveApiLog(serviceProviderId, url, options, response)
       if (error) {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
@@ -42,17 +44,17 @@ class HttpRequest {
     }
     request(options, (error, response, body) => {
       const url = options.url.split('/').slice(3).join('/')
+      saveApiLog(serviceProviderId, url, options, response)
       if (error) {
         deferred.reject(error)
       } else {
-        saveApiLog(serviceProviderId, url, options, response)
         deferred.resolve(body)
       }
     })
     return deferred.promise
   }
 
-  Patch (inputRequest, url, headers) {
+  Patch (inputRequest, url, headers, serviceProviderId) {
     const deferred = q.defer()
     const options = {
       method: 'PATCH',
@@ -65,6 +67,8 @@ class HttpRequest {
     }
     request(options, (error, response, body) => {
     // console.log('pppppppppppppppppppp', response)
+      const url = options.url.split('/').slice(3).join('/')
+      saveApiLog(serviceProviderId, url, options, response)
       if (error) {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
@@ -88,11 +92,11 @@ class HttpRequest {
     }
     request(options, (error, response, body) => {
       const url = options.url.split('/').slice(3).join('/')
+      saveApiLog(serviceProviderId, url, options, response)
       if (error) {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
-        saveApiLog(serviceProviderId, url, options, response)
         deferred.resolve(response)
       }
     })

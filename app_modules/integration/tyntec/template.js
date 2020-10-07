@@ -5,6 +5,7 @@ const tyntectConfig = __config.integration.tyntec
 const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
 const DataMapper = require('./dataMapper')
+const __logger = require('../../../lib/logger')
 
 class Template {
   constructor () {
@@ -16,12 +17,30 @@ class Template {
   addTemplate (templateData, wabaNumber) {
     const deferred = q.defer()
     let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.addTemplate
+    let headers = {}
+    let spId = ''
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
         console.log('dataatatatat', data, typeof data)
         url = url.split(':accountId').join(data.userAccountIdByProvider || '')
-        deferred.resolve({ url, templateData })
+        headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          apikey: data.apiKey
+        }
+        spId = data.serviceProviderId
+        return this.dataMapper.addTemplate(templateData)
+      })
+      .then(reqBody => this.http.Post(reqBody, 'body', url, headers, spId))
+      .then(data => {
+        // console.log('add responseeeeeeeeeeeeeeeeeeeeeeeeeeeee', data, data.statusCode, JSON.stringify(data.body))
+        __logger.info('integration :: Add template data', data)
+        if (data && data.statusCode === 201) {
+          deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+        } else {
+          return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
+        }
       })
       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return deferred.promise
@@ -45,6 +64,7 @@ class Template {
           return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((templateData) => {
+          __logger.info('integration :: get template list data', templateData)
           if (templateData && templateData.constructor.name.toLowerCase() === 'array') {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
           } else if (templateData && templateData.status === 404) {
@@ -80,6 +100,7 @@ class Template {
           return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((templateData) => {
+          __logger.info('integration :: get template info data', templateData)
           if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
           } else if (templateData && templateData.status === 404) {

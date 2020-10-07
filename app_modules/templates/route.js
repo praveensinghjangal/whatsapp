@@ -30,15 +30,15 @@ router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstr
 
 // Fetch Templates
 router.get('/inttest', (req, res) => {
-  // const integrationService = require('../../app_modules/integration')
-  // const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-  // templateService.getTemplateList(req.headers.wabanumber)
+  const integrationService = require('../../app_modules/integration')
+  const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+  templateService.addTemplate(req.body, req.headers.wabanumber)
   // const RuleEngine = require('./services/ruleEngine')
   // const ruleEngine = new RuleEngine()
   // ruleEngine.addTemplate(req.body)
-  const DataMapper = require('../integration/tyntec/dataMapper')
-  const dataMapper = new DataMapper()
-  dataMapper.addTemplate(req.body)
+  // const DataMapper = require('../integration/tyntec/dataMapper')
+  // const dataMapper = new DataMapper()
+  // dataMapper.addTemplate(req.body)
     .then(data => res.send(data))
     .catch(err => res.send(err))
 })
