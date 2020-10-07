@@ -38,22 +38,25 @@ const getAudienceRecordList = (req, res) => {
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
   if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const startDate = req.query ? req.query.startDate : null
+  const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1
   const ItemsPerPage = req.query.ItemsPerPage
   const offset = ItemsPerPage * (requiredPage - 1)
   __logger.info('Get Offset value', offset)
   const {
     channel, optin, optinSourceId, tempOptin,
-    segmentId, firstMessageActivation, phoneNumber
+    segmentId, phoneNumber
   } = req.query
   const inputArray = [{ colName: 'aud.channel', value: channel },
     { colName: 'aud.optin_source_id', value: optinSourceId },
     { colName: 'aud.segment_id', value: segmentId },
-    { colName: 'aud.first_message', value: firstMessageActivation },
+    // { colName: 'aud.first_message', value: firstMessageActivation },
     { colName: 'aud.phone_number', value: phoneNumber },
     { colName: 'wi.user_id', value: userId }]
   if (optin) inputArray.push({ colName: 'aud.optin', value: optin === 'true' ? 1 : 0 })
   if (tempOptin) inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin === 'true' ? 1 : 0 })
+
   const columnArray = []
   const valArray = []
   _.each(inputArray, function (input) {
@@ -62,7 +65,7 @@ const getAudienceRecordList = (req, res) => {
       valArray.push(input.value)
     }
   })
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage, userId), valArray)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage, userId, startDate, endDate), valArray)
     .then(result => {
       __logger.info('Got audience list from db -->', result)
       if ((result && result.length === 0) || result[0].length === 0) {
