@@ -13,16 +13,6 @@ const validateInput = input => {
     type: 'object',
     required: true,
     properties: {
-      vivaMessageId: {
-        type: 'string',
-        required: true,
-        minLength: 1
-      },
-      serviceProviderMessageId: {
-        type: 'string',
-        required: true,
-        minLength: 1
-      },
       serviceProviderId: {
         type: 'string',
         required: true,
@@ -42,11 +32,6 @@ const validateInput = input => {
         type: 'object',
         required: true,
         minProperties: 1
-      },
-      toPhoneNo: {
-        type: 'string',
-        required: true,
-        minLength: 1
       }
     }
   }
@@ -65,23 +50,26 @@ const validateInput = input => {
   return isvalid.promise
 }
 
-module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo) => {
+module.exports = (serviceProviderId, apiName, request, response) => {
+  __logger.info('ssssss', apiName.includes('chat-api/v2/messages'))
   const historyStored = q.defer()
-  const query = `insert into service_provider_message_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number)
-  values (?,?,?,?,?,?,?)`
-  __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId)
-  validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
-    .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo]))
-    .then(result => {
-      if (result && result.affectedRows && result.affectedRows > 0) {
-        historyStored.resolve(true)
-      } else {
-        historyStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
-      }
-    })
-    .catch(err => {
-      __logger.error('error: ', err)
-      historyStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-    })
-  return historyStored.promise
+  if (apiName.includes('chat-api/v2/messages') === false) {
+    const query = `insert into service_provider_api_log(service_provider_id,api_name,request,response)
+    values (?,?,?,?)`
+    __logger.info('Inside function to store api log in apilog table', serviceProviderId)
+    validateInput({ serviceProviderId, apiName, request, response })
+      .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response)]))
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          historyStored.resolve(true)
+        } else {
+          historyStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        historyStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return historyStored.promise
+  }
 }

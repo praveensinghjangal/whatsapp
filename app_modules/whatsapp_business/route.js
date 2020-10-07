@@ -27,7 +27,7 @@ router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
 router.post('/profile/optinmessage', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.addUpdateOptinMessage)
 
-router.put('/inttest', (req, res) => {
+router.get('/inttest', (req, res) => {
   const integrationService = require('../../app_modules/integration')
   const templateService = new integrationService.WabaAccount('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
   templateService.getAccountInfo(req.headers.wabanumber)

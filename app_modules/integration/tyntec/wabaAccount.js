@@ -28,7 +28,7 @@ class WabaAccount {
             Accept: 'application/json',
             apikey: data.apiKey
           }
-          return this.http.Get(url, headers)
+          return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((accountData) => {
           if (accountData && accountData.constructor.name.toLowerCase() === 'object') {
@@ -62,7 +62,7 @@ class WabaAccount {
           Accept: 'application/problem+json',
           apikey: data.apiKey
         }
-        return this.http.Put(profilePicBuffer, 'body', url, headers, false)
+        return this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
       })
       .then((accountData) => {
         __logger.info('Dataaaaa', accountData)

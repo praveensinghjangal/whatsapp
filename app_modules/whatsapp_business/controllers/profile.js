@@ -307,7 +307,7 @@ const upload = multer({
 const updateProfilePic = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
-  __logger.info('RTRT', req.headers.authorization, req.user.user_id)
+  __logger.info('RTRT', req.user, req.user.user_id)
   upload(req, res, function (err, data) {
     __logger.info('Hello ----------->', data, err)
     if (err) return res.send(err)
@@ -320,7 +320,7 @@ const updateProfilePic = (req, res) => {
         .then(results => {
           __logger.info('got result', results.record)
           if (results && results.record !== '') {
-            return wabaAccountService.updateProfilePic(results.record.phoneCode.concat(results.record.phoneNumber), req.files[0].buffer)
+            return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
           } else {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
           }
