@@ -2324,6 +2324,742 @@
             "security": []
          }
       },
+      "/users/otp": {
+         "post": {
+            "summary": "API to send otp code",
+            "description": "API to send otp code",
+            "tags": [
+               "verification"
+            ],
+            "operationId": "sendOtpCode",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "schema": {
+                     "$ref": "#/definitions/validateUserIdRequest"
+                  },                  
+                  "description": "Enter userId here"
+               }    
+            ],
+            "responses": {
+               "200": {
+                  "description": "success or already verified response",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                       {
+                           "code": 2001,
+                           "msg": "Please check your registered phone number for one time code",
+                           "data": {},
+                           "error":null
+                      },
+                       {
+                           "code": 3041,
+                           "msg": "Please Setup 2FA first.",
+                           "data": {},
+                           "error":null
+                      },
+                       {
+                           "code": 3042,
+                           "msg": "Invalid tfa type.",
+                           "data": {},
+                           "error":null
+                      },                         
+                       
+                    ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request"
+                        ]
+                     }
+                  }
+               },               
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         },
+         "patch": {
+            "summary": "API to validate otp code sent to the user",
+            "description": "API to validate code sent to the user",
+            "tags": [
+               "verification"
+            ],
+            "operationId": "validateTFa",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/validateOtpCodeRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "verification success message",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                       {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+                            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiIxNTg5ODg2ODA4MTQ5MTIiLCJzZXJ2aWNlUHJvdmlkZXJJZCI6ImYxZDQ0MjAwLTRiOWQtNDkwMS1hZTQ5LTUwMzVlMGIxNGE1ZCIsIndhYmFQaG9uZU51bWJlciI6IjkxODA4MDgwMDgwOCJ9LCJpYXQiOjE2MDIwNjc2NjgsImV4cCI6MTYwMjE1NDA2OH0.EPyx4t4jcR993aTkQqhilJonuQ9wr_K2-12WqymS7Vc"
+                        },
+                        "error" : null
+                     },
+                       {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+                            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiIxNTg5ODg2ODA4MTQ5MTIiLCJzZXJ2aWNlUHJvdmlkZXJJZCI6ImYxZDQ0MjAwLTRiOWQtNDkwMS1hZTQ5LTUwMzVlMGIxNGE1ZCIsIndhYmFQaG9uZU51bWJlciI6IjkxODA4MDgwMDgwOCJ9LCJpYXQiOjE2MDIwNjc2NjgsImV4cCI6MTYwMjE1NDA2OH0.EPyx4t4jcR993aTkQqhilJonuQ9wr_K2-12WqymS7Vc",
+                           "backupCodes": [
+                              "140a30bb-a325-4658-8879-18d1dbdbc701",
+                              "b500b2f6-d20c-4831-8e9d-b60149ca4db0",
+                              "936c7d0f-84a8-4c49-8257-acb29a5a46c6",
+                              "098e7fd6-c472-4da9-b381-59f140ec1af1",
+                              "487a5689-0679-4dfc-903e-234176af0960"
+                           ]
+                        },
+                        "error" : null
+                     }                     
+                     
+                     
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request",
+                           "Please provide code of type string",
+                           "Code provided in not valid",
+                           "please provide userId of type string"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "example": [
+                        "Unauthorized",
+                        {
+                           "code": 3017,
+                           "msg": "Invalid verification code",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/users/otp/backup": {
+         "patch": {
+            "summary": "API to validate backup code and reset tfa",
+            "description": "API to validate backup code and reset tfa",
+            "tags": [
+               "verification"
+            ],
+            "operationId": "validateBackupCodeAndResetTfa",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/validateBackUpCodeRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "verification success message",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+                            "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiI0NDY1ZjAzZC01NTg0LTQ0NDgtOTQ5Yi0zYWU1YjhkZjQ0OTgiLCJzZXJ2aWNlUHJvdmlkZXJJZCI6IiIsIndhYmFQaG9uZU51bWJlciI6IiJ9LCJpYXQiOjE2MDIwNzc4NzEsImV4cCI6MTYwMjE2NDI3MX0.L8a9EJsDetHFEu9r1zWAm2JGmbSXF8-HzxhaFL5mz9M",
+                            "resetTfaData": true
+                        },
+                        "error" : null
+                     }
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request",
+                           "Please provide backupCode of type string",
+                           "Please provide userId of type string"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "example": [
+                        "Unauthorized",
+                        {
+                           "code": 3046,
+                           "msg": "Invalid backup code",
+                           "data": null,
+                           "error": {}
+                        }                        
+                     ]
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/users/otp/new": {
+         "patch": {
+            "summary": "API to validate otp code sent to the user",
+            "description": "API to validate code sent to the user",
+            "tags": [
+               "verification"
+            ],
+            "operationId": "validateTempTFa",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/validateOtpCodeRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "verification success message",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example":[
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "backupCodes": [
+                                 "f1c68a73-2acd-4930-a1c8-8297619026bd",
+                                 "56c7107f-695c-4da8-9e14-680694d63a47",
+                                 "7029ce06-1fec-4ef2-a67c-814295b98964",
+                                 "3e659681-c4cc-4439-81cb-67b2a7128503",
+                                 "aea5de74-6ae8-47d1-a630-7f656ec10c03"
+                               ]                           
+                           },
+                           "error" : null
+                        },
+                        {
+                           "code": 3041,
+                           "msg": "Please Setup 2FA first.",
+                           "data": {                        
+                           },
+                           "error" : null
+                        },
+                        {
+                           "code": 3042,
+                           "msg": "Invalid tfa type.",
+                           "data": {                        
+                           },
+                           "error" : null
+                        },                        
+                        {
+                           "code": 3045,
+                           "msg": "Authentication method change request not found",
+                           "data": {                        
+                           },
+                           "error" : null
+                        }                           
+
+                     ] 
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request",
+                           "Please provide code of type integer",
+                           "Code provided in not valid",
+                           "please provide userId of type string"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "example": [
+                        "Unauthorized",
+                        {
+                           "code": 3017,
+                           "msg": "Invalid verification code",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },       
+      "/users/tfa": {
+         "post": {
+            "summary": "API to send otp code",
+            "description": "API to send otp code",
+            "tags": [
+               "verification"
+            ],
+            "operationId": "addTempTfaData",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "schema": {
+                     "$ref": "#/definitions/tfaRequest"
+                  },                  
+                  "description": "Enter userId here"
+               }    
+            ],
+            "responses": {
+               "200": {
+                  "description": "success or already verified response",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2001,
+                           "msg": "Please check your registered email for one time code",
+                           "data": {},
+                           "error":null
+                      },
+                       {
+                           "code": 2001,
+                           "msg": "Please check your registered phone number for one time code",
+                           "data": {},
+                           "error":null
+                      },
+                      {
+                        "code": 2001,
+                        "msg": "Please scan the QRcode or enter the secret key in authenticator app and then enter the OTP received.",
+                        "data": {
+                           "qrcode": "data:image/png;base64,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",
+                           "secret": "LV3FI3KIMESDYRDOFZ2UKSKWH4XXKVZO"                           
+                        },
+                        "error":null
+                     },  
+                       {
+                           "code": 3041,
+                           "msg": "Please Setup 2FA first.",
+                           "data": {},
+                           "error":null
+                      },
+                       {
+                           "code": 3042,
+                           "msg": "Invalid tfa type.",
+                           "data": {},
+                           "error":null
+                      },
+                      {
+                        "code": 3044,
+                        "msg": "Unable to generate QRcode",
+                        "data": {},
+                        "error":null
+                     }                         
+                    ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request",
+                           "Please tfaType either of the following : 'sms', 'email', 'authenticator'",
+                           "Please provide userId of type string",
+                           "Please provide authenticatorSecret of type string"                          
+                        ]
+                     }
+                  }
+               },               
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
       "/users/agreement": {
          "post": {
             "summary": "upload signed agreement",
@@ -8787,6 +9523,97 @@
          "required": [
             "apiKey"
          ]
-      }
+      },
+      "validateOtpCodeRequest": {
+         "title": "validateOtpCodeRequest",
+         "example": {
+            "code": "3167",
+            "userId":"1212313123123123"
+         },
+         "type": "object",
+         "properties": {
+            "code": {
+               "type": "string"
+            },
+            "userId": {
+               "type": "string"
+            }            
+         },
+         "required": [
+            "code",
+            "userId"
+         ]
+      },
+      "validateUserIdRequest": {
+         "title": "validateUserIdRequest",
+         "example": {
+            "userId":"1212313123123123"
+         },
+         "type": "object",
+         "properties": {
+            "userId": {
+               "type": "string"
+            }            
+         },
+         "required": [
+            "userId"
+         ]
+      },      
+      "validateBackUpCodeRequest": {
+         "title": "validateBackUpCodeRequest",
+         "example": {
+            "backupCode": "sadsadsadasdawd232wadasd",
+            "userId":"1212313123123123"
+         },
+         "type": "object",
+         "properties": {
+            "backupCode": {
+               "type": "string"
+            },
+            "userId": {
+               "type": "string"
+            }            
+         },
+         "required": [
+            "backupCode",
+            "userId"
+         ]
+      },
+      "validateTempTfaDataRequest": {
+         "title": "validateUserIdRequest",
+         "example": {
+            "userId":"1212313123123123",
+            "tfaType":"email"
+         },
+         "type": "object",
+         "properties": {
+            "userId": {
+               "type": "string"
+            } ,
+            "tfaType": {
+               "type": "string"
+            }              
+         },
+         "required": [
+            "userId",
+            "tfaType"
+         ]
+      },   
+      "tfaRequest": {
+         "title": "tfaRequest",
+         "example": {
+            "tfaType":"authenticator"
+         },
+         "type": "object",
+         "properties": {
+            "tfaType": {
+               "type": "string"
+            }              
+         },
+         "required": [
+            "tfaType"
+         ]
+      },       
+      
    }
 }
