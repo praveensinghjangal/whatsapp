@@ -225,6 +225,7 @@ module.exports = {
     }
   },
   emailProvider: {
+    sendEmail: process.env.EMAIL_PROVIDER_SEND_EMAIL === 'true',
     service: process.env.EMAIL_PROVIDER_SERVICE,
     host: process.env.EMAIL_PROVIDER_HOST,
     port: +process.env.EMAIL_PROVIDER_PORT,
