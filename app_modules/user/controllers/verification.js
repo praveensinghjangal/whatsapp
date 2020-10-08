@@ -347,7 +347,7 @@ const validateTFa = (req, res) => {
     .then(userData => {
       const payload = {
         user_id: userId,
-        serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
+        providerId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
         wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : ''
       }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
@@ -573,7 +573,7 @@ const validateBackupCodeAndResetTfa = (req, res) => {
     .then(userData => {
       const payload = {
         user_id: userId,
-        serviceProviderId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
+        providerId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
         wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : ''
       }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)

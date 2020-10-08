@@ -315,7 +315,7 @@ const updateProfilePic = (req, res) => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
       __logger.info('filessssss', req.files)
-      const wabaAccountService = new integrationService.WabaAccount(req.user.serviceProviderId)
+      const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
       businessAccountService.checkUserIdExist(userId)
         .then(results => {
           __logger.info('got result', results.record)
