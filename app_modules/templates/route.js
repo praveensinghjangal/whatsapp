@@ -10,6 +10,7 @@ const templatesCategoryController = require('./controllers/category')
 const templatesLanguageController = require('./controllers/language')
 const templatesCountController = require('./controllers/count')
 const addUpdateTemplateController = require('./controllers/addUpdateTemplates')
+const deleteTemplateController = require('./controllers/deleteTemplate')
 
 // Routes
 // Template Type
@@ -41,6 +42,7 @@ router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy
 router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateHeaderTypes)
 router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateButtonTypes)
 router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfo)
+router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), deleteTemplateController.deleteTemplate)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
 
 module.exports = router

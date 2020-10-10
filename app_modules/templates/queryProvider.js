@@ -34,7 +34,8 @@ const getTemplateInfo = () => {
     mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
     mt.first_localization_status as "firstLocalizationStatusId", mt.second_localization_status as "secondLocalizationStatusId",
     mtc.message_template_category_id as "messageTemplateCategoryId",mts.message_template_status_id as "messageTemplateStatusId",
-    mtl.message_template_language_id as "messageTemplateLanguageId",mtl2.message_template_language_id as "secondTemplateLanguageId"
+    mtl.message_template_language_id as "messageTemplateLanguageId",mtl2.message_template_language_id as "secondTemplateLanguageId",
+    mtl.language_code as "firstLangCode", mtl2.language_code as "secondLangCode"
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
@@ -66,6 +67,11 @@ const updateTemplate = () => {
   header_type = ?, button_type = ?,button_data = ?, updated_by =?,
   updated_on = now() 
   where message_template_id =? and  waba_information_id =?`
+}
+
+const deleteTemplate = () => {
+  return `update message_template set is_active =FALSE 
+  where message_template_id=? and is_active=true`
 }
 
 // Sample Template
@@ -223,5 +229,6 @@ module.exports = {
   getSampleTemplateList,
   getSampleTemplateInfo,
   setAllTemplatesInRedis,
-  setTemplatesInRedisForWabaId
+  setTemplatesInRedisForWabaId,
+  deleteTemplate
 }
