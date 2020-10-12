@@ -10,6 +10,8 @@ const templatesCategoryController = require('./controllers/category')
 const templatesLanguageController = require('./controllers/language')
 const templatesCountController = require('./controllers/count')
 const addUpdateTemplateController = require('./controllers/addUpdateTemplates')
+const templateApprovalController = require('./controllers/templateApproval')
+// const deleteTemplateController = require('./controllers/deleteTemplate')
 
 // Routes
 // Template Type
@@ -32,13 +34,8 @@ router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstr
 router.get('/inttest', (req, res) => {
   const integrationService = require('../../app_modules/integration')
   const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-  templateService.addTemplate(req.body, req.headers.wabanumber)
-  // const RuleEngine = require('./services/ruleEngine')
-  // const ruleEngine = new RuleEngine()
-  // ruleEngine.addTemplate(req.body)
-  // const DataMapper = require('../integration/tyntec/dataMapper')
-  // const dataMapper = new DataMapper()
-  // dataMapper.addTemplate(req.body)
+  // templateService.getTemplateList(req.headers.wabanumber)
+  templateService.getTemplateInfo(req.headers.wabanumber, req.body.templateId)
     .then(data => res.send(data))
     .catch(err => res.send(err))
 })
@@ -46,6 +43,9 @@ router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy
 router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateHeaderTypes)
 router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateButtonTypes)
 router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfo)
+router.post('/:templateId/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateApprovalController.sendTemplateForApproval)
+router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateApprovalController.sendTemplateForEvaluaion)
+// router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), deleteTemplateController.deleteTemplate)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
 
 module.exports = router

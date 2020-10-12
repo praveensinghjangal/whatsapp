@@ -251,6 +251,18 @@ class InternalClass {
       .catch(err => valid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err }))
     return valid.promise
   }
+
+  getTemplateCompletionStatus (templateData) {
+    const templateStatus = q.defer()
+    this.addTemplate(templateData)
+      .then((data) => {
+        templateStatus.resolve({ complete: true })
+      })
+      .catch(err => {
+        templateStatus.resolve({ complete: false, err: err })
+      })
+    return templateStatus.promise
+  }
 }
 
 module.exports = class RuleEngine {
@@ -259,4 +271,5 @@ module.exports = class RuleEngine {
   }
 
   addTemplate (templateDbData) { return this.internalClass.addTemplate(templateDbData) }
+  getTemplateCompletionStatus (templateDbData) { return this.internalClass.getTemplateCompletionStatus(templateDbData) }
 }
