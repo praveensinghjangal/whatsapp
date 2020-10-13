@@ -14,7 +14,9 @@ const getBusinessProfile = () => {
   address, country, can_receive_sms as "canReceiveSms", can_receive_voice_call as "canReceiveVoiceCall",
   associated_with_ivr as "associatedWithIvr", wabaprof.status_name as "wabaProfileSetupStatus",
   business_manager_verified as "businessManagerVerified", phone_verified as "phoneVerified", city,
-  postal_code as "postalCode", service_provider_name as "serviceProviderName", api_key as "apiKey",
+  postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
+  user_account_id_by_provider as "serviceProviderUserAccountId",
+  service_provider_name as "serviceProviderName", api_key as "apiKey",
   webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated"
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
