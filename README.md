@@ -1,4 +1,4 @@
-### Helo-Whatsapp Product API
+### Helo-Whatsapp Platform API
 #### To Run This Application Follow The Steps Below : 
 ```sh
 $ git clone http://git.vivaconnect.co/clientapps/helo-whatsapp-api.git
