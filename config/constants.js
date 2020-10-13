@@ -2,11 +2,11 @@ const APP_NAME = 'helowhatsapp'
 const DB_NAME = 'helowhatsapp'
 var MYSQL_QUERY = {
   cdr_reason: 'case ' +
-        "when cm.hangup_cause='NORMAL_CLEARING' or cm.billsec>0 then 'SUCCESS' " +
-        "when cm.hangup_cause in ('NO_ANSWER','CALL_REJECTED','USER_BUSY','NO_USER_RESPONSE','NO_ANSWER','CALL_AWARDED_DELIVERED') then 'ATTEMPT' " +
-        "when cm.hangup_cause in ('BLACKLISTED','OPTOUT','COOLING_PERIOD','DAILY','MONTHLYDEPT','NDNC_REJECT') then cm.hangup_cause " +
-        "else 'FAILED' " +
-        'end as reason'
+    "when cm.hangup_cause='NORMAL_CLEARING' or cm.billsec>0 then 'SUCCESS' " +
+    "when cm.hangup_cause in ('NO_ANSWER','CALL_REJECTED','USER_BUSY','NO_USER_RESPONSE','NO_ANSWER','CALL_AWARDED_DELIVERED') then 'ATTEMPT' " +
+    "when cm.hangup_cause in ('BLACKLISTED','OPTOUT','COOLING_PERIOD','DAILY','MONTHLYDEPT','NDNC_REJECT') then cm.hangup_cause " +
+    "else 'FAILED' " +
+    'end as reason'
 }
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
@@ -85,7 +85,19 @@ const PLAN_CATEGORY = {
 }
 const RESET_PASSWORD_TOKEN_EXPIREY_TIME = 3600
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
-const TEMPLATE_STATUS = ['DELETE_PENDING', 'Rejected', 'Approved', 'Send For Approval', 'REQUESTED', 'SUBMIT_FAILED', 'Partial Approval', 'Incomplete', 'DELETED', 'PENDING', 'SUBMITTED', 'Completed', 'Request Initiated']
+const TEMPLATE_STATUS = {
+  rejected: { statusCode: '1cc8cc1f-282a-4431-8618-43effb1ef7c0', displayName: 'Rejected' },
+  approved: { statusCode: '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9', displayName: 'Approved' },
+  requested: { statusCode: '3dd78583-9acd-42e8-b9f3-0413b3a339eb', displayName: 'Requested' },
+  submitFailed: { statusCode: '512155a0-9006-4a0d-89d0-b023d887bd9a', displayName: 'Submit-Failed' },
+  partiallyApproved: { statusCode: '588cff76-d6d1-49a3-8280-8c2c1d99bb81', displayName: 'Partially Approved' },
+  denied: { statusCode: '82889bf2-6142-4750-bca8-2e25ahsbvhsbhsbvh', displayName: 'Denied' },
+  deleted: { statusCode: '90789bf2-6142-4750-bca8-2e25a9a7e4aa', displayName: 'Deleted' },
+  pending: { statusCode: '9d2560a6-732e-4ac2-b1fa-47f89a28b6dd', displayName: 'Pending' },
+  submitted: { statusCode: 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1', displayName: 'Submitted' },
+  complete: { statusCode: 'c71a8387-80e0-468b-9ee3-abb5ec328176', displayName: 'Complete' },
+  incomplete: { statusCode: 'd11a8387-80e0-468b-9ee3-abb5eckil980', displayName: 'Incomplete' }
+}
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
