@@ -562,6 +562,7 @@ class validate {
 
   validateAndUpdateStatusService (request) {
     const isvalid = q.defer()
+    console.log('reqqqqqqqqqqqq', request, !request.secondLocalizationNewStatusId)
     const schema = {
       id: '/validateAndUpdateStatusService',
       type: 'object',
@@ -605,8 +606,69 @@ class validate {
         }
       }
     }
+    if (!request.firstLocalizationNewStatusId && request.secondLocalizationNewStatusId) {
+      schema.properties.firstLocalizationNewStatusId.type = [null, undefined]
+      schema.properties.firstLocalizationOldStatusId.type = [null, undefined]
+      schema.properties.firstLocalizationRejectionReason.type = [null, undefined]
+    }
+    if (!request.secondLocalizationNewStatusId && request.firstLocalizationNewStatusId) {
+      schema.properties.secondLocalizationNewStatusId.type = [null, undefined]
+      schema.properties.secondLocalizationOldStatusId.type = [null, undefined]
+      schema.properties.secondLocalizationRejectionReason.type = [null, undefined]
+    }
     const formatedError = []
     v.addSchema(schema, '/validateAndUpdateStatusService')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
+
+  compareAndUpdateStatusService (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/compareAndUpdateStatusService',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        templateIdArr: {
+          type: 'array',
+          required: true,
+          minItems: 1,
+          items: {
+            type: 'string'
+          }
+        },
+        serviceProviderId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabaNumber: {
+          type: 'string',
+          required: true,
+          minLength: 10,
+          maxLength: 12,
+          pattern: __constants.VALIDATOR.number
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/compareAndUpdateStatusService')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
