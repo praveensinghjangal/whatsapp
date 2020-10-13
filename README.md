@@ -1,4 +1,6 @@
-### Helo-Whatsapp Platform API
+
+![](https://helo.co.in/images/logo.png) WHATSAPP Platform API
+-------------
 #### To Run This Application Follow The Steps Below : 
 ```sh
 $ git clone http://git.vivaconnect.co/clientapps/helo-whatsapp-api.git
@@ -14,6 +16,7 @@ $ npm i
 ```sh
 $ npm run develop
 ```
+-------------
 #### Developement environment .env file :
 ```sh
 NODE_ENV = development
