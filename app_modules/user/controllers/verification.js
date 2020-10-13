@@ -258,7 +258,7 @@ const validateTFa = (req, res) => {
   let isTemp = false
   let dbData = {}
   if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string'] })
   }
   if (!req.body.code.match(__constants.VALIDATOR.number)) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
@@ -462,7 +462,7 @@ const validateTempTfaBs = reqBody => {
   let channelName = ''
   let dbData = {}
   if (!reqBody || !reqBody.code || typeof reqBody.code !== 'string') {
-    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string'] })
   }
   if (!reqBody.code.match(__constants.VALIDATOR.number)) {
     dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided is not valid'] })

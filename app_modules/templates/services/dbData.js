@@ -93,15 +93,14 @@ class TemplateService {
       buttonType: newData.buttonType || oldData.buttonType,
       buttonData: newData.buttonData || oldData.buttonData,
       createdBy: userId,
-      firstLocalizationStatus: __constants.TEMPLATE_DEFAULT_LANGUAGE_STATUS,
-      secondLocalizationStatus: oldData.buttonData
+      firstLocalizationStatus: ''
     }
-
+    templateData.firstLocalizationStatus = templateData.messageTemplateStatusId
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
 
     // Checks
     if (templateData.secondLanguageRequired) {
-      templateData.secondLocalizationStatus = __constants.TEMPLATE_DEFAULT_LANGUAGE_STATUS
+      templateData.secondLocalizationStatus = templateData.messageTemplateStatusId
     }
     // If Second Lang is not opted deleting the field related to it
     if (!templateData.secondLanguageRequired) {

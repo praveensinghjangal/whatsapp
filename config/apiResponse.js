@@ -390,5 +390,10 @@ module.exports = {
     status_code: 500,
     code: 3047,
     message: 'Some error occured'
+  },
+  CANNOT_CHANGE_STATUS: {
+    status_code: 200,
+    code: 3048,
+    message: 'Status cannot be changed'
   }
 }
