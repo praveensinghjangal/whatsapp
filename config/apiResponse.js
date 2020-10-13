@@ -395,5 +395,10 @@ module.exports = {
     status_code: 200,
     code: 3048,
     message: 'Status cannot be changed'
+  },
+  TEMPLATE_DELETED: {
+    status_code: 200,
+    code: 3048,
+    message: 'Template has already been deleted'
   }
 }
