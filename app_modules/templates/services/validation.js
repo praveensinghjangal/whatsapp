@@ -559,6 +559,67 @@ class validate {
     }
     return isvalid.promise
   }
+
+  validateAndUpdateStatusService (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/validateAndUpdateStatusService',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        templateId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        firstLocalizationNewStatusId: {
+          type: 'string',
+          required: !request.secondLocalizationNewStatusId,
+          minLength: 1
+        },
+        firstLocalizationOldStatusId: {
+          type: 'string',
+          required: !request.secondLocalizationNewStatusId,
+          minLength: 1
+        },
+        firstLocalizationRejectionReason: {
+          type: 'string',
+          required: request.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode,
+          minLength: 1
+        },
+        secondLocalizationNewStatusId: {
+          type: 'string',
+          required: !request.firstLocalizationNewStatusId,
+          minLength: 1
+        },
+        secondLocalizationOldStatusId: {
+          type: 'string',
+          required: !request.firstLocalizationNewStatusId,
+          minLength: 1
+        },
+        secondLocalizationRejectionReason: {
+          type: 'string',
+          required: request.secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/validateAndUpdateStatusService')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

@@ -34,7 +34,8 @@ const getTemplateInfo = () => {
     mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
     mt.first_localization_status as "firstLocalizationStatusId", mt.second_localization_status as "secondLocalizationStatusId",
     mtc.message_template_category_id as "messageTemplateCategoryId",mts.message_template_status_id as "messageTemplateStatusId",
-    mtl.message_template_language_id as "messageTemplateLanguageId",mtl2.message_template_language_id as "secondTemplateLanguageId"
+    mtl.message_template_language_id as "messageTemplateLanguageId",mtl2.message_template_language_id as "secondTemplateLanguageId",
+    mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason"
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
@@ -177,7 +178,8 @@ const getTemplateTableDataAndWabaId = () => {
   mt.second_message_template_language_id as "secondMessageTemplateLanguageId" ,mt.second_language_header_text as "secondLanguageHeaderText",
   mt.second_language_body_text as "secondLanguageBodyText",second_language_footer_text as "secondLanguageFooterText",
   mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
-  mt.first_localization_status as "firstLocalizationStatus",mt.second_localization_status as "secondLocalizationStatus"
+  mt.first_localization_status as "firstLocalizationStatus",mt.second_localization_status as "secondLocalizationStatus",
+  mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason"
   from waba_information wi
   left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true
   and mt.message_template_id = ?
@@ -206,6 +208,13 @@ const setTemplatesInRedisForWabaId = () => {
   where mt.is_active = true and wi.waba_information_id = ?`
 }
 
+const updateTemplateStatus = () => {
+  return `update message_template set message_template_status_id =?, first_localization_status =?,
+  first_localization_rejection_reason = ?, second_localization_status =?, second_localization_rejection_reason = ?,
+  updated_by =?, updated_on = now() 
+  where message_template_id =? and  waba_information_id =?`
+}
+
 module.exports = {
   getTemplateList,
   getTemplateInfo,
@@ -223,5 +232,6 @@ module.exports = {
   getSampleTemplateList,
   getSampleTemplateInfo,
   setAllTemplatesInRedis,
-  setTemplatesInRedisForWabaId
+  setTemplatesInRedisForWabaId,
+  updateTemplateStatus
 }
