@@ -406,6 +406,16 @@ module.exports = {
     code: 3047,
     message: 'Template Deletion already intiated'
   },
+  STATUS_MAPPING_NOT_FOUND: {
+    status_code: 500,
+    code: 3049,
+    message: 'Some error occured'
+  },
+  ALL_STATUS_NOT_UPDATED: {
+    status_code: 500,
+    code: 3050,
+    message: 'Some error occured'
+  },
   TEMPLATE_SENT_FOR_DELETION: {
     status_code: 204,
     code: 3051,

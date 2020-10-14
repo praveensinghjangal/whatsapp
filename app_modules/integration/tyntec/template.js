@@ -7,6 +7,22 @@ const RedisService = require('../../../lib/redis_service/redisService')
 const DataMapper = require('./dataMapper')
 const __logger = require('../../../lib/logger')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const getStatusMapping = require('../service/getStatusMapping')
+
+const mapStatusOfAllLocalization = localizationArray => {
+  let p = q()
+  const thePromises = []
+  localizationArray.forEach(singleObject => {
+    p = p.then(() => getStatusMapping(singleObject.status, __config.service_provider_id.tyntec))
+      .then(data => {
+        singleObject.messageTemplateStatusId = data.messageTemplateStatusId
+        return singleObject
+      })
+      .catch(err => err)
+    thePromises.push(p)
+  })
+  return q.all(thePromises)
+}
 
 class Template {
   constructor () {
@@ -85,6 +101,8 @@ class Template {
   getTemplateInfo (wabaNumber, templateId) {
     console.log(wabaNumber, templateId)
     const deferred = q.defer()
+    let isData = false
+    let tempData = {}
     if (wabaNumber && templateId) {
       const redisService = new RedisService()
       redisService.getWabaDataByPhoneNumber(wabaNumber)
@@ -100,8 +118,22 @@ class Template {
           }
           return this.http.Get(url, headers, data.serviceProviderId)
         })
-        .then((templateData) => {
+        .then(templateData => {
           __logger.info('integration :: get template info data', templateData)
+          if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {
+            isData = true
+            tempData = templateData
+            return mapStatusOfAllLocalization(templateData.localizations || [])
+          } else {
+            return templateData
+          }
+        })
+        .then(templateData => {
+          __logger.info('integration :: get template info data after mapping', templateData)
+          if (isData) {
+            tempData.localizations = templateData
+            templateData = tempData
+          }
           if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
           } else if (templateData && templateData.status === 404) {
