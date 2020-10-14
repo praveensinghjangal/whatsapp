@@ -9,6 +9,7 @@ const RuleEngine = require('../services/ruleEngine')
 const integrationService = require('../../integration/')
 const request = require('request')
 const q = require('q')
+const _ = require('lodash')
 
 /*
     param  -> tid
@@ -73,7 +74,7 @@ const sendTemplateForApproval = (req, res) => {
     check status =  requested
     if flag rejected then create input for status engine as (olfStatusId,newStatusID<rejected>,rejectReason)
     else if flag approved create input for status engine as (olfStatusId,newStatusID<submitted>)
-    call status engine (oldStatusID,newStatusId<requested>)
+    call update status(req)
     .then(updateStatusRes => {
       if status != submitted return true
       return rule engine (dbdata)
@@ -93,58 +94,84 @@ const sendTemplateForEvaluaion = (req, res) => {
     firstLocalizationNewStatusId: '',
     firstLocalizationOldStatusId: '',
     firstLocalizationRejectionReason: '',
-    secondLocalizationNewStatusId: '',
-    secondLocalizationOldStatusId: '',
-    secondLocalizationRejectionReason: '',
+    secondLocalizationNewStatusId: null,
+    secondLocalizationOldStatusId: null,
+    secondLocalizationRejectionReason: null,
     userId: req.user.user_id,
     messageTemplateId: req.params ? req.params.templateId : null
   }
   const templateService = new integrationService.Template(req.user.providerId)
-  const evaluationResponse = req.params.evaluationResponse
-  console.log('Evaluation Response', evaluationResponse)
-  if (evaluationResponse.toLowerCase() === __constants.TEMPLATE_STATUS.approved.displayName.toLowerCase()) {
-    reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.approved.statusCode
-    reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.approved.statusCode
-    reqBody.firstLocalizationOldStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
-    reqBody.secondLocalizationOldStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
+  const evaluationResponse = req.params ? req.params.evaluationResponse.toLowerCase() : ''
+
+  if (!__constants.SUPPORT_TICKET_STATUS.includes(evaluationResponse)) {
+    __util.send(res, { type: __constants.RESPONSE_MESSAGES.EVALUTAION_CANNOT_BE_PROCEDDED, data: {} })
+  } else {
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
+      .then(result => {
+        oldTemplateData = result
+        if (!oldTemplateData.length) {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, err: {}, data: {} })
+        }
+        if (oldTemplateData) {
+          oldTemplateData = oldTemplateData[0]
+          // Approved
+          if (__constants.SUPPORT_TICKET_STATUS[0] === evaluationResponse.toLowerCase()) {
+            reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
+            reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
+          }
+          // Second Translation Required and template is approved
+          if (__constants.SUPPORT_TICKET_STATUS[0] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
+            reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
+            reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
+          }
+          // Rejected
+          if (__constants.SUPPORT_TICKET_STATUS[1] === evaluationResponse.toLowerCase()) {
+            reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
+            reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
+            reqBody.firstLocalizationRejectionReason = req.body ? req.body.firstLocalizationRejectionReason : null
+          }
+          // Second Translation Required and template is rejected
+          if (__constants.SUPPORT_TICKET_STATUS[1] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
+            reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
+            reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
+            reqBody.secondLocalizationRejectionReason = req.body ? req.body.secondLocalizationRejectionReason : null
+          }
+          Object.keys(reqBody).forEach((key) => (reqBody[key] == null) && delete reqBody[key])
+
+          return updateTemplateStatus(reqBody, req.headers.authorization)
+        }
+      })
+      .then(updateStatusRes => {
+        // console.log('updateStatusRes', updateStatusRes)
+        // console.log('reqBody.firstLocalizationNewStatusId', reqBody.firstLocalizationNewStatusId)
+        // console.log('Comparison Reslt', reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode)
+        if (updateStatusRes.code !== 2000) {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: updateStatusRes.error, data: {} })
+        }
+        if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
+          return ruleEngine.addTemplate(oldTemplateData)
+        }
+        return true
+      })
+      .then(ruleEngineRes => {
+        // console.log('ruleEngineRes', ruleEngineRes)
+        // console.log('oldTemplateData>>>>>>>>>>>>.', oldTemplateData)
+        if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
+          return templateService.addTemplate(oldTemplateData, req.user.wabaPhoneNumber)
+        }
+        return true
+      })
+      .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
+      .catch(err => {
+        // if tyntec call is failed roll back status to requested
+        const tempUpdateBody = reqBody
+        tempUpdateBody.wabaInformationId = oldTemplateData.wabaInformationId
+        tempUpdateBody.secondLanguageRequired = oldTemplateData.secondLanguageRequired
+        updateTemplateStatusToComplete(tempUpdateBody.messageTemplateId, tempUpdateBody)
+        __logger.error('error sendTemplateForEvaluaion: ', err)
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR || err.type, err: err.err || {} })
+      })
   }
-  if (evaluationResponse.toLowerCase() === __constants.TEMPLATE_STATUS.rejected.displayName.toLowerCase()) {
-    reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
-    reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
-    reqBody.firstLocalizationOldStatusId = __constants.TEMPLATE_STATUS.requested.statusCode
-    reqBody.secondLocalizationOldStatusId = __constants.TEMPLATE_STATUS.requested.statusCode
-    reqBody.firstLocalizationRejectionReason = req.body ? req.body.firstLocalizationRejectionReason : ''
-    reqBody.secondLocalizationRejectionReason = req.body ? req.body.secondLocalizationRejectionReason : ''
-  }
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
-    .then(result => {
-      oldTemplateData = result
-      if (!oldTemplateData.length) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, err: {}, data: {} })
-      } else if (oldTemplateData) {
-        return updateTemplateStatus(reqBody, req.headers.authorization)
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please ensure that the template is in complete status '], data: {} })
-      }
-    })
-    .then(updateStatusRes => {
-      console.log('updateStatusRes', updateStatusRes)
-      if (updateStatusRes.code !== 2000) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: updateStatusRes.error, data: {} })
-      } else {
-        return ruleEngine.addTemplate(oldTemplateData[0])
-      }
-    })
-    .then(ruleEngineRes => {
-      console.log('ruleEngineRes', ruleEngineRes)
-      if (ruleEngineRes.code !== 2000) return true
-      return templateService.addTemplate(oldTemplateData[0])
-    })
-    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
-    .catch(err => {
-      __logger.error('error sendTemplateForApproval: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
-    })
 }
 
 const updateTemplateStatus = (reqBody, authToken) => {
@@ -168,4 +195,28 @@ const updateTemplateStatus = (reqBody, authToken) => {
   return apiCalled.promise
 }
 
+const updateTemplateStatusToComplete = (messageTemplateId, templateData) => {
+  if (messageTemplateId) {
+    const queryObj = {
+      messageTemplateStatusId: __constants.TEMPLATE_STATUS.complete.statusCode,
+      firstLocalizationStatus: __constants.TEMPLATE_STATUS.complete.statusCode,
+      firstLocalizationRejectionReason: templateData.firstLocalizationRejectionReason ? templateData.firstLocalizationRejectionReason : null,
+      secondLocalizationStatus: null,
+      secondLocalizationRejectionReason: null,
+      updatedBy: templateData.userId,
+      messageTemplateId: messageTemplateId,
+      wabaInformationId: templateData.wabaInformationId
+    }
+    if (templateData.secondLanguageRequired) {
+      queryObj.secondLocalizationStatus = __constants.TEMPLATE_STATUS.complete.statusCode
+      queryObj.secondLocalizationRejectionReason = templateData.secondLocalizationRejectionReason ? templateData.secondLocalizationRejectionReason : null
+    }
+    const queryParam = []
+    _.each(queryObj, val => queryParam.push(val))
+    __logger.info('validateAndUpdateStatus::update status query', queryParam)
+    return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplateStatus(), queryParam)
+  } else {
+    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_ID_NOT_EXISTS, data: {}, err: {} })
+  }
+}
 module.exports = { sendTemplateForApproval, sendTemplateForEvaluaion }

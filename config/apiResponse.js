@@ -430,5 +430,10 @@ module.exports = {
     status_code: 200,
     code: 3053,
     message: 'Template not found'
+  },
+  EVALUTAION_CANNOT_BE_PROCEDDED: {
+    status_code: 200,
+    code: 3053,
+    message: 'Evaluation cannot be proceeded as the approval or rejection from support person is not received.'
   }
 }
