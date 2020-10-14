@@ -254,6 +254,12 @@ const TEMPLATE_APPROVE_STATUS = TEMPLATE_STATUS.approved.statusCode
 const TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_STATUS.partiallyApproved.statusCode
 const TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_STATUS.incomplete.statusCode
 const TEMPLATE_DEFAULT_STATUS = TEMPLATE_STATUS.incomplete.statusCode
+const SCHEDULERS = {
+  UPDATE_STATUS: {
+    time: '00 58 11,12,23 * * *',
+    timeZone: 'Europe/Dublin'
+  }
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -301,3 +307,4 @@ module.exports.WA_ME_URL = WA_ME_URL
 module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME
 module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH
 module.exports.TEMPLATE_STATUS_MAPPING = TEMPLATE_STATUS_MAPPING
+module.exports.SCHEDULERS = SCHEDULERS
