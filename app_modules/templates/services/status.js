@@ -7,6 +7,7 @@ const queryProvider = require('../queryProvider')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const ValidatonService = require('../services/validation')
 const TemplateService = require('./dbData')
+const RedisService = require('../../../lib/redis_service/redisService')
 const integrationService = require('../../integration')
 
 class StatusService {
@@ -153,6 +154,8 @@ class StatusService {
       .then(valRes => this.processBulkStatusCompareAndChange(templateIdArr, serviceProviderId, wabaNumber, userId))
       .then(result => {
         __logger.info('compareAndUpdateStatus::After bulk process', { result })
+        const redisService = new RedisService()
+        redisService.setTemplatesInRedisForWabaPhoneNumber(wabaNumber.substring(2, wabaNumber.length))
         const invalidReq = _.filter(result, { valid: false })
         if (invalidReq.length > 0) {
           return comparedAndUpdated.reject({ type: __constants.RESPONSE_MESSAGES.ALL_STATUS_NOT_UPDATED, err: _.map(invalidReq, 'err') })
