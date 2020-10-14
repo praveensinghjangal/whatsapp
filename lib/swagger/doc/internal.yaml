@@ -6126,7 +6126,6 @@ definitions:
       apiKey:
         type: string
     required:
-<<<<<<< Updated upstream
     - apiKey
   validateOtpCodeRequest:
     title: validateOtpCodeRequest
@@ -6190,6 +6189,3 @@ definitions:
         type: string
     required:
     - tfaType
-=======
-      - apiKey
->>>>>>> Stashed changes

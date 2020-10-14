@@ -49,4 +49,15 @@ router.patch('/:templateId/status', authMiddleware.authenticate(authstrategy.jwt
 router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), deleteTemplateController.deleteTemplate)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
 
+router.delete('/:templateId', (req, res) => {
+  console.log('Delete Template Called', req.headers)
+  console.log('Delete Template Called', req.headers.wabaphonenumber)
+  console.log('Delete Template Called', req.headers.templateid)
+  const integrationService = require('../../app_modules/integration')
+  const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+  templateService.deleteTemplate(req.headers.wabaphonenumber, req.headers.templateid)
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
+})
+
 module.exports = router
