@@ -102,11 +102,8 @@ const validateEmailVerificationCode = (req, res) => {
 const validateSmsVerificationCode = (req, res) => {
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type integer'] })
-  }
-  if (!req.body.code.match(__constants.VALIDATOR.number)) {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
+  if (!req.body || !req.body.code || typeof req.body.code !== 'string' || !req.body.code.match(__constants.VALIDATOR.number)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string with only numeric characters'] })
   }
   verificationService.getCodeDetails(userId, req.body.code, __constants.VERIFICATION_CHANNEL.sms.name)
     .then(data => {
@@ -257,11 +254,8 @@ const validateTFa = (req, res) => {
   let backupData = {}
   let isTemp = false
   let dbData = {}
-  if (!req.body || !req.body.code || typeof req.body.code !== 'string') {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string'] })
-  }
-  if (!req.body.code.match(__constants.VALIDATOR.number)) {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided in not valid'] })
+  if (!req.body || !req.body.code || typeof req.body.code !== 'string' || !req.body.code.match(__constants.VALIDATOR.number)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string with only numeric characters'] })
   }
   if (!userId || userId === '0') {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
@@ -461,14 +455,13 @@ const validateTempTfaBs = reqBody => {
   const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
   let channelName = ''
   let dbData = {}
-  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'string') {
-    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string'] })
-  }
-  if (!reqBody.code.match(__constants.VALIDATOR.number)) {
-    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Code provided is not valid'] })
+  if (!reqBody || !reqBody.code || typeof reqBody.code !== 'string' || !reqBody.code.match(__constants.VALIDATOR.number)) {
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide code of type string with only numeric characters'] })
+    return dataAdded.promise
   }
   if (!userId || userId === '0') {
-    return dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
+    dataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, error: ['please provide userId of type string'] })
+    return dataAdded.promise
   }
   verificationService.getTfaData(userId)
     .then(data => {
