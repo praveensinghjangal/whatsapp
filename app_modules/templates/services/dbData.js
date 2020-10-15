@@ -235,6 +235,25 @@ class TemplateService {
       .catch(err => templateUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return templateUpdated.promise
   }
+
+  getTemplateInfo (userId, templateId) {
+    __logger.info('inside getTemplateInfo service')
+    const templateFetched = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [userId, templateId])
+      .then(result => {
+        __logger.info('getTemplateInfo ::>>>>>>>..', result)
+        if (result && result.length > 0) {
+          templateFetched.resolve(result[0])
+        } else {
+          templateFetched.reject({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateInfo function: ', err)
+        templateFetched.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateFetched.promise
+  }
 }
 
 module.exports = TemplateService

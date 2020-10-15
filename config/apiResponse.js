@@ -435,5 +435,10 @@ module.exports = {
     status_code: 200,
     code: 3053,
     message: 'Evaluation cannot be proceeded as the approval or rejection from support person is not received.'
+  },
+  TEMPLATE_STATUS_ROLLBACK: {
+    status_code: 200,
+    code: 3054,
+    message: 'Template status has been rolled over to previous state'
   }
 }

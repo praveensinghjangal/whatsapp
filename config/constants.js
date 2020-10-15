@@ -265,6 +265,16 @@ const SCHEDULERS = {
     timeZone: 'Europe/Dublin'
   }
 }
+const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
+  [TEMPLATE_STATUS.complete.statusCode]: TEMPLATE_STATUS.incomplete.statusCode,
+  [TEMPLATE_STATUS.requested.statusCode]: TEMPLATE_STATUS.complete.statusCode,
+  [TEMPLATE_STATUS.rejected.statusCode]: TEMPLATE_STATUS.complete.statusCode,
+  [TEMPLATE_STATUS.submitted.statusCode]: TEMPLATE_STATUS.requested.statusCode,
+  [TEMPLATE_STATUS.submitFailed.statusCode]: TEMPLATE_STATUS.submitted.statusCode,
+  [TEMPLATE_STATUS.pending.statusCode]: TEMPLATE_STATUS.submitted.statusCode,
+  [TEMPLATE_STATUS.approved.statusCode]: TEMPLATE_STATUS.pending.statusCode,
+  [TEMPLATE_STATUS.denied.statusCode]: TEMPLATE_STATUS.pending.statusCode
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -314,3 +324,4 @@ module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUT
 module.exports.TEMPLATE_STATUS_MAPPING = TEMPLATE_STATUS_MAPPING
 module.exports.SCHEDULERS = SCHEDULERS
 module.exports.TEMPLATE_EVALUATION_RESPONSE = TEMPLATE_EVALUATION_RESPONSE
+module.exports.TEMPLATE_ROLLBACK_STATUS_MAPPING = TEMPLATE_ROLLBACK_STATUS_MAPPING

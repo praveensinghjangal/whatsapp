@@ -169,6 +169,70 @@ class StatusService {
       })
     return comparedAndUpdated.promise
   }
+
+  rollBackStatusService (userId, templateId, rejectionReason) {
+    const statusChanged = q.defer()
+    const validate = new ValidatonService()
+    const templateService = new TemplateService()
+    let templateData
+    let validateBody
+    templateService.getTemplateInfo(userId, templateId)
+      .then(data => {
+        __logger.info('rollBackStatusService::>>>>>>template data>>>>>>>.', data)
+        templateData = data
+        validateBody = {
+          templateId,
+          firstLocalizationNewStatusId: data.firstLocalizationStatusId ? __constants.TEMPLATE_ROLLBACK_STATUS_MAPPING[data.firstLocalizationStatusId] : null,
+          firstLocalizationOldStatusId: data.firstLocalizationStatusId ? data.firstLocalizationStatusId : null,
+          firstLocalizationRejectionReason: data.firstLocalizationRejectionReason ? data.firstLocalizationRejectionReason : null
+        }
+        if (data.secondLanguageRequired) {
+          validateBody.secondLocalizationNewStatusId = data.secondLocalizationStatusId ? __constants.TEMPLATE_ROLLBACK_STATUS_MAPPING[data.secondLocalizationStatusId] : null
+          validateBody.secondLocalizationOldStatusId = data.secondLocalizationStatusId ? data.secondLocalizationStatusId : null
+          validateBody.secondLocalizationRejectionReason = data.secondLocalizationRejectionReason ? data.secondLocalizationRejectionReason : null
+        }
+        Object.keys(validateBody).forEach((key) => (validateBody[key] == null) && delete validateBody[key])
+        __logger.info('validateBody', validateBody)
+        return validate.validateAndUpdateStatusService(validateBody)
+      })
+      .then(validationRes => {
+        __logger.info('validationRes', validationRes)
+        if (templateData.messageTemplateId) {
+          const queryObj = {
+            messageTemplateStatusId: '',
+            firstLocalizationStatus: validateBody.firstLocalizationNewStatusId || templateData.firstLocalizationStatus,
+            firstLocalizationRejectionReason: validateBody.firstLocalizationRejectionReason ? validateBody.firstLocalizationRejectionReason : null,
+            secondLocalizationStatus: validateBody.secondLocalizationNewStatusId || templateData.secondLocalizationStatus,
+            secondLocalizationRejectionReason: validateBody.secondLocalizationRejectionReason ? validateBody.secondLocalizationRejectionReason : null,
+            updatedBy: userId,
+            messageTemplateId: templateId,
+            wabaInformationId: templateData.wabaInformationId
+          }
+          queryObj.messageTemplateStatusId = queryObj.firstLocalizationStatus
+          if (queryObj.firstLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode || queryObj.secondLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode) queryObj.templateStatus = __constants.TEMPLATE_STATUS.partiallyApproved.statusCode
+          if (queryObj.firstLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode && queryObj.secondLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode) queryObj.templateStatus = __constants.TEMPLATE_STATUS.approved.statusCode
+          const queryParam = []
+          _.each(queryObj, val => queryParam.push(val))
+          __logger.info('validateAndUpdateStatus::update status query', queryParam)
+          return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplateStatus(), queryParam)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_ID_NOT_EXISTS, data: {}, err: {} })
+        }
+      })
+      .then(result => {
+        __logger.info('updateTemplateStatus >>>>>>>>>>.', result)
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          statusChanged.resolve(true)
+        } else {
+          statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('validateAndUpdateStatus::error: ', err)
+        return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return statusChanged.promise
+  }
 }
 
 module.exports = StatusService
