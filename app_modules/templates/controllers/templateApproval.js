@@ -169,7 +169,7 @@ const sendTemplateForEvaluaion = (req, res) => {
         tempUpdateBody.secondLanguageRequired = oldTemplateData.secondLanguageRequired
         updateTemplateStatusToComplete(tempUpdateBody.messageTemplateId, tempUpdateBody)
         __logger.error('error sendTemplateForEvaluaion: ', err)
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR || err.type, err: err.err || {} })
+        return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
   }
 }

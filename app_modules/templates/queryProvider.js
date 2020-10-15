@@ -36,7 +36,7 @@ const getTemplateInfo = () => {
     mtc.message_template_category_id as "messageTemplateCategoryId",mts.message_template_status_id as "messageTemplateStatusId",
     mtl.message_template_language_id as "messageTemplateLanguageId",mtl2.message_template_language_id as "secondTemplateLanguageId",
     mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
-    mtl.language_code as "firstLangCode", mtl2.language_code as "secondLangCode"
+    mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
