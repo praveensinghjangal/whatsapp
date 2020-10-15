@@ -103,7 +103,7 @@ const sendTemplateForEvaluaion = (req, res) => {
   const templateService = new integrationService.Template(req.user.providerId)
   const evaluationResponse = req.params ? req.params.evaluationResponse.toLowerCase() : ''
 
-  if (!__constants.SUPPORT_TICKET_STATUS.includes(evaluationResponse)) {
+  if (!__constants.TEMPLATE_EVALUATION_RESPONSE.includes(evaluationResponse)) {
     __util.send(res, { type: __constants.RESPONSE_MESSAGES.EVALUTAION_CANNOT_BE_PROCEDDED, data: {} })
   } else {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId])
@@ -115,23 +115,23 @@ const sendTemplateForEvaluaion = (req, res) => {
         if (oldTemplateData) {
           oldTemplateData = oldTemplateData[0]
           // Approved
-          if (__constants.SUPPORT_TICKET_STATUS[0] === evaluationResponse.toLowerCase()) {
+          if (__constants.TEMPLATE_EVALUATION_RESPONSE[0] === evaluationResponse.toLowerCase()) {
             reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
             reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
           }
           // Second Translation Required and template is approved
-          if (__constants.SUPPORT_TICKET_STATUS[0] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
+          if (__constants.TEMPLATE_EVALUATION_RESPONSE[0] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
             reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
             reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
           }
           // Rejected
-          if (__constants.SUPPORT_TICKET_STATUS[1] === evaluationResponse.toLowerCase()) {
+          if (__constants.TEMPLATE_EVALUATION_RESPONSE[1] === evaluationResponse.toLowerCase()) {
             reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
             reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
             reqBody.firstLocalizationRejectionReason = req.body ? req.body.firstLocalizationRejectionReason : null
           }
           // Second Translation Required and template is rejected
-          if (__constants.SUPPORT_TICKET_STATUS[1] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
+          if (__constants.TEMPLATE_EVALUATION_RESPONSE[1] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
             reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
             reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
             reqBody.secondLocalizationRejectionReason = req.body ? req.body.secondLocalizationRejectionReason : null

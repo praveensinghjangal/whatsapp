@@ -1,5 +1,4 @@
-
-![](https://helo.co.in/images/logo.png) WHATSAPP Platform API
+![](https://stage-whatsapp.helo.ai/assets/img/logo.png) Platform API
 -------------
 #### To Run This Application Follow The Steps Below : 
 ```sh
