@@ -11,6 +11,7 @@ var MYSQL_QUERY = {
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
   PROD_ENV: 'production',
+  UAT_ENV: 'uat',
   STAG_ENV: 'staging',
   NOT_TO_UPDATE: '#$#NOT_TO_UPDATE#$#',
   ROW_STATUS: {
