@@ -167,7 +167,9 @@ const INTERNAL_END_POINTS = {
   sendOtpViaEmail: '/helowhatsapp/api/users/otp/email',
   sendOtpViaSms: '/helowhatsapp/api/users/otp/sms',
   redirectToWameUrl: '/helowhatsapp/api/audience/optin/url/redirect',
-  userLogin: '/helowhatsapp/api/users/auth/login'
+  userLogin: '/helowhatsapp/api/users/auth/login',
+  updateTemplateStatus: '/helowhatsapp/api/templates/'
+
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -206,7 +208,8 @@ const TYNTEC_ENDPOINTS = {
   getTemplateList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
   getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
   getAccountInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId',
-  updateProfilePic: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/logo'
+  updateProfilePic: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/logo',
+  deleteTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -254,6 +257,7 @@ const TEMPLATE_APPROVE_STATUS = TEMPLATE_STATUS.approved.statusCode
 const TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_STATUS.partiallyApproved.statusCode
 const TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_STATUS.incomplete.statusCode
 const TEMPLATE_DEFAULT_STATUS = TEMPLATE_STATUS.incomplete.statusCode
+const SUPPORT_TICKET_STATUS = ['approved', 'rejected']
 const SCHEDULERS = {
   UPDATE_STATUS: {
     time: '00 58 11,12,23 * * *',
@@ -308,3 +312,4 @@ module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME
 module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH
 module.exports.TEMPLATE_STATUS_MAPPING = TEMPLATE_STATUS_MAPPING
 module.exports.SCHEDULERS = SCHEDULERS
+module.exports.SUPPORT_TICKET_STATUS = SUPPORT_TICKET_STATUS

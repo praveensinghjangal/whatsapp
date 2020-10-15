@@ -24,6 +24,8 @@ class Template {
   getTemplateList (wabaNumber) { return this.template.getTemplateList(wabaNumber) }
 
   getTemplateInfo (wabaNumber, templateId) { return this.template.getTemplateInfo(wabaNumber, templateId) }
+
+  deleteTemplate (wabaNumber, templateId) { return this.template.deleteTemplate(wabaNumber, templateId) }
 }
 
 class WabaAccount {

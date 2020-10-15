@@ -71,7 +71,7 @@ const updateTemplate = () => {
 }
 
 const deleteTemplate = () => {
-  return `update message_template set is_active =FALSE 
+  return `update message_template set is_active =FALSE, message_template_status_id =?
   where message_template_id=? and is_active=true`
 }
 

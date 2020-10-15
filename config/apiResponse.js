@@ -396,6 +396,16 @@ module.exports = {
     code: 3048,
     message: 'Status cannot be changed'
   },
+  TEMPLATE_DELETED: {
+    status_code: 200,
+    code: 3048,
+    message: 'Template has already been deleted'
+  },
+  TEMPLATE_DELETE_INITIATED: {
+    status_code: 200,
+    code: 3047,
+    message: 'Template Deletion already intiated'
+  },
   STATUS_MAPPING_NOT_FOUND: {
     status_code: 500,
     code: 3049,
@@ -405,5 +415,25 @@ module.exports = {
     status_code: 500,
     code: 3050,
     message: 'Some error occured'
+  },
+  TEMPLATE_SENT_FOR_DELETION: {
+    status_code: 204,
+    code: 3051,
+    message: 'Template has been sent for deletion'
+  },
+  TEMPLATE_DELETION_ERROR: {
+    status_code: 404,
+    code: 3052,
+    message: 'Error ocurred while template deletion'
+  },
+  TEMPLATE_NOT_FOUND: {
+    status_code: 200,
+    code: 3053,
+    message: 'Template not found'
+  },
+  EVALUTAION_CANNOT_BE_PROCEDDED: {
+    status_code: 200,
+    code: 3053,
+    message: 'Evaluation cannot be proceeded as the approval or rejection from support person is not received.'
   }
 }

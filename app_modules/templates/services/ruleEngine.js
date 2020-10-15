@@ -171,7 +171,7 @@ class InternalClass {
   validHeaderType (td) {
     const valid = q.defer()
     const headerTypeArr = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
-    if (!td.headerType || !headerTypeArr.includes(td.headerType)) {
+    if (!td.headerType || !headerTypeArr.includes(td.headerType.toLowerCase())) {
       valid.reject('please provide a valid template header type of enum values: ' + headerTypeArr.join(', '))
       return valid.promise
     }
@@ -217,7 +217,7 @@ class InternalClass {
       return valid.promise
     }
     const typeArr = _.map(__constants.TEMPLATE_TYPE, json => json.templateType.toLowerCase())
-    if (!td.type || !typeArr.includes(td.type)) {
+    if (!td.type || !typeArr.includes(td.type.toLowerCase())) {
       valid.reject('please provide a valid template type of enum values: ' + typeArr.join(', '))
       return valid.promise
     }
@@ -251,6 +251,18 @@ class InternalClass {
       .catch(err => valid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err }))
     return valid.promise
   }
+
+  getTemplateCompletionStatus (templateData) {
+    const templateStatus = q.defer()
+    this.addTemplate(templateData)
+      .then((data) => {
+        templateStatus.resolve({ complete: true })
+      })
+      .catch(err => {
+        templateStatus.resolve({ complete: false, err: err })
+      })
+    return templateStatus.promise
+  }
 }
 
 module.exports = class RuleEngine {
@@ -259,4 +271,5 @@ module.exports = class RuleEngine {
   }
 
   addTemplate (templateDbData) { return this.internalClass.addTemplate(templateDbData) }
+  getTemplateCompletionStatus (templateDbData) { return this.internalClass.getTemplateCompletionStatus(templateDbData) }
 }

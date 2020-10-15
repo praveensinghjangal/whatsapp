@@ -102,6 +102,28 @@ class HttpRequest {
     })
     return deferred.promise
   }
+
+  Delete (url, headers, serviceProviderId) {
+    const deferred = q.defer()
+    const options = {
+      method: 'DELETE',
+      url: url,
+      timeout: this.timeInSeconds,
+      headers: headers,
+      json: true,
+      rejectUnauthorized: false
+    }
+    request(options, (error, response, body) => {
+      const url = options.url.split('/').slice(3).join('/')
+      saveApiLog(serviceProviderId, url, options, response)
+      if (error) {
+        deferred.reject(error)
+      } else {
+        deferred.resolve(body)
+      }
+    })
+    return deferred.promise
+  }
 }
 
 module.exports = HttpRequest

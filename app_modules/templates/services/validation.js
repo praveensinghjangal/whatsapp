@@ -562,7 +562,6 @@ class validate {
 
   validateAndUpdateStatusService (request) {
     const isvalid = q.defer()
-    console.log('reqqqqqqqqqqqq', request, !request.secondLocalizationNewStatusId)
     const schema = {
       id: '/validateAndUpdateStatusService',
       type: 'object',
@@ -610,12 +609,28 @@ class validate {
       schema.properties.firstLocalizationNewStatusId.type = [null, undefined]
       schema.properties.firstLocalizationOldStatusId.type = [null, undefined]
       schema.properties.firstLocalizationRejectionReason.type = [null, undefined]
+      delete schema.properties.secondLocalizationNewStatusId.minLength
+      delete schema.properties.secondLocalizationOldStatusId.minLength
+      delete schema.properties.secondLocalizationRejectionReason.minLength
     }
     if (!request.secondLocalizationNewStatusId && request.firstLocalizationNewStatusId) {
       schema.properties.secondLocalizationNewStatusId.type = [null, undefined]
       schema.properties.secondLocalizationOldStatusId.type = [null, undefined]
       schema.properties.secondLocalizationRejectionReason.type = [null, undefined]
+      delete schema.properties.firstLocalizationNewStatusId.minLength
+      delete schema.properties.firstLocalizationOldStatusId.minLength
+      delete schema.properties.firstLocalizationRejectionReason.minLength
     }
+
+    if (request.secondLocalizationNewStatusId && request.firstLocalizationNewStatusId) {
+      delete schema.properties.firstLocalizationNewStatusId.minLength
+      delete schema.properties.firstLocalizationOldStatusId.minLength
+      delete schema.properties.firstLocalizationRejectionReason.minLength
+      delete schema.properties.secondLocalizationNewStatusId.minLength
+      delete schema.properties.secondLocalizationOldStatusId.minLength
+      delete schema.properties.secondLocalizationRejectionReason.minLength
+    }
+
     const formatedError = []
     v.addSchema(schema, '/validateAndUpdateStatusService')
     const error = _.map(v.validate(request, schema).errors, 'stack')

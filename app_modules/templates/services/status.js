@@ -18,13 +18,13 @@ class StatusService {
   }
 
   validateAndUpdateStatus (templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason, userId) {
+    __logger.info('validateAndUpdateStatus::argumenst', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason })
     const statusChanged = q.defer()
     const validate = new ValidatonService()
     const templateService = new TemplateService()
-    console.log('heyyyyyyyyyyyyyyyyyyy', secondLocalizationNewStatusId)
     validate.validateAndUpdateStatusService({ templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason })
       .then(data => {
-        __logger.info('validateAndUpdateStatus::here to update sta  us', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason })
+        // __logger.info('validateAndUpdateStatus::here to update sta  us', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason , userId })
         if (firstLocalizationNewStatusId && this.canUpdateStatus(firstLocalizationNewStatusId, firstLocalizationOldStatusId)) {
           return templateService.getTemplateTableDataAndWabaId(templateId, userId)
         } else if (secondLocalizationNewStatusId && this.canUpdateStatus(secondLocalizationNewStatusId, secondLocalizationOldStatusId)) {
@@ -34,7 +34,7 @@ class StatusService {
         }
       })
       .then(templateData => {
-        __logger.info('validateAndUpdateStatus::dbData', { templateData })
+        // __logger.info('validateAndUpdateStatus::dbData', { templateData })
         if (templateData.messageTemplateId) {
           let flrr = templateData.firstLocalizationRejectionReason
           let slrr = templateData.secondLocalizationRejectionReason

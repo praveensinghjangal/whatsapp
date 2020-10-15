@@ -14,11 +14,11 @@ class TemplateService {
   }
 
   getTemplateTableDataAndWabaId (messageTemplateId, userId) {
-    __logger.info('inside get template by id service', messageTemplateId)
+    __logger.info('inside get template by id service', messageTemplateId, userId)
     const templateData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
-      // console.log('Qquery Result', results)
+        // console.log('Qquery Result', result)
         if (result && result.length > 0) {
           result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
           templateData.resolve(result[0])
