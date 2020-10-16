@@ -117,6 +117,13 @@ const getCodeData = () => {
   and is_active = true`
 }
 
+const getEmailAndFirstNameByUserId = () => {
+  return `select u.email, u.first_name 
+    from users u 
+    where u.user_id = ?
+    and u.is_active = true`
+}
+
 const setTokenConsumed = () => {
   return `update user_verification_code 
   set is_consumed = true, updated_by = ?, updated_on = now()
@@ -268,6 +275,7 @@ module.exports = {
   addVerificationCode,
   updateVerificationCode,
   getCodeData,
+  getEmailAndFirstNameByUserId,
   setTokenConsumed,
   markUserEmailVerified,
   markUserSmsVerified,

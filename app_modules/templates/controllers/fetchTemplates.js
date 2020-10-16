@@ -12,7 +12,8 @@ const ValidatonService = require('../services/validation')
 
 const getTemplateList = (req, res) => {
   __logger.info('Get Templates List API Called', req.query)
-
+  const statusService = new StatusService()
+  statusService.notify(req.user.user_id, '')
   const { messageTemplateStatusId } = req.query
   const params = [req.user.user_id]
 

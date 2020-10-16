@@ -1,13 +1,17 @@
 const q = require('q')
 const _ = require('lodash')
 const __db = require('../../../lib/db')
+const __config = require('../../../config')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const queryProvider = require('../queryProvider')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const ValidatonService = require('../services/validation')
 const TemplateService = require('./dbData')
+const UserService = require('../../user/services/dbData')
 const RedisService = require('../../../lib/redis_service/redisService')
+const emailTemplates = require('../../../lib/sendNotifications/emailTemplates')
+const EmailService = require('../../../lib/sendNotifications/email')
 const integrationService = require('../../integration')
 
 class StatusService {
@@ -232,6 +236,20 @@ class StatusService {
         return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return statusChanged.promise
+  }
+
+  notify (userId, templateStatus) {
+    const notificationSent = q.defer()
+    const userService = new UserService()
+    const emailService = new EmailService(__config.emailProvider)
+    userService.getEmailAndFirstNameFromUserId(userId)
+      .then(userData => emailService.sendEmail([userData.email], __config.emailProvider.subject.templateStatusUpdate, emailTemplates.templateStatusUpdate(templateStatus, userData.firstName)))
+      .then(data => notificationSent.resolve(data))
+      .catch(err => {
+        __logger.error('validateAndUpdateStatus::error: ', err)
+        return notificationSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return notificationSent.promise
   }
 }
 
