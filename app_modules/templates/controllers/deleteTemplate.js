@@ -9,7 +9,7 @@ const queryProvider = require('../queryProvider')
 const deleteTemplate = (req, res) => {
   __logger.info('Delete Template API Called', req.params)
   const wabaPhoneNumber = req.user ? req.user.wabaPhoneNumber : ''
-  const templateService = new integrationService.Template(req.user.serviceProviderId)
+  const templateService = new integrationService.Template(req.user.providerId)
 
   if (req.params && req.params.templateId) {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.deleteTemplate(), [__constants.TEMPLATE_STATUS.deleted.statusCode, req.params.templateId])
