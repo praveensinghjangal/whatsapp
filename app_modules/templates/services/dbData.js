@@ -14,11 +14,11 @@ class TemplateService {
   }
 
   getTemplateTableDataAndWabaId (messageTemplateId, userId) {
-    __logger.info('inside get template by id service', messageTemplateId)
+    __logger.info('inside get template by id service', messageTemplateId, userId)
     const templateData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
-      // console.log('Qquery Result', results)
+        // console.log('Qquery Result', result)
         if (result && result.length > 0) {
           result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
           templateData.resolve(result[0])
@@ -73,7 +73,7 @@ class TemplateService {
     __logger.info('Inserting new template')
     const dataInserted = q.defer()
     const templateData = {
-      messageTemplateId: oldData.messageTemplateId || this.uniqueId.uuid(),
+      messageTemplateId: oldData && oldData.messageTemplateId ? oldData.messageTemplateId : this.uniqueId.uuid().split('-').join('_'),
       wabaInformationId: oldData.wabaInformationId,
       templateName: newData.templateName || oldData.templateName,
       type: newData.type || oldData.type,
@@ -93,15 +93,14 @@ class TemplateService {
       buttonType: newData.buttonType || oldData.buttonType,
       buttonData: newData.buttonData || oldData.buttonData,
       createdBy: userId,
-      firstLocalizationStatus: __constants.TEMPLATE_DEFAULT_LANGUAGE_STATUS,
-      secondLocalizationStatus: oldData.buttonData
+      firstLocalizationStatus: ''
     }
-
+    templateData.firstLocalizationStatus = templateData.messageTemplateStatusId
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
 
     // Checks
     if (templateData.secondLanguageRequired) {
-      templateData.secondLocalizationStatus = __constants.TEMPLATE_DEFAULT_LANGUAGE_STATUS
+      templateData.secondLocalizationStatus = templateData.messageTemplateStatusId
     }
     // If Second Lang is not opted deleting the field related to it
     if (!templateData.secondLanguageRequired) {
@@ -235,6 +234,25 @@ class TemplateService {
       .then(data => templateUpdated.resolve(data))
       .catch(err => templateUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return templateUpdated.promise
+  }
+
+  getTemplateInfo (userId, templateId) {
+    __logger.info('inside getTemplateInfo service')
+    const templateFetched = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [userId, templateId])
+      .then(result => {
+        __logger.info('getTemplateInfo ::>>>>>>>..', result)
+        if (result && result.length > 0) {
+          templateFetched.resolve(result[0])
+        } else {
+          templateFetched.reject({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateInfo function: ', err)
+        templateFetched.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateFetched.promise
   }
 }
 

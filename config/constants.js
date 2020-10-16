@@ -86,19 +86,6 @@ const PLAN_CATEGORY = {
 }
 const RESET_PASSWORD_TOKEN_EXPIREY_TIME = 3600
 const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
-const TEMPLATE_STATUS = {
-  rejected: { statusCode: '1cc8cc1f-282a-4431-8618-43effb1ef7c0', displayName: 'Rejected' },
-  approved: { statusCode: '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9', displayName: 'Approved' },
-  requested: { statusCode: '3dd78583-9acd-42e8-b9f3-0413b3a339eb', displayName: 'Requested' },
-  submitFailed: { statusCode: '512155a0-9006-4a0d-89d0-b023d887bd9a', displayName: 'Submit-Failed' },
-  partiallyApproved: { statusCode: '588cff76-d6d1-49a3-8280-8c2c1d99bb81', displayName: 'Partially Approved' },
-  denied: { statusCode: '82889bf2-6142-4750-bca8-2e25ahsbvhsbhsbvh', displayName: 'Denied' },
-  deleted: { statusCode: '90789bf2-6142-4750-bca8-2e25a9a7e4aa', displayName: 'Deleted' },
-  pending: { statusCode: '9d2560a6-732e-4ac2-b1fa-47f89a28b6dd', displayName: 'Pending' },
-  submitted: { statusCode: 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1', displayName: 'Submitted' },
-  complete: { statusCode: 'c71a8387-80e0-468b-9ee3-abb5ec328176', displayName: 'Complete' },
-  incomplete: { statusCode: 'd11a8387-80e0-468b-9ee3-abb5eckil980', displayName: 'Incomplete' }
-}
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
@@ -134,11 +121,14 @@ const ENTITY_NAME = {
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
 }, {
-  templateHeaderType: 'Pdf'
+  templateHeaderType: 'Document'
 }, {
   templateHeaderType: 'Location'
 }, {
   templateHeaderType: 'Text'
+},
+{
+  templateHeaderType: 'Image'
 }]
 const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Call To Action'
@@ -159,7 +149,6 @@ const MQ = {
   delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
   delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
   retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
-
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5
@@ -179,7 +168,9 @@ const INTERNAL_END_POINTS = {
   sendOtpViaEmail: '/helowhatsapp/api/users/otp/email',
   sendOtpViaSms: '/helowhatsapp/api/users/otp/sms',
   redirectToWameUrl: '/helowhatsapp/api/audience/optin/url/redirect',
-  userLogin: '/helowhatsapp/api/users/auth/login'
+  userLogin: '/helowhatsapp/api/users/auth/login',
+  updateTemplateStatus: '/helowhatsapp/api/templates/'
+
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -201,7 +192,8 @@ const VALIDATOR = {
   phoneNumber: '^\\d{1,10}$',
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
-  timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$'
+  timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
+  aplphaNumericWithUnderscore: '^[a-z0-9_]+$'
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
@@ -211,17 +203,16 @@ const TAG = {
   insert: 'insert',
   update: 'update'
 }
-const TEMPLATE_DEFAULT_LANGUAGE_STATUS = 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1'
-const TEMPLATE_DEFAULT_STATUS = 'd11a8387-80e0-468b-9ee3-abb5eckil980'
 const TYNTEC_ENDPOINTS = {
   sendMessage: '/chat-api/v2/messages',
   addTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
   getTemplateList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates',
-  getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId'
+  getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
+  getAccountInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId',
+  updateProfilePic: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/logo',
+  deleteTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
-const TEMPLATE_APPROVE_STATUS = '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9'
-const TEMPLATE_PARTIAL_APPROVE_STATUS = '588cff76-d6d1-49a3-8280-8c2c1d99bb81'
 const ADMIN_PANNEL_ENDPOINTS = {
   adminPannelResetPassword: '/#/new-password'
 }
@@ -233,6 +224,56 @@ const TFA_TYPE_DISPLAYNAME = {
   [TFA_TYPE_ENUM[0]]: 'Phone Number',
   [TFA_TYPE_ENUM[1]]: 'Email Address',
   [TFA_TYPE_ENUM[2]]: 'Authenticator App'
+}
+const TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = {
+  singleButtonLength: 20,
+  arrayLength: 3
+}
+const TEMPLATE_STATUS = {
+  rejected: { statusCode: '1cc8cc1f-282a-4431-8618-43effb1ef7c0', displayName: 'Rejected' },
+  approved: { statusCode: '1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9', displayName: 'Approved' },
+  requested: { statusCode: '3dd78583-9acd-42e8-b9f3-0413b3a339eb', displayName: 'Requested' },
+  submitFailed: { statusCode: '512155a0-9006-4a0d-89d0-b023d887bd9a', displayName: 'Submit-Failed' },
+  partiallyApproved: { statusCode: '588cff76-d6d1-49a3-8280-8c2c1d99bb81', displayName: 'Partially Approved' },
+  denied: { statusCode: '27993dbb-e966-4f3a-a2b4-1adb28b05a8a', displayName: 'Denied' },
+  deleted: { statusCode: '90789bf2-6142-4750-bca8-2e25a9a7e4aa', displayName: 'Deleted' },
+  pending: { statusCode: '9d2560a6-732e-4ac2-b1fa-47f89a28b6dd', displayName: 'Pending' },
+  submitted: { statusCode: 'b4414c85-5f80-4e8d-98bc-44bbc05b14b1', displayName: 'Submitted' },
+  complete: { statusCode: 'c71a8387-80e0-468b-9ee3-abb5ec328176', displayName: 'Complete' },
+  incomplete: { statusCode: 'd11a8387-80e0-468b-9ee3-abb5eckil980', displayName: 'Incomplete' }
+}
+const TEMPLATE_STATUS_MAPPING = {
+  [TEMPLATE_STATUS.incomplete.statusCode]: [TEMPLATE_STATUS.complete.statusCode],
+  [TEMPLATE_STATUS.complete.statusCode]: [TEMPLATE_STATUS.requested.statusCode],
+  [TEMPLATE_STATUS.requested.statusCode]: [TEMPLATE_STATUS.rejected.statusCode, TEMPLATE_STATUS.submitted.statusCode],
+  [TEMPLATE_STATUS.rejected.statusCode]: [TEMPLATE_STATUS.complete.statusCode],
+  [TEMPLATE_STATUS.submitted.statusCode]: [TEMPLATE_STATUS.submitFailed.statusCode, TEMPLATE_STATUS.pending.statusCode, TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode],
+  [TEMPLATE_STATUS.submitFailed.statusCode]: [TEMPLATE_STATUS.submitted.statusCode],
+  [TEMPLATE_STATUS.pending.statusCode]: [TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode],
+  [TEMPLATE_STATUS.approved.statusCode]: [TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.denied.statusCode]: [TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.deleted.statusCode]: []
+}
+const TEMPLATE_APPROVE_STATUS = TEMPLATE_STATUS.approved.statusCode
+const TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_STATUS.partiallyApproved.statusCode
+const TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_STATUS.incomplete.statusCode
+const TEMPLATE_DEFAULT_STATUS = TEMPLATE_STATUS.incomplete.statusCode
+const TEMPLATE_EVALUATION_RESPONSE = ['approved', 'rejected']
+const SCHEDULERS = {
+  UPDATE_STATUS: {
+    time: '00 58 11,12,23 * * *',
+    timeZone: 'Europe/Dublin'
+  }
+}
+const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
+  [TEMPLATE_STATUS.complete.statusCode]: TEMPLATE_STATUS.incomplete.statusCode,
+  [TEMPLATE_STATUS.requested.statusCode]: TEMPLATE_STATUS.complete.statusCode,
+  [TEMPLATE_STATUS.rejected.statusCode]: TEMPLATE_STATUS.complete.statusCode,
+  [TEMPLATE_STATUS.submitted.statusCode]: TEMPLATE_STATUS.requested.statusCode,
+  [TEMPLATE_STATUS.submitFailed.statusCode]: TEMPLATE_STATUS.submitted.statusCode,
+  [TEMPLATE_STATUS.pending.statusCode]: TEMPLATE_STATUS.submitted.statusCode,
+  [TEMPLATE_STATUS.approved.statusCode]: TEMPLATE_STATUS.pending.statusCode,
+  [TEMPLATE_STATUS.denied.statusCode]: TEMPLATE_STATUS.pending.statusCode
 }
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
@@ -279,3 +320,8 @@ module.exports.TFA_BACKUP_CODES_AMOUNT = TFA_BACKUP_CODES_AMOUNT
 module.exports.TFA_AUTHENTICATOR_LABEL = TFA_AUTHENTICATOR_LABEL
 module.exports.WA_ME_URL = WA_ME_URL
 module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME
+module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH
+module.exports.TEMPLATE_STATUS_MAPPING = TEMPLATE_STATUS_MAPPING
+module.exports.SCHEDULERS = SCHEDULERS
+module.exports.TEMPLATE_EVALUATION_RESPONSE = TEMPLATE_EVALUATION_RESPONSE
+module.exports.TEMPLATE_ROLLBACK_STATUS_MAPPING = TEMPLATE_ROLLBACK_STATUS_MAPPING

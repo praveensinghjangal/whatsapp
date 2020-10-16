@@ -559,6 +559,144 @@ class validate {
     }
     return isvalid.promise
   }
+
+  validateAndUpdateStatusService (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/validateAndUpdateStatusService',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        templateId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        firstLocalizationNewStatusId: {
+          type: 'string',
+          required: !request.secondLocalizationNewStatusId,
+          minLength: 1
+        },
+        firstLocalizationOldStatusId: {
+          type: 'string',
+          required: !request.secondLocalizationNewStatusId,
+          minLength: 1
+        },
+        firstLocalizationRejectionReason: {
+          type: 'string',
+          required: request.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode,
+          minLength: 1
+        },
+        secondLocalizationNewStatusId: {
+          type: 'string',
+          required: !request.firstLocalizationNewStatusId,
+          minLength: 1
+        },
+        secondLocalizationOldStatusId: {
+          type: 'string',
+          required: !request.firstLocalizationNewStatusId,
+          minLength: 1
+        },
+        secondLocalizationRejectionReason: {
+          type: 'string',
+          required: request.secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode,
+          minLength: 1
+        }
+      }
+    }
+    if (!request.firstLocalizationNewStatusId && request.secondLocalizationNewStatusId) {
+      schema.properties.firstLocalizationNewStatusId.type = [null, undefined]
+      schema.properties.firstLocalizationOldStatusId.type = [null, undefined]
+      schema.properties.firstLocalizationRejectionReason.type = [null, undefined]
+      delete schema.properties.secondLocalizationNewStatusId.minLength
+      delete schema.properties.secondLocalizationOldStatusId.minLength
+      delete schema.properties.secondLocalizationRejectionReason.minLength
+    }
+    if (!request.secondLocalizationNewStatusId && request.firstLocalizationNewStatusId) {
+      schema.properties.secondLocalizationNewStatusId.type = [null, undefined]
+      schema.properties.secondLocalizationOldStatusId.type = [null, undefined]
+      schema.properties.secondLocalizationRejectionReason.type = [null, undefined]
+      delete schema.properties.firstLocalizationNewStatusId.minLength
+      delete schema.properties.firstLocalizationOldStatusId.minLength
+      delete schema.properties.firstLocalizationRejectionReason.minLength
+    }
+
+    if (request.secondLocalizationNewStatusId && request.firstLocalizationNewStatusId) {
+      delete schema.properties.firstLocalizationNewStatusId.minLength
+      delete schema.properties.firstLocalizationOldStatusId.minLength
+      delete schema.properties.firstLocalizationRejectionReason.minLength
+      delete schema.properties.secondLocalizationNewStatusId.minLength
+      delete schema.properties.secondLocalizationOldStatusId.minLength
+      delete schema.properties.secondLocalizationRejectionReason.minLength
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/validateAndUpdateStatusService')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
+
+  compareAndUpdateStatusService (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/compareAndUpdateStatusService',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        templateIdArr: {
+          type: 'array',
+          required: true,
+          minItems: 1,
+          items: {
+            type: 'string'
+          }
+        },
+        serviceProviderId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabaNumber: {
+          type: 'string',
+          required: true,
+          minLength: 10,
+          maxLength: 12,
+          pattern: __constants.VALIDATOR.number
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/compareAndUpdateStatusService')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

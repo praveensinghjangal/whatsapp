@@ -24,6 +24,19 @@ class Template {
   getTemplateList (wabaNumber) { return this.template.getTemplateList(wabaNumber) }
 
   getTemplateInfo (wabaNumber, templateId) { return this.template.getTemplateInfo(wabaNumber, templateId) }
+
+  deleteTemplate (wabaNumber, templateId) { return this.template.deleteTemplate(wabaNumber, templateId) }
 }
 
-module.exports = { Messaage, Template }
+class WabaAccount {
+  constructor (providerId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.wabaAccount = new providers[this.providerName].WabaAccount()
+  }
+
+  getAccountInfo (wabaNumber) { return this.wabaAccount.getAccountInfo(wabaNumber) }
+
+  updateProfilePic (wabaNumber, profilePic) { return this.wabaAccount.updateProfilePic(wabaNumber, profilePic) }
+}
+
+module.exports = { Messaage, Template, WabaAccount }

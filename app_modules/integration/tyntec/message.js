@@ -2,7 +2,7 @@ const q = require('q')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const tyntectConfig = __config.integration.tyntec
-const saveApiLog = require('../service/saveApiLog')
+const saveMessageApiLog = require('../service/saveMessageApiLog')
 const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
 
@@ -32,7 +32,7 @@ class Message {
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
-        saveApiLog(payload.messageId, apiRes.messageId, spId, 'sendMessage', reqObj, apiRes, payload.to)
+        saveMessageApiLog(payload.messageId, apiRes.messageId, spId, 'sendMessage', reqObj, apiRes, payload.to)
         if (apiRes.messageId) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes })
         } else {
