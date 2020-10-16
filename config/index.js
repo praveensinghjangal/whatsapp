@@ -266,5 +266,11 @@ module.exports = {
   authTokens: process.env.AUTH_TOKENS.split(',') || [],
   chatAppUrl: process.env.CHAT_APP_URL,
   chatAppToken: process.env.CHAT_APP_TOKEN,
-  adminPannelBaseUrl: process.env.ADMIN_PANNEL_BASE_URL
+  adminPannelBaseUrl: process.env.ADMIN_PANNEL_BASE_URL,
+  schedulers: {
+    updateTemplateStatus: {
+      time: process.env.SCHEDULERS_UPDATE_TEMPLATE_STATUS_TIME,
+      timeZone: process.env.SCHEDULERS_UPDATE_TEMPLATE_STATUS_TIMEZONE
+    }
+  }
 }

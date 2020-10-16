@@ -1,21 +1,21 @@
 var cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
-const __constants = require('../../config/constants')
+const __config = require('../../config')
 const fetchAndUpdateTemplateStatus = require('../../app_modules/integration/schedulers/fetchAndUpdateTemplateStatus')
 
 class FetchAndUpdateTemplateStatus {
   startServer () {
     __db.init()
       .then(result => {
-        var task = cron.schedule(__constants.SCHEDULERS.UPDATE_STATUS.time, () => {
+        var task = cron.schedule(__config.schedulers.updateTemplateStatus.time, () => {
           fetchAndUpdateTemplateStatus()
             .then(data => __logger.info('SCHEDULER::udateTicketStatus::FINISHED ==================>', data)
             )
             .catch(err => __logger.info('SCHEDULER::udateTicketStatus::FINISHED WITH ERROR ==================>', err))
         }, {
           scheduled: true,
-          timezone: __constants.SCHEDULERS.UPDATE_STATUS.timeZone
+          timezone: __config.schedulers.updateTemplateStatus.timeZone
         })
         task.start()
       })
