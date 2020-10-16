@@ -39,9 +39,11 @@ class StatusService {
           let flrr = templateData.firstLocalizationRejectionReason
           let slrr = templateData.secondLocalizationRejectionReason
           if (firstLocalizationNewStatusId && firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode) flrr = firstLocalizationRejectionReason
-          if (firstLocalizationNewStatusId && firstLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode) flrr = null
+          if (firstLocalizationNewStatusId && firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.denied.statusCode) flrr = firstLocalizationRejectionReason
+          if (firstLocalizationNewStatusId && firstLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode && firstLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.denied.statusCode) flrr = null
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode) slrr = secondLocalizationRejectionReason
-          if (secondLocalizationNewStatusId && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode) slrr = null
+          if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.denied.statusCode) slrr = secondLocalizationRejectionReason
+          if (secondLocalizationNewStatusId && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.denied.statusCode) slrr = null
           const queryObj = {
             templateStatus: '',
             firstLocalizationStatus: firstLocalizationNewStatusId || templateData.firstLocalizationStatus,
