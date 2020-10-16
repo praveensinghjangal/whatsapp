@@ -15,6 +15,7 @@ const addUpdateTemplates = (req, res) => {
   let messageTemplateId = ''
   let wabaInformationId = ''
   let oldStatus = ''
+  let secondLangRequired = false
   validate.addUpdateTemplate(req.body)
     .then(data => templateService.getTemplateTableDataAndWabaId(req.body.messageTemplateId, req.user.user_id))
     .then(wabaAndTemplateData => {
@@ -34,13 +35,14 @@ const addUpdateTemplates = (req, res) => {
       messageTemplateId = data.messageTemplateId
       wabaInformationId = data.wabaInformationId
       oldStatus = data.messageTemplateStatusId
+      secondLangRequired = data.secondLanguageRequired || false
       return ruleEngine.checkAddTemplateRulesByTemplateId(data.messageTemplateId, req.user.user_id)
     })
     .then(validationData => {
       __logger.info('add update template:: rule checked', validationData)
       if (!validationData.complete) return false
       const statusService = new StatusService()
-      return statusService.changeStatusToComplete(messageTemplateId, oldStatus, req.user.user_id, wabaInformationId)
+      return statusService.changeStatusToComplete(messageTemplateId, oldStatus, req.user.user_id, wabaInformationId, secondLangRequired)
     })
     .then(statusChanged => {
       __logger.info('add update template:: status marked as completed', statusChanged)

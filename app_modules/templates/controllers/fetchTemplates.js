@@ -48,7 +48,7 @@ const getTemplateInfo = (req, res) => {
   // __logger.info('Get Templates Info API Called', req.user.user_id)
   const validate = new ValidatonService()
   let finalResult
-  compareAndUpdateStatus([req.params.templateId], req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id)
+  compareAndUpdateStatus(req.params.templateId, req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id)
     .then(statusUpdated => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
     .then(result => {
       // __logger.info('then 1',result)
