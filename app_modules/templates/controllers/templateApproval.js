@@ -57,9 +57,9 @@ const sendTemplateForApproval = (req, res) => {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please ensure that the template is in complete status '], data: {} })
       }
     })
-    .then((data) => {
-      __logger.info('Rule Engine Result', data)
-      if (data.complete) {
+    .then((ruleEngineResponse) => {
+      __logger.info('Rule Engine Result', ruleEngineResponse)
+      if (ruleEngineResponse.complete) {
         const reqBody = {
           firstLocalizationNewStatusId: __constants.TEMPLATE_STATUS.requested.statusCode,
           firstLocalizationOldStatusId: oldTemplateData ? oldTemplateData.firstLocalizationStatusId : __constants.TEMPLATE_STATUS.complete.statusCode,
@@ -72,12 +72,12 @@ const sendTemplateForApproval = (req, res) => {
         }
         return updateTemplateStatus(reqBody, req.headers.authorization)
       } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: data.err, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ruleEngineResponse.err, data: ruleEngineResponse })
       }
     })
     .then(data => {
       __logger.info('updateTemplateStatus result', data)
-      __util.send(res, data)
+      res.send(data)
     })
     .catch(err => {
       __logger.error('error sendTemplateForApproval: ', err)

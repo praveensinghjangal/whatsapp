@@ -10,6 +10,15 @@ const StatusService = require('../services/status')
 // Services
 const ValidatonService = require('../services/validation')
 
+const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId) => {
+  const statusUpdated = q.defer()
+  const statusService = new StatusService()
+  statusService.compareAndUpdateStatus([templateId], providerId, wabaPhoneNumber, userId)
+    .then(data => statusUpdated.resolve(data))
+    .catch(err => statusUpdated.resolve(err))
+  return statusUpdated.promise
+}
+
 const getTemplateList = (req, res) => {
   __logger.info('Get Templates List API Called', req.query)
 
@@ -39,9 +48,8 @@ const getTemplateInfo = (req, res) => {
   // __logger.info('Get Templates Info API Called', req.user.user_id)
   const validate = new ValidatonService()
   let finalResult
-  const statusService = new StatusService()
-  statusService.compareAndUpdateStatus([req.params.templateId], req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id)
-    .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
+  compareAndUpdateStatus([req.params.templateId], req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id)
+    .then(statusUpdated => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
     .then(result => {
       // __logger.info('then 1',result)
       // console.log('then 1', result, result[0].buttonData, typeof result[0].buttonData)

@@ -2,6 +2,7 @@ const q = require('q')
 const _ = require('lodash')
 const __constants = require('../../../config/constants')
 const url = require('../../../lib/util/url')
+const TemplateService = require('./dbData')
 
 class InternalClass {
   quickReplyButtonValid (td) {
@@ -171,7 +172,7 @@ class InternalClass {
   validHeaderType (td) {
     const valid = q.defer()
     const headerTypeArr = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
-    if (!td.headerType || !headerTypeArr.includes(td.headerType.toLowerCase())) {
+    if (td.headerType && !headerTypeArr.includes(td.headerType.toLowerCase())) {
       valid.reject('please provide a valid template header type of enum values: ' + headerTypeArr.join(', '))
       return valid.promise
     }
@@ -251,18 +252,6 @@ class InternalClass {
       .catch(err => valid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err }))
     return valid.promise
   }
-
-  getTemplateCompletionStatus (templateData) {
-    const templateStatus = q.defer()
-    this.addTemplate(templateData)
-      .then((data) => {
-        templateStatus.resolve({ complete: true })
-      })
-      .catch(err => {
-        templateStatus.resolve({ complete: false, err: err })
-      })
-    return templateStatus.promise
-  }
 }
 
 module.exports = class RuleEngine {
@@ -271,5 +260,26 @@ module.exports = class RuleEngine {
   }
 
   addTemplate (templateDbData) { return this.internalClass.addTemplate(templateDbData) }
-  getTemplateCompletionStatus (templateDbData) { return this.internalClass.getTemplateCompletionStatus(templateDbData) }
+
+  getTemplateCompletionStatus (templateDbData) {
+    const templateStatus = q.defer()
+    this.addTemplate(templateDbData)
+      .then((data) => {
+        templateStatus.resolve({ complete: true })
+      })
+      .catch(err => {
+        templateStatus.resolve({ complete: false, err: err })
+      })
+    return templateStatus.promise
+  }
+
+  checkAddTemplateRulesByTemplateId (templateId, userId) {
+    const rulePassed = q.defer()
+    const templateService = new TemplateService()
+    templateService.getTemplateInfo(userId, templateId)
+      .then(templateData => this.getTemplateCompletionStatus(templateData))
+      .then(data => rulePassed.resolve(data))
+      .catch(err => rulePassed.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return rulePassed.promise
+  }
 }

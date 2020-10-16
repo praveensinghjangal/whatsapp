@@ -233,6 +233,28 @@ class StatusService {
       })
     return statusChanged.promise
   }
+
+  changeStatusToComplete (templateId, oldStatusId, userId, wabaInformationId) {
+    __logger.info('changeStatusToComplete::', { templateId, oldStatusId })
+    const statusChanged = q.defer()
+    if (!this.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, oldStatusId)) {
+      statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_CHANGE_STATUS, err: { details: 'cannot change to a complete status from this current status' } })
+      return statusChanged.promise
+    }
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplateStatus(), [__constants.TEMPLATE_STATUS.complete.statusCode, __constants.TEMPLATE_STATUS.complete.statusCode, null, __constants.TEMPLATE_STATUS.complete.statusCode, null, userId, templateId, wabaInformationId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          statusChanged.resolve(true)
+        } else {
+          statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('changeStatusToComplete::error: ', err)
+        return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return statusChanged.promise
+  }
 }
 
 module.exports = StatusService
