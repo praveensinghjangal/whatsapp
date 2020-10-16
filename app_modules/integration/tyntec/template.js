@@ -189,7 +189,7 @@ class Template {
         })
         .then((templateData) => {
           console.log('templateData', templateData)
-          if (templateData.status === 404) {
+          if (templateData && templateData.status === 404) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
           } else {
             return deferred.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_SENT_FOR_DELETION, data: {} })
