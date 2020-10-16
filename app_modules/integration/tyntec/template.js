@@ -164,16 +164,15 @@ class Template {
           let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getTemplateInfo
           url = url.split(':accountId').join(data.userAccountIdByProvider || '').split(':templateId').join(templateId || '')
           // console.log('URL====', url)
-          const headers = {
+          headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
             apikey: data.apiKey
           }
-          return this.http.Get(url, headers)
+          return this.http.Get(url, headers, redisData.serviceProviderId)
         })
         .then(result => {
           console.log('Template Search Result', result)
-          result.status = 200
           if (result.status === 404) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
           } else {
