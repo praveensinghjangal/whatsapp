@@ -26,7 +26,7 @@ const deleteTemplate = (req, res) => {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
       })
       .catch(err => {
-        __logger.error('error in create user function: ', err)
+        __logger.error('error in delete template: ', err)
         return __util.send(res, { type: err.type, err: err.err })
       })
   } else {

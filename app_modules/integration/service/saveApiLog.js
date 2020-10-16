@@ -50,7 +50,7 @@ const validateInput = input => {
   return isvalid.promise
 }
 
-module.exports = (serviceProviderId, apiName, request, response) => {
+module.exports = (serviceProviderId, apiName, request, response = { actualResponse: 'null or undefined' }) => {
   __logger.info('ssssss', apiName.includes('chat-api/v2/messages'))
   const historyStored = q.defer()
   if (apiName.includes('chat-api/v2/messages') === false) {
