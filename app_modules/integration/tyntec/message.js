@@ -5,6 +5,7 @@ const tyntectConfig = __config.integration.tyntec
 const saveMessageApiLog = require('../service/saveMessageApiLog')
 const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
+const logger = require('../../../lib/logger')
 
 class Message {
   constructor () {
@@ -20,7 +21,7 @@ class Message {
 
     redisService.getWabaDataByPhoneNumber(payload.whatsapp.from)
       .then(data => {
-        // console.log('dataatatatat', data, typeof data)
+        logger.info('called to send message', reqObj)
         spId = data.serviceProviderId
         const headers = {
           'Content-Type': 'application/json',
@@ -28,10 +29,12 @@ class Message {
           apikey: data.apiKey
         }
         reqObj = { headers, payload }
+        logger.info('tyntec send message api request', reqObj)
         return this.http.Post(payload, 'body', tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.sendMessage, headers)
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
+        logger.info('tyntec send message api response', apiRes)
         saveMessageApiLog(payload.messageId, apiRes.messageId, spId, 'sendMessage', reqObj, apiRes, payload.to)
         if (apiRes.messageId) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes })
