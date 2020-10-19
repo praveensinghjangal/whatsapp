@@ -21,7 +21,7 @@ class Message {
 
     redisService.getWabaDataByPhoneNumber(payload.whatsapp.from)
       .then(data => {
-        logger.info('called to send message', reqObj)
+        logger.info('called to send message', payload)
         spId = data.serviceProviderId
         const headers = {
           'Content-Type': 'application/json',
@@ -30,7 +30,7 @@ class Message {
         }
         reqObj = { headers, payload }
         logger.info('tyntec send message api request', reqObj)
-        return this.http.Post(payload, 'body', tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.sendMessage, headers)
+        return this.http.Post(payload, 'body', tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.sendMessage, headers, spId)
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes

@@ -41,7 +41,7 @@ class RedirectService {
           Accept: 'application/json'
         }
         if (data && data.webhookPostUrl && url.isValid(data.webhookPostUrl)) {
-          return http.Post(validPayload, 'body', data.webhookPostUrl, headers)
+          return http.Post(validPayload, 'body', data.webhookPostUrl, headers, data.serviceProviderId)
         } else {
           return { notRedirected: true, type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: null }
         }
@@ -84,7 +84,7 @@ class RedirectService {
         Accept: 'application/json',
         Authorization: __config.chatAppToken
       }
-      http.Post(payload, 'body', apiUrl, headers)
+      http.Post(payload, 'body', apiUrl, headers, redisData.serviceProviderId)
         .then(apiRes => {
           // __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode, apiRes.body)
           if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
