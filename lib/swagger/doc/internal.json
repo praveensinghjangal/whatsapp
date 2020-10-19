@@ -5565,6 +5565,136 @@
             "security": []
          }
       },
+      "/templates/count": {
+         "get": {
+            "description": "This api returns templates count",
+            "summary": "Get template count",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "getTemplateCount",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "This api returns templates count",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+                         "statusCount":[
+                           {
+                              "statusName": "Rejected",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Approved",
+                              "templateCount": 0
+                           },                  
+                           {
+                              "statusName": "Requested",
+                              "templateCount": 0
+                           },                                 
+                           {
+                              "statusName": "Submit-Failed",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Partially Approved",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Denied",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Deleted",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Pending",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Submitted",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Complete",
+                              "templateCount": 0
+                           },
+                           {
+                              "statusName": "Incomplete",
+                              "templateCount": 0
+                           }
+                        ],
+                        "allocatedTemplateCount":0,
+                        "usedTemplateCount":0,                        
+                      }
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
       "/templates/{templateId}": {
          "get": {
             "summary": "Get template Info",
@@ -5804,6 +5934,484 @@
             "security": []
          }         
       },
+      "/templates/{templateId}/status": {
+         "patch": {
+            "summary": "API to update template status",
+            "description": "API to template status",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "updateTemplateStatus",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Internal Auth Token"
+               },
+               {
+                  "name": "templateId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Id of Template"
+               },                 
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/UpdateTemplateStatusRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "verification success message",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                       {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {},
+                        "error": null
+                     },
+                     {
+                        "code": 3048,
+                        "msg": "Status cannot be changed",
+                        "data": null,
+                        "error": { 
+                          "details": 'cannot change to a new requested status from this current status' 
+                        }
+                     }                        
+                       ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": [
+                       {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request"
+                        ]
+                       },
+                       {
+                        "code": 3026,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "TemplateId does not exist for this waba number"
+                        ]
+                       }                        
+                      ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "example": [
+                        "Unauthorized",
+                        {
+                           "code": 3017,
+                           "msg": "Invalid verification code",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }       
+      },
+      "/templates/{templateId}/submit": {
+         "post": {
+            "description": "API to send template for approval",
+            "summary": "API to send template for approval",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "sendTemplateForApproval",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "templateId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Id of Template"
+               }                
+            ],
+            "responses": {
+               "200": {
+                  "description": "API to send template for approval",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {},
+                           "error":null
+                        },
+                        {
+                          "code": 3053,
+                          "msg": "Template not found",
+                          "data": null,
+                          "error": {}
+                        }                        
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here",
+                           "Please ensure that the template is in complete status"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }     
+      },        
+      "/templates/{templateId}/submit/{evaluationResult}": {
+         "patch": {
+            "summary": "API to evaluate template",
+            "description": "API to evaluate template",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "sendTemplateForEvaluaion",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Internal Auth Token"
+               },
+               {
+                  "name": "templateId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Id of Template"
+               },
+              {
+                  "name": "evaluationResult",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Evaluation Result of Template"
+              }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Template evaluation message",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                         {
+                          "code": 2000,
+                          "msg": "Success",
+                          "data": {},
+                          "error": null
+                       },
+                       {
+                          "code": 3053,
+                          "msg": "Evaluation cannot be proceeded as the approval or rejection from support person is not received.",
+                          "data": null,
+                          "error": {}
+                       }                        
+                    ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": [
+                       {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "Invalid request",
+                           "invalid body error here",
+                           "please provide valid template name with only aplha numeric character in lowercase and underscore",
+                           "please provide a valid template type of enum values: Standard Message Template , Media Message Template",
+                           "Template category not selected",
+                           "Template language not selected",
+                           "please provide a body for primary language",
+                           "Both of the template language cannot be same",
+                           "please provide a valid template header type of enum values: Video, Document, Location, Text, Image",
+                           "please provide header text for header type text",
+                           "please provide a body for secondry language",
+                           "please provide second language header text for header type text",
+                           "Variable in both language header text does not match",
+                           "please provide second language footer type",
+                           "Variable not allowed in footer",
+                           "Variable not allowed in second language footer",
+                           "Variable in both language body does not match",
+                           "please provide button data of type json",
+                           "please provide website button text",
+                           "please provide website button text for second language",
+                           "please provide phone button text",
+                           "please provide phone button text for second language",
+                           "please provide valid web URL",
+                           "please provide valid phone number",
+                           "please provide quick reply text",
+                           "please provide quick reply text of type array",
+                           "please provide atleast one quick reply text",
+                           "quick reply buttons limit of 3 exeeded",
+                           "quick reply button data invalid, please makle sure it is string with maximum length of 20",
+                           "please provide quick reply text for second language",
+                           "please provide second language quick reply text of type array",
+                           "please provide the same amount of second language quick reply text as there in quick reply text",
+                           "second language quick reply buttons limit of 3 exeeded",
+                           "econd language quick reply button data invalid, please makle sure it is string with maximum length of 20",
+                           "both language quick reply buttons are not equal"                           
+                        ]
+                       },
+                       {
+                        "code": 3026,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "TemplateId does not exist for this waba number"
+                        ]
+                       }                        
+                      ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "example": [
+                        "Unauthorized",
+                        {
+                           "code": 3017,
+                           "msg": "Invalid verification code",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }       
+      },      
       "/templates/languages": {
          "get": {
             "description": "API to get list of languages available with helo-whatsapp",
@@ -6281,6 +6889,34 @@
                      ]
                   }
                },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },               
                "401": {
                   "description": "Invalid token in header",
                   "headers": {},
@@ -6515,6 +7151,182 @@
             "security": []
          }
       },
+      "/templates/{templateId}/validate": {
+         "get": {
+            "summary": "Check validation of the template",
+            "description": "Use this API to check template validation",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "templateId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Id of Template"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns info of a template",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                             "valid":true,
+                             "details":[
+                                 "please provide valid template name with only aplha numeric character in lowercase and underscore",
+                                 "please provide a valid template type of enum values: Standard Message Template , Media Message Template",
+                                 "Template category not selected",
+                                 "Template language not selected",
+                                 "please provide a body for primary language",
+                                 "Both of the template language cannot be same",
+                                 "please provide a valid template header type of enum values: Video, Document, Location, Text, Image",
+                                 "please provide header text for header type text",
+                                 "please provide a body for secondry language",
+                                 "please provide second language header text for header type text",
+                                 "Variable in both language header text does not match",
+                                 "please provide second language footer type",
+                                 "Variable not allowed in footer",
+                                 "Variable not allowed in second language footer",
+                                 "Variable in both language body does not match",
+                                 "please provide button data of type json",
+                                 "please provide website button text",
+                                 "please provide website button text for second language",
+                                 "please provide phone button text",
+                                 "please provide phone button text for second language",
+                                 "please provide valid web URL",
+                                 "please provide valid phone number",
+                                 "please provide quick reply text",
+                                 "please provide quick reply text of type array",
+                                 "please provide atleast one quick reply text",
+                                 "quick reply buttons limit of 3 exeeded",
+                                 "quick reply button data invalid, please makle sure it is string with maximum length of 20",
+                                 "please provide quick reply text for second language",
+                                 "please provide second language quick reply text of type array",
+                                 "please provide the same amount of second language quick reply text as there in quick reply text",
+                                 "second language quick reply buttons limit of 3 exeeded",
+                                 "econd language quick reply button data invalid, please makle sure it is string with maximum length of 20",
+                                 "both language quick reply buttons are not equal"                               
+                               ]
+                           },
+                           "error": {}
+                        },                       
+                        {
+                           "code": 3053,
+                           "msg": "Template not found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },                
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
       "/audience": {
          "get": {
             "isPublic": true,
@@ -9315,6 +10127,42 @@
             }
          }
       },
+      "UpdateTemplateStatusRequest": {
+         "title": "updateTemplateStatusRequest",
+         "example": {
+            "firstLocalizationNewStatusId": "c71a8387-80e0-468b-9ee3-abb5ec328176",
+            "firstLocalizationOldStatusId": "1cc8cc1f-282a-4431-8618-43effb1ef7c0",
+            "secondLocalizationNewStatusId": "1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9",
+            "secondLocalizationOldStatusId": "b4414c85-5f80-4e8d-98bc-44bbc05b14b1",
+            "firstLocalizationRejectionReason": "MARKETING STUFF",
+            "secondLocalizationRejectionReason": "MARKETING STUFF"
+          },
+         "type": "object",
+         "properties": {
+            "firstLocalizationNewStatusId": {
+               "type": "string"
+            },
+            "firstLocalizationOldStatusId": {
+               "type": "string"
+            },
+            "firstLocalizationRejectionReason": {
+               "type": "string"
+            },
+            "secondLocalizationNewStatusId": {
+               "type": "string"
+            },
+            "secondLocalizationOldStatusId": {
+               "type": "string"
+            },
+            "secondLocalizationRejectionReason": {
+               "type": "string"
+            }              
+         },
+         "required": [
+            "firstLocalizationNewStatusId",
+            "firstLocalizationOldStatusId"
+         ]
+      },        
       "Audience": {
          "title": "Audience",
          "example": {

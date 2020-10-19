@@ -54,6 +54,11 @@ module.exports = {
     code: 5000,
     message: 'Something went wrong. Please try again later.'
   },
+  SERVICE_PROVIDER_NOT_PRESENT: {
+    status_code: 500,
+    code: 5000,
+    message: 'Please ensure service provider data is present.'
+  },
   // Note: use codes 2000 to 2999 for api success
   SUCCESS: {
     status_code: 200,
