@@ -66,15 +66,17 @@ class RedirectService {
 
   callMessageFlow (redisData, payload) {
     // if bot flag true then hit or else do nothing
-    console.log('Inside callMessageFlow')
+    __logger.info('Inside callMessageFlow', redisData, payload)
     if (payload && payload.content && payload.content.text) {
       payload.content.text = payload.content.text.trim()
+      __logger.info('payload text', payload.content.text, payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText)
       if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText) {
         payload.isVavaOptin = true
       }
     }
+    __logger.info('2nd check ', payload)
     if ((redisData && redisData.chatbotActivated) || payload.isVavaOptin === true) {
-      console.log('Inside if')
+      __logger.info('Inside to send req to chatbot')
       const http = new HttpService(3000)
       const apiUrl = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.chatFlow
       const headers = {
