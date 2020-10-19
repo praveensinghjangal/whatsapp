@@ -18,6 +18,7 @@ class HttpRequest {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('request for HTTP post ', options)
     request(options, (error, response, body) => {
       __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
