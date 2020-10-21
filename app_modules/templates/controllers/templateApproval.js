@@ -64,9 +64,9 @@ const sendTemplateForApproval = (req, res) => {
           firstLocalizationNewStatusId: __constants.TEMPLATE_STATUS.requested.statusCode,
           firstLocalizationOldStatusId: oldTemplateData ? oldTemplateData.firstLocalizationStatusId : __constants.TEMPLATE_STATUS.complete.statusCode,
           firstLocalizationRejectionReason: oldTemplateData.firstLocalizationRejectionReason ? oldTemplateData.firstLocalizationRejectionReason : '',
-          secondLocalizationNewStatusId: __constants.TEMPLATE_STATUS.requested.statusCode,
-          secondLocalizationOldStatusId: oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : __constants.TEMPLATE_STATUS.complete.statusCode,
-          secondLocalizationRejectionReason: oldTemplateData.secondLocalizationRejectionReason ? oldTemplateData.secondLocalizationRejectionReason : '',
+          secondLocalizationNewStatusId: oldTemplateData.secondLanguageRequired ? __constants.TEMPLATE_STATUS.requested.statusCode : null,
+          secondLocalizationOldStatusId: oldTemplateData.secondLanguageRequired && oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null,
+          secondLocalizationRejectionReason: oldTemplateData.secondLanguageRequired && oldTemplateData.secondLocalizationRejectionReason ? oldTemplateData.secondLocalizationRejectionReason : '',
           userId: req.user ? req.user.user_id : null,
           messageTemplateId: req.params ? req.params.templateId : null
         }

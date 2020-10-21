@@ -54,9 +54,10 @@ module.exports = (serviceProviderId, apiName, request, response = { actualRespon
   __logger.info('ssssss', apiName.includes('chat-api/v2/messages'))
   const historyStored = q.defer()
   if (apiName.includes('chat-api/v2/messages') === false) {
+    console.log('this is generic save api log', serviceProviderId, apiName)
     const query = `insert into service_provider_api_log(service_provider_id,api_name,request,response)
     values (?,?,?,?)`
-    __logger.info('Inside function to store api log in apilog table', serviceProviderId)
+    __logger.info('Inside function to store generic api log in api log table', serviceProviderId)
     validateInput({ serviceProviderId, apiName, request, response })
       .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response)]))
       .then(result => {

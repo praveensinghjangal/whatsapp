@@ -51,9 +51,9 @@ class StatusService {
           const queryObj = {
             templateStatus: '',
             firstLocalizationStatus: firstLocalizationNewStatusId || templateData.firstLocalizationStatus,
-            firstLocalizationRejectionReason: flrr,
+            firstLocalizationRejectionReason: flrr || null,
             secondLocalizationStatus: secondLocalizationNewStatusId || templateData.secondLocalizationStatus,
-            secondLocalizationRejectionReason: slrr,
+            secondLocalizationRejectionReason: slrr || null,
             updatedBy: userId,
             messageTemplateId: templateId,
             wabaInformationId: templateData.wabaInformationId

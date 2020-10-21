@@ -584,8 +584,8 @@ class validate {
           minLength: 1
         },
         firstLocalizationRejectionReason: {
-          type: 'string',
-          required: request.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode,
+          type: [null, 'string'],
+          required: false,
           minLength: 1
         },
         secondLocalizationNewStatusId: {
@@ -599,8 +599,8 @@ class validate {
           minLength: 1
         },
         secondLocalizationRejectionReason: {
-          type: 'string',
-          required: request.secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode,
+          type: [null, 'string'],
+          required: false,
           minLength: 1
         }
       }
