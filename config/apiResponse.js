@@ -440,5 +440,10 @@ module.exports = {
     status_code: 200,
     code: 3054,
     message: 'Template status has been rolled over to previous state'
+  },
+  TEMPLATE_CANNOT_BE_EDITED: {
+    status_code: 200,
+    code: 3055,
+    message: 'Template cannot be edited in this current status'
   }
 }

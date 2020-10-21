@@ -244,7 +244,7 @@ const TEMPLATE_STATUS = {
 }
 const TEMPLATE_STATUS_MAPPING = {
   [TEMPLATE_STATUS.incomplete.statusCode]: [TEMPLATE_STATUS.complete.statusCode],
-  [TEMPLATE_STATUS.complete.statusCode]: [TEMPLATE_STATUS.requested.statusCode],
+  [TEMPLATE_STATUS.complete.statusCode]: [TEMPLATE_STATUS.complete.statusCode, TEMPLATE_STATUS.requested.statusCode],
   [TEMPLATE_STATUS.requested.statusCode]: [TEMPLATE_STATUS.rejected.statusCode, TEMPLATE_STATUS.submitted.statusCode],
   [TEMPLATE_STATUS.rejected.statusCode]: [TEMPLATE_STATUS.complete.statusCode],
   [TEMPLATE_STATUS.submitted.statusCode]: [TEMPLATE_STATUS.submitFailed.statusCode, TEMPLATE_STATUS.pending.statusCode, TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode],
