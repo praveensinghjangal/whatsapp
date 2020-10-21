@@ -254,6 +254,46 @@ class TemplateService {
       })
     return templateFetched.promise
   }
+
+  deleteTemplate (statusCode, oldStatusCode, templateId, userId) {
+    __logger.info('delete template service called')
+    const templateDeleted = q.defer()
+    const StatusEngine = require('./status')
+    const statusEngine = new StatusEngine()
+    if (statusEngine.canUpdateStatus(statusCode, oldStatusCode)) {
+      this.getTemplateInfo(userId, templateId)
+        .then(data => {
+          const templateData = {
+            messageTemplateStatusId: statusCode,
+            firstLocalizationStatus: __constants.TEMPLATE_STATUS.deleted.statusCode,
+            secondLocalizationStatus: data.secondLocalizationStatusId ? data.secondLocalizationStatusId : null,
+            updatedBy: userId,
+            messageTemplateId: templateId,
+            wabaInformationId: data.wabaInformationId
+          }
+          if (data && data.secondLanguageRequired) {
+            templateData.secondLocalizationStatus = __constants.TEMPLATE_STATUS.deleted.statusCode
+          }
+          const queryParam = []
+          _.each(templateData, (val) => queryParam.push(val))
+          return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.deleteTemplate(), queryParam)
+        })
+        .then(result => {
+          if (result && result.affectedRows > 0) {
+            templateDeleted.resolve(true)
+          } else {
+            return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {}, data: {} })
+          }
+        })
+        .catch(err => {
+          __logger.error('error: ', err)
+          templateDeleted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        })
+    } else {
+      templateDeleted.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_CHANGE_STATUS, err: {} })
+    }
+    return templateDeleted.promise
+  }
 }
 
 module.exports = TemplateService

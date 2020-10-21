@@ -2,7 +2,7 @@
 const getTemplateList = (messageTemplateStatusId) => {
   let query = `
     SELECT DISTINCT mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
-    mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName", mtl.language_name as "languageName",
+    mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName", mts.message_template_status_id as "messageTemplateStatusId", mtl.language_name as "languageName",
     mt.media_type as "mediaType"
     FROM message_template mt
       JOIN waba_information wi
@@ -71,7 +71,8 @@ const updateTemplate = () => {
 }
 
 const deleteTemplate = () => {
-  return `update message_template set is_active =FALSE, message_template_status_id =?
+  return `update message_template set is_active =FALSE, message_template_status_id =?,
+  first_localization_status =?,second_localization_status =?, updated_on = now(),updated_by =?
   where message_template_id=? and is_active=true`
 }
 
@@ -186,8 +187,10 @@ const getTemplateTableDataAndWabaId = () => {
   mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
   mt.first_localization_status as "firstLocalizationStatus",mt.second_localization_status as "secondLocalizationStatus",
   mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason"
+  mts.status_name as "templateStatus"
   from waba_information wi
   left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true
+  left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true
   and mt.message_template_id = ?
   where wi.is_active = true and wi.user_id = ?`
 }

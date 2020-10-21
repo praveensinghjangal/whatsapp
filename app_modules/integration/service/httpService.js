@@ -19,7 +19,7 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
-      // console.log('pppppppppppppppppppp', response.statusCode)
+      __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -43,9 +43,11 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
+      __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
+        __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
         deferred.resolve(body)
@@ -66,7 +68,7 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
-    // console.log('pppppppppppppppppppp', response)
+      __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -91,6 +93,7 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
+      __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -114,12 +117,14 @@ class HttpRequest {
       rejectUnauthorized: false
     }
     request(options, (error, response, body) => {
+      __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
+        __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
-        deferred.resolve(body)
+        deferred.resolve(response)
       }
     })
     return deferred.promise

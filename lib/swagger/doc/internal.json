@@ -4305,6 +4305,8 @@
                            "phoneVerified": true,
                            "city": "mumbai",
                            "postalCode": "400009",
+                           "serviceProviderId": "f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+                           "serviceProviderUserAccountId": "asfwevawvw33423sdfsdrf32",
                            "serviceProviderName": "Tyntec",
                            "apiKey": "test123",
                            "webhookPostUrl": "http://localhost:3000/helowhatsapp/message",
@@ -6228,7 +6230,7 @@
             "security": []
          }     
       },        
-      "/templates/{templateId}/submit/{evaluationResult}": {
+      "/templates/{templateId}/submit/{evaluationResponse}": {
          "patch": {
             "summary": "API to evaluate template",
             "description": "API to evaluate template",
@@ -6256,11 +6258,11 @@
                   "description": "Id of Template"
                },
               {
-                  "name": "evaluationResult",
+                  "name": "evaluationResponse",
                   "in": "path",
                   "required": true,
                   "type": "string",
-                  "description": "Evaluation Result of Template"
+                  "description": "Evaluation Response of Template"
               }
             ],
             "responses": {
@@ -6319,41 +6321,7 @@
                         "msg": "Invalid request",
                         "data": null,
                         "error": [
-                           "Invalid request",
-                           "invalid body error here",
-                           "please provide valid template name with only aplha numeric character in lowercase and underscore",
-                           "please provide a valid template type of enum values: Standard Message Template , Media Message Template",
-                           "Template category not selected",
-                           "Template language not selected",
-                           "please provide a body for primary language",
-                           "Both of the template language cannot be same",
-                           "please provide a valid template header type of enum values: Video, Document, Location, Text, Image",
-                           "please provide header text for header type text",
-                           "please provide a body for secondry language",
-                           "please provide second language header text for header type text",
-                           "Variable in both language header text does not match",
-                           "please provide second language footer type",
-                           "Variable not allowed in footer",
-                           "Variable not allowed in second language footer",
-                           "Variable in both language body does not match",
-                           "please provide button data of type json",
-                           "please provide website button text",
-                           "please provide website button text for second language",
-                           "please provide phone button text",
-                           "please provide phone button text for second language",
-                           "please provide valid web URL",
-                           "please provide valid phone number",
-                           "please provide quick reply text",
-                           "please provide quick reply text of type array",
-                           "please provide atleast one quick reply text",
-                           "quick reply buttons limit of 3 exeeded",
-                           "quick reply button data invalid, please makle sure it is string with maximum length of 20",
-                           "please provide quick reply text for second language",
-                           "please provide second language quick reply text of type array",
-                           "please provide the same amount of second language quick reply text as there in quick reply text",
-                           "second language quick reply buttons limit of 3 exeeded",
-                           "econd language quick reply button data invalid, please makle sure it is string with maximum length of 20",
-                           "both language quick reply buttons are not equal"                           
+                           "Invalid request"
                         ]
                        },
                        {

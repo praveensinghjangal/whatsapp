@@ -77,6 +77,8 @@ const sendTemplateForApproval = (req, res) => {
     })
     .then(data => {
       __logger.info('updateTemplateStatus result', data)
+      const statusService = new StatusService()
+      statusService.notify(userId, oldTemplateData.statusName, oldTemplateData.templateName)
       res.send(data)
     })
     .catch(err => {
@@ -175,7 +177,13 @@ const sendTemplateForEvaluaion = (req, res) => {
           }
           return true
         })
-        .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
+        .then(data => {
+          const statusService = new StatusService()
+          if (oldTemplateData && oldTemplateData.statusName && oldTemplateData.templateName) {
+            statusService.notify(userId, oldTemplateData.statusName, oldTemplateData.templateName)
+          }
+          __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+        })
         .catch(err => {
           __logger.error('error sendTemplateForEvaluaion: ', err)
           // if tyntec call is failed roll back status to requested

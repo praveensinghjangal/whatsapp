@@ -43,9 +43,11 @@ class StatusService {
           let flrr = templateData.firstLocalizationRejectionReason
           let slrr = templateData.secondLocalizationRejectionReason
           if (firstLocalizationNewStatusId && firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode) flrr = firstLocalizationRejectionReason
-          if (firstLocalizationNewStatusId && firstLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode) flrr = null
+          if (firstLocalizationNewStatusId && firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.denied.statusCode) flrr = firstLocalizationRejectionReason
+          if (firstLocalizationNewStatusId && firstLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode && firstLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.denied.statusCode) flrr = null
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode) slrr = secondLocalizationRejectionReason
-          if (secondLocalizationNewStatusId && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode) slrr = null
+          if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.denied.statusCode) slrr = secondLocalizationRejectionReason
+          if (secondLocalizationNewStatusId && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.denied.statusCode) slrr = null
           const queryObj = {
             templateStatus: '',
             firstLocalizationStatus: firstLocalizationNewStatusId || templateData.firstLocalizationStatus,
@@ -115,12 +117,16 @@ class StatusService {
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
           console.log('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          this.notify(userId, data.firstLocalizationStatus, data.templateName)
+          this.notify(userId, data.secondLocalizationStatus, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else if (oldFirstLocalizationStatus) {
           console.log('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          this.notify(userId, data.firstLocalizationStatus, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, null, null, null, userId)
         } else if (oldSecondLocalizationStatus) {
           console.log('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          this.notify(userId, data.secondLocalizationStatus, data.templateName)
           return this.validateAndUpdateStatus(templateId, null, null, null, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else {
           console.log('wont update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
@@ -238,12 +244,12 @@ class StatusService {
     return statusChanged.promise
   }
 
-  notify (userId, templateStatus) {
+  notify (userId, templateStatus, templateName) {
     const notificationSent = q.defer()
     const userService = new UserService()
     const emailService = new EmailService(__config.emailProvider)
     userService.getEmailAndFirstNameFromUserId(userId)
-      .then(userData => emailService.sendEmail([userData.email], __config.emailProvider.subject.templateStatusUpdate, emailTemplates.templateStatusUpdate(templateStatus, userData.firstName)))
+      .then(userData => emailService.sendEmail([userData.email], __config.emailProvider.subject.templateStatusUpdate + templateName, emailTemplates.templateStatusUpdate(templateStatus, userData.firstName, templateName)))
       .then(data => notificationSent.resolve(data))
       .catch(err => {
         __logger.error('validateAndUpdateStatus::error: ', err)

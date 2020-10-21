@@ -243,28 +243,26 @@ const TEMPLATE_STATUS = {
   incomplete: { statusCode: 'd11a8387-80e0-468b-9ee3-abb5eckil980', displayName: 'Incomplete' }
 }
 const TEMPLATE_STATUS_MAPPING = {
-  [TEMPLATE_STATUS.incomplete.statusCode]: [TEMPLATE_STATUS.complete.statusCode],
-  [TEMPLATE_STATUS.complete.statusCode]: [TEMPLATE_STATUS.requested.statusCode],
-  [TEMPLATE_STATUS.requested.statusCode]: [TEMPLATE_STATUS.rejected.statusCode, TEMPLATE_STATUS.submitted.statusCode],
-  [TEMPLATE_STATUS.rejected.statusCode]: [TEMPLATE_STATUS.complete.statusCode],
-  [TEMPLATE_STATUS.submitted.statusCode]: [TEMPLATE_STATUS.submitFailed.statusCode, TEMPLATE_STATUS.pending.statusCode, TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode],
-  [TEMPLATE_STATUS.submitFailed.statusCode]: [TEMPLATE_STATUS.submitted.statusCode],
-  [TEMPLATE_STATUS.pending.statusCode]: [TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode],
+  [TEMPLATE_STATUS.incomplete.statusCode]: [TEMPLATE_STATUS.complete.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.complete.statusCode]: [TEMPLATE_STATUS.requested.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.requested.statusCode]: [TEMPLATE_STATUS.rejected.statusCode, TEMPLATE_STATUS.submitted.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.rejected.statusCode]: [TEMPLATE_STATUS.complete.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.submitted.statusCode]: [TEMPLATE_STATUS.submitFailed.statusCode, TEMPLATE_STATUS.pending.statusCode, TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.submitFailed.statusCode]: [TEMPLATE_STATUS.submitted.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.pending.statusCode]: [TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode, TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.approved.statusCode]: [TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.denied.statusCode]: [TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.deleted.statusCode]: []
+}
+const TYNTEC_TEMPLATE_REPLY_STATUS = {
+  deletePending: 'DELETE_PENDING',
+  deleted: 'DELETED'
 }
 const TEMPLATE_APPROVE_STATUS = TEMPLATE_STATUS.approved.statusCode
 const TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_STATUS.partiallyApproved.statusCode
 const TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_STATUS.incomplete.statusCode
 const TEMPLATE_DEFAULT_STATUS = TEMPLATE_STATUS.incomplete.statusCode
 const TEMPLATE_EVALUATION_RESPONSE = ['approved', 'rejected']
-const SCHEDULERS = {
-  UPDATE_STATUS: {
-    time: '00 58 11,12,23 * * *',
-    timeZone: 'Europe/Dublin'
-  }
-}
 const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
   [TEMPLATE_STATUS.complete.statusCode]: TEMPLATE_STATUS.incomplete.statusCode,
   [TEMPLATE_STATUS.requested.statusCode]: TEMPLATE_STATUS.complete.statusCode,
@@ -322,6 +320,6 @@ module.exports.WA_ME_URL = WA_ME_URL
 module.exports.TFA_TYPE_DISPLAYNAME = TFA_TYPE_DISPLAYNAME
 module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH
 module.exports.TEMPLATE_STATUS_MAPPING = TEMPLATE_STATUS_MAPPING
-module.exports.SCHEDULERS = SCHEDULERS
 module.exports.TEMPLATE_EVALUATION_RESPONSE = TEMPLATE_EVALUATION_RESPONSE
 module.exports.TEMPLATE_ROLLBACK_STATUS_MAPPING = TEMPLATE_ROLLBACK_STATUS_MAPPING
+module.exports.TYNTEC_TEMPLATE_REPLY_STATUS = TYNTEC_TEMPLATE_REPLY_STATUS
