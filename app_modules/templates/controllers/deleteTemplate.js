@@ -11,11 +11,13 @@ const deleteTemplate = (req, res) => {
   if (req.user && req.user.providerId) {
     const templateService = new integrationService.Template(req.user.providerId)
     const templateDbService = new TemplateDbService()
-    if (req.params && req.params.templateId && req.params.status) {
-      templateDbService.deleteTemplate(__constants.TEMPLATE_STATUS.deleted.statusCode, req.params.status, req.params.templateId, req.user.user_id)
-        .then(() => templateService.deleteTemplate(wabaPhoneNumber, req.params.templateId))
+    if (req.params && req.params.templateId) {
+      templateDbService.deleteTemplate(req.params.templateId, req.user.user_id)
         .then(() => {
           __db.redis.key_delete(req.params.templateId + '___' + wabaPhoneNumber)
+          return templateService.deleteTemplate(wabaPhoneNumber, req.params.templateId)
+        })
+        .then(() => {
           __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         })
         .catch(err => {

@@ -8,7 +8,7 @@ const RuleEngine = require('../services/ruleEngine')
 const StatusService = require('../services/status')
 
 const addUpdateTemplates = (req, res) => {
-  __logger.info('add update template API called')
+  __logger.info('add update template API called', req.body)
   const validate = new ValidatonService()
   const templateService = new TemplateService()
   let wabaPhoneNumber = ''
@@ -21,7 +21,7 @@ const addUpdateTemplates = (req, res) => {
     .then(wabaAndTemplateData => {
       __logger.info('add update template:: dbData', wabaAndTemplateData)
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
-      if (wabaAndTemplateData.messageTemplateId) {
+      if (req.body.messageTemplateId) {
         __logger.info('add update template:: will update')
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
       } else {

@@ -109,6 +109,14 @@ class StatusService {
         __logger.info('singleStatusCompareAndChange::dbData', data)
         let oldFirstLocalizationStatus = null
         let oldSecondLocalizationStatus = null
+
+        const notifyStatusData = {
+          secondLanguageRequired: data.secondLanguageRequired ? data.secondLanguageRequired : null,
+          firstLocalizationStatus: data.firstLocalizationStatus ? data.firstLocalizationStatus : null,
+          secondLocalizationStatus: data.secondLocalizationStatus ? data.secondLocalizationStatus : null,
+          firstLocalizationRejectionReason: data.firstLocalizationRejectionReason ? data.firstLocalizationRejectionReason : null,
+          secondLocalizationRejectionReason: data.secondLocalizationRejectionReason ? data.secondLocalizationRejectionReason : null
+        }
         if (data.firstLocalizationStatus !== firstLocalizationStatusFromProvider) {
           oldFirstLocalizationStatus = data.firstLocalizationStatus
         }
@@ -117,16 +125,15 @@ class StatusService {
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
           console.log('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
-          this.notify(userId, data.firstLocalizationStatus, data.templateName)
-          this.notify(userId, data.secondLocalizationStatus, data.templateName)
+          this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else if (oldFirstLocalizationStatus) {
           console.log('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
-          this.notify(userId, data.firstLocalizationStatus, data.templateName)
+          this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, null, null, null, userId)
         } else if (oldSecondLocalizationStatus) {
           console.log('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
-          this.notify(userId, data.secondLocalizationStatus, data.templateName)
+          this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, null, null, null, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else {
           console.log('wont update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
@@ -244,17 +251,34 @@ class StatusService {
     return statusChanged.promise
   }
 
-  notify (userId, templateStatus, templateName) {
+  notify (userId, statusData, templateName) {
+    __logger.info('notify', { statusData, templateName })
     const notificationSent = q.defer()
     const userService = new UserService()
     const emailService = new EmailService(__config.emailProvider)
+    const emailSubject = __config.emailProvider.subject.templateStatusSubject
+
+    if (statusData && statusData.firstLocalizationStatus === __constants.TEMPLATE_STATUS.rejected.displayName.toLowerCase()) {
+      statusData.firstLocalizationRejectionReason = statusData.firstLocalizationRejectionReason
+        ? statusData.firstLocalizationRejectionReason : null
+    }
+    if (statusData && statusData.secondLanguageRequired &&
+      statusData.secondLocalizationStatus === __constants.TEMPLATE_STATUS.rejected.displayName.toLowerCase()) {
+      statusData.secondLocalizationRejectionReason = statusData.secondLocalizationRejectionReason
+        ? statusData.secondLocalizationRejectionReason : null
+    }
     userService.getEmailAndFirstNameFromUserId(userId)
-      .then(userData => emailService.sendEmail([userData.email], __config.emailProvider.subject.templateStatusUpdate + templateName, emailTemplates.templateStatusUpdate(templateStatus, userData.firstName, templateName)))
-      .then(data => notificationSent.resolve(data))
+      .then(userData => emailService.sendEmail([userData.email], emailSubject + templateName,
+        emailTemplates.templateStatusUpdate(statusData, userData.firstName, templateName)))
+      .then(data => {
+        __logger.info('Email Contents>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', { data })
+        notificationSent.resolve(data)
+      })
       .catch(err => {
         __logger.error('validateAndUpdateStatus::error: ', err)
         return notificationSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
+
     return notificationSent.promise
   }
 

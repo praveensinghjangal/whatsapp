@@ -243,7 +243,7 @@ module.exports = {
     subject: {
       emailVerification: process.env.EMAIL_PROVIDER_SUBJECT_EMAIL_VERIFICATION,
       passwordReset: process.env.EMAIL_PROVIDER_SUBJECT_PASSWORD_RESET,
-      templateStatusUpdate: process.env.EMAIL_TEMPLATE_STATUS_UPDATE
+      templateStatusSubject: process.env.EMAIL_TEMPLATE_STATUS_SUBJECT
     }
   },
   webcpSmsProvider: {

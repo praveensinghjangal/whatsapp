@@ -4279,6 +4279,11 @@ paths:
           required: true
           type: string
           description: Id of Template
+        - name: Body
+          in: body
+          description: ''
+          schema:
+            $ref: '#/definitions/templateEvaluationRequest'
         - name: evaluationResponse
           in: path
           required: true
@@ -7233,3 +7238,14 @@ definitions:
         type: string
     required:
       - tfaType
+  templateEvaluationRequest:
+    title: templateEvaluationRequest
+    example:
+      firstLocalizationRejectionReason: null
+      secondLocalizationRejectionReason: null
+    type: object
+    properties:
+      firstLocalizationRejectionReason:
+        type: string
+      secondLocalizationRejectionReason:
+        type: string

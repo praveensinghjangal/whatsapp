@@ -118,7 +118,7 @@ const getCodeData = () => {
 }
 
 const getEmailAndFirstNameByUserId = () => {
-  return `select u.email, u.first_name 
+  return `select u.email, u.first_name as "firstName" 
     from users u 
     where u.user_id = ?
     and u.is_active = true`

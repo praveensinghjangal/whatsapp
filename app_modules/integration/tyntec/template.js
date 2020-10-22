@@ -32,6 +32,7 @@ class Template {
 
   // when this service will be called we will call waba to get phone number to use here in redis
   addTemplate (templateData, wabaNumber) {
+    __logger.info('Tyntec addTemplate ::>>>>>>>>>>>>>>>>>>>>> ', templateData)
     const deferred = q.defer()
     let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.addTemplate
     let headers = {}

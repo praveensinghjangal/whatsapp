@@ -8,6 +8,7 @@ const integrationService = require('../../integration/')
 const TemplateService = require('../services/dbData')
 const StatusService = require('../../templates/services/status')
 const request = require('request')
+const _ = require('lodash')
 const q = require('q')
 
 const updateTemplateStatus = (reqBody, authToken) => {
@@ -59,14 +60,14 @@ const sendTemplateForApproval = (req, res) => {
     })
     .then((ruleEngineResponse) => {
       __logger.info('Rule Engine Result', ruleEngineResponse)
-      if (ruleEngineResponse.complete) {
+      if (ruleEngineResponse && ruleEngineResponse.complete) {
         const reqBody = {
           firstLocalizationNewStatusId: __constants.TEMPLATE_STATUS.requested.statusCode,
           firstLocalizationOldStatusId: oldTemplateData ? oldTemplateData.firstLocalizationStatusId : __constants.TEMPLATE_STATUS.complete.statusCode,
-          firstLocalizationRejectionReason: oldTemplateData.firstLocalizationRejectionReason ? oldTemplateData.firstLocalizationRejectionReason : '',
+          firstLocalizationRejectionReason: oldTemplateData.firstLocalizationRejectionReason ? oldTemplateData.firstLocalizationRejectionReason : null,
           secondLocalizationNewStatusId: oldTemplateData.secondLanguageRequired ? __constants.TEMPLATE_STATUS.requested.statusCode : null,
           secondLocalizationOldStatusId: oldTemplateData.secondLanguageRequired && oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null,
-          secondLocalizationRejectionReason: oldTemplateData.secondLanguageRequired && oldTemplateData.secondLocalizationRejectionReason ? oldTemplateData.secondLocalizationRejectionReason : '',
+          secondLocalizationRejectionReason: oldTemplateData.secondLanguageRequired && oldTemplateData.secondLocalizationRejectionReason ? oldTemplateData.secondLocalizationRejectionReason : null,
           userId: req.user ? req.user.user_id : null,
           messageTemplateId: req.params ? req.params.templateId : null
         }
@@ -77,8 +78,6 @@ const sendTemplateForApproval = (req, res) => {
     })
     .then(data => {
       __logger.info('updateTemplateStatus result', data)
-      const statusService = new StatusService()
-      statusService.notify(userId, oldTemplateData.statusName, oldTemplateData.templateName)
       res.send(data)
     })
     .catch(err => {
@@ -178,9 +177,20 @@ const sendTemplateForEvaluaion = (req, res) => {
           return true
         })
         .then(data => {
+          __logger.info('oldTemplateData>>>>>>>>>', oldTemplateData)
+
           const statusService = new StatusService()
-          if (oldTemplateData && oldTemplateData.statusName && oldTemplateData.templateName) {
-            statusService.notify(userId, oldTemplateData.statusName, oldTemplateData.templateName)
+          if (oldTemplateData && oldTemplateData.templateName) {
+            const notifyStatusData = {
+              secondLanguageRequired: oldTemplateData.secondLanguageRequired ? oldTemplateData.secondLanguageRequired : null,
+              firstLocalizationStatus: reqBody.firstLocalizationNewStatusId ? getTemplateStatusName(reqBody.firstLocalizationNewStatusId) : null,
+              secondLocalizationStatus: reqBody.secondLocalizationNewStatusId ? getTemplateStatusName(reqBody.secondLocalizationNewStatusId) : null,
+              firstLocalizationRejectionReason: reqBody.firstLocalizationRejectionReason ? reqBody.firstLocalizationRejectionReason : null,
+              secondLocalizationRejectionReason: reqBody.secondLocalizationRejectionReason ? reqBody.secondLocalizationRejectionReason : null
+            }
+
+            __logger.info('notifyStatusData>>>>>>>>>>>>>.', notifyStatusData)
+            statusService.notify(userId, notifyStatusData, oldTemplateData.templateName)
           }
           __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         })
@@ -203,6 +213,19 @@ const sendTemplateForEvaluaion = (req, res) => {
     }
   } else {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVICE_PROVIDER_NOT_PRESENT, data: {} })
+  }
+}
+
+function getTemplateStatusName (templateCode) {
+  const result = _(__constants.TEMPLATE_STATUS)
+    .filter(c => c.statusCode === templateCode)
+    .map('displayName')
+    .value()
+
+  if (result && result.length > 0) {
+    return result[0]
+  } else {
+    return null
   }
 }
 
