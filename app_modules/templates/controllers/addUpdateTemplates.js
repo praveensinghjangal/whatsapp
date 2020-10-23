@@ -21,7 +21,7 @@ const addUpdateTemplates = (req, res) => {
     .then(wabaAndTemplateData => {
       __logger.info('add update template:: dbData', wabaAndTemplateData)
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
-      if (req.body.messageTemplateId) {
+      if (wabaAndTemplateData.messageTemplateId) {
         __logger.info('add update template:: will update')
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
       } else {
