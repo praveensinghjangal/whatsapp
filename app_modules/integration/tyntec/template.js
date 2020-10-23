@@ -39,7 +39,7 @@ class Template {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        console.log('dataatatatat', data, typeof data)
+        __logger.info('dataatatatat', { data }, typeof data)
         url = url.split(':accountId').join(data.userAccountIdByProvider || '')
         headers = {
           'Content-Type': 'application/json',
@@ -51,8 +51,8 @@ class Template {
       })
       .then(reqBody => this.http.Post(reqBody, 'body', url, headers, spId))
       .then(data => {
-        // console.log('add responseeeeeeeeeeeeeeeeeeeeeeeeeeeee', data, data.statusCode, JSON.stringify(data.body))
-        __logger.info('integration :: Add template data', data)
+        // __logger.info('add responseeeeeeeeeeeeeeeeeeeeeeeeeeeee', data, data.statusCode, JSON.stringify(data.body))
+        __logger.info('integration :: Add template data', { data })
         if (data && data.statusCode === 201) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else {
@@ -69,10 +69,10 @@ class Template {
       const redisService = new RedisService()
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
-          console.log('dataatatatat', data, typeof data)
+          __logger.info('dataatatatat', { data }, typeof data)
           let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getTemplateList
           url = url.split(':accountId').join(data.userAccountIdByProvider || '')
-          console.log('URL====', url)
+          __logger.info('URL====', url)
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
@@ -81,7 +81,7 @@ class Template {
           return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((templateData) => {
-          __logger.info('integration :: get template list data', templateData)
+          __logger.info('integration :: get template list data', { templateData })
           if (templateData && templateData.constructor.name.toLowerCase() === 'array') {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
           } else if (templateData && templateData.status === 404) {
@@ -99,7 +99,7 @@ class Template {
   }
 
   getTemplateInfo (wabaNumber, templateId) {
-    console.log(wabaNumber, templateId)
+    __logger.info(wabaNumber, templateId)
     const deferred = q.defer()
     let isData = false
     let tempData = {}
@@ -107,10 +107,10 @@ class Template {
       const redisService = new RedisService()
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
-          console.log('dataatatatat', data, typeof data)
+          __logger.info('dataatatatat', { data }, typeof data)
           let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getTemplateInfo
           url = url.split(':accountId').join(data.userAccountIdByProvider || '').split(':templateId').join(templateId || '')
-          console.log('URL====', url)
+          __logger.info('URL====', url)
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
@@ -119,7 +119,7 @@ class Template {
           return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then(templateData => {
-          __logger.info('integration :: get template info data', templateData)
+          __logger.info('integration :: get template info data', { templateData })
           if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {
             isData = true
             tempData = templateData
@@ -129,7 +129,7 @@ class Template {
           }
         })
         .then(templateData => {
-          __logger.info('integration :: get template info data after mapping', templateData)
+          __logger.info('integration :: get template info data after mapping', { templateData })
           if (isData) {
             tempData.localizations = templateData
             templateData = tempData
@@ -151,7 +151,7 @@ class Template {
   }
 
   deleteTemplate (wabaNumber, templateId) {
-    console.log('Template Service >>>>>>>>>>>>>>>>>>>>>>>>>>', wabaNumber, templateId)
+    __logger.info('Template Service >>>>>>>>>>>>>>>>>>>>>>>>>>', wabaNumber, templateId)
     const deferred = q.defer()
     if (wabaNumber && templateId) {
       const redisService = new RedisService()
@@ -159,11 +159,11 @@ class Template {
       let redisData
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
-          // console.log('dataatatatat', data, typeof data)
+          // __logger.info('dataatatatat', data, typeof data)
           redisData = data
           let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getTemplateInfo
           url = url.split(':accountId').join(data.userAccountIdByProvider || '').split(':templateId').join(templateId || '')
-          // console.log('URL====', url)
+          // __logger.info('URL====', url)
           headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json',
@@ -172,7 +172,7 @@ class Template {
           return this.http.Get(url, headers, redisData.serviceProviderId)
         })
         .then(result => {
-          console.log('Template Search Result', result)
+          __logger.info('Template Search Result', { result })
           if (result.status === 404) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
           } else {
@@ -188,7 +188,7 @@ class Template {
           }
         })
         .then((templateData) => {
-          console.log('templateData', templateData)
+          __logger.info('templateData', { templateData })
           if (templateData && templateData.status === 404) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
           } else {

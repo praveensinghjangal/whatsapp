@@ -14,10 +14,11 @@ const getMessageStatusList = (req, res) => {
   const requiredPage = req.query.page ? +req.query.page : 1
   const ItemsPerPage = +req.query.ItemsPerPage
   const offset = ItemsPerPage * (requiredPage - 1)
-  console.log('Get Offset value', offset)
+  __logger.info('Get Offset value', offset)
   validate.checkstartDateAndendDate(req.query)
     .then(invalid => dbServices.getMessageStatusList(req.params.status, req.query.startDate, req.query.endDate, ItemsPerPage, offset, userId))
     .then(data => {
+      __logger.info('data then 2', { data })
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })

@@ -8,7 +8,7 @@ module.exports = (req, res) => {
   const ruleEngine = new RuleEngine()
   ruleEngine.checkAddTemplateRulesByTemplateId(req.params.templateId, req.user.user_id)
     .then(results => {
-      console.log('results', results)
+      __logger.info('results', { results })
       const details = results.err && results.err.err ? results.err.err : ''
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { valid: results.complete || false, details } })
     })

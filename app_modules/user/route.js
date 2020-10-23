@@ -6,6 +6,7 @@ const authstrategy = require('../../config').authentication.strategy
 const userConfiMiddleware = require('../../middlewares/setUserConfig')
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
 const bearerTokenAuth = require('../../middlewares/auth/bearerTokenAuth')
+const __logger = require('../../lib/logger')
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
@@ -27,7 +28,7 @@ router.post('/internal/authorize', tokenBasedAuth, require('./controllers/author
 
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {
-  console.log('redirected', req.user)
+  __logger.info('redirected', req.user)
   const user = {
     displayName: req.user.displayName,
     name: req.user.name.givenName,
@@ -38,7 +39,7 @@ router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.na
   res.send(token)
 })
 router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.facebook.name), (req, res) => {
-  console.log('redirected', req.user)
+  __logger.info('redirected', req.user)
   const user = {
     displayName: req.user.displayName,
     name: req.user._json.name,

@@ -11,6 +11,7 @@ const ValidatonService = require('../services/validation')
 const BusinessAccountService = require('../../whatsapp_business/services/businesAccount')
 
 const createAuthTokenByUserId = userId => {
+  __logger.info('createAuthTokenByUserId')
   const authToken = q.defer()
   const businessAccountService = new BusinessAccountService()
   if (!userId || typeof userId !== 'string') {
@@ -40,6 +41,7 @@ const createAuthTokenByUserId = userId => {
 }
 
 const authorize = (req, res) => {
+  __logger.info('authorize::')
   const validate = new ValidatonService()
   const userService = new UserService()
   validate.authorize(req.body)

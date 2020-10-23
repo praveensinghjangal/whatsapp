@@ -17,7 +17,7 @@ const generateBusinessNumberVerificationCode = (req, res) => {
   }
   verificationService.getVerifiedAndCodeDataByUserIdForBusinessNumber(userId)
     .then(data => {
-      __logger.info('then 1', data)
+      __logger.info('then 1', { data })
       businessName = data && data.business_name ? data.business_name : ''
       businessNumber = data && data.phone_code && data.phone_number ? data.phone_code + data.phone_number : ''
       if (data && data.phone_verified) {
@@ -27,7 +27,7 @@ const generateBusinessNumberVerificationCode = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('then 2', data)
+      __logger.info('then 2', { data })
       if (data && data.user_verification_code_id) {
         return verificationService.updateExistingTokens(userId, __constants.VERIFICATION_CHANNEL.businessNumber.name)
       } else {
@@ -36,7 +36,7 @@ const generateBusinessNumberVerificationCode = (req, res) => {
     })
     .then(data => verificationService.addVerificationCode(userId, __constants.VERIFICATION_CHANNEL.businessNumber.name, __constants.VERIFICATION_CHANNEL.businessNumber.expiresIn, __constants.VERIFICATION_CHANNEL.businessNumber.codeLength))
     .then(data => {
-      __logger.info('then 4', data)
+      __logger.info('then 4', { data })
       if (req.query.verificationChannel === 'sms') {
         return verificationService.sendVerificationCodeBySms(data.code, businessNumber, businessName)
       } else if (req.query.verificationChannel === 'voice') {
@@ -51,6 +51,7 @@ const generateBusinessNumberVerificationCode = (req, res) => {
 }
 
 const validateBusinessNumberVerificationCode = (req, res) => {
+  __logger.info('validateBusinessNumberVerificationCode::>>>>>>>>>>...')
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
@@ -60,7 +61,7 @@ const validateBusinessNumberVerificationCode = (req, res) => {
     .then(data => {
       const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
       const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-      // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+      __logger.info('datatat ===>', { data }, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
       if (moment(currentTime).isBefore(expireyTime)) {
         return verificationService.setTokenConsumed(userId, req.body.code, __constants.VERIFICATION_CHANNEL.businessNumber.name)
       } else {
@@ -70,7 +71,6 @@ const validateBusinessNumberVerificationCode = (req, res) => {
     .then(data => verificationService.markChannelVerified(userId, __constants.VERIFICATION_CHANNEL.businessNumber.name))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.BUSINESS_PHONE_VERIFIED, data: {} }))
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })

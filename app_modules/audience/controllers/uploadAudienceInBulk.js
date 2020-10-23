@@ -58,7 +58,6 @@ const validateSingleReq = excelSingleData => {
   if (!excelSingleData.country || typeof excelSingleData.country !== 'string' || excelSingleData.country.length < 1) errorData.push('please provide "country" of type string having minimum length 1')
 
   _.each(excelSingleData, (val, key) => {
-    // console.log('key ->', key, 'val ->', val)
     if (key !== 'phoneNumber' && key !== 'optinSource' && key !== 'name' && key !== 'email' && key !== 'gender' && key !== 'country') {
       if (!val) {
         errorData.push('please provide ' + key + ' of type string')
@@ -66,19 +65,19 @@ const validateSingleReq = excelSingleData => {
     }
   })
 
-  // console.log('Error Data', errorData)
+  // __logger.info('Error Data', errorData)
   if (errorData.length > 0) {
     isValid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errorData })
     // return isValid.promise
   } else {
     isValid.resolve(excelSingleData)
   }
-  // console.log('safe to check ahead', errorData)
+  __logger.info('safe to check ahead', errorData)
   return isValid.promise
 }
 
 const validateAndFormRequestBody = excelData => {
-  // console.log('here to form reqbody and validate', excelData)
+  __logger.info('here to form reqbody and validate', { excelData })
   let p = q()
   const thePromises = []
   excelData.forEach(singleObject => {
@@ -114,7 +113,7 @@ const filter = function (req, file, cb) {
   let fileExt = file.originalname.split('.')
   fileExt = fileExt[fileExt.length - 1]
   var extname = filetypes.test(fileExt.toLowerCase())
-  // console.log('file mime type filter  -->', extname)
+  // __logger.info('file mime type filter  -->', extname)
   if (extname) {
     return cb(null, true)
   } else {
@@ -129,6 +128,7 @@ const upload = multer({
 }).array('optinFile', 1)
 
 const uploadAudienceData = (req, res) => {
+  __logger.info('inside uploadAudienceData::>>>>>>>>>>>>>>')
   upload(req, res, function (err, data) {
     if (err) {
       __logger.error('sendAudieneDataToExcel :: file upload API error', err)
@@ -141,7 +141,7 @@ const uploadAudienceData = (req, res) => {
       convertToJson(req.files)
         .then(jsonData => validateAndFormRequestBody(jsonData))
         .then(reqBody => {
-          // console.log('req body for api =>', reqBody)
+          __logger.info('req body for api => then 2', { reqBody })
           const invalidReq = _.filter(reqBody, { valid: false })
           if (invalidReq.length > 0) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })

@@ -3,11 +3,12 @@ const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const messengerPeopleIntegrationConfig = __config.integration.messengerPeople
 const authToken = require('./authenticator').authToken
+const __logger = require('../../../lib/logger')
 
 class Message {
   constructor () {
     this.http = new HttpService(60000)
-    // console.log('=======', messengerPeopleIntegrationConfig)
+    __logger.info('=======', messengerPeopleIntegrationConfig)
   }
 
   sendMessage (businessNumber, recieverNumber, payload) {
@@ -23,28 +24,28 @@ class Message {
     this.http.Post(inputRequest, 'body', messengerPeopleIntegrationConfig.baseUrl + messengerPeopleIntegrationConfig.endpoint.sendMessage, headers)
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
-        console.log('datatattatatattatatat', apiRes)
+        __logger.info('datatattatatattatatat', { apiRes })
         if (apiRes && apiRes.hint && apiRes.hint === 'The request has not been authenticated.') {
           return authToken.setToken()
         } else {
-          console.log('successs-------------')
-          return { firstAttempSuccess: true, data: apiRes }
+          __logger.info('successs-------------')
+          return { firstAttempSuccess: true, data: { apiRes } }
         }
       })
       .then(data => {
         if (data.firstAttempSuccess) {
-          console.log('i am hererererrererererrere')
+          __logger.info('i am hererererrererererrere')
           return data
         } else {
           headers.Authorization = 'Bearer ' + authToken.getAuthToken()
-          console.log('new token set retru now')
+          __logger.info('new token set retru now')
           return this.http.Post(inputRequest, 'body', messengerPeopleIntegrationConfig.baseUrl + messengerPeopleIntegrationConfig.endpoint.sendMessage, headers)
         }
       })
       .then(finalRes => { // todo : handle response properly
         finalRes = finalRes.body || finalRes
         if (finalRes.firstAttempSuccess) finalRes = finalRes.data
-        console.log('final res --->', finalRes)
+        __logger.info('final res --->', { finalRes })
         if (finalRes && finalRes.error) {
           deferred.reject({ success: false, message: 'Message not sent', error: finalRes })
         } else {

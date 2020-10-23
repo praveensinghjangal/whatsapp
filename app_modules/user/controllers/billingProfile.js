@@ -18,7 +18,7 @@ const getBusinessBilllingProfile = (req, res) => {
   let queryResult = {}
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBillingProfile(), [userId])
     .then(results => {
-      __logger.info('Then 1', results)
+      __logger.info('Then 1', { results })
       if (results && results.length > 0) {
         queryResult = results[0]
         return checkBusinessBillingProfileCompletionStatus(results[0])
@@ -27,7 +27,7 @@ const getBusinessBilllingProfile = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('then 2')
+      __logger.info('then 2', { data })
       queryResult.complete = data.complete
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
@@ -64,7 +64,7 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateBusinessBillingProfile(), [businessDataObj.city, businessDataObj.state, businessDataObj.country, businessDataObj.addressLine1, businessDataObj.addressLine2, businessDataObj.contactNumber, businessDataObj.phoneCode, businessDataObj.postalCode, businessDataObj.panCard, businessDataObj.gstOrTaxNo, businessDataObj.billingName, userId, userId])
       .then(result => {
-        __logger.info('Then 2 update', result)
+        __logger.info('Then 2 update', { result })
         queryResult = result
         return checkBusinessBillingProfileCompletionStatus(businessDataObj)
       })
@@ -97,7 +97,7 @@ const addBusinessBilllingProfile = (req, res) => {
     })
     .then(result => {
       /* If exists then updating else inserting */
-      __logger.info('Inside Query execution function then 2', result)
+      __logger.info('Inside Query execution function then 2', { result })
       if (!result.exists) {
         return insertBusinessBillingProfileInfo(userId, req.body, {})
       } else {
@@ -105,7 +105,7 @@ const addBusinessBilllingProfile = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('Then 3', result)
+      __logger.info('Then 3', { result })
       if (result && result.affectedRows && result.affectedRows > 0) {
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
@@ -148,6 +148,7 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
   return new Promise((resolve, reject) => {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createBusinessBillingProfile(), [userId, billingObj.billingName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.billingInformationId, userId])
       .then(result => {
+        __logger.bind('result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           queryResult = result
           return checkBusinessBillingProfileCompletionStatus(billingObj)
@@ -156,7 +157,7 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
         }
       })
       .then(data => {
-        __logger.info('then 1', data)
+        __logger.info('then 2', { data })
         // __logger.info('queryResult', queryResult)
         // __logger.info('data', data)
         return resolve({ affectedRows: queryResult.affectedRows, complete: data.complete })
@@ -169,8 +170,8 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
 }
 
 function checkBusinessBillingProfileCompletionStatus (data) {
+  __logger.info('checkBusinessBillingProfileCompletionStatus::>>>>>>>>>>>...........')
   const checkCompleteStatus = new CheckInfoCompletionService()
-
   return checkCompleteStatus.checkBusinessBillingProfileStatus(data)
 }
 

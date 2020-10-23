@@ -24,7 +24,7 @@ class StatusService {
     const templateService = new TemplateService()
     validate.validateAndUpdateStatusService({ templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason })
       .then(data => {
-        // __logger.info('validateAndUpdateStatus::here to update sta  us', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason , userId })
+        __logger.info('validateAndUpdateStatus::here to update sta  us then 1', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason, userId })
         if (firstLocalizationNewStatusId && this.canUpdateStatus(firstLocalizationNewStatusId, firstLocalizationOldStatusId)) {
           return templateService.getTemplateTableDataAndWabaId(templateId, userId)
         } else if (secondLocalizationNewStatusId && this.canUpdateStatus(secondLocalizationNewStatusId, secondLocalizationOldStatusId)) {
@@ -34,7 +34,7 @@ class StatusService {
         }
       })
       .then(templateData => {
-        // __logger.info('validateAndUpdateStatus::dbData', { templateData })
+        __logger.info('validateAndUpdateStatus::dbData then 2', { templateData })
         if (templateData.messageTemplateId) {
           let flrr = templateData.firstLocalizationRejectionReason
           let slrr = templateData.secondLocalizationRejectionReason
@@ -66,6 +66,7 @@ class StatusService {
         }
       })
       .then(result => {
+        __logger.info('result then 3 ')
         if (result && result.affectedRows && result.affectedRows > 0) {
           statusChanged.resolve(true)
         } else {
@@ -90,7 +91,7 @@ class StatusService {
     let secondRejectReason = ''
     templateIntegrationService.getTemplateInfo(wabaNumber, templateId)
       .then(result => {
-        __logger.info('singleStatusCompareAndChange::integration result', { result })
+        __logger.info('singleStatusCompareAndChange::integration result then 1', { result })
         if (result && result.code === __constants.RESPONSE_MESSAGES.SUCCESS.code) {
           firstLocalizationStatusFromProvider = result.data && result.data.localizations && result.data.localizations[0] && result.data.localizations[0].messageTemplateStatusId ? result.data.localizations[0].messageTemplateStatusId : null
           secondLocalizationStatusFromProvider = result.data && result.data.localizations && result.data.localizations[1] && result.data.localizations[1].messageTemplateStatusId ? result.data.localizations[1].messageTemplateStatusId : null
@@ -102,7 +103,7 @@ class StatusService {
         }
       })
       .then(data => {
-        __logger.info('singleStatusCompareAndChange::dbData', data)
+        __logger.info('singleStatusCompareAndChange::dbData then 2', data)
         let oldFirstLocalizationStatus = null
         let oldSecondLocalizationStatus = null
         if (data.firstLocalizationStatus !== firstLocalizationStatusFromProvider) {
@@ -112,16 +113,16 @@ class StatusService {
           oldSecondLocalizationStatus = data.secondLocalizationStatus
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
-          console.log('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else if (oldFirstLocalizationStatus) {
-          console.log('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, null, null, null, userId)
         } else if (oldSecondLocalizationStatus) {
-          console.log('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           return this.validateAndUpdateStatus(templateId, null, null, null, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else {
-          console.log('wont update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('wont update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           return true
         }
       })
@@ -180,7 +181,7 @@ class StatusService {
     let validateBody
     templateService.getTemplateInfo(userId, templateId)
       .then(data => {
-        __logger.info('rollBackStatusService::>>>>>>template data>>>>>>>.', data)
+        __logger.info('rollBackStatusService::>>>>>>template data>>>>>>>. then 1', data)
         templateData = data
         validateBody = {
           templateId,
@@ -198,7 +199,7 @@ class StatusService {
         return validate.validateAndUpdateStatusService(validateBody)
       })
       .then(validationRes => {
-        __logger.info('validationRes', validationRes)
+        __logger.info('validationRes then 2', { validationRes })
         if (templateData.messageTemplateId) {
           const queryObj = {
             messageTemplateStatusId: '',
@@ -222,7 +223,7 @@ class StatusService {
         }
       })
       .then(result => {
-        __logger.info('updateTemplateStatus >>>>>>>>>>.', result)
+        __logger.info('updateTemplateStatus >>>>>>>>>>. then 3', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           statusChanged.resolve(true)
         } else {

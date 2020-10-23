@@ -14,6 +14,7 @@ const deleteTemplate = (req, res) => {
   if (req.params && req.params.templateId) {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.deleteTemplate(), [__constants.TEMPLATE_STATUS.deleted.statusCode, req.params.templateId])
       .then(result => {
+        __logger.info('Iresult then 1', { result })
         if (result && result.affectedRows === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETED, err: {}, data: {} })
         } else {
@@ -21,7 +22,7 @@ const deleteTemplate = (req, res) => {
         }
       })
       .then(data => {
-        console.log('Inside deleteTemplate', data)
+        __logger.info('Inside deleteTemplate then 2', { data })
         __db.redis.key_delete(req.params.templateId + '___' + wabaPhoneNumber)
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
       })

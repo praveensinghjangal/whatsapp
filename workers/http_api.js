@@ -20,16 +20,16 @@ const authMiddleware = require('../middlewares/auth/authentication')
 class httpApiWorker {
   constructor () {
     this.app = {}
-    // console.log("welcome http_api");
+    // __logger.info("welcome http_api");
   }
 
   async startServer () {
     var vm = this
     await __db.init().then((result) => {
-      console.log(result)
+      __logger.info(result)
       vm.runExpressServer()
     }).catch((error) => {
-      console.log(error)
+      __logger.info(error)
       process.exit(1)
     })
   }
@@ -113,16 +113,16 @@ class httpApiWorker {
     const stopGraceFully = () => {
       vm.stopExpressServer()
       __db.close().then((result) => {
-        console.log('success', result)
+        __logger.info('success', result)
       }).catch((error) => {
-        console.log('error', error)
+        __logger.info('error', error)
         process.exit(0)
       })
     }
     process.on('SIGINT', stopGraceFully)
     process.on('SIGTERM', stopGraceFully)
     process.on('uncaughtException', (err) => {
-      console.log(' ##### SERVER CRASH ##### \n', err, '\n ########## END ##########')
+      __logger.info(' ##### SERVER CRASH ##### \n', err, '\n ########## END ##########')
     })
   }
 
@@ -133,7 +133,7 @@ class httpApiWorker {
 
 class Worker extends httpApiWorker {
   start () {
-    console.log((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     // call initialization function of extended worker class
     super.startServer()
     // const express_server = new http_api();

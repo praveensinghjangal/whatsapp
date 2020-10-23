@@ -11,6 +11,7 @@ const request = require('request')
 const q = require('q')
 
 const updateTemplateStatus = (reqBody, authToken) => {
+  __logger.info('updateTemplateStatus called ::>>>>>>>>>>>>>>>>>.')
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.updateTemplateStatus + `${reqBody.messageTemplateId}` + '/status'
   __logger.info('updateTemplateStatus :: >>>>>>>>>>>>>>>>>>>>>>>>', reqBody)
@@ -50,7 +51,7 @@ const sendTemplateForApproval = (req, res) => {
   templateService.getTemplateInfo(userId, templateId)
     .then(result => {
       oldTemplateData = result
-      __logger.info('Template data', oldTemplateData)
+      __logger.info('Template data then 1', { oldTemplateData })
       if (oldTemplateData && oldTemplateData.messageTemplateStatusId === __constants.TEMPLATE_STATUS.complete.statusCode) {
         return ruleEngine.getTemplateCompletionStatus(oldTemplateData)
       } else {
@@ -58,7 +59,7 @@ const sendTemplateForApproval = (req, res) => {
       }
     })
     .then((ruleEngineResponse) => {
-      __logger.info('Rule Engine Result', ruleEngineResponse)
+      __logger.info('Rule Engine Result then 2', { ruleEngineResponse })
       if (ruleEngineResponse.complete) {
         const reqBody = {
           firstLocalizationNewStatusId: __constants.TEMPLATE_STATUS.requested.statusCode,
@@ -76,7 +77,7 @@ const sendTemplateForApproval = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('updateTemplateStatus result', data)
+      __logger.info('updateTemplateStatus result then 4', { data })
       res.send(data)
     })
     .catch(err => {
@@ -128,6 +129,7 @@ const sendTemplateForEvaluaion = (req, res) => {
   } else {
     templateDbService.getTemplateInfo(userId, templateId)
       .then(result => {
+        __logger.info('result then 1', { result })
         oldTemplateData = result
         if (oldTemplateData) {
           // Approved
@@ -157,7 +159,7 @@ const sendTemplateForEvaluaion = (req, res) => {
         }
       })
       .then(updateStatusRes => {
-        __logger.info('updateStatusRes', updateStatusRes)
+        __logger.info('updateStatusRes then 2', { updateStatusRes })
         if (updateStatusRes.code !== 2000) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: updateStatusRes.error, data: {} })
         }
@@ -167,7 +169,7 @@ const sendTemplateForEvaluaion = (req, res) => {
         return true
       })
       .then(ruleEngineRes => {
-        __logger.info('ruleEngineRes', ruleEngineRes)
+        __logger.info('ruleEngineRes then 3', { ruleEngineRes })
         if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
           return templateService.addTemplate(oldTemplateData, req.user.wabaPhoneNumber)
         }

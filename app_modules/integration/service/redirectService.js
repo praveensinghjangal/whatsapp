@@ -29,6 +29,7 @@ class RedirectService {
     }
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
+        __logger.info('data then 1', { data })
         if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
@@ -47,14 +48,14 @@ class RedirectService {
         }
       })
       .then(apiRes => {
-        __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode)
+        __logger.info('webhookPost api ressssssssssssssssss then 2', apiRes.statusCode)
         if (apiRes.notRedirected) {
           return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
         }
         if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
           return apiRes.body
         } else {
-          console.log('Retry Count In Else', payload)
+          __logger.info('Retry Count In Else', payload)
           this.sendToRetryMessageSendQueue(payload, retryCount)
           return 'send for retry'
         }

@@ -18,7 +18,7 @@ class TemplateService {
     const templateData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataAndWabaId(), [messageTemplateId, userId])
       .then(result => {
-        // console.log('Qquery Result', result)
+        __logger.info('Qquery Result', { result })
         if (result && result.length > 0) {
           result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
           templateData.resolve(result[0])
@@ -38,6 +38,7 @@ class TemplateService {
     const count = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCount(), [wabaInformationId])
       .then(result => {
+        __logger.info('result', { result })
         if (result && result.length > 0) {
           count.resolve(result[0])
         } else {
@@ -56,6 +57,7 @@ class TemplateService {
     __logger.info('Setting is active false to Template record', messageTemplateId)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByTemplateId(), [messageTemplateId, userId])
       .then(result => {
+        __logger.info('result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           recordDeactivated.resolve(true)
         } else {
@@ -128,6 +130,7 @@ class TemplateService {
     __logger.info('inserttttttttttttttttttttt->', templateData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addTemplate(), queryParam)
       .then(result => {
+        __logger.info('result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(templateData)
         } else {
@@ -146,6 +149,7 @@ class TemplateService {
     const templateAdded = q.defer()
     this.getTemplatesCount(wabaData.wabaInformationId)
       .then(data => {
+        __logger.info('data', { data })
         if (data.templatesConsumed < wabaData.templatesAllowed) {
           return this.insertTemplate(insertData, wabaData, userId)
         } else {
@@ -211,6 +215,7 @@ class TemplateService {
     __logger.info('updateeeeee --->', templateData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplate(), queryParam)
       .then(result => {
+        __logger.info('result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(templateData)
         } else {
@@ -227,7 +232,7 @@ class TemplateService {
   updateTemplateData (newData, oldData, userId) {
     __logger.info('update template service called', newData, oldData, userId)
     const templateUpdated = q.defer()
-    console.log('i will updateeeee')
+    __logger.info('i will updateeeee')
     // this.deactivateOldTemplateData(oldData.messageTemplateId, userId)
     // .then(data => this.insertTemplate(newData, oldData, userId))
     this.updateTemplate(newData, oldData, userId)
@@ -241,7 +246,7 @@ class TemplateService {
     const templateFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [userId, templateId])
       .then(result => {
-        __logger.info('getTemplateInfo ::>>>>>>>..', result)
+        __logger.info('getTemplateInfo ::>>>>>>>..', { result })
         if (result && result.length > 0) {
           templateFetched.resolve(result[0])
         } else {

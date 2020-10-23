@@ -3,10 +3,11 @@ const __util = require('../lib/util')
 const redisConnectionObject = require('../lib/db/redis_local').connection
 const __constants = require('../config/constants')
 const userConfgiMiddleware = require('./setUserConfig')
+const __logger = require('../lib/logger')
 
 const rateLimit = (req, res, next) => {
-  // console.log('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig.tps)
-  // console.log('Request>>>>>>>>>>>>>>>>>>>>>>>>..', redisConnectionObject)
+  __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig.tps)
+  __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', redisConnectionObject)
   if (req.userConfig && req.userConfig.tps) {
     this.noOfHitsAllowedConfig = new RateLimiterRedis({
       storeClient: redisConnectionObject,

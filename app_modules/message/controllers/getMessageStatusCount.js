@@ -7,14 +7,14 @@ const DbServices = require('../services/dbData')
 
 const getMessageStatusCount = (req, res) => {
   __logger.info('Get Message Status Count API Called', req.query)
-  console.log('startDate and endDate----->', req.query.startDate, req.query.endDate)
+  __logger.info('startDate and endDate----->', req.query.startDate, req.query.endDate)
   const validate = new ValidatonService()
   const dbServices = new DbServices()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   validate.checkstartDateAndendDate(req.query)
     .then(isvalid => dbServices.getMessageCount(userId, req.query.startDate, req.query.endDate))
     .then(data => {
-      __logger.info('db count data ----->', data)
+      __logger.info('db count data ----->then 2', { data })
       _.each(__constants.MESSAGE_STATUS, singleStatus => { if (!_.find(data, obj => obj.state.toLowerCase() === singleStatus.toLowerCase())) data.push({ state: singleStatus, stateCount: 0 }) })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data })
     })

@@ -69,11 +69,12 @@ module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, ap
   const historyStored = q.defer()
   const query = `insert into service_provider_message_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number)
   values (?,?,?,?,?,?,?)`
-  console.log('saveeeeeeeeeeeeeeeeee', vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo)
+  __logger.info('saveeeeeeeeeeeeeeeeee', vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo)
   __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId)
   validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
     .then(validData => __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo]))
     .then(result => {
+      __logger.info('result then 2', { result })
       if (result && result.affectedRows && result.affectedRows > 0) {
         historyStored.resolve(true)
       } else {
