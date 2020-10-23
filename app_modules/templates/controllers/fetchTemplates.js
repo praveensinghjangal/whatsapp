@@ -21,7 +21,6 @@ const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId)
 
 const getTemplateList = (req, res) => {
   __logger.info('Get Templates List API Called', req.query)
-
   const { messageTemplateStatusId } = req.query
   const params = [req.user.user_id]
 

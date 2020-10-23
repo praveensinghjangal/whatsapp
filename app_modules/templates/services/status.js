@@ -1,13 +1,17 @@
 const q = require('q')
 const _ = require('lodash')
 const __db = require('../../../lib/db')
+const __config = require('../../../config')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const queryProvider = require('../queryProvider')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const ValidatonService = require('../services/validation')
 const TemplateService = require('./dbData')
+const UserService = require('../../user/services/dbData')
 const RedisService = require('../../../lib/redis_service/redisService')
+const emailTemplates = require('../../../lib/sendNotifications/emailTemplates')
+const EmailService = require('../../../lib/sendNotifications/email')
 const integrationService = require('../../integration')
 
 class StatusService {
@@ -105,6 +109,14 @@ class StatusService {
         __logger.info('singleStatusCompareAndChange::dbData', data)
         let oldFirstLocalizationStatus = null
         let oldSecondLocalizationStatus = null
+
+        const notifyStatusData = {
+          secondLanguageRequired: data.secondLanguageRequired ? data.secondLanguageRequired : null,
+          firstLocalizationStatus: data.firstLocalizationStatus ? data.firstLocalizationStatus : null,
+          secondLocalizationStatus: data.secondLocalizationStatus ? data.secondLocalizationStatus : null,
+          firstLocalizationRejectionReason: data.firstLocalizationRejectionReason ? data.firstLocalizationRejectionReason : null,
+          secondLocalizationRejectionReason: data.secondLocalizationRejectionReason ? data.secondLocalizationRejectionReason : null
+        }
         if (data.firstLocalizationStatus !== firstLocalizationStatusFromProvider) {
           oldFirstLocalizationStatus = data.firstLocalizationStatus
         }
@@ -113,12 +125,15 @@ class StatusService {
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
           console.log('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else if (oldFirstLocalizationStatus) {
           console.log('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, null, null, null, userId)
         } else if (oldSecondLocalizationStatus) {
           console.log('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, null, null, null, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else {
           console.log('wont update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
@@ -234,6 +249,37 @@ class StatusService {
         return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return statusChanged.promise
+  }
+
+  notify (userId, statusData, templateName) {
+    __logger.info('notify', { statusData, templateName })
+    const notificationSent = q.defer()
+    const userService = new UserService()
+    const emailService = new EmailService(__config.emailProvider)
+    const emailSubject = __config.emailProvider.subject.templateStatusSubject
+
+    if (statusData && statusData.firstLocalizationStatus === __constants.TEMPLATE_STATUS.rejected.displayName.toLowerCase()) {
+      statusData.firstLocalizationRejectionReason = statusData.firstLocalizationRejectionReason
+        ? statusData.firstLocalizationRejectionReason : null
+    }
+    if (statusData && statusData.secondLanguageRequired &&
+      statusData.secondLocalizationStatus === __constants.TEMPLATE_STATUS.rejected.displayName.toLowerCase()) {
+      statusData.secondLocalizationRejectionReason = statusData.secondLocalizationRejectionReason
+        ? statusData.secondLocalizationRejectionReason : null
+    }
+    userService.getEmailAndFirstNameFromUserId(userId)
+      .then(userData => emailService.sendEmail([userData.email], emailSubject + templateName,
+        emailTemplates.templateStatusUpdate(statusData, userData.firstName, templateName)))
+      .then(data => {
+        __logger.info('Email Contents>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', { data })
+        notificationSent.resolve(data)
+      })
+      .catch(err => {
+        __logger.error('validateAndUpdateStatus::error: ', err)
+        return notificationSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+
+    return notificationSent.promise
   }
 
   changeStatusToComplete (templateId, oldStatusId, userId, wabaInformationId, secondLanguageRequired) {

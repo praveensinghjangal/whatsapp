@@ -64,6 +64,7 @@ class businesAccountService {
   insertBusinessData (userId, businessData, businessOldData) {
     const dataInserted = q.defer()
     __logger.info('Inputs insertBusinessData userId', userId)
+    saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
     const businessAccountObj = {
       facebookManagerId: businessData.facebookManagerId ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
@@ -90,11 +91,12 @@ class businesAccountService {
       apiKey: businessData.apiKey ? businessData.apiKey : businessOldData.apiKey,
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
-      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false
+      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
+      serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId
     }
 
     this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.insert)
-      .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated]))
+      .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId]))
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(businessAccountObj)
@@ -142,10 +144,11 @@ class businesAccountService {
       apiKey: businessData.apiKey ? businessData.apiKey : businessOldData.apiKey,
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
-      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false
+      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
+      serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId
     }
     const redisService = new RedisService()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.wabaInformationId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.profilePhotoUrl, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webHookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId, businessAccountObj.wabaInformationId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           if (businessAccountObj.phoneNumber) redisService.setDataInRedis(businessAccountObj.phoneNumber)
