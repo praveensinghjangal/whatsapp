@@ -287,6 +287,24 @@ class UserData {
       .catch(err => passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return passwordTokenConsumed.promise
   }
+
+  getEmailAndFirstNameFromUserId (userId) {
+    const userDataFetched = q.defer()
+    if (!userId || typeof userId !== 'string') {
+      userDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
+      return userDataFetched.promise
+    }
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getEmailAndFirstNameByUserId(), [userId])
+      .then(result => {
+        if (result && result.length === 0) {
+          userDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
+        } else {
+          userDataFetched.resolve(result[0])
+        }
+      })
+      .catch(err => userDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return userDataFetched.promise
+  }
 }
 
 module.exports = UserData

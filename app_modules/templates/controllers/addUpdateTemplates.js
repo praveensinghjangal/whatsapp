@@ -9,7 +9,7 @@ const StatusService = require('../services/status')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 const addUpdateTemplates = (req, res) => {
-  __logger.info('add update template API called')
+  __logger.info('add update template API called', req.body)
   const validate = new ValidatonService()
   const templateService = new TemplateService()
   let wabaPhoneNumber = ''

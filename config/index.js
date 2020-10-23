@@ -242,7 +242,8 @@ module.exports = {
     fromEmail: process.env.EMAIL_PROVIDER_FROM_EMAIL,
     subject: {
       emailVerification: process.env.EMAIL_PROVIDER_SUBJECT_EMAIL_VERIFICATION,
-      passwordReset: process.env.EMAIL_PROVIDER_SUBJECT_PASSWORD_RESET
+      passwordReset: process.env.EMAIL_PROVIDER_SUBJECT_PASSWORD_RESET,
+      templateStatusSubject: process.env.EMAIL_TEMPLATE_STATUS_SUBJECT
     }
   },
   webcpSmsProvider: {

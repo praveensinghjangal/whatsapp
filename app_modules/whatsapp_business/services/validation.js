@@ -257,6 +257,10 @@ class validate {
         chatBotActivated: {
           type: 'boolean',
           required: false
+        },
+        serviceProviderUserAccountId: {
+          type: 'string',
+          required: false
         }
       }
     }
