@@ -45,7 +45,7 @@ const savFileDataInDataBase = (userId, fileName, filePath) => {
   __logger.info('Save file data function ', userId, fileName, filePath)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, userId])
     .then(result => {
-      __logger.info('Save file data function db result ', result)
+      __logger.info('Save file data function db result ', { result })
       if (result && result.affectedRows && result.affectedRows > 0) {
         fileSaved.resolve(true)
       } else {
@@ -84,7 +84,7 @@ const getAgreement = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getLatestAgreementByUserId(), [userId])
     .then(results => {
-      __logger.info('Got result from db 1', results)
+      __logger.info('Got result from db 1', { results })
       if (results && results.length > 0) {
         __logger.info('fileeeeeeeeeeeeeeeeeeee', results[0].file_path)
         res.download(results[0].file_path)

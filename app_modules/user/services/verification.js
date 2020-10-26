@@ -12,8 +12,10 @@ const smsTemplates = require('../../../lib/sendNotifications/smsTemplates')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const QRCode = require('qrcode')
 const speakeasy = require('speakeasy')
+const __logger = require('../../../lib/logger')
 
 const generateBackupCodes = number => {
+  __logger.info('generateBackupCodes:')
   const bc = []
   const uniqueId = new UniqueId()
   for (let i = 0; i < number; i++) {
@@ -28,6 +30,7 @@ class VerificationService {
   }
 
   getVerifiedAndCodeDataByUserId (userId, verificationChannel) {
+    __logger.info('getVerifiedAndCodeDataByUserId:')
     const verificationData = q.defer()
     if (!userId || typeof userId !== 'string') {
       verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -51,6 +54,7 @@ class VerificationService {
   }
 
   addVerificationCode (userId, verificationChannel, expiresIn, codeLength) {
+    __logger.info('addVerificationCode:')
     const verificationDataAdded = q.defer()
     if (!userId || typeof userId !== 'string') {
       verificationDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -83,6 +87,7 @@ class VerificationService {
   }
 
   updateExistingTokens (userId, verificationChannel) {
+    __logger.info('updateExistingTokens:')
     const verificationDataUpdated = q.defer()
     if (!userId || typeof userId !== 'string') {
       verificationDataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -106,6 +111,7 @@ class VerificationService {
   }
 
   sendVerificationCodeByEmail (code, email, firstName = '') {
+    __logger.info('sendVerificationCodeByEmail:')
     const emailSent = q.defer()
     if (!code || typeof code !== 'number') {
       emailSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
@@ -123,6 +129,7 @@ class VerificationService {
   }
 
   sendVerificationCodeBySms (code, phoneNumber, firstName) {
+    __logger.info('sendVerificationCodeBySms:')
     const smsSent = q.defer()
     if (!code || typeof code !== 'number') {
       smsSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
@@ -140,6 +147,7 @@ class VerificationService {
   }
 
   getCodeDetails (userId, code, verificationChannel) {
+    __logger.info('getCodeDetails:')
     const codeData = q.defer()
     if (!userId || typeof userId !== 'string') {
       codeData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -171,6 +179,7 @@ class VerificationService {
   }
 
   setTokenConsumed (userId, code, verificationChannel) {
+    __logger.info('setTokenConsumed:')
     const tokenMarkedConsumed = q.defer()
     if (!userId || typeof userId !== 'string') {
       tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -202,6 +211,7 @@ class VerificationService {
   }
 
   markChannelVerified (userId, verificationChannel) {
+    __logger.info('markChannelVerified:')
     const tokenMarkedConsumed = q.defer()
     if (!userId || typeof userId !== 'string') {
       tokenMarkedConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -244,6 +254,7 @@ class VerificationService {
   }
 
   getVerifiedAndCodeDataByUserIdForBusinessNumber (userId) {
+    __logger.info('getVerifiedAndCodeDataByUserIdForBusinessNumber:')
     const verificationData = q.defer()
     if (!userId || typeof userId !== 'string') {
       verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -252,7 +263,7 @@ class VerificationService {
     const query = queryProvider.getVerifiedAndCodeDataByUserIdForBusinessNumber()
     __db.mysql.query(__constants.HW_MYSQL_NAME, query, [__constants.VERIFICATION_CHANNEL.businessNumber.name, userId])
       .then(result => {
-        console.log('hettttttttttttttttttttttt', result, userId)
+        __logger.info('hettttttttttttttttttttttt', { result }, userId)
         if (result.length === 0) {
           verificationData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {
@@ -264,6 +275,7 @@ class VerificationService {
   }
 
   sendVerificationCodeByVoice (code, phoneNumber, firstName) {
+    __logger.info('sendVerificationCodeByVoice:')
     const voiceCallSent = q.defer()
     if (!code || typeof code !== 'number') {
       voiceCallSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
@@ -278,6 +290,7 @@ class VerificationService {
   }
 
   sendOtpByEmail (code, email, firstName) {
+    __logger.info('sendOtpByEmail:')
     const emailSent = q.defer()
     if (!code || typeof code !== 'number') {
       emailSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
@@ -295,6 +308,7 @@ class VerificationService {
   }
 
   sendOtpBySms (code, phoneNumber, firstName = '') {
+    __logger.info('sendOtpBySms:')
     const smsSent = q.defer()
     if (!code || typeof code !== 'number') {
       smsSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide code of type integer' })
@@ -312,6 +326,7 @@ class VerificationService {
   }
 
   getTfaData (userId) {
+    __logger.info('getTfaData:')
     const verificationData = q.defer()
     if (!userId || typeof userId !== 'string') {
       verificationData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -324,6 +339,7 @@ class VerificationService {
   }
 
   updateTfaData (userTfaId, newData, oldData, userId) {
+    __logger.info('updateTfaData:')
     const dataUpdated = q.defer()
     // __logger.info('Inputs insertBusinessData userId', userId)
     saveHistoryData(oldData, __constants.ENTITY_NAME.USERS_TFA, userTfaId, userId)
@@ -353,6 +369,7 @@ class VerificationService {
   }
 
   addTempTfaData (userId, tfaType, authenticatorSecret) {
+    __logger.info('addTempTfaData:>>>>>>>>>>>>>')
     const tfaAdded = q.defer()
     if (!userId || typeof userId !== 'string') {
       tfaAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -380,6 +397,7 @@ class VerificationService {
   }
 
   updateTempTfaData (userId, tfaType, authenticatorSecret, oldData) {
+    __logger.info('updateTempTfaData:>>>>>>>>>>>>>')
     const dataUpdated = q.defer()
     // __logger.info('Inputs insertBusinessData userId', userId)
     if (!userId || typeof userId !== 'string') {
@@ -411,11 +429,13 @@ class VerificationService {
   }
 
   createSecretKey () {
+    __logger.info('createSecretKey:>>>>>>>>>>>>>')
     const { base32 } = speakeasy.generateSecret({ length: 20 })
     return base32
   }
 
   generateAuthenticatorQrcode (label, secretKey) {
+    __logger.info('generateAuthenticatorQrcode:>>>>>>>>>>>>>')
     const authenticatorData = q.defer()
     const url = speakeasy.otpauthURL({ secret: secretKey, encoding: 'base32', label })
     QRCode.toDataURL(url, (err, qrcode) => {
@@ -426,6 +446,7 @@ class VerificationService {
   }
 
   validateAuthenticatorOtp (secretKey, token) {
+    __logger.info('validateAuthenticatorOtp:>>>>>>>>>>>>>')
     const isValid = q.defer()
     isValid.resolve({
       isAuthenticatorOtpValid: speakeasy.totp.verify({
@@ -438,6 +459,7 @@ class VerificationService {
   }
 
   resetTfaData (userId, oldData) {
+    __logger.info('resetTfaData:>>>>>>>>>>>>>')
     const dataUpdated = q.defer()
     // __logger.info('Inputs insertBusinessData userId', userId)
     if (!userId || typeof userId !== 'string') {

@@ -1,9 +1,11 @@
 const q = require('q')
 const __config = require('../../../config')
+const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const request = require('request')
 
 const isTyntecOptinMessage = (content, optinText) => {
+  __logger.info('isTyntecOptinMessage::>>>>>>>>>>>>>..')
   const isOptin = q.defer()
   if (content && content.contentType === 'text' && content.text && optinText) {
     content.text = content.text.trim()
@@ -25,6 +27,7 @@ let isOptinMessage = () => {
 }
 
 function addAudienceAndOptin (inputPayload, redisData) {
+  __logger.info('addAudienceAndOptin::>>>>>>>>>>>>>..')
   const audienceData = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
   const audienceDataToBePosted = [{
@@ -50,7 +53,6 @@ function addAudienceAndOptin (inputPayload, redisData) {
         headers: { Authorization: __config.internalApiCallToken },
         json: true
       }
-      // console.log('all options', options)
       request.post(options, (err, httpResponse, body) => {
         if (err) {
           audienceData.reject(err)

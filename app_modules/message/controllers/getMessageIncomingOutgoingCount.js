@@ -14,7 +14,7 @@ const getIncomingOutgoingMessageCount = (req, res) => {
   validate.transactionValidator(req.query)
     .then(invalid => dbServices.getIncomingOutgoingMessageCount(userId, req.query.startDate, req.query.endDate, flag))
     .then(data => {
-      __logger.info('Incoming -----', data)
+      __logger.info('Incoming -----then 2', { data })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data })
     })
     .catch(err => {

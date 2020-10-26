@@ -12,12 +12,14 @@ const authMiddleware = require('../../../middlewares/auth/authentication')
 const UserService = require('../services/dbData')
 
 const generateEmailVerificationCode = (req, res) => {
+  __logger.info('generateEmailVerificationCode::')
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let firstName = ''
   let email = ''
   verificationService.getVerifiedAndCodeDataByUserId(userId, __constants.VERIFICATION_CHANNEL.email.name)
     .then(data => {
+      __logger.info('data:: then 1', { data })
       firstName = data && data.first_name ? data.first_name : ''
       email = data && data.email ? data.email : ''
       if (data && data.email_verified) {
@@ -27,6 +29,7 @@ const generateEmailVerificationCode = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('data:: then 2', { data })
       if (data && data.user_verification_code_id) {
         return verificationService.updateExistingTokens(userId, __constants.VERIFICATION_CHANNEL.email.name)
       } else {
@@ -43,12 +46,14 @@ const generateEmailVerificationCode = (req, res) => {
 }
 
 const generateSmsVerificationCode = (req, res) => {
+  __logger.info('generateSmsVerificationCode::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let firstName = ''
   let phoneNumber = ''
   verificationService.getVerifiedAndCodeDataByUserId(userId, __constants.VERIFICATION_CHANNEL.sms.name)
     .then(data => {
+      __logger.info('data:: then 1', data)
       firstName = data && data.first_name ? data.first_name : ''
       phoneNumber = data && data.contact_number && data.phone_code ? data.phone_code + data.contact_number : ''
       if (data && data.phone_verified) {
@@ -58,6 +63,7 @@ const generateSmsVerificationCode = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('data:: then 2', data)
       if (data && data.user_verification_code_id) {
         return verificationService.updateExistingTokens(userId, __constants.VERIFICATION_CHANNEL.sms.name)
       } else {
@@ -74,6 +80,7 @@ const generateSmsVerificationCode = (req, res) => {
 }
 
 const validateEmailVerificationCode = (req, res) => {
+  __logger.info('validateEmailVerificationCode::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   if (!req.body || !req.body.code || typeof req.body.code !== 'number') {
@@ -83,7 +90,7 @@ const validateEmailVerificationCode = (req, res) => {
     .then(data => {
       const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
       const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-      // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+      __logger.info('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
       if (moment(currentTime).isBefore(expireyTime)) {
         return verificationService.setTokenConsumed(userId, req.body.code, __constants.VERIFICATION_CHANNEL.email.name)
       } else {
@@ -93,13 +100,14 @@ const validateEmailVerificationCode = (req, res) => {
     .then(data => verificationService.markChannelVerified(userId, __constants.VERIFICATION_CHANNEL.email.name))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.EMAIL_VERIFIED, data: {} }))
     .catch(err => {
-      console.log(err.err)
+      __logger.info(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
 
 const validateSmsVerificationCode = (req, res) => {
+  __logger.info('validateSmsVerificationCode::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   if (!req.body || !req.body.code || typeof req.body.code !== 'string' || !req.body.code.match(__constants.VALIDATOR.number)) {
@@ -109,7 +117,7 @@ const validateSmsVerificationCode = (req, res) => {
     .then(data => {
       const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
       const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-      // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+      // __logger.info('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
       if (moment(currentTime).isBefore(expireyTime)) {
         return verificationService.setTokenConsumed(userId, req.body.code, __constants.VERIFICATION_CHANNEL.sms.name)
       } else {
@@ -119,13 +127,14 @@ const validateSmsVerificationCode = (req, res) => {
     .then(data => verificationService.markChannelVerified(userId, __constants.VERIFICATION_CHANNEL.sms.name))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.PHONE_VERIFIED, data: {} }))
     .catch(err => {
-      console.log(err.err)
+      __logger.info(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
 
 const generateEmailOtpCode = (req, res) => {
+  __logger.info('generateEmailOtpCode::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
   if (!userId || userId === '0') {
@@ -135,11 +144,13 @@ const generateEmailOtpCode = (req, res) => {
   let email = ''
   verificationService.getVerifiedAndCodeDataByUserId(userId, __constants.VERIFICATION_CHANNEL.emailTfa.name)
     .then(data => {
+      __logger.info('data:: then 1', data)
       firstName = data && data.first_name ? data.first_name : ''
       email = data && data.email ? data.email : ''
       return data
     })
     .then(data => {
+      __logger.info('data:: then 2', data)
       if (data && data.user_verification_code_id) {
         return verificationService.updateExistingTokens(userId, __constants.VERIFICATION_CHANNEL.emailTfa.name)
       } else {
@@ -156,6 +167,7 @@ const generateEmailOtpCode = (req, res) => {
 }
 
 const generateSmsOtpCode = (req, res) => {
+  __logger.info('generateSmsOtpCode::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
   if (!userId || userId === '0') {
@@ -165,11 +177,13 @@ const generateSmsOtpCode = (req, res) => {
   let phoneNumber = ''
   verificationService.getVerifiedAndCodeDataByUserId(userId, __constants.VERIFICATION_CHANNEL.smsTfa.name)
     .then(data => {
+      __logger.info('then 1', { data })
       firstName = data && data.first_name ? data.first_name : ''
       phoneNumber = data && data.contact_number && data.phone_code ? data.phone_code + data.contact_number : ''
       return data
     })
     .then(data => {
+      __logger.info('then 3', { data })
       if (data && data.user_verification_code_id) {
         return verificationService.updateExistingTokens(userId, __constants.VERIFICATION_CHANNEL.smsTfa.name)
       } else {
@@ -186,6 +200,7 @@ const generateSmsOtpCode = (req, res) => {
 }
 
 const sendOtpCode = (req, res) => {
+  __logger.info('sendOtpCode::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
   if (!userId || userId === '0') {
@@ -193,7 +208,7 @@ const sendOtpCode = (req, res) => {
   }
   verificationService.getTfaData(userId)
     .then(data => {
-      console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+      __logger.info('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       if (_.isEmpty(data)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
@@ -214,7 +229,7 @@ const sendOtpCode = (req, res) => {
         default:
           url = null
       }
-      console.log('[[[[[[[[[[[[[[[[[[[[', url)
+      __logger.info('[[[[[[[[[[[[[[[[[[[[', url)
       if (!url && data[0].tempTfaType) {
         switch (data[0].tempTfaType) {
           case __constants.TFA_TYPE_ENUM[0]:
@@ -249,6 +264,7 @@ const sendOtpCode = (req, res) => {
 }
 
 const validateTFa = (req, res) => {
+  __logger.info('validateTFa::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
   let backupData = {}
@@ -264,7 +280,7 @@ const validateTFa = (req, res) => {
   verificationService.getTfaData(userId)
     .then(data => {
       dbData = data
-      console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+      __logger.info('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       if (_.isEmpty(data)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
@@ -284,7 +300,7 @@ const validateTFa = (req, res) => {
         default:
           channelName = null
       }
-      console.log('[[[[[[[[[[[[[[[[[[[[', channelName)
+      __logger.info('[[[[[[[[[[[[[[[[[[[[', channelName)
       if (!channelName && data[0].tempTfaType) {
         isTemp = true
         switch (data[0].tempTfaType) {
@@ -308,13 +324,13 @@ const validateTFa = (req, res) => {
       }
     })
     .then(data => {
-      console.log('heyyyyyyyyyyyyyyyyyy', data)
+      __logger.info('heyyyyyyyyyyyyyyyyyy', { data })
       if (data.isAuthenticatorOtpValid) {
         return data
       } else {
         const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
         const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-        // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        // __logger.info('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
         if (moment(currentTime).isBefore(expireyTime)) {
           return verificationService.setTokenConsumed(userId, req.body.code, channelName)
         } else {
@@ -353,13 +369,13 @@ const validateTFa = (req, res) => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: outData })
     })
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
 
 const addTempTfaDataBS = reqBody => {
+  __logger.info('addTempTfaDataBS::>>>>>>..')
   const dataAdded = q.defer()
   const verificationService = new VerificationService()
   const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
@@ -377,7 +393,7 @@ const addTempTfaDataBS = reqBody => {
   verificationService.getTfaData(userId)
     .then(data => {
       dbData = data
-      console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+      __logger.info('aaaaaaaaaaaaaaaaaaaaaaaaaaa', { data })
       if (!_.isEmpty(data)) {
         return verificationService.updateTempTfaData(userId, reqBody.tfaType, authenticatorSecret, data[0])
       }
@@ -405,7 +421,7 @@ const addTempTfaDataBS = reqBody => {
         default:
           url = null
       }
-      console.log('[[[[[[[[[[[[[[[[[[[[', url)
+      __logger.info('[[[[[[[[[[[[[[[[[[[[', url)
       if (!url) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
       }
@@ -428,7 +444,6 @@ const addTempTfaDataBS = reqBody => {
     })
     .then(data => dataAdded.resolve(data.body || {}))
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return dataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
@@ -436,6 +451,7 @@ const addTempTfaDataBS = reqBody => {
 }
 
 const addTempTfaData = (req, res) => {
+  __logger.info('addTempTfaData::>>>>>>..')
   req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
   addTempTfaDataBS(req.body)
     .then(data => {
@@ -443,13 +459,13 @@ const addTempTfaData = (req, res) => {
       return res.send(data)
     })
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
 
 const validateTempTfaBs = reqBody => {
+  __logger.info('validateTempTfaBs::>>>>>>..')
   const dataAdded = q.defer()
   const verificationService = new VerificationService()
   const userId = reqBody && reqBody.userId ? reqBody.userId : '0'
@@ -466,7 +482,7 @@ const validateTempTfaBs = reqBody => {
   verificationService.getTfaData(userId)
     .then(data => {
       dbData = data
-      console.log('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+      __logger.info('aaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       if (_.isEmpty(data)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TFA_NOT_SETTED_UP, data: {} })
       }
@@ -486,7 +502,7 @@ const validateTempTfaBs = reqBody => {
         default:
           channelName = null
       }
-      console.log('[[[[[[[[[[[[[[[[[[[[', channelName)
+      __logger.info('[[[[[[[[[[[[[[[[[[[[', channelName)
       if (!channelName) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_TFA_TYPE, data: {} })
       }
@@ -502,7 +518,7 @@ const validateTempTfaBs = reqBody => {
       } else {
         const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
         const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-        // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        // __logger.info('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
         if (moment(currentTime).isBefore(expireyTime)) {
           return verificationService.setTokenConsumed(userId, reqBody.code, channelName)
         } else {
@@ -511,7 +527,7 @@ const validateTempTfaBs = reqBody => {
       }
     })
     .then(data => {
-      console.log('code valid lets set temp as permenant', data)
+      __logger.info('code valid lets set temp as permenant', data)
       const newData = {
         tfaType: dbData[0].tempTfaType
       }
@@ -525,7 +541,6 @@ const validateTempTfaBs = reqBody => {
       return dataAdded.resolve(data)
     })
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return dataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
@@ -533,17 +548,18 @@ const validateTempTfaBs = reqBody => {
 }
 
 const validateTempTFa = (req, res) => {
+  __logger.info('validateTempTFa::>>>>>>..')
   req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
   validateTempTfaBs(req.body)
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
 
 const validateBackupCodeAndResetTfa = (req, res) => {
+  __logger.info('validateBackupCodeAndResetTfa::>>>>>>..')
   const verificationService = new VerificationService()
   const userId = req.body && req.body.userId ? req.body.userId : '0'
   if (!req.body || !req.body.backupCode || typeof req.body.backupCode !== 'string') {
@@ -554,16 +570,19 @@ const validateBackupCodeAndResetTfa = (req, res) => {
   }
   verificationService.getTfaData(userId)
     .then(data => {
+      __logger.info('data::>>>>>>.. then 1')
       if (!data[0].backupCodes.includes(req.body.backupCode)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_BACKUP_CODE, err: {} })
       }
       return verificationService.resetTfaData(userId, data[0])
     })
     .then(data => {
+      __logger.info('data::>>>>>>.. then 2')
       const userService = new UserService()
       return userService.checkUserIdExistsForAccountProfile(userId)
     })
     .then(userData => {
+      __logger.info('userData::>>>>>>.. then 3')
       const payload = {
         user_id: userId,
         providerId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
@@ -573,7 +592,6 @@ const validateBackupCodeAndResetTfa = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token, resetTfaData: true } })
     })
     .catch(err => {
-      console.log(err.err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })

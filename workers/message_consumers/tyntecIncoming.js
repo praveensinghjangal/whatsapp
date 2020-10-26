@@ -20,17 +20,17 @@ class TyntecConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        console.log('tyntec incoming message QueueConsumer::Waiting for message...')
+        __logger.info('tyntec incoming message QueueConsumer::Waiting for message...')
         __logger.info('tyntec insoming queue consumer started')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageData = JSON.parse(mqData.content.toString())
-            // console.log('incoming!!!!!!!!!!!!!!!!!!', messageData)
+            // __logger.info('incoming!!!!!!!!!!!!!!!!!!', messageData)
             const uniqueId = new UniqueId()
             const redirectService = new RedirectService()
             messageData.vivaMessageId = uniqueId.uuid()
             const retryCount = messageData.retryCount || 0
-            // console.log('Alteredddddddddddddddddddddddd------', messageData, retryCount)
+            // __logger.info('Alteredddddddddddddddddddddddd------', messageData, retryCount)
             __logger.info('tyntec incoming message QueueConsumer:: messageData received:', messageData)
             saveIncomingMessagePayloadService(messageData.vivaMessageId, messageData.messageId, messageData, messageData.from)
               .then(payloadSaved => {
@@ -42,13 +42,13 @@ class TyntecConsumer {
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
                 __logger.error('ppperrrrrrrrrr', err, retryCount)
-                // console.log('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
+                // __logger.info('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                  // console.log('time to check retry count', retryCount, __constants.INCOMING_MESSAGE_RETRY.tyntec, retryCount < __constants.INCOMING_MESSAGE_RETRY.tyntec)
+                  // __logger.info('time to check retry count', retryCount, __constants.INCOMING_MESSAGE_RETRY.tyntec, retryCount < __constants.INCOMING_MESSAGE_RETRY.tyntec)
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.tyntec) {
                     const oldObj = JSON.parse(mqData.content.toString())
                     oldObj.retryCount = retryCount + 1
-                    // console.log('requeing --->', oldObj)
+                    // __logger.info('requeing --->', oldObj)
                     sendToTyntecIncomingQueue(oldObj, rmqObject)
                   }
                 }
@@ -78,7 +78,7 @@ class TyntecConsumer {
 
 class Worker extends TyntecConsumer {
   start () {
-    console.log((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

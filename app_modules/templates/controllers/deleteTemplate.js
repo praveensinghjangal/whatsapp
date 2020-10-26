@@ -13,15 +13,15 @@ const deleteTemplate = (req, res) => {
     const templateDbService = new TemplateDbService()
     if (req.params && req.params.templateId) {
       templateDbService.deleteTemplate(req.params.templateId, req.user.user_id)
-        .then(() => {
+        .then(data => {
           __db.redis.key_delete(req.params.templateId + '___' + wabaPhoneNumber)
           return templateService.deleteTemplate(wabaPhoneNumber, req.params.templateId)
         })
-        .then(() => {
+        .then(data => {
           __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         })
         .catch(err => {
-          __logger.error('error in delete template: ', err)
+          __logger.error('deleteTemplateerror in delete template: ', err)
           return __util.send(res, { type: err.type, err: err.err || err })
         })
     } else {

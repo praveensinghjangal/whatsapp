@@ -11,6 +11,7 @@ const addUpdateOptinSourceData = (req, res) => {
   validate.checkAddOptinSourceData(req.body)
     .then(data => optinService.getOptinSourceDataById(req.body.optinSourceId))
     .then(optinData => {
+      __logger.info('optinData::then 2', { optinData })
       if (optinData.optinSourceId) {
         return optinService.updateOptinSourceData(req.body, optinData)
       } else {
@@ -18,6 +19,7 @@ const addUpdateOptinSourceData = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('optinData::then 3')
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => {

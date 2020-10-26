@@ -12,7 +12,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 const sendPasswordTokenByEmail = (token, email, firstName) => {
   const emailSent = q.defer()
-  console.log('send ----------------->', token, email, firstName)
+  __logger.info('send ----------------->', token, email, firstName)
   if (!token || typeof token !== 'string') {
     emailSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide token of type string' })
     return emailSent.promise
@@ -62,7 +62,7 @@ const changePassword = (req, res) => {
     .then(data => {
       const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
       const expireyTime = moment(data.created_on).utc().add(+data.expires_in, 'seconds').format('YYYY-MM-DD HH:mm:ss')
-      // console.log('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+      __logger.info('datatat ===>', data, expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
       if (moment(currentTime).isBefore(expireyTime)) {
         return userService.updatePassword(data.user_id, req.body.newPassword)
       } else {

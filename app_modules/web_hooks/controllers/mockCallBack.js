@@ -1,6 +1,7 @@
 const __config = require('../../../config')
 const __constants = require('../../../config/constants')
 const request = require('request')
+const __logger = require('../../../lib/logger')
 
 const controller = (req, res) => {
   // __logger.info('Input', req.body)
@@ -28,10 +29,9 @@ const controller = (req, res) => {
       headers: { Authorization: __config.mockWebHook.authorization },
       json: true
     }
-    // console.log('..........................', options)
     // Calling another api for sending messages
     request.post(options, (err, httpResponse, body) => {
-      console.log('responseeeeeeeeeeeeeeeeeee', err, body)
+      __logger.info('responseeeeeeeeeeeeeeeeeee', err, { body })
       if (err) {
         return res.send(err)
       }

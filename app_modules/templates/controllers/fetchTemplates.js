@@ -50,8 +50,7 @@ const getTemplateInfo = (req, res) => {
   compareAndUpdateStatus(req.params.templateId, req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id)
     .then(statusUpdated => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
     .then(result => {
-      // __logger.info('then 1',result)
-      // console.log('then 1', result, result[0].buttonData, typeof result[0].buttonData)
+      __logger.info('then 1', { result })
       if (result && result.length === 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
@@ -61,7 +60,7 @@ const getTemplateInfo = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('then 2')
+      __logger.info('data then 2', { data })
       finalResult[0].mediaTemplateComplete = data.complete
       return checksForTemplate(finalResult[0])
     })

@@ -2,13 +2,11 @@ const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
-
 const queryProvider = require('../queryProvider')
 
 const getAllPlans =
 (req, res) => {
   __logger.info('Get Plan List API Called')
-
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPlanList(), [])
     .then(result => {
       if (result && result.affectedRows && result.affectedRows === 0) {

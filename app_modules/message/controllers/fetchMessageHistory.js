@@ -11,7 +11,7 @@ const getMessageHistoryRecordById = (req, res) => {
   validate.checkMessageIdExistService(req.params)
     .then(data => messageHistoryService.getMessageHistoryTableDataWithId(req.params.messageId))
     .then(result => {
-      __logger.info('then 1', result)
+      __logger.info('then 1', { result })
       if (result) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       } else {

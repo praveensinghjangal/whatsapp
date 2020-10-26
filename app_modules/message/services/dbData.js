@@ -9,11 +9,12 @@ const ValidatonService = require('../services/validation')
 
 class MessgaeHistoryService {
   getMessageHistoryTableDataWithId (messageId) {
+    __logger.info('getMessageHistoryTableDataWithId::>>>>>>>>>>>>')
     __logger.info('inside get message history by id service', typeof messageId)
     const messageHistoryData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageTableDataWithId(), [messageId])
       .then(result => {
-        // console.log('Query Result', result)
+        __logger.info('Query Result', { result })
         if (result && result.length > 0) {
           messageHistoryData.resolve(result)
         } else {
@@ -28,10 +29,11 @@ class MessgaeHistoryService {
   }
 
   getMessageIdByServiceProviderMsgId (serviceProviderMessageId) {
+    __logger.info('getMessageIdByServiceProviderMsgId::>>>>>>>>>>>>')
     const messageHistoryData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageIdByServiceProviderMsgId(), [serviceProviderMessageId])
       .then(result => {
-        console.log('Query Result', result)
+        __logger.info('Query Result', { result })
         if (result && result.length > 0) {
           messageHistoryData.resolve({ messageId: result[0].messageId, serviceProviderId: result[0].serviceProviderId, businessNumber: result[0].businessNumber, endConsumerNumber: result[0].endConsumerNumber })
         } else {
@@ -46,6 +48,7 @@ class MessgaeHistoryService {
   }
 
   addMessageHistoryDataService (dataObj) {
+    __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>')
     const messageHistoryDataAdded = q.defer()
     const validate = new ValidatonService()
     let msgId = ''
@@ -54,6 +57,7 @@ class MessgaeHistoryService {
     __logger.info('Add message history service called', dataObj)
     validate.addMessageHistory(dataObj)
       .then(valres => {
+        __logger.info('valres then 1', { valres })
         if (!dataObj.messageId) {
           return this.getMessageIdByServiceProviderMsgId(dataObj.serviceProviderMessageId)
         } else {
@@ -61,6 +65,7 @@ class MessgaeHistoryService {
         }
       })
       .then(dbData => {
+        __logger.info('dbData then 2', { dbData })
         msgId = dbData.messageId
         bnNum = dbData.businessNumber ? dbData.businessNumber : dataObj.businessNumber
         ecNum = dbData.endConsumerNumber ? dbData.endConsumerNumber : dataObj.endConsumerNumber
@@ -80,7 +85,7 @@ class MessgaeHistoryService {
       })
       .then(queryParamArr => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(), queryParamArr))
       .then(result => {
-        // console.log('Add Result', result)
+        __logger.info('Add Result then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum })
         } else {
@@ -92,11 +97,13 @@ class MessgaeHistoryService {
   }
 
   getMessageCount (userId, startDate, endDate) {
+    __logger.info('getMessageCount::>>>>>>>>>>>>')
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageStatusCount(), [userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
+        __logger.info('result', { result })
         if (result && result.length > 0) {
-          __logger.info('dbData---', result)
+          __logger.info('dbData---', { result })
           messageStatus.resolve(result)
         } else {
           __logger.info('Failed to get Data')
@@ -111,6 +118,7 @@ class MessgaeHistoryService {
   }
 
   getMessageStatusList (status, startDate, endDate, ItemsPerPage, offset, userId) {
+    __logger.info('getMessageStatusList::>>>>>>>>>>>>')
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageStatusList(), [status, startDate, endDate, userId, startDate, endDate, userId, ItemsPerPage, offset, status, startDate, endDate, userId, startDate, endDate, userId])
       .then(result => {
@@ -129,6 +137,7 @@ class MessgaeHistoryService {
   }
 
   getIncomingOutgoingMessageCount (userId, startDate, endDate, flag) {
+    __logger.info('getIncomingOutgoingMessageCount::>>>>>>>>>>>>')
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
@@ -154,6 +163,7 @@ class MessgaeHistoryService {
   }
 
   getMessageTransactionList (userId, startDate, endDate, flag, ItemsPerPage, offset) {
+    __logger.info('getMessageTransactionList::>>>>>>>>>>>>')
     const messageStatus = q.defer()
     let qry = ''
     let qryParam = []

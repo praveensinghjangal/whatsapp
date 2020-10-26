@@ -12,6 +12,7 @@ const _ = require('lodash')
 const q = require('q')
 
 const updateTemplateStatus = (reqBody, authToken) => {
+  __logger.info('updateTemplateStatus called ::>>>>>>>>>>>>>>>>>.')
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.updateTemplateStatus + `${reqBody.messageTemplateId}` + '/status'
   __logger.info('updateTemplateStatus :: >>>>>>>>>>>>>>>>>>>>>>>>', reqBody)
@@ -51,7 +52,7 @@ const sendTemplateForApproval = (req, res) => {
   templateService.getTemplateInfo(userId, templateId)
     .then(result => {
       oldTemplateData = result
-      __logger.info('Template data', oldTemplateData)
+      __logger.info('Template data then 1', { oldTemplateData })
       if (oldTemplateData && oldTemplateData.messageTemplateStatusId === __constants.TEMPLATE_STATUS.complete.statusCode) {
         return ruleEngine.getTemplateCompletionStatus(oldTemplateData)
       } else {
@@ -77,7 +78,7 @@ const sendTemplateForApproval = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('updateTemplateStatus result', data)
+      __logger.info('updateTemplateStatus result then 4', { data })
       res.send(data)
     })
     .catch(err => {

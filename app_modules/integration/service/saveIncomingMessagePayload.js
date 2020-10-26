@@ -62,13 +62,16 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
   validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
     .then(valres => redisService.getWabaDataByPhoneNumber(payload.to))
     .then(data => {
+      __logger.info(' then 2', { data })
       redisData = data
       return addAudienceAndOptin(payload, data)
     })
     .then(data => {
+      __logger.info(' then 3', { data })
       return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, redisData.serviceProviderId, JSON.stringify(payload), fromNumber])
     })
     .then(result => {
+      __logger.info(' then 34', { result })
       if (result && result.affectedRows && result.affectedRows > 0) {
         payloadStored.resolve(true)
       } else {

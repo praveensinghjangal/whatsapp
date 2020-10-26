@@ -89,7 +89,7 @@ class downloadWorker {
 
 class worker extends downloadWorker {
   start () {
-    console.log((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

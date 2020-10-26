@@ -42,7 +42,7 @@ class MessageConsumer {
             messageService.sendMessage(messageData.payload)
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
-                console.log('Error------------------------------->', err)
+                __logger.info('Error------------------------------->', err)
                 if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
                   messageData.payload.retryCount--
                   sendToMockProviderQueue(messageData, rmqObject)
@@ -78,7 +78,7 @@ class MessageConsumer {
 
 class Worker extends MessageConsumer {
   start () {
-    console.log((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

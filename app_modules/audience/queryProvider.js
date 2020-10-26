@@ -15,7 +15,6 @@ const updateAudienceRecord = () => {
 }
 
 const getAudienceRecordList = (columnArray, offset, limit, userId, startDate, endDate) => {
-  // console.log('getAudienceRecoredList', columnArray)
   let query = `SELECT count(1) over() as "totalFilteredRecord", audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", optin, (last_message between now()- interval 24 HOUR and now()) as tempOptin,
@@ -30,7 +29,6 @@ const getAudienceRecordList = (columnArray, offset, limit, userId, startDate, en
   WHERE aud.is_active = true`
 
   columnArray.forEach((element, index) => {
-    // console.log('Element', element)
     if (element === 'aud.phone_number') {
       query += ` AND LOCATE (?,${element})`
     } else {

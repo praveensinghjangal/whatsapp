@@ -5,13 +5,14 @@ const rejectionHandler = require('../lib/util/rejectionHandler')
 const __util = require('../lib/util')
 const __constants = require('../config/constants')
 const authorize = require('../app_modules/user/controllers/authorize').createAuthTokenByUserId
+const __logger = require('../lib/logger')
 
 const getAuthToken = userId => {
   const token = q.defer()
   authorize(userId)
     .then(data => token.resolve(data))
     .catch(err => {
-      console.log(err)
+      __logger.info(err)
       token.resolve('')
     })
   return token.promise
@@ -32,7 +33,7 @@ const setDataInRedis = userId => {
     })
     .then(token => {
       userData.authToken = token
-      // console.log('data to be set ------->', userData)
+      // __logger.info('data to be set ------->', userData)
       return __db.redis.setex(userId, JSON.stringify(userData), __constants.REDIS_TTL.userConfig)
     })
     .then(result => dataSet.resolve(userData))
@@ -70,7 +71,7 @@ module.exports = (req, res, next) => {
       return next()
     })
     .catch(err => {
-      console.log('err', err)
+      __logger.info('err', err)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
 }

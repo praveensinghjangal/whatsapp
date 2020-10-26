@@ -36,7 +36,7 @@ class FetchAndUpdateTemplateStatus {
 
 class Worker extends FetchAndUpdateTemplateStatus {
   start () {
-    console.log((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

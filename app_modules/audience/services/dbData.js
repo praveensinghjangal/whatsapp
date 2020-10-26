@@ -19,7 +19,7 @@ class AudienceService {
     const audienceData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [audienceId])
       .then(result => {
-        // console.log('Query Result', result)
+        __logger.info('Query Result', { result })
         if (result && result.length === 0) {
           audienceData.resolve(null)
         } else {
@@ -46,7 +46,7 @@ class AudienceService {
     const queryFilter = wabaPhoneNumber || userId
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumber])
       .then(result => {
-        // console.log('Query Result', result)
+        __logger.info('Query Result', { result })
         if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
@@ -80,7 +80,7 @@ class AudienceService {
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
-        // console.log('WabaNum>>>>>>>>>>>>>>>>>>>>>>>>', data)
+        __logger.info('WabaNum>>>>>>>>>>>>>>>>>>>>>>>> then 1', { data })
         audienceData.wabaPhoneNumber = data
         if (newData.isIncomingMessage) {
           audienceData.firstMessageValue = this.formatToTimeStamp()
@@ -92,12 +92,13 @@ class AudienceService {
         // __logger.info('audienceData', audienceData)
       })
       .then(() => {
+        __logger.info('Then 2')
         const queryParam = []
         _.each(audienceData, (val) => queryParam.push(val))
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceData(), queryParam)
       })
       .then(result => {
-        // console.log('Add Result', result)
+        __logger.info('Add Result then 3', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete audienceData.createdBy
           delete audienceData.wabaPhoneNumber
@@ -115,11 +116,8 @@ class AudienceService {
   // waba
   updateAudienceDataService (newData, oldData) {
     // __logger.info('update audience service called', newData)
-    // __logger.info('update audience service called', oldData)
     const audienceUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.userId)
-
-    // console.log('i will updateeeee')
     // this.updateAudience(newData, oldData)
     var audienceData = {
       channel: newData.channel || oldData.channel,
@@ -144,6 +142,7 @@ class AudienceService {
 
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
+        __logger.info('data then 1', { data })
         audienceData.wabaPhoneNumber = data
         if (newData.isIncomingMessage) {
           audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : this.formatToTimeStamp()
@@ -154,6 +153,7 @@ class AudienceService {
         }
       })
       .then(() => {
+        __logger.info('Then 2')
         _.each(audienceData, (val) => queryParam.push(val))
         __logger.info('updateeeeee --->', audienceData, queryParam)
         const validate = new ValidatonService()
@@ -161,6 +161,7 @@ class AudienceService {
       })
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudienceRecord(), queryParam))
       .then(result => {
+        __logger.info('result Then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete audienceData.wabaPhoneNumber
           delete audienceData.firstMessageValue
@@ -184,14 +185,12 @@ class AudienceService {
   }
 
   checkAndReturnWabaNumber (wabaNumber, userId) {
-    // console.log('WabaNumber', wabaNumber)
-    // console.log('UserIId', userId)
+    __logger.info('WabaNumber', wabaNumber)
     const wabaNumberData = q.defer()
     // if present in redis use it
 
     // else fetch data from db using user Id
     if (wabaNumber) {
-      // console.log('If')
       __db.redis.get(wabaNumber)
         .then(data => {
           if (data) {
@@ -209,7 +208,6 @@ class AudienceService {
           wabaNumberData.resolve(null)
         })
     } else {
-      // console.log('Else')
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromDb(), [userId])
         .then(data => {
           if (data.length > 0) {
@@ -285,6 +283,7 @@ class AudienceService {
     validate.checkUpdateSegmentData(segmentData)
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateSegmentData(), queryParam))
       .then(result => {
+        __logger.info('result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           segmentUpdated.resolve(segmentData)
         } else {
@@ -303,6 +302,7 @@ class AudienceService {
     if (optinSourceId) {
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinSourceDataById(), [optinSourceId])
         .then(result => {
+          __logger.info('result then 1', { result })
           if (result && result.length > 0) {
             optinData.resolve(result[0])
           } else {
@@ -354,6 +354,7 @@ class AudienceService {
     validate.checkUpdateOptinSourceData(optinntData)
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateOptinSourceData(), queryParam))
       .then(result => {
+        __logger.info('result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           optinUpdated.resolve(optinntData)
         } else {

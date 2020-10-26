@@ -22,6 +22,7 @@ const callSendToQueueApi = (formattedBody, authToken) => {
   // Calling another api for sending messages
   request.post(options, (err, httpResponse, body) => {
     if (err) {
+      __logger.info('err', err)
       return apiCalled.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     }
     return apiCalled.resolve(body)
@@ -52,12 +53,10 @@ const formReqBody = excelSingleData => {
     }
   }
   _.each(excelSingleData, (val, key) => {
-    // console.log('key ->', key, 'val ->', val)
     if (key !== 'from' && key !== 'to' && key !== 'templateId' && key !== 'languageCode') {
       excelSingleData[key] = val.toString()
       const arrOfkey = key.split('_')
       let obj = {}
-      // console.log('arrrrr of 1', arrOfkey[1])
       if (arrOfkey[1] === 'text') {
         obj = {
           type: 'text',
@@ -73,19 +72,19 @@ const formReqBody = excelSingleData => {
           }
         }
       }
-      // console.log('before switch and case', obj)
+      // __logger.info('before switch and case', obj)
       if (!_.isEmpty(obj)) {
         switch (arrOfkey[0]) {
           case 'bodyParameter':
-            // console.log('in switch case bod', obj, key)
+            // __logger.info('in switch case bod', obj, key)
             bodyParam.push(obj)
             break
           case 'headerParameter':
-            // console.log('in switch case head', obj, key)
+            // __logger.info('in switch case head', obj, key)
             headerParam.push(obj)
             break
           case 'footerParameter':
-            // console.log('in switch case foot', obj, key)
+            // __logger.info('in switch case foot', obj, key)
             footerParam.push(obj)
         }
       }
@@ -118,19 +117,18 @@ const formReqBody = excelSingleData => {
 
 const validateSingleReq = excelSingleData => {
   const isValid = q.defer()
-  console.log('single validate', excelSingleData)
+  __logger.info('single validate', { excelSingleData })
   const errorData = []
   if (!excelSingleData.from || isNaN(+excelSingleData.from)) errorData.push('please provide "from" of type number')
   if (!excelSingleData.to || isNaN(+excelSingleData.to)) errorData.push('please provide "to" of type number')
   if (!excelSingleData.templateId || typeof excelSingleData.templateId !== 'string') errorData.push('please provide "templateId" of type string')
   if (!excelSingleData.languageCode || typeof excelSingleData.languageCode !== 'string' || excelSingleData.languageCode.length !== 2) errorData.push('please provide "languageCode" of type string having legth 2')
-  // console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', isNaN(+excelSingleData.to), errorData)
+  // __logger.info('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', isNaN(+excelSingleData.to), errorData)
   if (errorData.length > 0) {
     isValid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errorData })
     return isValid.promise
   }
   _.each(excelSingleData, (val, key) => {
-    // console.log('key ->', key, 'val ->', val)
     if (key !== 'from' && key !== 'to' && key !== 'templateId' && key !== 'languageCode') {
       if (!val) {
         errorData.push('please provide ' + key + ' of type string')
@@ -150,12 +148,12 @@ const validateSingleReq = excelSingleData => {
   } else {
     isValid.resolve(excelSingleData)
   }
-  // console.log('safe to check ahead', errorData)
+  // __logger.info('safe to check ahead', {errorData})
   return isValid.promise
 }
 
 const validateAndFormRequestBody = excelData => {
-  // console.log('here to form reqbody and validate', excelData)
+  // __logger.info('here to form reqbody and validate', {excelData})
   let p = q()
   const thePromises = []
   excelData.forEach(singleObject => {
@@ -191,7 +189,7 @@ const filter = function (req, file, cb) {
   let fileExt = file.originalname.split('.')
   fileExt = fileExt[fileExt.length - 1]
   var extname = filetypes.test(fileExt.toLowerCase())
-  // console.log('file mime type filter  -->', extname)
+  // __logger.info('file mime type filter  -->', extname)
   if (extname) {
     return cb(null, true)
   } else {
@@ -222,7 +220,7 @@ const controller = (req, res) => {
       convertToJson(req.files)
         .then(jsonData => validateAndFormRequestBody(jsonData))
         .then(reqBody => {
-          // console.log('req body for api =>', reqBody)
+          __logger.info('req body for api => then 2', { reqBody })
           const invalidReq = _.filter(reqBody, { valid: false })
           if (invalidReq.length > 0) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })

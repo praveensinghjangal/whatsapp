@@ -365,7 +365,6 @@ class validate {
   }
 
   isAddUpdateBusinessAccessInfoComplete (request) {
-    // console.log('req --------------------', request)
     const isvalid = q.defer()
     const schema = {
       id: '/isAddUpdateBusinessAccessInfoComplete',
