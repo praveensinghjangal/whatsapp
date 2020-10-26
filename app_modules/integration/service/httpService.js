@@ -68,6 +68,7 @@ class HttpRequest {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('Integration Patch::OPTIONS', options)
     request(options, (error, response, body) => {
       __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
@@ -76,7 +77,7 @@ class HttpRequest {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
-        deferred.resolve(body)
+        deferred.resolve(response)
       }
     })
     return deferred.promise

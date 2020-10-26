@@ -3,6 +3,7 @@ const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 const router = express.Router()
+// const userConfiMiddleware = require('../../middlewares/setUserConfig')
 
 // Controller require section
 const businessCategoryController = require('./controllers/category')
@@ -27,12 +28,5 @@ router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
 router.post('/profile/optinmessage', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.addUpdateOptinMessage)
 
-router.get('/inttest', (req, res) => {
-  const integrationService = require('../../app_modules/integration')
-  const templateService = new integrationService.WabaAccount('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-  templateService.getAccountInfo(req.headers.wabanumber)
-    .then(data => res.send(data))
-    .catch(err => res.send(err))
-})
 router.put('/profile/logo', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.updateProfilePic)
 module.exports = router

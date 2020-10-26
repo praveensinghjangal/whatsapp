@@ -3,6 +3,8 @@ const _ = require('lodash')
 const __constants = require('../../../config/constants')
 const __config = require('../../../config')
 const getCategoryMapping = require('../service/getCategoryMapping')
+const getWabaCategoryMapping = require('../service/getWabaCategoryMapping')
+const __logger = require('../../../lib/logger')
 
 class InternalService {
   createInitialBody (td) {
@@ -140,6 +142,25 @@ class DataMapper {
         body = internalService.addFooter(body, templateData)
         body = internalService.addCallToActionButton(body, templateData)
         body = internalService.addQuickReplyButton(body, templateData)
+        apiReqBody.resolve(body)
+      })
+      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return apiReqBody.promise
+  }
+
+  updateProfileDetails (wabaData) {
+    const apiReqBody = q.defer()
+    getWabaCategoryMapping(wabaData.businessCategoryId, __config.service_provider_id.tyntec)
+      .then(data => {
+        const body = {
+          vertical: data.service_provider_business_category_name,
+          address: wabaData.address || '' + ', ' + wabaData.city || '' + ', ' + wabaData.state || '' + ', ' + wabaData.country || '' + 'Pin Code ' + wabaData.postalCode || '',
+          description: wabaData.description,
+          email: wabaData.email,
+          websites: wabaData.websites,
+          about: wabaData.whatsappStatus
+        }
+        __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
       .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))

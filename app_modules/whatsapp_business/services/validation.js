@@ -257,6 +257,10 @@ class validate {
         chatBotActivated: {
           type: 'boolean',
           required: false
+        },
+        websites: {
+          type: 'array',
+          required: false
         }
       }
     }

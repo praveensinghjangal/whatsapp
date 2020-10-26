@@ -86,29 +86,64 @@ const addupdateBusinessAccountInfo = (req, res) => {
 
 // todo : add check if category id exists in master
 const addUpdateBusinessProfile = (req, res) => {
-  __logger.info('API TO ADD/UPDATE BUSINESS PROFILE CALLED', req.user.user_id)
+  __logger.info('addUpdateBusinessProfile::API TO ADD/UPDATE BUSINESS PROFILE CALLED', req.user.user_id)
+  __logger.info('addUpdateBusinessProfile::PROVID===-', req.user.providerId, req.user.wabaPhoneNumber)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  let wabaProfileData = {}
+  let profileData = {}
   validate.addUpdateBusinessInfo(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
-      __logger.info('exists ----------------->', data)
-      if (!data.exists) {
-        req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
-        return businessAccountService.insertBusinessData(userId, req.body, {})
+      profileData = data
+      return businessAccountService.getWebsiteLimitByProviderId(req.user.providerId)
+    })
+    .then(result => {
+      __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
+      if (req.body.websites && req.body.websites !== []) {
+        if (req.body.websites.length <= result[0].maxWebsiteAllowed) {
+          if (!profileData.exists) {
+            req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
+            return businessAccountService.insertBusinessData(userId, req.body, {})
+          } else {
+            __logger.info('addUpdateBusinessProfile::time to update')
+            return businessAccountService.updateBusinessData(req.body, profileData.record || {})
+          }
+        } else {
+          __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', result[0].maxWebsiteAllowed)
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Maximum website allowed by provider is: ' + result[0].maxWebsiteAllowed, data: {} })
+        }
       } else {
-        __logger.info('time to update')
-        return businessAccountService.updateBusinessData(req.body, data.record || {})
+        if (!profileData.exists) {
+          req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
+          return businessAccountService.insertBusinessData(userId, req.body, {})
+        } else {
+          __logger.info('addUpdateBusinessProfile::time to update')
+          return businessAccountService.updateBusinessData(req.body, profileData.record || {})
+        }
       }
     })
-    .then(data => validate.isAddUpdateBusinessInfoComplete(data))
+    // call integration here in .then
     .then(data => {
-      __logger.info('After inserting or updating', data)
+      wabaProfileData = data
+      __logger.info('addUpdateBusinessProfile::ddddd----', data)
+      if (wabaProfileData && wabaProfileData.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+        __logger.info('addUpdateBusinessProfile::called tyntec api to update profile data---')
+        const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
+        return wabaAccountService.updateProfile(req.user.wabaPhoneNumber, wabaProfileData)
+      } else {
+        __logger.info('addUpdateBusinessProfile::status not accepted')
+        return data
+      }
+    })
+    .then(data => validate.isAddUpdateBusinessInfoComplete(wabaProfileData))
+    .then(data => {
+      __logger.info('addUpdateBusinessProfile::After inserting or updating', data)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessProfileCompletionStatus: data } })
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('addUpdateBusinessProfile::error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }

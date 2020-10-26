@@ -17,7 +17,7 @@ const getBusinessProfile = () => {
   postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
   user_account_id_by_provider as "serviceProviderUserAccountId",
   service_provider_name as "serviceProviderName", api_key as "apiKey",
-  webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated"
+  webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
   LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true
@@ -38,7 +38,7 @@ const getWabaTableDataByUserId = () => {
   business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified",city,postal_code as "postalCode",
   service_provider_id as "serviceProviderId",api_key as "apiKey",
-  webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated"
+  webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated", websites
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
@@ -61,8 +61,8 @@ const addWabaTableData = () => {
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
   country, email, business_category_id ,profile_photo_url , waba_profile_setup_status_id ,business_manager_verified,
   phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,
-  optin_text,chatbot_activated)
-  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  optin_text,chatbot_activated,websites)
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateWabaTableData = () => {
@@ -71,7 +71,7 @@ const updateWabaTableData = () => {
   ,address=?,country=?, email=?, business_category_id =?,profile_photo_url =?,
   waba_profile_setup_status_id =?,business_manager_verified=?,phone_verified =?,waba_information_id=?,
   updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?, 
-  service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?,chatbot_activated=?
+  service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?,chatbot_activated=?,websites=?
   where waba_information_id=? and user_id=?`
 }
 
@@ -136,6 +136,12 @@ const getWabaNumberAndOptinTextFromUserId = () => {
   where wi.user_id = ? and wi.is_active = true`
 }
 
+const getWebsiteLimit = () => {
+  return `select max_website_allowed as "maxWebsiteAllowed"
+  from service_provider 
+  where service_provider_id = ? and is_active = 1`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -151,5 +157,6 @@ module.exports = {
   updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId,
   getWabaNumberFromUserId,
   getUserIdAndTokenKeyByWabaNumber,
-  getWabaNumberAndOptinTextFromUserId
+  getWabaNumberAndOptinTextFromUserId,
+  getWebsiteLimit
 }
