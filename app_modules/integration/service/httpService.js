@@ -126,7 +126,7 @@ class HttpRequest {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
       } else {
-        deferred.resolve(body)
+        deferred.resolve(response)
       }
     })
     return deferred.promise

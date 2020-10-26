@@ -1,4 +1,5 @@
 const express = require('express')
+const __logger = require('../../lib/logger')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
@@ -67,9 +68,9 @@ router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name,
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
 
 router.delete('/:templateId', (req, res) => {
-  console.log('Delete Template Called', req.headers)
-  console.log('Delete Template Called', req.headers.wabaphonenumber)
-  console.log('Delete Template Called', req.headers.templateid)
+  __logger.info('Delete Template Called', req.headers)
+  __logger.info('Delete Template Called', req.headers.wabaphonenumber)
+  __logger.info('Delete Template Called', req.headers.templateid)
   const integrationService = require('../../app_modules/integration')
   const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
   templateService.deleteTemplate(req.headers.wabaphonenumber, req.headers.templateid)

@@ -4,6 +4,7 @@ const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
 const TrimService = require('../../../lib/trimService/trim')
+const __logger = require('../../../lib/logger')
 const trimInput = new TrimService()
 
 class validate {
@@ -353,7 +354,7 @@ class validate {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
-    console.log('errrrrrrrrrrrrrrrrrrrrr', formatedError)
+    __logger.info('errrrrrrrrrrrrrrrrrrrrr', formatedError)
     if (formatedError.length > 0) {
       isvalid.resolve(false)
     } else {
@@ -363,7 +364,7 @@ class validate {
   }
 
   checkTemplateInfoStatus (request) {
-    // console.log('Request', request)
+    // __logger.info('Request', request)
     const isvalid = q.defer()
     if (request && request.type) request.type = request.type.toLowerCase()
     if (request && request.headerType) request.headerType = request.headerType.toLowerCase()

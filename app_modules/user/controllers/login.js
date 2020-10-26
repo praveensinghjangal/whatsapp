@@ -15,11 +15,11 @@ const controller = (req, res) => {
   const email = req.body.email
   validate.login(req.body)
     .then(data => {
-      __logger.info('Then 1', data)
+      __logger.info('Then 1', { data })
       return userService.getUSerDataByEmail(email)
     })
     .then(results => {
-      __logger.info('Then 2', results)
+      __logger.info('Then 2', { results })
       const hashPassword = passMgmt.create_hash_of_password(password, results[0].salt_key.toLowerCase())
       if (hashPassword.passwordHash !== results[0].hash_password.toLowerCase()) { // todo : use bcrypt
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: null })

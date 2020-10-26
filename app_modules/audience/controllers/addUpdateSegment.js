@@ -11,6 +11,7 @@ const addUpdateSegmentData = (req, res) => {
   validate.checkAddSegmentData(req.body)
     .then(data => segmentService.getSegmentDataById(req.body.segmentId))
     .then(segmentData => {
+      __logger.info('Segment Data then 2', { segmentData })
       if (segmentData.segmentId) {
         return segmentService.updateSegmentData(req.body, segmentData, req.user.user_id)
       } else {
@@ -18,6 +19,7 @@ const addUpdateSegmentData = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('data then 3', { data })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => {

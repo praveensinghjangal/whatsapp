@@ -21,7 +21,7 @@ class WabaAccount {
       const redisService = new RedisService()
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
-          __logger.info('dataatatatat', data, typeof data)
+          __logger.info('dataatatatat then 1', data, typeof data)
           let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getAccountInfo
           url = url.split(':accountId').join(data.userAccountIdByProvider || '')
           __logger.info('URL====', url)
@@ -33,6 +33,7 @@ class WabaAccount {
           return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then((accountData) => {
+          __logger.info('accountData then 2', { accountData })
           if (accountData && accountData.constructor.name.toLowerCase() === 'object') {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: accountData })
           } else if (accountData && accountData.status === 404) {
@@ -55,7 +56,7 @@ class WabaAccount {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        __logger.info('dataatatatat', data)
+        __logger.info('dataatatatat then 1', { data })
         let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateProfilePic
         url = url.split(':phoneNumber').join(data.id || '')
         __logger.info('URL====', url)
@@ -67,7 +68,7 @@ class WabaAccount {
         return this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
       })
       .then((accountData) => {
-        __logger.info('Dataaaaa', accountData)
+        __logger.info('Dataaaaa then 2', { accountData })
         if (accountData && accountData.statusCode === 204) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else {

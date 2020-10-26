@@ -258,6 +258,10 @@ class validate {
           type: 'boolean',
           required: false
         },
+        serviceProviderUserAccountId: {
+          type: 'string',
+          required: false
+        },
         websites: {
           type: 'array',
           required: false
@@ -365,7 +369,6 @@ class validate {
   }
 
   isAddUpdateBusinessAccessInfoComplete (request) {
-    // console.log('req --------------------', request)
     const isvalid = q.defer()
     const schema = {
       id: '/isAddUpdateBusinessAccessInfoComplete',

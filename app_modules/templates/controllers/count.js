@@ -10,7 +10,7 @@ const getTemplateCount = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountByStatus(), [userId])
     .then(data => {
-      __logger.info('formatAndReturnTemplateCount', data)
+      __logger.info('formatAndReturnTemplateCount', { data })
       const result = {}
       result.statusCount = []
       result.allocatedTemplateCount = data.length > 0 ? data[0].templates_allowed : 0
@@ -24,7 +24,7 @@ const getTemplateCount = (req, res) => {
           result.statusCount.push({ templateCount: recordData.count, statusName: singleStatus.displayName })
         }
       })
-      __logger.info('Result ', result)
+      __logger.info('Result ', { result })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {

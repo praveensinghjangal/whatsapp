@@ -57,7 +57,7 @@ const getTemplateIdData = authToken => {
     .then(data => {
       __logger.info('get metadata api response', data)
       data = data.body || data
-      console.log('datatatattatatatatat', data)
+      __logger.info('datatatattatatatatat', { data })
       if (data && data.code && data.code === 2000) {
         apiCalled.resolve(data)
       } else {
@@ -80,7 +80,7 @@ const callSetOptinTextApi = (optinText, authToken) => {
     .then(data => {
       __logger.info('set optin api response', data)
       data = data.body || data
-      console.log('datatatattatatatatat', data)
+      __logger.info('datatatattatatatatat', { data })
       if (data && data.code && data.code === 2000) {
         apiCalled.resolve(data)
       } else {
@@ -96,10 +96,12 @@ const getOptinAndTemplate = (req, res) => {
   const resData = {}
   getTemplateIdData(req.headers.authorization)
     .then(metaData => {
+      __logger.info('metaData then 1', { metaData })
       resData.templateId = metaData.data.optinTemplateId
       return getOptinText(req.headers.authorization)
     })
     .then(optinText => {
+      __logger.info('optinText then 2', { optinText })
       resData.optinText = optinText
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: resData })
     })

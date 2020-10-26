@@ -34,10 +34,10 @@ const updateAudience = (audienceNumber, audOptin, wabaNumber) => {
     headers: { Authorization: __config.internalApiCallToken },
     json: true
   }
-  // console.log('all options', options)
   request.post(options, (err, httpResponse, body) => {
-    // console.log('aud update response', body)
+    __logger.info('aud update response', { body })
     if (err) {
+      __logger.info('aud update response', err)
       audUpdated.reject(err)
     } else {
       audUpdated.resolve(true)
@@ -74,7 +74,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
 }
 
 const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber) => {
-  // console.log('hererereererrerere', endUserPhoneNumber, templateObj, isOptin)
+  __logger.info('checkOptinStaus::>>>>>>>>>>>', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
     updateAudience(endUserPhoneNumber, true, wabaNumber)
@@ -100,7 +100,7 @@ const checkIfNoExists = number => {
   const redisService = new RedisService()
   redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
-      // console.log('datatat', data)
+      __logger.info('datatat', { data })
       exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: { redisData: data } })
     })
     .catch(err => exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
@@ -182,7 +182,7 @@ const controller = (req, res) => {
   validate.sendMessageToQueue(req.body)
     .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber))
     .then(isValid => {
-      __logger.info('sendMessageToQueue :: Rules checked', isValid, req.body.length)
+      __logger.info('sendMessageToQueue :: Rules checked then 2', isValid, req.body.length)
       const invalidReq = _.filter(isValid, { valid: false })
       if (invalidReq.length > 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
@@ -191,7 +191,7 @@ const controller = (req, res) => {
       }
     })
     .then(sendToQueueRes => {
-      // __logger.info('sendMessageToQueue :: message sentt to queue', sendToQueueRes)
+      __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: sendToQueueRes })
     })
     .catch(err => {

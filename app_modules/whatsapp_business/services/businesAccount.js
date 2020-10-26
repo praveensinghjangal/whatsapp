@@ -34,15 +34,18 @@ class businesAccountService {
   }
 
   checkUserIdExist (userId) {
+    __logger.info('checkUserIdExist::>>>>>>>>>>...')
     // declare a prmoise
     const doesUserIdExist = q.defer()
     // checking using service whether the userId is  provided or not
     this.validate.checkUserIdService({ userId })
     // then using a query to check that a record exist or not in table
       .then(valResponse => {
+        __logger.info('valRespons then 1')
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaTableDataByUserId(), [userId])
       })
       .then(result => {
+        __logger.info('result then 2')
         // if exist throw return true exist
         if (result && result.length > 0) {
           result[0].canReceiveSms = result[0].canReceiveSms === 1
@@ -62,8 +65,10 @@ class businesAccountService {
   }
 
   insertBusinessData (userId, businessData, businessOldData) {
+    __logger.info('insertBusinessData::>>>>>>>>>>...')
     const dataInserted = q.defer()
     __logger.info('Inputs insertBusinessData userId', userId)
+    saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
     const businessAccountObj = {
       facebookManagerId: businessData.facebookManagerId ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
@@ -91,6 +96,7 @@ class businesAccountService {
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
       chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
+      serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId,
       websites: businessData.websites ? businessData.websites : businessOldData.websites
     }
 
@@ -113,7 +119,7 @@ class businesAccountService {
   /* To do the handling of facebook manager id when null  */
   updateBusinessInfo (userId, businessData, businessOldData) {
     const dataUpdated = q.defer()
-    __logger.info('Inputs insertBusinessData userId', userId)
+    __logger.info('Inputs updateBusinessInfo userId', userId)
     // __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
     // __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
     saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
@@ -144,6 +150,7 @@ class businesAccountService {
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
       chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
+      serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId,
       websites: businessData.websites ? businessData.websites : businessOldData.websites
     }
     const redisService = new RedisService()
@@ -164,6 +171,7 @@ class businesAccountService {
   }
 
   updateBusinessData (businessData, businessOldData) {
+    __logger.info('Inputs updateBusinessData userId')
     const businessDataUpdated = q.defer()
     // this.deactivateWabaRecord(businessOldData.wabaInformationId, businessOldData.userId)
     // .then(data => this.insertBusinessData(businessOldData.userId, businessData, businessOldData))
@@ -194,6 +202,7 @@ class businesAccountService {
   }
 
   getBusinessProfileInfo (userId) {
+    __logger.info('getBusinessProfileInfo')
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfile(), [userId])
       .then(businessData => businessDataFetched.resolve(businessData))
@@ -205,8 +214,8 @@ class businesAccountService {
   }
 
   updateServiceProviderId (userId, serviceProviderId) {
+    __logger.info('updateServiceProviderId')
     const dataUpdated = q.defer()
-
     const serviceProviderData = {
       serviceProviderId: serviceProviderId,
       updatedBy: userId,
@@ -233,6 +242,7 @@ class businesAccountService {
   }
 
   getUserIdFromWabaNumber (wabaNumber) {
+    __logger.info('getUserIdFromWabaNumber')
     let phoneCode
     if (wabaNumber.includes('91')) {
       phoneCode = wabaNumber.substring(0, 2)
@@ -245,7 +255,7 @@ class businesAccountService {
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
-        console.log('BusinessData', businessData)
+        __logger.info('BusinessData', { businessData })
         if (businessData.length > 0) {
           businessDataFetched.resolve(businessData[0].userId)
         } else {
@@ -264,7 +274,7 @@ class businesAccountService {
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaData(), [wabaNumber])
       .then(result => {
-        // console.log('resulttttttttttttttttttttttttttt', result[0], wabaNumber)
+        // __logger.info('resulttttttttttttttttttttttttttt', result[0], wabaNumber)
         if (result && result.length === 0) {
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
         } else {
@@ -308,6 +318,7 @@ class businesAccountService {
   }
 
   updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber) {
+    __logger.info('updateWabaNumberAndPhoneCode::>>>>>>>>>>>>>.')
     /* To do
        Update all the tables with waba Number
        currently updating only waba info table
@@ -344,6 +355,7 @@ class businesAccountService {
   }
 
   getWabaNumberFromUserId (userId) {
+    __logger.info('getWabaNumberFromUserId::>>>>>>>>>>>>>.')
     const wabaNumber = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromUserId(), [userId])
       .then(result => {
@@ -360,6 +372,7 @@ class businesAccountService {
   }
 
   getUserIdAndTokenKeyByWabaNumber (wabaNumber) {
+    __logger.info('getUserIdAndTokenKeyByWabaNumber::>>>>>>>>>>>>>.')
     let phoneCode
     if (wabaNumber.includes('91')) {
       phoneCode = wabaNumber.substring(0, 2)
@@ -372,7 +385,7 @@ class businesAccountService {
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdAndTokenKeyByWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
-        console.log('BusinessData', businessData)
+        __logger.info('BusinessData', { businessData })
         if (businessData.length > 0) {
           businessDataFetched.resolve(businessData[0])
         } else {

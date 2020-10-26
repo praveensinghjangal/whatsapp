@@ -13,6 +13,7 @@ const placeIdService = require('../services/getPlacesId')
 const integrationService = require('../../../app_modules/integration')
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
+  __logger.info('getBusinessProfile:>>>>>>>>>>>>>')
   let queryResult = []
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
@@ -40,7 +41,7 @@ const getBusinessProfile = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('Then 3', result)
+      __logger.info('Then 3', { result })
       return formatFinalStatus(queryResult, result)
     })
     .then(result => {
@@ -157,7 +158,7 @@ const markManagerVerified = (req, res) => {
   validate.markManagerVerified(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
-      __logger.info('exists ----------------->', data)
+      __logger.info('exists -----------------> then 2', data)
       if (!data.exists) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
@@ -168,7 +169,7 @@ const markManagerVerified = (req, res) => {
       }
     })
     .then(data => {
-      // console.log('datatatatata', data)
+      __logger.info('datatatatata then 3', data)
       if (data) {
         return validate.isAddUpdateBusinessInfoComplete(record)
       } else {
@@ -176,6 +177,7 @@ const markManagerVerified = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('datatatatata then 4', data)
       if (data) {
         return businessAccountService.updateBusinessData(req.body, record || {})
       } else {
@@ -183,7 +185,7 @@ const markManagerVerified = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('After Marking Manager verified', data)
+      __logger.info('After Marking Manager verified then 5', data)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessVerificationCompletionStatus: true } })
     })
     .catch(err => {
@@ -193,6 +195,7 @@ const markManagerVerified = (req, res) => {
 }
 
 function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
+  __logger.info('AcomputeBusinessAccessAndBusinessProfleCompleteStatus >>')
   // __logger.info('Input Data ', data)
   const businessProfilePromise = q.defer()
   const errorFields = data.fieldErr
@@ -216,6 +219,7 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
 }
 
 function formatFinalStatus (queryResult, result) {
+  __logger.info('formatFinalStatus >>')
   const finalResult = q.defer()
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : false
@@ -237,7 +241,7 @@ const updateServiceProviderId = (req, res) => {
   validationService.checkServiceProviderIdService(req.body)
     .then(data => businessAccountService.getBusinessProfileInfo(userId))
     .then(results => {
-      __logger.info('Then 1')
+      __logger.info('Then 2')
       if (results && results.length > 0) {
         saveHistoryData(results[0], __constants.ENTITY_NAME.WABA_INFORMATION, results[0].wabaInformationId, userId)
         return businessAccountService.updateServiceProviderId(userId, req.body.serviceProviderId)
@@ -264,7 +268,7 @@ const updateWabaPhoneNumber = (req, res) => {
   validationService.checkPhoneCodeAndPhoneNumberService(req.body)
     .then(data => businessAccountService.checkWabaNumberAlreadyExist(req.body.phoneCode, req.body.phoneNumber, userId))
     .then(results => {
-      __logger.info('Then 1')
+      __logger.info('Then 2')
       return businessAccountService.updateWabaNumberAndPhoneCode(userId, req.body.phoneCode, req.body.phoneNumber, req.body.wabaInformationId)
     })
     .then(result => {
@@ -286,7 +290,7 @@ const addUpdateOptinMessage = (req, res) => {
   validate.addUpdateOptinMessage(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
-      __logger.info('exists ----------------->', data)
+      __logger.info('exists -----------------> then 2', { data })
       if (!data.exists) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
@@ -297,7 +301,7 @@ const addUpdateOptinMessage = (req, res) => {
       }
     })
     .then(data => {
-      // console.log('datatatatata', data)
+      __logger.info('datatatatata then 3', { data })
       if (data) {
         return validate.isAddUpdateBusinessInfoComplete(record)
       } else {
@@ -305,6 +309,7 @@ const addUpdateOptinMessage = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('data then 4 >>')
       if (data) {
         return businessAccountService.updateBusinessData(req.body, record || {})
       } else {
@@ -312,7 +317,7 @@ const addUpdateOptinMessage = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('After Adding Or Updating Optin Message', data)
+      __logger.info('After Adding Or Updating Optin Message then 5', data)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessVerificationCompletionStatus: true } })
     })
     .catch(err => {
@@ -322,6 +327,7 @@ const addUpdateOptinMessage = (req, res) => {
 }
 
 const filter = function (req, file, cb) {
+  __logger.info('filter')
   var filetypes = /(jpe?g|png)$/i
   let fileExt = file.originalname.split('.')
   fileExt = fileExt[fileExt.length - 1]
@@ -340,6 +346,7 @@ const upload = multer({
 }).array('profilePicture', 1)
 
 const updateProfilePic = (req, res) => {
+  __logger.info('updateProfilePic>>>>>>>>>>>>>>>...........')
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
   __logger.info('RTRT', req.user, req.user.user_id)

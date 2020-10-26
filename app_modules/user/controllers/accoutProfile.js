@@ -18,7 +18,7 @@ const getAcountProfile = (req, res) => {
   let queryResult = {}
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
-      __logger.info('Then 1')
+      __logger.info('results Then 1')
       // __logger.info('Then 1', results)
       if (results && results.length > 0) {
         queryResult = results[0]
@@ -30,6 +30,7 @@ const getAcountProfile = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('data then 2', data)
       queryResult.complete = data.complete
       __logger.info('queryResult', queryResult)
       __logger.info('data', data)
@@ -54,10 +55,11 @@ const updateAcountProfile = (req, res) => {
 
   validate.accountProfile(req.body)
     .then(data => {
+      __logger.info('data then 1', { data })
       return userService.checkUserIdExistsForAccountProfile(req.user.user_id)
     })
     .then(result => {
-      __logger.info('UserId exist check then 1', result.exists)
+      __logger.info('UserId exist check then 2', result.exists)
       if (result.exists) {
         saveHistoryData(result.rows[0], __constants.ENTITY_NAME.USER_ACCOUNT_PROFILE, req.user.user_id, req.user.user_id)
         accountProfileData = {
@@ -130,7 +132,7 @@ const generateAndUpdateTokenKey = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('queryResult')
+      __logger.info('queryResult then 2')
       delete tokenData.updated_by
       delete tokenData.user_id
       saveHistoryData(dbData, __constants.ENTITY_NAME.USERS, dbData.accountId, userId)

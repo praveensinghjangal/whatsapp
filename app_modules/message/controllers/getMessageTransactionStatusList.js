@@ -19,7 +19,7 @@ const getMessageTransactionstatusList = (req, res) => {
   validate.transactionValidator(req.query)
     .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset))
     .then(data => {
-      __logger.info('Data------>', data)
+      __logger.info('Data------> then 2', data)
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })

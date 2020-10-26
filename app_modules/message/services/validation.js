@@ -4,6 +4,8 @@ const Validator = require('jsonschema').Validator
 const v = new Validator()
 const __constants = require('../../../config/constants')
 const TrimService = require('../../../lib/trimService/trim')
+const __logger = require('../../../lib/logger')
+
 const trimInput = new TrimService()
 // "payload": {
 //     "text": "This is an example response"
@@ -461,7 +463,7 @@ class validate {
       formatedError.push(regexPatternPreetyMessage)
     })
     if (formatedError.length > 0) {
-      console.log('Catched', formatedError)
+      __logger.info('Catched', formatedError)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       if (request.startDate === request.endDate) {
@@ -471,7 +473,7 @@ class validate {
         formatedError.push('startDate can not be greater than endDate!')
       }
       if (formatedError.length > 0) {
-        console.log('Catched', formatedError)
+        __logger.info('Catched', formatedError)
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
         trimInput.singleInputTrim(request)

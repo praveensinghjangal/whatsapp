@@ -37,7 +37,6 @@ class InternalService {
   }
 
   addHeader (body, td) {
-    // console.log('ppppppppppppppppp', td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase, td.type.toLowerCase(), __constants.TEMPLATE_TYPE[1].templateType.toLowerCase())
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.headerType) {
       body.localizations[0].components.push({
         type: 'HEADER',

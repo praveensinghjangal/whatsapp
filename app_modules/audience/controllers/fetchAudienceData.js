@@ -67,7 +67,7 @@ const getAudienceRecordList = (req, res) => {
   })
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage, userId, startDate, endDate), valArray)
     .then(result => {
-      __logger.info('Got audience list from db -->', result)
+      __logger.info('Got audience list from db -->', { result })
       if ((result && result.length === 0) || result[0].length === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
@@ -77,7 +77,7 @@ const getAudienceRecordList = (req, res) => {
           singleObj.tempOptin = singleObj.tempOptin === 1
           delete singleObj.totalFilteredRecord
         })
-        console.log('pagination       ----->', pagination)
+        __logger.info('pagination       ----->', pagination)
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
       }
     })
@@ -92,19 +92,18 @@ function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
 
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber, wabaNumber])
     .then(result => {
-      // console.log('optin sssssssssssssssssssssssssss->', result, phoneNumber, wabaNumber)
+      __logger.info('optin sssssssssssssssssssssssssss-> then 1', { result }, phoneNumber, wabaNumber)
       if (result && result.length === 0) {
         dataFetched.resolve({ optin: false, tempOptin: false })
       } else {
         result[0].optin = result[0].optin === 1
-
         const currentTime = moment().utc().format('YYYY-MM-DD HH:mm:ss')
         const expireyTime = moment(result[0].lastMessage).utc().add(24, 'hours').format('YYYY-MM-DD HH:mm:ss')
-        // console.log('datatat ===>', expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
+        // __logger.info('datatat ===>', expireyTime, currentTime, moment(currentTime).isBefore(expireyTime))
         result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
 
         // result[0].tempOptin = moment().diff(moment(result[0].lastMessage), 'hours') <= 24
-        // console.log('Result>>>>>>>>>>>>>>>>>.....', result[0])
+        // __logger.info('Result>>>>>>>>>>>>>>>>>.....', result[0])
         dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin })
       }
     })

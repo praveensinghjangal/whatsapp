@@ -3,9 +3,11 @@ const _ = require('lodash')
 const __constants = require('../../../config/constants')
 const url = require('../../../lib/util/url')
 const TemplateService = require('./dbData')
+const __logger = require('../../../lib/logger')
 
 class InternalClass {
   quickReplyButtonValid (td) {
+    __logger.info('quickReplyButtonValid::')
     const valid = q.defer()
     if (td.buttonData && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[1].buttonType.toLowerCase()) {
       if (!td.buttonData.quickReply) {
@@ -66,6 +68,7 @@ class InternalClass {
   }
 
   callToActionButtonValid (td) {
+    __logger.info('callToActionButtonValid::')
     const valid = q.defer()
     if (td.buttonData && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
       if (!td.buttonData.websiteButtontext) {
@@ -99,6 +102,7 @@ class InternalClass {
   }
 
   buttonDataPresent (td) {
+    __logger.info('buttonDataPresent::')
     const valid = q.defer()
     const buttonTypeArr = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
     if (td.buttonType && buttonTypeArr.includes(td.buttonType.toLowerCase()) && (!td.buttonData || _.isEmpty(td.buttonData))) {
@@ -110,10 +114,11 @@ class InternalClass {
   }
 
   bodyTextVarMatchInBothLang (td) {
+    __logger.info('bodyTextVarMatchInBothLang::')
     const valid = q.defer()
     const firstLangBodyVarCount = td.bodyText ? (td.bodyText.match(/{{\d}}/g) || []).length : 0
     const secondLangBodyVarCount = td.secondLanguageBodyText ? (td.secondLanguageBodyText.match(/{{\d}}/g) || []).length : 0
-    console.log('header var match', firstLangBodyVarCount, secondLangBodyVarCount)
+    __logger.info('header var match', firstLangBodyVarCount, secondLangBodyVarCount)
     if (td.secondLanguageRequired && firstLangBodyVarCount !== secondLangBodyVarCount) {
       valid.reject('Variable in both language body does not match')
       return valid.promise
@@ -123,6 +128,7 @@ class InternalClass {
   }
 
   textPresentForSecondLanguageFooterAndVarMatchInBothLang (td) {
+    __logger.info('textPresentForSecondLanguageFooterAndVarMatchInBothLang::')
     const valid = q.defer()
     if (td.secondLanguageRequired && td.footerText && !td.secondLanguageFooterText) {
       valid.reject('please provide second language footer type')
@@ -143,6 +149,7 @@ class InternalClass {
   }
 
   textPresentForSecondLanguageHeaderTypeTextAndVarMatchInBothLang (td) {
+    __logger.info('textPresentForSecondLanguageHeaderTypeTextAndVarMatchInBothLang::')
     const valid = q.defer()
     if (td.secondLanguageRequired && td.headerType && td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && !td.secondLanguageHeaderText) {
       valid.reject('please provide second language header text for header type text')
@@ -150,7 +157,7 @@ class InternalClass {
     }
     const firstLangHeaderTextVarCount = td.headerText ? (td.headerText.match(/{{\d}}/g) || []).length : 0
     const secondLangHeaderTextVarCount = td.secondLanguageHeaderText ? (td.secondLanguageHeaderText.match(/{{\d}}/g) || []).length : 0
-    console.log('header var match', firstLangHeaderTextVarCount, secondLangHeaderTextVarCount)
+    __logger.info('header var match', firstLangHeaderTextVarCount, secondLangHeaderTextVarCount)
     if (td.secondLanguageRequired && firstLangHeaderTextVarCount !== secondLangHeaderTextVarCount) {
       valid.reject('Variable in both language header text does not match')
       return valid.promise
@@ -160,6 +167,7 @@ class InternalClass {
   }
 
   textPresentForHeaderTypeText (td) {
+    __logger.info('textPresentForHeaderTypeText::')
     const valid = q.defer()
     if (td.headerType && td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && !td.headerText) {
       valid.reject('please provide header text for header type text')
@@ -170,6 +178,7 @@ class InternalClass {
   }
 
   validHeaderType (td) {
+    __logger.info('validHeaderType::')
     const valid = q.defer()
     const headerTypeArr = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
     if (td.headerType && !headerTypeArr.includes(td.headerType.toLowerCase())) {
@@ -181,6 +190,7 @@ class InternalClass {
   }
 
   templateSecondryBodyPresent (td) {
+    __logger.info('templateSecondryBodyPresent::')
     const valid = q.defer()
     if (td.secondLanguageRequired && !td.secondLanguageBodyText) {
       valid.reject('please provide a body for secondry language')
@@ -191,6 +201,7 @@ class InternalClass {
   }
 
   bothLanguageSame (td) {
+    __logger.info('bothLanguageSame::')
     const valid = q.defer()
     if (td.secondLanguageRequired && td.messageTemplateLanguageId === td.secondTemplateLanguageId) {
       valid.reject('Both of the template language cannot be same')
@@ -201,6 +212,7 @@ class InternalClass {
   }
 
   templatePrimaryBodyPresent (td) {
+    __logger.info('templatePrimaryBodyPresent::')
     const valid = q.defer()
     if (!td.bodyText) {
       valid.reject('please provide a body for primary language')
@@ -211,6 +223,7 @@ class InternalClass {
   }
 
   basicDataPresent (td) {
+    __logger.info('basicDataPresent::')
     const valid = q.defer()
     const testRegex = td.templateName.match(new RegExp(__constants.VALIDATOR.aplphaNumericWithUnderscore, 'g'))
     if (!td.templateName || !testRegex || testRegex.length === 0) {
@@ -235,6 +248,7 @@ class InternalClass {
   }
 
   addTemplate (dbDatemplateData) {
+    __logger.info('addTemplate::')
     const valid = q.defer()
     this.basicDataPresent(dbDatemplateData)
       .then(data => this.templatePrimaryBodyPresent(dbDatemplateData))
@@ -262,18 +276,21 @@ module.exports = class RuleEngine {
   addTemplate (templateDbData) { return this.internalClass.addTemplate(templateDbData) }
 
   getTemplateCompletionStatus (templateDbData) {
+    __logger.info('getTemplateCompletionStatus::')
     const templateStatus = q.defer()
     this.addTemplate(templateDbData)
       .then((data) => {
         templateStatus.resolve({ complete: true })
       })
       .catch(err => {
+        __logger.info('err::', err)
         templateStatus.resolve({ complete: false, err: err })
       })
     return templateStatus.promise
   }
 
   checkAddTemplateRulesByTemplateId (templateId, userId) {
+    __logger.info('checkAddTemplateRulesByTemplateId::')
     const rulePassed = q.defer()
     const templateService = new TemplateService()
     templateService.getTemplateInfo(userId, templateId)

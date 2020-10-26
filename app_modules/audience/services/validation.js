@@ -5,6 +5,7 @@ const v = new Validator()
 const __constants = require('../../../config/constants')
 const TrimService = require('../../../lib/trimService/trim')
 const trimInput = new TrimService()
+const __logger = require('../../../lib/logger')
 
 class validate {
   checkAudienceIdExistService (request) {
@@ -219,7 +220,7 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      console.log('Error', formatedError)
+      __logger.info('Error', formatedError)
       trimInput.singleInputTrim(request)
         .then(data => isvalid.resolve(data))
     }

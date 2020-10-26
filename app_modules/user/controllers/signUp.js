@@ -15,10 +15,11 @@ const controller = (req, res) => {
       return userService.createUser(req.body.email, req.body.password, req.body.tncAccepted, 'viva-portal')
     })
     .then(data => {
-      __logger.info('Then 2', data)
+      __logger.info('Then 2', { data })
       return addTempTfaDataBS({ userId: data.userId, tfaType: __constants.TFA_TYPE_ENUM[1] })
     })
     .then(data => {
+      __logger.info('Then 3', { data })
       delete data.userTfaId
       return res.send(data)
     })

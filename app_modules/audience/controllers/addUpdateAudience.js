@@ -9,12 +9,11 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const addUpdateAudienceData = (req, res) => {
   __logger.info('add update audience API called', req.body)
   __logger.info('add update audience API called', req.user)
-
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
 
   processRecordInBulk(req.body, userId)
     .then(data => {
-    //   console.log('Data', data)
+      __logger.info('processRecordInBulk::', { data })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => {
@@ -25,7 +24,6 @@ const addUpdateAudienceData = (req, res) => {
 
 function updateAudienceData (inputData, oldAudienceData) {
   const audienceData = q.defer()
-
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.updateAudience(inputData)
@@ -35,19 +33,18 @@ function updateAudienceData (inputData, oldAudienceData) {
       __logger.error('error: ', err)
       audienceData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
-
   return audienceData.promise
 }
 
 const singleRecordProcess = (data, userId) => {
-//   console.log('Singlge Record', data)
+  __logger.info('Inside singleRecordProcess :: ', { data }, userId)
   const dataSaved = q.defer()
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
     .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber, userId, data.wabaPhoneNumber))
     .then(audienceData => {
-      // console.log('Get Result', audienceData)
+      __logger.info('audienceData:: then 2', { audienceData })
       data.userId = userId
       if (audienceData.audienceId) {
         return updateAudienceData(data, audienceData)
@@ -66,7 +63,6 @@ const singleRecordProcess = (data, userId) => {
 const processRecordInBulk = (data, userId) => {
   let p = q()
   const thePromises = []
-
   if (!data.length) {
     return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
   }
@@ -81,17 +77,15 @@ const processRecordInBulk = (data, userId) => {
 const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   __logger.info('inside markOptinByPhoneNumber', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-
   const input = req.body
   input.optin = true
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
-
   const validate = new ValidatonService()
   validate.checkOptinInput(input)
     .then(data => singleRecordProcess(input, userId))
     .then(data => {
+      __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
       for (var key in data) {
-        // console.log('key', key)
         if (key !== 'optin' && key !== 'optinSourceId') {
           delete data[key]
         }
@@ -102,7 +96,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
 }
 
 const markOptOutByPhoneNumber = (req, res) => {
-  // __logger.info('inside markOptOutByPhoneNumber', req.body)
+  __logger.info('inside markOptOutByPhoneNumber')
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const input = req.body
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
@@ -112,9 +106,8 @@ const markOptOutByPhoneNumber = (req, res) => {
   validate.checkPhoneNumberExistService(input)
     .then(data => singleRecordProcess(input, userId))
     .then(data => {
-      // console.log('Data', data)
+      __logger.info('markOptOutByPhoneNumber then 2')
       for (var key in data) {
-        // console.log('key', key)
         if (key !== 'optin') {
           delete data[key]
         }

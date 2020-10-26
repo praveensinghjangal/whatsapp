@@ -14,6 +14,7 @@ class TemplateParamValidationService {
     const dataStored = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setAllTemplatesInRedis(), [])
       .then(result => {
+        __logger.info('result then 1', { result })
         if (result && result.length === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
@@ -21,6 +22,7 @@ class TemplateParamValidationService {
         }
       })
       .then(dbData => {
+        __logger.info('dbData then 2', { dbData })
         _.each(dbData, singleObj => {
           const dataObject = {
             templateId: singleObj.message_template_id,
@@ -45,6 +47,7 @@ class TemplateParamValidationService {
     const dataStored = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaId(), [wabaId])
       .then(result => {
+        __logger.info('result then 1', { result })
         if (result && result.length === 0) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
@@ -52,6 +55,7 @@ class TemplateParamValidationService {
         }
       })
       .then(dbData => {
+        __logger.info('result then 2', { dbData })
         _.each(dbData, singleObj => {
           const dataObject = {
             templateId: singleObj.message_template_id,
@@ -71,12 +75,12 @@ class TemplateParamValidationService {
   }
 
   checkIfParamsEqual (templateObject, phoneNumber) {
+    __logger.info('inside checkIfParamsEqual')
     const dataStored = q.defer()
     if (!templateObject) {
       dataStored.resolve(true)
       return dataStored.promise
     }
-
     const redisService = new RedisService()
     redisService.getTemplateDataByIdAndPhoneNumber(templateObject.templateId + '___' + phoneNumber)
       .then(redisData => {
