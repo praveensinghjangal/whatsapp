@@ -34,11 +34,6 @@ class checkCompleteIncomplete {
           required: true,
           minLength: 1
         },
-        addressLine2: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
         contactNumber: {
           type: 'string',
           required: true,
@@ -110,11 +105,6 @@ class checkCompleteIncomplete {
           minLength: 1
         },
         addressLine1: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        addressLine2: {
           type: 'string',
           required: true,
           minLength: 1
