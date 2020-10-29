@@ -49,6 +49,11 @@ module.exports = {
     code: 4032,
     message: 'Invalid request URL'
   },
+  INVALID_FILE_SIZE: {
+    status_code: 400,
+    code: 4033,
+    message: 'File size or pixel is less than expected'
+  },
   SERVER_ERROR: {
     status_code: 500,
     code: 5000,

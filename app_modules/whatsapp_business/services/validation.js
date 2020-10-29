@@ -261,6 +261,10 @@ class validate {
         serviceProviderUserAccountId: {
           type: 'string',
           required: false
+        },
+        websites: {
+          type: 'array',
+          required: false
         }
       }
     }

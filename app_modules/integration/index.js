@@ -37,6 +37,12 @@ class WabaAccount {
   getAccountInfo (wabaNumber) { return this.wabaAccount.getAccountInfo(wabaNumber) }
 
   updateProfilePic (wabaNumber, profilePic) { return this.wabaAccount.updateProfilePic(wabaNumber, profilePic) }
+
+  getAccountPhoneNoList (wabaNumber) { return this.wabaAccount.getAccountPhoneNoList(wabaNumber) }
+
+  getCurrentProfile (wabaNumber) { return this.wabaAccount.getCurrentProfile(wabaNumber) }
+
+  updateProfile (wabaNumber, bodyData) { return this.wabaAccount.updateProfile(wabaNumber, bodyData) }
 }
 
 module.exports = { Messaage, Template, WabaAccount }

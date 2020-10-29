@@ -193,7 +193,8 @@ const VALIDATOR = {
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
-  aplphaNumericWithUnderscore: '^[a-z0-9_]+$'
+  aplphaNumericWithUnderscore: '^[a-z0-9_]+$',
+  fileExtType: /^(jpg|jpeg|png)$/
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
@@ -210,7 +211,10 @@ const TYNTEC_ENDPOINTS = {
   getTemplateInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
   getAccountInfo: '/chat-api/v2/channels/whatsapp/accounts/:accountId',
   updateProfilePic: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/logo',
-  deleteTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId'
+  deleteTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
+  getAccountPhoneNumberList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/phone-numbers',
+  getCurrentProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
+  updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -273,6 +277,13 @@ const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
   [TEMPLATE_STATUS.approved.statusCode]: TEMPLATE_STATUS.pending.statusCode,
   [TEMPLATE_STATUS.denied.statusCode]: TEMPLATE_STATUS.pending.statusCode
 }
+const WABA_PROFILE_STATUS = {
+  rejected: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c7a', displayName: 'Rejected' },
+  profileIncomplete: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c9b', displayName: 'Profile Incomplete / Pending For Submission' },
+  submitted: { statusCode: '91b6a637-11bb-4f35-ace7-41e959c8fbb7', displayName: 'Submitted' },
+  accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' },
+  pendinfForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' }
+}
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -322,4 +333,5 @@ module.exports.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH = TEMPLATE_QUICK_REPLY_BUT
 module.exports.TEMPLATE_STATUS_MAPPING = TEMPLATE_STATUS_MAPPING
 module.exports.TEMPLATE_EVALUATION_RESPONSE = TEMPLATE_EVALUATION_RESPONSE
 module.exports.TEMPLATE_ROLLBACK_STATUS_MAPPING = TEMPLATE_ROLLBACK_STATUS_MAPPING
+module.exports.WABA_PROFILE_STATUS = WABA_PROFILE_STATUS
 module.exports.TYNTEC_TEMPLATE_REPLY_STATUS = TYNTEC_TEMPLATE_REPLY_STATUS
