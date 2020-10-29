@@ -6,6 +6,8 @@ const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const __logger = require('../../../lib/logger')
+const fs = require('fs')
+const path = require('path')
 
 const Storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -85,16 +87,23 @@ const getAgreement = (req, res) => {
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getLatestAgreementByUserId(), [userId])
     .then(results => {
       __logger.info('Got result from db 1', { results })
+      const baseFileName = path.basename(results[0].file_path)
+      const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
       if (results && results.length > 0) {
         __logger.info('fileeeeeeeeeeeeeeeeeeee', results[0].file_path)
-        res.download(results[0].file_path)
+        __logger.info('File Path Exist', fs.existsSync(finalPath))
+        if (fs.existsSync(finalPath)) {
+          res.download(results[0].file_path)
+        } else {
+          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        }
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
 
