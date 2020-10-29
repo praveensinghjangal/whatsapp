@@ -51,7 +51,7 @@ class WabaAccount {
   }
 
   updateProfilePic (wabaNumber, profilePicBuffer) {
-    __logger.info('wabaNumber & profilePic--', wabaNumber, profilePicBuffer)
+    __logger.info('wabaNumber & profilePic--', wabaNumber)
     const deferred = q.defer()
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
@@ -71,6 +71,8 @@ class WabaAccount {
         __logger.info('Dataaaaa then 2', { accountData })
         if (accountData && accountData.statusCode === 204) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+        } else if (accountData && accountData.statusCode === 400) {
+          return deferred.resolve({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: {} })
         } else {
           return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: {} })
         }

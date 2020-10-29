@@ -97,7 +97,7 @@ class businesAccountService {
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
       chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
       serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId,
-      websites: businessData.websites ? businessData.websites : businessOldData.websites
+      websites: businessData.websites ? businessData.websites : []
     }
 
     this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.insert)
@@ -422,6 +422,17 @@ class businesAccountService {
   getWebsiteLimitByProviderId (serviceProviderId) {
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWebsiteLimit(), [serviceProviderId])
+      .then(businessData => businessDataFetched.resolve(businessData))
+      .catch(err => {
+        __logger.error('error: ', err)
+        businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return businessDataFetched.promise
+  }
+
+  updateProfilePicUrl (profilePicUrl, userId) {
+    const businessDataFetched = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateProfilePicUrl(), [profilePicUrl, userId])
       .then(businessData => businessDataFetched.resolve(businessData))
       .catch(err => {
         __logger.error('error: ', err)

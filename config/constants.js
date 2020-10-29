@@ -193,7 +193,8 @@ const VALIDATOR = {
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
-  aplphaNumericWithUnderscore: '^[a-z0-9_]+$'
+  aplphaNumericWithUnderscore: '^[a-z0-9_]+$',
+  fileExtType: /^(jpg|jpeg|png)$/
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',

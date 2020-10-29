@@ -143,6 +143,12 @@ const getWebsiteLimit = () => {
   where service_provider_id = ? and is_active = 1`
 }
 
+const updateProfilePicUrl = () => {
+  return `update waba_information
+  set profile_photo_url= ?
+  WHERE user_id=? and is_active = true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -159,5 +165,6 @@ module.exports = {
   getWabaNumberFromUserId,
   getUserIdAndTokenKeyByWabaNumber,
   getWabaNumberAndOptinTextFromUserId,
-  getWebsiteLimit
+  getWebsiteLimit,
+  updateProfilePicUrl
 }

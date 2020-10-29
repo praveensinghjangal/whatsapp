@@ -5,12 +5,19 @@ const q = require('q')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const multer = require('multer')
+const fs = require('fs')
+const url = require('../../../lib/util/url')
+const { FileStream } = require('../../../lib/util/fileStream')
+const { FileDownload } = require('../../../lib/util/fileDownload')
+const __config = require('../../../config')
 // Services
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const placeIdService = require('../services/getPlacesId')
 const integrationService = require('../../../app_modules/integration')
+const HttpService = require('../../../lib/http_service')
+// const apiResponse = require('../../../config/apiResponse')
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   __logger.info('getBusinessProfile:>>>>>>>>>>>>>')
@@ -91,38 +98,57 @@ const addUpdateBusinessProfile = (req, res) => {
   __logger.info('addUpdateBusinessProfile::PROVID===-', req.user.providerId, req.user.wabaPhoneNumber)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
+  this.http = new HttpService(60000)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let wabaProfileData = {}
   let profileData = {}
+  let websiteLimitByProvider = ''
   validate.addUpdateBusinessInfo(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
       profileData = data
       return businessAccountService.getWebsiteLimitByProviderId(req.user.providerId)
     })
-    .then(result => {
-      __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
-      if (req.body.websites && req.body.websites !== []) {
-        if (req.body.websites.length <= result[0].maxWebsiteAllowed) {
-          if (!profileData.exists) {
-            req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
-            return businessAccountService.insertBusinessData(userId, req.body, {})
-          } else {
-            __logger.info('addUpdateBusinessProfile::time to update')
-            return businessAccountService.updateBusinessData(req.body, profileData.record || {})
+    .then(data => {
+      websiteLimitByProvider = data
+      __logger.info('addUpdateBusinessProfile::profile pic url-----', req.body.profilePhotoUrl, profileData.record.profilePhotoUrl)
+      if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+        if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
+          __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
+          const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfile + '/logo/url'
+          const headers = {
+            Authorization: req.headers.authorization
           }
+          return this.http.Put({ profilePic: req.body.profilePhotoUrl }, 'body', url, headers, true)
         } else {
-          __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', result[0].maxWebsiteAllowed)
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Maximum website allowed by provider is: ' + result[0].maxWebsiteAllowed, data: {} })
+          return data
         }
       } else {
-        if (!profileData.exists) {
-          req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
-          return businessAccountService.insertBusinessData(userId, req.body, {})
-        } else {
-          __logger.info('addUpdateBusinessProfile::time to update')
-          return businessAccountService.updateBusinessData(req.body, profileData.record || {})
-        }
+        return data
+      }
+    })
+    .then(apiResponse => {
+      __logger.info('addUpdateBusinessProfile::apiREsponse', apiResponse)
+      __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
+      if (apiResponse && apiResponse.code === 4032) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: 'Invalid url for profilePhotoUrl', data: {} })
+      }
+      if (apiResponse && apiResponse.code === 4031) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png' })
+      }
+      if (apiResponse && apiResponse.code === 4033) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
+      }
+      if (req.body.websites && req.body.websites !== [] && req.body.websites.length > websiteLimitByProvider[0].maxWebsiteAllowed) {
+        __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', websiteLimitByProvider[0].maxWebsiteAllowed)
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Maximum website allowed by provider is: ' + websiteLimitByProvider[0].maxWebsiteAllowed, data: {} })
+      }
+      if (!profileData.exists) {
+        req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
+        return businessAccountService.insertBusinessData(userId, req.body, {})
+      } else {
+        __logger.info('addUpdateBusinessProfile::time to update')
+        return businessAccountService.updateBusinessData(req.body, profileData.record || {})
       }
     })
     // call integration here in .then
@@ -376,6 +402,68 @@ const updateProfilePic = (req, res) => {
   })
 }
 
+const updateProfilePicByUrl = (req, res) => {
+  __logger.info('updateProfilePicByUrl::url', req.body.profilePic)
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const businessAccountService = new BusinessAccountService()
+  const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
+  const fileStream = new FileStream()
+  const fileDownload = new FileDownload()
+  __logger.info('updateProfilePicByUrl::userId', req.user, req.user.user_id)
+  if (!req.body.profilePic || req.body.profilePic === '') {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Enter url to update', data: {} })
+  }
+  if (!url.isValid(req.body.profilePic)) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: {}, data: {} })
+  }
+  let fileName = req.body.profilePic.split('/')
+  fileName = fileName[fileName.length - 1]
+  const fileExt = fileName.split('.')[1]
+  let fileRes = ''
+  let resultRecord = ''
+  var filetypes = __constants.VALIDATOR.fileExtType
+  var extname = filetypes.test(fileExt.toLowerCase())
+  if (!extname) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png' })
+  }
+  __logger.info('updateProfilePicByUrl::file ext validation', extname)
+  // download(req.body.profilePic, fileName, function () {
+  fileDownload.downloadFile(req.body.profilePic, fileName, function () {
+    businessAccountService.checkUserIdExist(userId)
+      .then(result => {
+        if (result && result.record !== '') {
+          resultRecord = result.record
+          const data = fs.readFileSync(__constants.PUBLIC_FOLDER_PATH + '/downloads/' + fileName)
+          return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, data)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        }
+      })
+      .then(apiResponse => {
+        __logger.info('updateProfilePicByUrl::', apiResponse, apiResponse.type.status_code)
+        if (apiResponse && apiResponse.type.status_code === 200) {
+          return businessAccountService.updateProfilePicUrl(req.body.profilePic, req.user.user_id)
+        } else if (apiResponse && apiResponse.type.status_code === 400) {
+          // async function call
+          fileRes = fileStream.deleteFile(__constants.PUBLIC_FOLDER_PATH + '/downloads/' + fileName, fileName)
+          __logger.info('updateProfilePicByUrl', fileRes)
+          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
+        }
+      })
+      .then(result => {
+        if (result && result.affectedRows > 0) {
+          saveHistoryData(resultRecord, __constants.ENTITY_NAME.WABA_INFORMATION, resultRecord.wabaInformationId, userId)
+          fileStream.deleteFile(__constants.PUBLIC_FOLDER_PATH + '/downloads/' + fileName, fileName)
+          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+      })
+  })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -384,5 +472,6 @@ module.exports = {
   updateServiceProviderId,
   updateWabaPhoneNumber,
   addUpdateOptinMessage,
-  updateProfilePic
+  updateProfilePic,
+  updateProfilePicByUrl
 }
