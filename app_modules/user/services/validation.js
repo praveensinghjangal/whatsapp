@@ -201,8 +201,7 @@ class validate {
         },
         addressLine2: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         contactNumber: {
           type: 'string',
@@ -301,8 +300,7 @@ class validate {
         },
         addressLine2: {
           type: 'string',
-          required: false,
-          minLength: 1
+          required: false
         },
         contactNumber: {
           type: 'string',
