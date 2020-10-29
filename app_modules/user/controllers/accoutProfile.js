@@ -52,7 +52,7 @@ const updateAcountProfile = (req, res) => {
   const userService = new UserService()
   const validate = new ValidatonService()
   let accountProfileData
-
+  if (req && req.body && req.body.addressLine2 === null) req.body.addressLine2 = ''
   validate.accountProfile(req.body)
     .then(data => {
       __logger.info('data then 1', { data })
@@ -68,7 +68,7 @@ const updateAcountProfile = (req, res) => {
           state: req.body.state ? req.body.state : result.rows[0].state,
           country: req.body.country ? req.body.country : result.rows[0].country,
           addressLine1: req.body.addressLine1 ? req.body.addressLine1 : result.rows[0].addressLine1,
-          addressLine2: req.body.addressLine2 ? req.body.addressLine2 : result.rows[0].addressLine2,
+          addressLine2: req.body.addressLine2 ? req.body.addressLine2 : null,
           contactNumber: req.body.contactNumber ? req.body.contactNumber : result.rows[0].contactNumber,
           phoneCode: req.body.phoneCode ? req.body.phoneCode : result.rows[0].phoneCode,
           postalCode: req.body.postalCode ? req.body.postalCode : result.rows[0].postalCode,

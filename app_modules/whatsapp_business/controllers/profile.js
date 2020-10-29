@@ -9,7 +9,6 @@ const multer = require('multer')
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
-const placeIdService = require('../services/getPlacesId')
 const integrationService = require('../../../app_modules/integration')
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
@@ -22,10 +21,9 @@ const getBusinessProfile = (req, res) => {
       __logger.info('Then 1')
       queryResult = results[0]
       if (results && results.length > 0) {
-        const idObj = placeIdService(results[0].country, results[0].state, results[0].city)
-        results[0].countryId = idObj.countryId
-        results[0].stateId = idObj.stateId
-        results[0].cityId = idObj.cityId
+        results[0].canReceiveSms = results[0].canReceiveSms === 1
+        results[0].canReceiveVoiceCall = results[0].canReceiveVoiceCall === 1
+        results[0].associatedWithIvr = results[0].associatedWithIvr === 1
         const checkCompleteStatus = new CheckInfoCompletionService()
         return checkCompleteStatus.validateBusinessProfile(results[0])
       } else {
@@ -37,7 +35,7 @@ const getBusinessProfile = (req, res) => {
       if (data.err) {
         return computeBusinessAccessAndBusinessProfleCompleteStatus(data)
       } else {
-        return { businessAccessProfileCompletionStatus: true, businessProfileCompletionStatus: true }
+        return { businessAccessProfileCompletionStatus: data ? data.complete : true, businessProfileCompletionStatus: true }
       }
     })
     .then(result => {
@@ -59,7 +57,9 @@ const addupdateBusinessAccountInfo = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
-
+  if (req && req.body) {
+    req.body.associatedWithIvr = req.body.associatedWithIvr ? req.body.associatedWithIvr : false
+  }
   validate.businessAccessInfo(req.body)
     .then(data => {
       __logger.info(' then 1')
@@ -178,6 +178,12 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   }
   delete data.fieldErr
   delete data.complete
+  if (data && data.canReceiveSms && data.canReceiveVoiceCall && data.businessAccessProfileCompletionStatus) {
+    data.businessAccessProfileCompletionStatus = true
+  }
+  if (data && (!data.canReceiveSms || !data.canReceiveVoiceCall || data.associatedWithIvr)) {
+    data.businessAccessProfileCompletionStatus = false
+  }
   // __logger.info('Result Data ', data)
   businessProfilePromise.resolve(data)
   return businessProfilePromise.promise
