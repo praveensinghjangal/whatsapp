@@ -16,7 +16,7 @@ const getBusinessProfile = () => {
   business_manager_verified as "businessManagerVerified", phone_verified as "phoneVerified", city,
   postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
   user_account_id_by_provider as "serviceProviderUserAccountId",
-  service_provider_name as "serviceProviderName", api_key as "apiKey",
+  service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 0) as "maxWebsiteAllowed",
   webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
