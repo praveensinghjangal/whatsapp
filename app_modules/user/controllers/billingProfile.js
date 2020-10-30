@@ -53,7 +53,7 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
       state: businessDataToBeUpdated.state ? businessDataToBeUpdated.state : oldBusinessData.state,
       country: businessDataToBeUpdated.country ? businessDataToBeUpdated.country : oldBusinessData.country,
       addressLine1: businessDataToBeUpdated.addressLine1 ? businessDataToBeUpdated.addressLine1 : oldBusinessData.addressLine1,
-      addressLine2: businessDataToBeUpdated.addressLine2 ? businessDataToBeUpdated.addressLine2 : oldBusinessData.addressLine2,
+      addressLine2: businessDataToBeUpdated.addressLine2 ? businessDataToBeUpdated.addressLine2 : null,
       contactNumber: businessDataToBeUpdated.contactNumber ? businessDataToBeUpdated.contactNumber : oldBusinessData.contactNumber,
       phoneCode: businessDataToBeUpdated.phoneCode ? businessDataToBeUpdated.phoneCode : oldBusinessData.phoneCode,
       postalCode: businessDataToBeUpdated.postalCode ? businessDataToBeUpdated.postalCode : oldBusinessData.postalCode,
@@ -88,6 +88,7 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
 const addBusinessBilllingProfile = (req, res) => {
   __logger.info('Inside getBusinessBilllingProfile', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  if (req && req.body && req.body.addressLine2 === null) req.body.addressLine2 = ''
   const validate = new ValidatonService()
   validate.businessProfile(req.body)
     .then(data => {
@@ -133,7 +134,7 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
     state: businessData.state ? businessData.state : businessOldData.state,
     country: businessData.country ? businessData.country : businessOldData.country,
     addressLine1: businessData.addressLine1 ? businessData.addressLine1 : businessOldData.addressLine1,
-    addressLine2: businessData.addressLine2 ? businessData.addressLine2 : businessOldData.addressLine2,
+    addressLine2: businessData.addressLine2 ? businessData.addressLine2 : null,
     contactNumber: businessData.contactNumber ? businessData.contactNumber : businessOldData.contactNumber,
     phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
     postalCode: businessData.postalCode ? businessData.postalCode : businessOldData.postalCode,

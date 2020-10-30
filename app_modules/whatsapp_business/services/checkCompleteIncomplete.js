@@ -116,7 +116,12 @@ class checkCompleteIncomplete {
     if (formatedError.length > 0) {
       isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError })
     } else {
-      isvalid.resolve({ complete: true })
+      if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
+        isvalid.resolve({ complete: false })
+      }
+      if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
+        isvalid.resolve({ complete: true })
+      }
     }
     return isvalid.promise
   }
