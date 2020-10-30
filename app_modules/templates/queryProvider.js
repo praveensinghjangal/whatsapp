@@ -189,13 +189,10 @@ const getTemplateTableDataAndWabaId = () => {
   mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
   mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
   from waba_information wi
-  left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true
+  left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = ?
   left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true
-  LEFT JOIN message_template_language mtl
-  ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
-  LEFT JOIN message_template_language mtl2
-  ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-  and mt.message_template_id = ?
+  left JOIN message_template_language mtl ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
+  left JOIN message_template_language mtl2 ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
   where wi.is_active = true and wi.user_id = ?`
 }
 
