@@ -22,11 +22,11 @@ const addUpdateTemplates = (req, res) => {
     .then(data => templateService.getTemplateTableDataAndWabaId(req.body.messageTemplateId, req.user.user_id))
     .then(wabaAndTemplateData => {
       __logger.info('add update template:: dbData then 2', { wabaAndTemplateData })
-      if (wabaAndTemplateData.messageTemplateId && !statusService.canUpdateStatus(wabaAndTemplateData.messageTemplateStatusId)) {
+      if (wabaAndTemplateData.messageTemplateId && !statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_EDITED, data: {}, err: {} })
       }
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
-      if (wabaAndTemplateData.messageTemplateId) {
+      if (req.body.messageTemplateId) {
         __logger.info('add update template:: will update')
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
       } else {
