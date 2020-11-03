@@ -190,16 +190,7 @@ const markManagerVerified = (req, res) => {
       } else {
         record = data.record
         __logger.info('time to update')
-        // return
         return validate.isAddUpdateBusinessAccessInfoComplete(record)
-      }
-    })
-    .then(data => {
-      __logger.info('datatatatata then 3', data)
-      if (data) {
-        return validate.isAddUpdateBusinessInfoComplete(record)
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_ACCESS_INFO_NOT_COMPLETE, err: {}, data: {} })
       }
     })
     .then(data => {
@@ -245,19 +236,14 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   if (data && (!data.canReceiveSms || !data.canReceiveVoiceCall || data.associatedWithIvr)) {
     data.businessAccessProfileCompletionStatus = false
   }
-  // __logger.info('Result Data ', data)
   businessProfilePromise.resolve(data)
   return businessProfilePromise.promise
 }
 
 function formatFinalStatus (queryResult, result) {
-  __logger.info('formatFinalStatus >>')
   const finalResult = q.defer()
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : false
-  queryResult.canReceiveSms = queryResult.canReceiveSms === 1
-  queryResult.canReceiveVoiceCall = queryResult.canReceiveVoiceCall === 1
-  queryResult.associatedWithIvr = queryResult.associatedWithIvr === 1
   queryResult.businessManagerVerified = queryResult.businessManagerVerified === 1
   queryResult.phoneVerified = queryResult.phoneVerified === 1
   finalResult.resolve(queryResult)

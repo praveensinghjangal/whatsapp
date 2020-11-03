@@ -114,10 +114,10 @@ class checkCompleteIncomplete {
       formatedFieldError.push(reFromatedErr[0])
     })
     if (formatedError.length > 0) {
-      isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError })
+      isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr })
     } else {
       if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
-        isvalid.resolve({ complete: false })
+        isvalid.resolve({ complete: false, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr })
       }
       if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
         isvalid.resolve({ complete: true })
