@@ -179,6 +179,8 @@ class WabaAccount {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
           } else if (accountData && accountData.statusCode === 404) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          } else if (accountData && accountData.body.status === 400) {
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
           } else {
             return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData.statusCode, data: {} })
           }
