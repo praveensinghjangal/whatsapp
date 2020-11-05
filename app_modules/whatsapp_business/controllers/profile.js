@@ -164,6 +164,13 @@ const addUpdateBusinessProfile = (req, res) => {
         return data
       }
     })
+    .then(apiResponse => {
+      if (apiResponse && apiResponse.status_code === 400) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Website URL must be valid and start with http or https', data: {} })
+      } else if (apiResponse && apiResponse.status_code === 404) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+      }
+    })
     .then(data => validate.isAddUpdateBusinessInfoComplete(wabaProfileData))
     .then(data => {
       __logger.info('addUpdateBusinessProfile::After inserting or updating', data)
@@ -354,7 +361,7 @@ const filter = function (req, file, cb) {
   if (extname) {
     return cb(null, true)
   } else {
-    const err = { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'File upload only supports the following filetypes - jpg, jpeg, png' }
+    const err = { ...__constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'File upload only supports the following filetypes - jpg, jpeg, png' }
     cb(err)
   }
 }
@@ -410,13 +417,16 @@ const updateProfilePicByUrl = (req, res) => {
   }
   let fileName = req.body.profilePic.split('/')
   fileName = fileName[fileName.length - 1]
+  if (fileName.split('.')[1] === undefined) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic needs to be one among the following filetypes - jpg, jpeg, png', data: {} })
+  }
   const fileExt = fileName.split('.')[1]
   let fileRes = ''
   let resultRecord = ''
   var filetypes = __constants.VALIDATOR.fileExtType
   var extname = filetypes.test(fileExt.toLowerCase())
   if (!extname) {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png' })
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png', data: {} })
   }
   __logger.info('updateProfilePicByUrl::file ext validation', extname)
   // download(req.body.profilePic, fileName, function () {
