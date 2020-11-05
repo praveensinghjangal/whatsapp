@@ -95,7 +95,7 @@ class businesAccountService {
       apiKey: businessData.apiKey ? businessData.apiKey : businessOldData.apiKey,
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
-      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
+      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : businessOldData.chatBotActivated || false,
       serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId,
       websites: businessData.websites ? businessData.websites : []
     }
@@ -149,7 +149,7 @@ class businesAccountService {
       apiKey: businessData.apiKey ? businessData.apiKey : businessOldData.apiKey,
       webHookPostUrl: businessData.webHookPostUrl ? businessData.webHookPostUrl : businessOldData.webHookPostUrl,
       optinText: businessData.optinText ? businessData.optinText : businessOldData.optinText,
-      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : false,
+      chatBotActivated: typeof businessData.chatBotActivated === 'boolean' ? businessData.chatBotActivated : businessOldData.chatBotActivated || false,
       serviceProviderUserAccountId: businessData.serviceProviderUserAccountId ? businessData.serviceProviderUserAccountId : businessOldData.serviceProviderUserAccountId,
       websites: businessData.websites ? businessData.websites : businessOldData.websites
     }
