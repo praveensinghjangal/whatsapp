@@ -115,7 +115,7 @@ const addUpdateBusinessProfile = (req, res) => {
       if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
           __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
-          const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfile + '/logo/url'
+          const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfileLogoByUrl
           const headers = {
             Authorization: req.headers.authorization
           }
@@ -431,8 +431,10 @@ const updateProfilePicByUrl = (req, res) => {
   __logger.info('updateProfilePicByUrl::file ext validation', extname)
   // download(req.body.profilePic, fileName, function () {
   fileDownload.downloadFile(req.body.profilePic, fileName, function () {
+    __logger.info('updateProfilePicByUrl::file downloaded', fileName)
     businessAccountService.checkUserIdExist(userId)
       .then(result => {
+        __logger.info('updateProfilePicByUrl:: user exists ? ---------->', { result })
         if (result && result.record !== '') {
           resultRecord = result.record
           const data = fs.readFileSync(__constants.PUBLIC_FOLDER_PATH + '/downloads/' + fileName)
@@ -442,18 +444,19 @@ const updateProfilePicByUrl = (req, res) => {
         }
       })
       .then(apiResponse => {
-        __logger.info('updateProfilePicByUrl::', apiResponse, apiResponse.type.status_code)
+        __logger.info('updateProfilePicByUrl::', { apiResponse, status_code: apiResponse.type.status_code })
         if (apiResponse && apiResponse.type.status_code === 200) {
           return businessAccountService.updateProfilePicUrl(req.body.profilePic, req.user.user_id)
         } else if (apiResponse && apiResponse.type.status_code === 400) {
           // async function call
           fileRes = fileStream.deleteFile(__constants.PUBLIC_FOLDER_PATH + '/downloads/' + fileName, fileName)
-          __logger.info('updateProfilePicByUrl', fileRes)
+          __logger.info('updateProfilePicByUrl', { fileRes })
           return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
         }
       })
       .then(result => {
         if (result && result.affectedRows > 0) {
+          __logger.info('updateProfilePicByUrl:: updated pic in db', { result })
           saveHistoryData(resultRecord, __constants.ENTITY_NAME.WABA_INFORMATION, resultRecord.wabaInformationId, userId)
           fileStream.deleteFile(__constants.PUBLIC_FOLDER_PATH + '/downloads/' + fileName, fileName)
           return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
