@@ -16,7 +16,7 @@ const getBusinessProfile = () => {
   business_manager_verified as "businessManagerVerified", phone_verified as "phoneVerified", city,
   postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
   user_account_id_by_provider as "serviceProviderUserAccountId",
-  service_provider_name as "serviceProviderName", api_key as "apiKey",
+  service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
   webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
@@ -63,7 +63,7 @@ const addWabaTableData = () => {
   country, email, business_category_id ,profile_photo_url , waba_profile_setup_status_id ,business_manager_verified,
   phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,
   optin_text,chatbot_activated,user_account_id_by_provider,websites)
-  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateWabaTableData = () => {

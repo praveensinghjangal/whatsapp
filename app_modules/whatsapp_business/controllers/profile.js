@@ -14,7 +14,6 @@ const __config = require('../../../config')
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
-const placeIdService = require('../services/getPlacesId')
 const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
 // const apiResponse = require('../../../config/apiResponse')
@@ -29,10 +28,9 @@ const getBusinessProfile = (req, res) => {
       __logger.info('Then 1')
       queryResult = results[0]
       if (results && results.length > 0) {
-        const idObj = placeIdService(results[0].country, results[0].state, results[0].city)
-        results[0].countryId = idObj.countryId
-        results[0].stateId = idObj.stateId
-        results[0].cityId = idObj.cityId
+        results[0].canReceiveSms = results[0].canReceiveSms === 1
+        results[0].canReceiveVoiceCall = results[0].canReceiveVoiceCall === 1
+        results[0].associatedWithIvr = results[0].associatedWithIvr === 1
         const checkCompleteStatus = new CheckInfoCompletionService()
         return checkCompleteStatus.validateBusinessProfile(results[0])
       } else {
@@ -44,7 +42,7 @@ const getBusinessProfile = (req, res) => {
       if (data.err) {
         return computeBusinessAccessAndBusinessProfleCompleteStatus(data)
       } else {
-        return { businessAccessProfileCompletionStatus: true, businessProfileCompletionStatus: true }
+        return { businessAccessProfileCompletionStatus: data ? data.complete : true, businessProfileCompletionStatus: true }
       }
     })
     .then(result => {
@@ -66,7 +64,9 @@ const addupdateBusinessAccountInfo = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
-
+  if (req && req.body) {
+    req.body.associatedWithIvr = req.body.associatedWithIvr ? req.body.associatedWithIvr : false
+  }
   validate.businessAccessInfo(req.body)
     .then(data => {
       __logger.info(' then 1')
@@ -197,16 +197,7 @@ const markManagerVerified = (req, res) => {
       } else {
         record = data.record
         __logger.info('time to update')
-        // return
         return validate.isAddUpdateBusinessAccessInfoComplete(record)
-      }
-    })
-    .then(data => {
-      __logger.info('datatatatata then 3', data)
-      if (data) {
-        return validate.isAddUpdateBusinessInfoComplete(record)
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_ACCESS_INFO_NOT_COMPLETE, err: {}, data: {} })
       }
     })
     .then(data => {
@@ -246,19 +237,20 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   }
   delete data.fieldErr
   delete data.complete
-  // __logger.info('Result Data ', data)
+  if (data && data.canReceiveSms && data.canReceiveVoiceCall && data.businessAccessProfileCompletionStatus) {
+    data.businessAccessProfileCompletionStatus = true
+  }
+  if (data && (!data.canReceiveSms || !data.canReceiveVoiceCall || data.associatedWithIvr)) {
+    data.businessAccessProfileCompletionStatus = false
+  }
   businessProfilePromise.resolve(data)
   return businessProfilePromise.promise
 }
 
 function formatFinalStatus (queryResult, result) {
-  __logger.info('formatFinalStatus >>')
   const finalResult = q.defer()
   queryResult.businessProfileCompletionStatus = result.businessProfileCompletionStatus ? result.businessProfileCompletionStatus : false
   queryResult.businessAccessProfileCompletionStatus = result.businessAccessProfileCompletionStatus ? result.businessAccessProfileCompletionStatus : false
-  queryResult.canReceiveSms = queryResult.canReceiveSms === 1
-  queryResult.canReceiveVoiceCall = queryResult.canReceiveVoiceCall === 1
-  queryResult.associatedWithIvr = queryResult.associatedWithIvr === 1
   queryResult.businessManagerVerified = queryResult.businessManagerVerified === 1
   queryResult.phoneVerified = queryResult.phoneVerified === 1
   finalResult.resolve(queryResult)

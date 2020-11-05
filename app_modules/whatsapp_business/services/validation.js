@@ -417,7 +417,12 @@ class validate {
       isvalid.resolve(false)
     } else {
       trimInput.singleInputTrim(request)
-      isvalid.resolve(true)
+      if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
+        isvalid.resolve(true)
+      }
+      if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
+        isvalid.resolve(false)
+      }
     }
     return isvalid.promise
   }
