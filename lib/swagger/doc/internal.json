@@ -66,6 +66,10 @@
       {
          "name": "message-history",
          "description": "API's related to whatsapp message history"
+      },
+      {
+         "name": "chat-app",
+         "description": "API's related to chat app"
       }
    ],
    "schemes": [
@@ -5320,7 +5324,7 @@
          }
       },
       "/business/profile/logo/url": {
-        "put": {
+         "put": {
             "description": "API to update business profile photo using url",
             "summary": "update business profile photo",
             "tags": [
@@ -5344,10 +5348,10 @@
                   "in": "body",
                   "required": true,
                   "description": "Enter url of profile photo to update",
-                  "schema":{
-                    "example":{
-                      "profilePic":"https://stage-whatsapp.helo.ai/assets/img/gallery/login.png"
-                    }
+                  "schema": {
+                     "example": {
+                        "profilePic": "https://stage-whatsapp.helo.ai/assets/img/gallery/login.png"
+                     }
                   }
                }
             ],
@@ -5394,24 +5398,24 @@
                      },
                      "example": [
                         {
-                          "code": 4033,
-                          "msg": "File size or pixel is less than expected",
-                          "data": {},
-                          "error": "Add image with large size"
+                           "code": 4033,
+                           "msg": "File size or pixel is less than expected",
+                           "data": {},
+                           "error": "Add image with large size"
                         },
                         {
-                          "code": 4031,
-                          "msg": "Invalid file type",
-                          "data": {},
-                          "error": "Profile pic only supports the following filetypes - jpg, jpeg, png"
+                           "code": 4031,
+                           "msg": "Invalid file type",
+                           "data": {},
+                           "error": "Profile pic only supports the following filetypes - jpg, jpeg, png"
                         },
                         {
-                          "code": 4000,
-                          "msg": "Invalid request",
-                          "data": {},
-                          "error": "Enter url to update"
+                           "code": 4000,
+                           "msg": "Invalid request",
+                           "data": {},
+                           "error": "Enter url to update"
                         }
-                      ]
+                     ]
                   }
                },
                "401": {
@@ -5467,7 +5471,7 @@
          }
       },
       "/business/profile/logo": {
-        "put": {
+         "put": {
             "summary": "upload profile photo",
             "description": "upload profile photo",
             "tags": [
@@ -5515,10 +5519,10 @@
                         }
                      },
                      "example": {
-                         "code": 2000,
-                          "msg": "Success",
-                          "data": {},
-                          "error": null
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {},
+                        "error": null
                      }
                   }
                },
@@ -5545,19 +5549,19 @@
                            "code": 4030,
                            "msg": "Please provide a file",
                            "data": {},
-                           "error":null
+                           "error": null
                         },
                         {
-                          "code": 4031,
-                          "message": "Invalid file type",
-                          "err": "File upload only supports the following filetypes - jpg, jpeg, png",
-                          "storageErrors": []
+                           "code": 4031,
+                           "message": "Invalid file type",
+                           "err": "File upload only supports the following filetypes - jpg, jpeg, png",
+                           "storageErrors": []
                         },
                         {
-                          "code": 4033,
-                          "msg": "File size or pixel is less than expected",
-                          "data": null,
-                          "error": {}
+                           "code": 4033,
+                           "msg": "File size or pixel is less than expected",
+                           "data": null,
+                           "error": {}
                         }
                      ]
                   }
@@ -5888,55 +5892,55 @@
                         "code": 2000,
                         "msg": "Success",
                         "data": {
-                         "statusCount":[
-                           {
-                              "statusName": "Rejected",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Approved",
-                              "templateCount": 0
-                           },                  
-                           {
-                              "statusName": "Requested",
-                              "templateCount": 0
-                           },                                 
-                           {
-                              "statusName": "Submit-Failed",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Partially Approved",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Denied",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Deleted",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Pending",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Submitted",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Complete",
-                              "templateCount": 0
-                           },
-                           {
-                              "statusName": "Incomplete",
-                              "templateCount": 0
-                           }
-                        ],
-                        "allocatedTemplateCount":0,
-                        "usedTemplateCount":0                      
-                      }
+                           "statusCount": [
+                              {
+                                 "statusName": "Rejected",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Approved",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Requested",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Submit-Failed",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Partially Approved",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Denied",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Deleted",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Pending",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Submitted",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Complete",
+                                 "templateCount": 0
+                              },
+                              {
+                                 "statusName": "Incomplete",
+                                 "templateCount": 0
+                              }
+                           ],
+                           "allocatedTemplateCount": 0,
+                           "usedTemplateCount": 0
+                        }
                      }
                   }
                },
@@ -5977,7 +5981,7 @@
             },
             "security": []
          }
-      },      
+      },
       "/templates/{templateId}": {
          "get": {
             "summary": "Get template Info",
@@ -6215,7 +6219,7 @@
                }
             },
             "security": []
-         }         
+         }
       },
       "/templates/{templateId}/status": {
          "patch": {
@@ -6243,7 +6247,7 @@
                   "required": true,
                   "type": "string",
                   "description": "Id of Template"
-               },                 
+               },
                {
                   "name": "Body",
                   "in": "body",
@@ -6271,21 +6275,21 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {},
-                        "error": null
-                     },
-                     {
-                        "code": 3048,
-                        "msg": "Status cannot be changed",
-                        "data": null,
-                        "error": { 
-                          "details": "cannot change to a new requested status from this current status"
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {},
+                           "error": null
+                        },
+                        {
+                           "code": 3048,
+                           "msg": "Status cannot be changed",
+                           "data": null,
+                           "error": {
+                              "details": "cannot change to a new requested status from this current status"
+                           }
                         }
-                     }                        
-                       ]
+                     ]
                   }
                },
                "400": {
@@ -6307,23 +6311,23 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 4000,
-                        "msg": "Invalid request",
-                        "data": null,
-                        "error": [
-                           "Invalid request"
-                        ]
-                       },
-                       {
-                        "code": 3026,
-                        "msg": "Invalid request",
-                        "data": null,
-                        "error": [
-                           "TemplateId does not exist for this waba number"
-                        ]
-                       }                        
-                      ]
+                        {
+                           "code": 4000,
+                           "msg": "Invalid request",
+                           "data": null,
+                           "error": [
+                              "Invalid request"
+                           ]
+                        },
+                        {
+                           "code": 3026,
+                           "msg": "Invalid request",
+                           "data": null,
+                           "error": [
+                              "TemplateId does not exist for this waba number"
+                           ]
+                        }
+                     ]
                   }
                },
                "401": {
@@ -6369,7 +6373,7 @@
                }
             },
             "security": []
-         }       
+         }
       },
       "/templates/{templateId}/submit": {
          "post": {
@@ -6397,7 +6401,7 @@
                   "required": true,
                   "type": "string",
                   "description": "Id of Template"
-               }                
+               }
             ],
             "responses": {
                "200": {
@@ -6419,14 +6423,14 @@
                            "code": 2000,
                            "msg": "Success",
                            "data": {},
-                           "error":null
+                           "error": null
                         },
                         {
-                          "code": 3053,
-                          "msg": "Template not found",
-                          "data": null,
-                          "error": {}
-                        }                        
+                           "code": 3053,
+                           "msg": "Template not found",
+                           "data": null,
+                           "error": {}
+                        }
                      ]
                   }
                },
@@ -6509,8 +6513,8 @@
                }
             },
             "security": []
-         }     
-      },        
+         }
+      },
       "/templates/{templateId}/submit/{evaluationResponse}": {
          "patch": {
             "summary": "API to evaluate template",
@@ -6545,14 +6549,14 @@
                   "schema": {
                      "$ref": "#/definitions/templateEvaluationRequest"
                   }
-               },               
-              {
+               },
+               {
                   "name": "evaluationResponse",
                   "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "Evaluation Response of Template"
-              }
+               }
             ],
             "responses": {
                "200": {
@@ -6571,19 +6575,19 @@
                         }
                      },
                      "example": [
-                         {
-                          "code": 2000,
-                          "msg": "Success",
-                          "data": {},
-                          "error": null
-                       },
-                       {
-                          "code": 3053,
-                          "msg": "Evaluation cannot be proceeded as the approval or rejection from support person is not received.",
-                          "data": null,
-                          "error": {}
-                       }                        
-                    ]
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {},
+                           "error": null
+                        },
+                        {
+                           "code": 3053,
+                           "msg": "Evaluation cannot be proceeded as the approval or rejection from support person is not received.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
                   }
                },
                "400": {
@@ -6605,23 +6609,23 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 4000,
-                        "msg": "Invalid request",
-                        "data": null,
-                        "error": [
-                           "Invalid request"
-                        ]
-                       },
-                       {
-                        "code": 3026,
-                        "msg": "Invalid request",
-                        "data": null,
-                        "error": [
-                           "TemplateId does not exist for this waba number"
-                        ]
-                       }                        
-                      ]
+                        {
+                           "code": 4000,
+                           "msg": "Invalid request",
+                           "data": null,
+                           "error": [
+                              "Invalid request"
+                           ]
+                        },
+                        {
+                           "code": 3026,
+                           "msg": "Invalid request",
+                           "data": null,
+                           "error": [
+                              "TemplateId does not exist for this waba number"
+                           ]
+                        }
+                     ]
                   }
                },
                "401": {
@@ -6667,8 +6671,8 @@
                }
             },
             "security": []
-         }       
-      },      
+         }
+      },
       "/templates/languages": {
          "get": {
             "description": "API to get list of languages available with helo-whatsapp",
@@ -7173,7 +7177,7 @@
                         ]
                      }
                   }
-               },               
+               },
                "401": {
                   "description": "Invalid token in header",
                   "headers": {},
@@ -7456,8 +7460,8 @@
                            "code": 2000,
                            "msg": "Success",
                            "data": {
-                             "valid":true,
-                             "details":[
+                              "valid": true,
+                              "details": [
                                  "please provide valid template name with only aplha numeric character in lowercase and underscore",
                                  "please provide a valid template type of enum values: Standard Message Template , Media Message Template",
                                  "Template category not selected",
@@ -7490,11 +7494,11 @@
                                  "please provide the same amount of second language quick reply text as there in quick reply text",
                                  "second language quick reply buttons limit of 3 exeeded",
                                  "econd language quick reply button data invalid, please makle sure it is string with maximum length of 20",
-                                 "both language quick reply buttons are not equal"                               
-                               ]
+                                 "both language quick reply buttons are not equal"
+                              ]
                            },
                            "error": {}
-                        },                       
+                        },
                         {
                            "code": 3053,
                            "msg": "Template not found.",
@@ -7531,7 +7535,7 @@
                         ]
                      }
                   }
-               },                
+               },
                "401": {
                   "description": "Invalid token in header",
                   "headers": {},
@@ -7583,7 +7587,7 @@
             },
             "security": []
          }
-      },      
+      },
       "/audience": {
          "get": {
             "isPublic": true,
@@ -7653,6 +7657,20 @@
                   "required": false,
                   "type": "boolean",
                   "description": ""
+               },
+               {
+                  "name": "ItemsPerPage",
+                  "in": "query",
+                  "required": false,
+                  "type": "number",
+                  "description": "No of records per page"
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": false,
+                  "type": "number",
+                  "description": "Enter page number"
                }
             ],
             "responses": {
@@ -9542,6 +9560,1326 @@
                }
             }
          }
+      },
+      "/users/auth/forgetpassword": {
+         "post": {
+            "isPublic": true,
+            "summary": "Authorize API",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "tags": [
+               "users"
+            ],
+            "operationId": "forgetPassword",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
+               {
+                  "name": "email",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/forgetPasswordRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns auth token if API key provided is correct",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2001,
+                           "msg": "Link to set new password has been sent on your registered email",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found",
+                           "data": {}
+                        },
+                        {
+                           "code": 3014,
+                           "msg": "User does not exist",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/users/auth/changepassword": {
+         "post": {
+            "isPublic": true,
+            "summary": "Authorize API",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "tags": [
+               "users"
+            ],
+            "operationId": "changePassword",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/changePasswordRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns auth token if API key provided is correct",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3036,
+                           "msg": "Invalid token.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/helowhatsappchat/api/flowmessage/flow": {
+         "get": {
+            "summary": "Get Identifier",
+            "description": "Use this API to get identifier",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "fetchIdentifier",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "flowTopic",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "flowTopic needs to be entered here"
+               },
+               {
+                  "name": "parentIdentfierText",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "parentIdentfierText needs to be entered here"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns various identifiers",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": [
+                              {
+                                 "flowTopic": "account details"
+                              },
+                              {
+                                 "flowTopic": "account update"
+                              },
+                              {
+                                 "flowTopic": "health check"
+                              }
+                           ]
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         },
+         "post": {
+            "isPublic": true,
+            "summary": "This API is used to add update flow",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "addUpdateFlow",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/addUpdateFlowRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns added or updated flow result",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        },
+                        {
+                           "code": 3034,
+                           "msg": "Identifier Text Already Exists.",
+                           "data": {}
+                        },
+                        {
+                           "code": 3035,
+                           "msg": "Parent Identifier Text Does Not Exists.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/helowhatsappchat/api/flowmessage/flow/types": {
+         "get": {
+            "summary": "Get Flow Types",
+            "description": "Use this API to get flow types",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getEventTypes",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns various flow types",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": [
+                              {
+                                 "defaultMessage": "defaultMessage"
+                              },
+                              {
+                                 "showMenu": "showMenu"
+                              },
+                              {
+                                 "predefinedtext": "predefinedText"
+                              },
+                              {
+                                 "noEvent": "noEvent"
+                              },
+                              {
+                                 "more": "moreMenu"
+                              },
+                              {
+                                 "postcall": "postCall"
+                              },
+                              {
+                                 "gettext": "getText"
+                              },
+                              {
+                                 "getimage": "getImage"
+                              },
+                              {
+                                 "getlocation": "getLocation"
+                              },
+                              {
+                                 "getdocument": "getDocument"
+                              },
+                              {
+                                 "getvideo": "getVideo"
+                              },
+                              {
+                                 "end": "end"
+                              },
+                              {
+                                 "optinEventHandler": "optinEventHandler"
+                              }
+                           ]
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/helowhatsappchat/api/flowmessage/flow/identifier/cancel": {
+         "get": {
+            "summary": "Get Cancel Identifiers",
+            "description": "Use this API to get cancel identifiers",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getCancelonIdentifiers",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns cancelled identifiers",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": [
+                              {
+                                 "identifierText": "6"
+                              },
+                              {
+                                 "identifierText": "1"
+                              }
+                           ]
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": []
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/helowhatsappchat/api/flowmessage/chat": {
+         "post": {
+            "isPublic": true,
+            "summary": "This API is used to send messages",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "flowManager",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/addUpdateChatRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns auth token if API key provided is correct",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3036,
+                           "msg": "Invalid token.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/helowhatsappchat/api/flowmessage/chat/metadata": {
+         "get": {
+            "summary": "Get Chat Meta Data",
+            "description": "Use this API to get chat meta data",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getChatMetaData",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns chat meta data",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": []
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         },
+         "post": {
+            "isPublic": true,
+            "summary": "This API is used to add update metadata",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "addUpdateChatMetaData",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/addUpdateChatMetaDataRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns added or updated data result",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "/helowhatsappchat/api/flowmessage/flow/identifier/delete": {
+         "patch": {
+            "isPublic": true,
+            "summary": "THis API is used to delete identifier",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "deactivateFlowbyflowId",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/deactivateFlowbyflowIdRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns added or updated data result",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
       }
    },
    "definitions": {
@@ -10393,7 +11731,7 @@
             "secondLocalizationOldStatusId": "b4414c85-5f80-4e8d-98bc-44bbc05b14b1",
             "firstLocalizationRejectionReason": "MARKETING STUFF",
             "secondLocalizationRejectionReason": "MARKETING STUFF"
-          },
+         },
          "type": "object",
          "properties": {
             "firstLocalizationNewStatusId": {
@@ -10413,13 +11751,13 @@
             },
             "secondLocalizationRejectionReason": {
                "type": "string"
-            }              
+            }
          },
          "required": [
             "firstLocalizationNewStatusId",
             "firstLocalizationOldStatusId"
          ]
-      },        
+      },
       "Audience": {
          "title": "Audience",
          "example": {
@@ -10769,7 +12107,235 @@
          },
          "required": [
             "backupCode",
-            "userId"
+            "userId - backupCode - userId"
+         ]
+      },
+      "forgetPasswordRequest": {
+         "title": "Authorize Request",
+         "example": {
+            "email": "abc@gmail.com"
+         },
+         "type": "object",
+         "properties": {
+            "email": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "email"
+         ]
+      },
+      "addUpdateFlowRequest": {
+         "title": "addUpdateFlowRequest",
+         "example": {
+            "identifierText": "301",
+            "event": "postcall",
+            "eventData": {
+               "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/samplePost",
+               "requiredKeys": [
+                  "name|Name|string|1|30",
+                  "address|Address|string|10|100",
+                  "phone|Registered Phone Number|number|10|12"
+               ],
+               "transActionEndingIdentifier": "7"
+            },
+            "flowTopic": "account test",
+            "parentIdentifierText": null,
+            "identifierDisplayName": "order new gas cylinder"
+         },
+         "type": "object",
+         "properties": {
+            "identifierText": {
+               "type": "string"
+            },
+            "event": {
+               "type": "string"
+            },
+            "eventData": {
+               "type": "object",
+               "properties": {
+                  "url": {
+                     "type": "string"
+                  },
+                  "requiredKeys": {
+                     "type": "array",
+                     "items": {}
+                  },
+                  "transActionEndingIdentifier": {
+                     "type": "string"
+                  }
+               }
+            },
+            "flowTopic": {
+               "type": "string"
+            },
+            "parentIdentifierText": {
+               "type": "string"
+            },
+            "identifierDisplayName": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "identifierText",
+            "event",
+            "flowTopic",
+            "identifierDisplayName"
+         ]
+      },
+      "addUpdateChatMetaDataRequest": {
+         "title": "addUpdateChatMetaDataRequest",
+         "example": {
+            "defaultMessage": "Please enter one of the following text to get started :\n\tAccount Details\n\tHealth Check\nYou can also Optin with us by sending 'helloviva1' to receive important updates.",
+            "templateId": "register_thanks_converse"
+         },
+         "type": "object",
+         "properties": {
+            "defaultMessage": {
+               "type": "string"
+            },
+            "templateId": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "defaultMessage",
+            "templateId"
+         ]
+      },
+      "addUpdateChatRequest": {
+         "title": "addUpdateChatRequest",
+         "example": {
+            "messageId": "e68ef594-71a6-446c-9535-8bc908ab9684",
+            "channel": "whatsapp",
+            "from": "917666545750",
+            "to": "918080800808",
+            "receivedAt": "2020-08-06T14:07:14Z",
+            "content": {
+               "contentType": "text",
+               "text": "7"
+            },
+            "event": "MoMessage",
+            "whatsapp": {
+               "senderName": "Danish"
+            },
+            "timestamp": "2020-08-06T14:07:14Z",
+            "isVavaOptin": true
+         },
+         "type": "object",
+         "properties": {
+            "messageId": {
+               "type": "string"
+            },
+            "channel": {
+               "type": "string"
+            },
+            "from": {
+               "type": "string"
+            },
+            "to": {
+               "type": "string"
+            },
+            "receivedAt": {
+               "type": "string"
+            },
+            "content": {
+               "type": "object",
+               "properties": {
+                  "contentType": {
+                     "type": "string"
+                  },
+                  "text": {
+                     "type": "string"
+                  },
+                  "media": {
+                     "type": "object",
+                     "properties": {
+                        "type": {
+                           "type": "string"
+                        },
+                        "url": {
+                           "type": "string"
+                        },
+                        "caption": {
+                           "type": "string"
+                        },
+                        "filename": {
+                           "type": "string"
+                        }
+                     }
+                  },
+                  "location": {
+                     "type": "object",
+                     "properties": {
+                        "longitude": {
+                           "type": "number"
+                        },
+                        "latitude": {
+                           "type": "number"
+                        }
+                     }
+                  }
+               }
+            },
+            "event": {
+               "type": "string"
+            },
+            "whatsapp": {
+               "type": "object",
+               "properties": {
+                  "senderName": {
+                     "type": "string"
+                  }
+               }
+            },
+            "timestamp": {
+               "type": "string"
+            },
+            "isVavaOptin": {
+               "type": "boolean"
+            }
+         },
+         "required": [
+            "messageId",
+            "from",
+            "to",
+            "content"
+         ]
+      },
+      "deactivateFlowbyflowIdRequest": {
+         "title": " deactivateFlowbyflowIdRequest",
+         "example": {
+            "auotMessageFlowId": "5588a0a6-9011-4f67-a926-47ea367fd976"
+         },
+         "type": "object",
+         "properties": {
+            "auotMessageFlowId": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "auotMessageFlowId"
+         ]
+      },
+      "changePasswordRequest": {
+         "title": "changePasswordRequest",
+         "example": {
+            "newPassword": "asdasdasdsadm",
+            "token": "asdasdasdsadm"
+         },
+         "type": "object",
+         "properties": {
+            "newPassword": {
+               "type": "string"
+            },
+            "token": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "newPassword",
+            "token"
          ]
       },
       "validateTempTfaDataRequest": {
@@ -10812,7 +12378,7 @@
          "example": {
             "firstLocalizationRejectionReason": null,
             "secondLocalizationRejectionReason": null
-          },
+         },
          "type": "object",
          "properties": {
             "firstLocalizationRejectionReason": {
@@ -10820,8 +12386,8 @@
             },
             "secondLocalizationRejectionReason": {
                "type": "string"
-            }              
+            }
          }
-      }      
+      }
    }
 }

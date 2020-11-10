@@ -2,7 +2,7 @@
 -------------
 #### To Run This Application Follow The Steps Below : 
 ```sh
-$ git clone http://git.vivaconnect.co/clientapps/helo-whatsapp-api.git
+$ git clone http://git.vivaconnect.co/helo-whatsapp/platform-api.git
 ```
 ```sh 
 $ cd ./helo-whatsapp-api

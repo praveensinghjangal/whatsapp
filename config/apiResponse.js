@@ -455,5 +455,10 @@ module.exports = {
     status_code: 200,
     code: 3055,
     message: 'Template cannot be edited in this current status'
+  },
+  TEMPLATE_CANNOT_BE_ADDED: {
+    status_code: 200,
+    code: 3056,
+    message: 'Template with same name already exists'
   }
 }

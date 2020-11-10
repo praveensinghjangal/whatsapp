@@ -6,9 +6,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const q = require('q')
 const queryProvider = require('../queryProvider')
 const StatusService = require('../services/status')
-
-// Services
-const ValidatonService = require('../services/validation')
+const RuleEngine = require('../services/ruleEngine')
 
 const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId) => {
   const statusUpdated = q.defer()
@@ -44,8 +42,7 @@ const getTemplateList = (req, res) => {
 
 const getTemplateInfo = (req, res) => {
   __logger.info('Get Templates Info API Called', req.params)
-  // __logger.info('Get Templates Info API Called', req.user.user_id)
-  const validate = new ValidatonService()
+  const ruleEngine = new RuleEngine()
   let finalResult
   compareAndUpdateStatus(req.params.templateId, req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id)
     .then(statusUpdated => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
@@ -56,12 +53,13 @@ const getTemplateInfo = (req, res) => {
       } else {
         result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
         finalResult = result
-        return validate.checkTemplateInfoStatus(result[0])
+        return ruleEngine.getTemplateCompletionStatus(result[0])
       }
     })
     .then(data => {
       __logger.info('data then 2', { data })
-      finalResult[0].mediaTemplateComplete = data.complete
+      finalResult[0].isTemplateValid = data.complete
+      finalResult[0].invalidRemark = data.err && data.err.err ? data.err.err : null
       return checksForTemplate(finalResult[0])
     })
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult }))
