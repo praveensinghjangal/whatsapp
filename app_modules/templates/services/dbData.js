@@ -303,6 +303,26 @@ class TemplateService {
 
     return templateDeleted.promise
   }
+
+  getTemplateTableDataByTemplateIdOrTemplateName (messageTemplateId, templateName, userId) {
+    __logger.info('inside get template by id or name service', messageTemplateId, templateName, userId)
+    const templateData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateTableDataByTemplateIdOrTemplateName(messageTemplateId, templateName, userId), [])
+      .then(result => {
+        __logger.info('Qquery Result', { result })
+        if (result && result.length > 0) {
+          result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
+          templateData.resolve(result[0])
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template by id or name function: ', err)
+        templateData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateData.promise
+  }
 }
 
 module.exports = TemplateService
