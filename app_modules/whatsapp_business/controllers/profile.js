@@ -381,12 +381,20 @@ const updateProfilePic = (req, res) => {
     if (!req.files || (req.files && !req.files[0])) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
-      __logger.info('filessssss', req.files)
+      const imageData = req.files && req.files[0].buffer
       const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
       businessAccountService.checkUserIdExist(userId)
         .then(results => {
           __logger.info('got result', results.record)
           if (results && results.record !== '') {
+            const reqBody = {
+              imageData: imageData,
+              userId,
+              phoneCode: results.record.phoneCode,
+              phoneNumber: results.record.phoneNumber
+            }
+            results.record.userId = userId
+            businessAccountService.updateBusinessData(reqBody, results.record)
             return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
           } else {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })

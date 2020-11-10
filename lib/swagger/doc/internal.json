@@ -5471,7 +5471,7 @@
             "summary": "upload profile photo",
             "description": "upload profile photo",
             "tags": [
-               "agreement"
+               "WABA"
             ],
             "operationId": "uploadprofilephoto",
             "deprecated": false,
