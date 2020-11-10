@@ -19,7 +19,7 @@ const addUpdateTemplates = (req, res) => {
   let secondLangRequired = false
   const statusService = new StatusService()
   validate.addUpdateTemplate(req.body)
-    .then(data => templateService.getTemplateTableDataAndWabaId(req.body.messageTemplateId, req.user.user_id))
+    .then(data => templateService.getTemplateTableDataByTemplateIdOrTemplateName(req.body.messageTemplateId, req.body.templateName, req.user.user_id))
     .then(wabaAndTemplateData => {
       __logger.info('add update template:: dbData then 2', { wabaAndTemplateData })
       if (wabaAndTemplateData.messageTemplateId && !statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)) {
@@ -30,8 +30,12 @@ const addUpdateTemplates = (req, res) => {
         __logger.info('add update template:: will update')
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
       } else {
-        __logger.info('add update template:: will insert')
-        return templateService.addTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
+        if (req.body.templateName === wabaAndTemplateData.templateName) {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_ADDED, data: {}, err: {} })
+        } else {
+          __logger.info('add update template:: will insert')
+          return templateService.addTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
+        }
       }
     })
     .then(data => {
