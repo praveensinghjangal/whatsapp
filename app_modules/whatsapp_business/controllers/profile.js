@@ -102,35 +102,33 @@ const addUpdateBusinessProfile = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let wabaProfileData = {}
   let profileData = {}
-  let websiteLimitByProvider = ''
   validate.addUpdateBusinessInfo(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
       profileData = data
       return businessAccountService.getWebsiteLimitByProviderId(req.user.providerId)
     })
-    .then(data => {
-      websiteLimitByProvider = data
-      return data
-      // __logger.info('addUpdateBusinessProfile::profile pic url-----', req.body.profilePhotoUrl, profileData.record.profilePhotoUrl)
-      // if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
-      //   if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
-      //     __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
-      //     const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfileLogoByUrl
-      //     const headers = {
-      //       Authorization: req.headers.authorization
-      //     }
-      //     return this.http.Put({ profilePic: req.body.profilePhotoUrl }, 'body', url, headers, true)
-      //   } else {
-      //     return data
-      //   }
-      //   return data
-      // } else {
-      //   return data
-      // }
-    })
-    .then(apiResponse => {
-      __logger.info('addUpdateBusinessProfile::apiREsponse', apiResponse)
+    // .then(data => {
+    //   return data
+    //   // __logger.info('addUpdateBusinessProfile::profile pic url-----', req.body.profilePhotoUrl, profileData.record.profilePhotoUrl)
+    //   // if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+    //   //   if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
+    //   //     __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
+    //   //     const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfileLogoByUrl
+    //   //     const headers = {
+    //   //       Authorization: req.headers.authorization
+    //   //     }
+    //   //     return this.http.Put({ profilePic: req.body.profilePhotoUrl }, 'body', url, headers, true)
+    //   //   } else {
+    //   //     return data
+    //   //   }
+    //   //   return data
+    //   // } else {
+    //   //   return data
+    //   // }
+    // })
+    .then(websiteLimitByProvider => {
+      __logger.info('addUpdateBusinessProfile::apiREsponse', websiteLimitByProvider)
       __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
       // if (apiResponse && apiResponse.code === 4032) {
       //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: 'Invalid url for profilePhotoUrl', data: {} })
@@ -141,9 +139,10 @@ const addUpdateBusinessProfile = (req, res) => {
       // if (apiResponse && apiResponse.code === 4033) {
       //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
       // }
-      if (req.body.websites && req.body.websites !== [] && req.body.websites.length > websiteLimitByProvider[0].maxWebsiteAllowed) {
-        __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', websiteLimitByProvider[0].maxWebsiteAllowed)
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Maximum website allowed by provider is: ' + websiteLimitByProvider[0].maxWebsiteAllowed, data: {} })
+      const maxWebsiteAlwd = websiteLimitByProvider && websiteLimitByProvider[0] && websiteLimitByProvider[0].maxWebsiteAllowed ? websiteLimitByProvider[0].maxWebsiteAllowed : 0
+      if (req.body.websites && req.body.websites !== [] && req.body.websites.length > maxWebsiteAlwd) {
+        __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', maxWebsiteAlwd)
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Maximum website allowed by provider is: ' + maxWebsiteAlwd, data: {} })
       }
       if (!profileData.exists) {
         req.body.wabaProfileSetupStatusId = __constants.DEFAULT_WABA_SETUP_STATUS_ID
