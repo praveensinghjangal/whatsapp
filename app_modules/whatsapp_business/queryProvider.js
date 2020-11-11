@@ -34,7 +34,7 @@ const getWabaTableDataByUserId = () => {
   associated_with_ivr as "associatedWithIvr",business_name as "businessName",
    state, whatsapp_status as "whatsappStatus", 
   description,address, country, email, business_category_id as "businessCategoryId",
-  profile_photo_url as "profilePhotoUrl", waba_profile_setup_status_id as "wabaProfileSetupStatusId",
+  waba_profile_setup_status_id as "wabaProfileSetupStatusId",
   business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified",city,postal_code as "postalCode",
   service_provider_id as "serviceProviderId",api_key as "apiKey",
@@ -60,16 +60,16 @@ const updateBusinessProfileVerificationStatus = () => {
 const addWabaTableData = () => {
   return `insert into waba_information (facebook_manager_id ,phone_code ,phone_number,can_receive_sms,
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
-  country, email, business_category_id ,profile_photo_url , waba_profile_setup_status_id ,business_manager_verified,
+  country, email, business_category_id , waba_profile_setup_status_id ,business_manager_verified,
   phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,
   optin_text,chatbot_activated,user_account_id_by_provider,websites)
-  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateWabaTableData = () => {
   return `update waba_information set can_receive_sms=?,
   can_receive_voice_call=?, associated_with_ivr=?,business_name =?, state=?,whatsapp_status =?, description=?
-  ,address=?,country=?, email=?, business_category_id =?,profile_photo_url =?,
+  ,address=?,country=?, email=?, business_category_id =?,
   waba_profile_setup_status_id =?,business_manager_verified=?,phone_verified =?,waba_information_id=?,
   updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?, 
   service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?,chatbot_activated=?,
@@ -143,13 +143,12 @@ const getWebsiteLimit = () => {
   from service_provider 
   where service_provider_id = ? and is_active = 1`
 }
-
+/* Not in use */
 const updateProfilePicUrl = () => {
   return `update waba_information
   set profile_photo_url= ?
   WHERE user_id=? and is_active = true`
 }
-
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,

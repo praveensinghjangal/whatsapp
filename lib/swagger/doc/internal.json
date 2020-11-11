@@ -4301,7 +4301,6 @@
                            "state": "maharashtra",
                            "whatsappStatus": "available up-date",
                            "description": "available 24/7",
-                           "profilePhotoUrl": "www.google.com/image",
                            "address": "some address",
                            "country": "IN",
                            "wabaProfileSetupStatus": "Profile Incomplete / Pending For Submission",
@@ -5323,153 +5322,153 @@
             "security": []
          }
       },
-      "/business/profile/logo/url": {
-         "put": {
-            "description": "API to update business profile photo using url",
-            "summary": "update business profile photo",
-            "tags": [
-               "WABA"
-            ],
-            "operationId": "updatebusinessprofilephoto",
-            "deprecated": false,
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "Authorization",
-                  "in": "header",
-                  "required": true,
-                  "type": "string",
-                  "description": "user can obtain auth token by using login API"
-               },
-               {
-                  "name": "profilePic",
-                  "in": "body",
-                  "required": true,
-                  "description": "Enter url of profile photo to update",
-                  "schema": {
-                     "example": {
-                        "profilePic": "https://stage-whatsapp.helo.ai/assets/img/gallery/login.png"
-                     }
-                  }
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "Returns Status of business profile photo completion",
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {},
-                        "error": null
-                     }
-                  }
-               },
-               "400": {
-                  "description": "Returns invalid request error in error array",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "array"
-                        }
-                     },
-                     "example": [
-                        {
-                           "code": 4033,
-                           "msg": "File size or pixel is less than expected",
-                           "data": {},
-                           "error": "Add image with large size"
-                        },
-                        {
-                           "code": 4031,
-                           "msg": "Invalid file type",
-                           "data": {},
-                           "error": "Profile pic only supports the following filetypes - jpg, jpeg, png"
-                        },
-                        {
-                           "code": 4000,
-                           "msg": "Invalid request",
-                           "data": {},
-                           "error": "Enter url to update"
-                        }
-                     ]
-                  }
-               },
-               "401": {
-                  "description": "Invalid token in header",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 4001,
-                        "msg": "Unauthorized access.",
-                        "data": null
-                     }
-                  }
-               },
-               "500": {
-                  "description": "in case of some exceptional error",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 5000,
-                        "msg": "Something went wrong. Please try again later.",
-                        "data": {},
-                        "error": {}
-                     }
-                  }
-               }
-            },
-            "security": []
-         }
-      },
+      # "/business/profile/logo/url": {
+      #   "put": {
+      #       "description": "API to update business profile photo using url",
+      #       "summary": "update business profile photo",
+      #       "tags": [
+      #         "WABA"
+      #       ],
+      #       "operationId": "updatebusinessprofilephoto",
+      #       "deprecated": false,
+      #       "produces": [
+      #         "application/json"
+      #       ],
+      #       "parameters": [
+      #         {
+      #             "name": "Authorization",
+      #             "in": "header",
+      #             "required": true,
+      #             "type": "string",
+      #             "description": "user can obtain auth token by using login API"
+      #         },
+      #         {
+      #             "name": "profilePic",
+      #             "in": "body",
+      #             "required": true,
+      #             "description": "Enter url of profile photo to update",
+      #             "schema": {
+      #               "example": {
+      #                   "profilePic": "https://stage-whatsapp.helo.ai/assets/img/gallery/login.png"
+      #               }
+      #             }
+      #         }
+      #       ],
+      #       "responses": {
+      #         "200": {
+      #             "description": "Returns Status of business profile photo completion",
+      #             "schema": {
+      #               "properties": {
+      #                   "code": {
+      #                     "type": "number"
+      #                   },
+      #                   "msg": {
+      #                     "type": "string"
+      #                   },
+      #                   "data": {
+      #                     "type": "object"
+      #                   }
+      #               },
+      #               "example": {
+      #                   "code": 2000,
+      #                   "msg": "Success",
+      #                   "data": {},
+      #                   "error": null
+      #               }
+      #             }
+      #         },
+      #         "400": {
+      #             "description": "Returns invalid request error in error array",
+      #             "headers": {},
+      #             "schema": {
+      #               "properties": {
+      #                   "code": {
+      #                     "type": "number"
+      #                   },
+      #                   "msg": {
+      #                     "type": "string"
+      #                   },
+      #                   "data": {
+      #                     "type": "object"
+      #                   },
+      #                   "error": {
+      #                     "type": "array"
+      #                   }
+      #               },
+      #               "example": [
+      #                   {
+      #                     "code": 4033,
+      #                     "msg": "File size or pixel is less than expected",
+      #                     "data": {},
+      #                     "error": "Add image with large size"
+      #                   },
+      #                   {
+      #                     "code": 4031,
+      #                     "msg": "Invalid file type",
+      #                     "data": {},
+      #                     "error": "Profile pic only supports the following filetypes - jpg, jpeg, png"
+      #                   },
+      #                   {
+      #                     "code": 4000,
+      #                     "msg": "Invalid request",
+      #                     "data": {},
+      #                     "error": "Enter url to update"
+      #                   }
+      #               ]
+      #             }
+      #         },
+      #         "401": {
+      #             "description": "Invalid token in header",
+      #             "headers": {},
+      #             "schema": {
+      #               "properties": {
+      #                   "code": {
+      #                     "type": "number"
+      #                   },
+      #                   "msg": {
+      #                     "type": "string"
+      #                   },
+      #                   "data": {
+      #                     "type": "object"
+      #                   }
+      #               },
+      #               "example": {
+      #                   "code": 4001,
+      #                   "msg": "Unauthorized access.",
+      #                   "data": null
+      #               }
+      #             }
+      #         },
+      #         "500": {
+      #             "description": "in case of some exceptional error",
+      #             "headers": {},
+      #             "schema": {
+      #               "properties": {
+      #                   "code": {
+      #                     "type": "number"
+      #                   },
+      #                   "msg": {
+      #                     "type": "string"
+      #                   },
+      #                   "data": {
+      #                     "type": "object"
+      #                   },
+      #                   "error": {
+      #                     "type": "object"
+      #                   }
+      #               },
+      #               "example": {
+      #                   "code": 5000,
+      #                   "msg": "Something went wrong. Please try again later.",
+      #                   "data": {},
+      #                   "error": {}
+      #               }
+      #             }
+      #         }
+      #       },
+      #       "security": []
+      #   }
+      # },
       "/business/profile/logo": {
          "put": {
             "summary": "upload profile photo",
@@ -11455,7 +11454,6 @@
             "postalCode": "400001",
             "email": "123@gmail.com",
             "businessCategoryId": "bda36704-cde5-41c9-b039-e3841fa9229f",
-            "profilePhotoUrl": "www.google.com/image",
             "serviceProviderId": "f1d44200-4b9d-4901-ae49-5035e0b14a5d",
             "apiKey": "test123",
             "webHookPostUrl": "http://localhost:3000/helowhatsapp/message",
@@ -11491,9 +11489,6 @@
                "type": "string"
             },
             "businessCategoryId": {
-               "type": "string"
-            },
-            "profilePhotoUrl": {
                "type": "string"
             },
             "serviceProviderId": {
