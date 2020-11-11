@@ -24,6 +24,9 @@ const addUpdateTemplates = (req, res) => {
       __logger.info('add update template:: dbData then 2', { wabaAndTemplateData })
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
       if (req.body.messageTemplateId) {
+        if (!wabaAndTemplateData || !wabaAndTemplateData.messageTemplateId) {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, data: {}, err: {} })
+        }
         if (wabaAndTemplateData.messageTemplateId && !statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_EDITED, data: {}, err: {} })
         }
