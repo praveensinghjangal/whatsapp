@@ -9,7 +9,6 @@ const fs = require('fs')
 const url = require('../../../lib/util/url')
 const { FileStream } = require('../../../lib/util/fileStream')
 const { FileDownload } = require('../../../lib/util/fileDownload')
-const __config = require('../../../config')
 // Services
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
