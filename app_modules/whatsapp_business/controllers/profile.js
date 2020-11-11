@@ -111,34 +111,36 @@ const addUpdateBusinessProfile = (req, res) => {
     })
     .then(data => {
       websiteLimitByProvider = data
-      __logger.info('addUpdateBusinessProfile::profile pic url-----', req.body.profilePhotoUrl, profileData.record.profilePhotoUrl)
-      if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
-        if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
-          __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
-          const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfileLogoByUrl
-          const headers = {
-            Authorization: req.headers.authorization
-          }
-          return this.http.Put({ profilePic: req.body.profilePhotoUrl }, 'body', url, headers, true)
-        } else {
-          return data
-        }
-      } else {
-        return data
-      }
+      return data
+      // __logger.info('addUpdateBusinessProfile::profile pic url-----', req.body.profilePhotoUrl, profileData.record.profilePhotoUrl)
+      // if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+      //   if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
+      //     __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
+      //     const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfileLogoByUrl
+      //     const headers = {
+      //       Authorization: req.headers.authorization
+      //     }
+      //     return this.http.Put({ profilePic: req.body.profilePhotoUrl }, 'body', url, headers, true)
+      //   } else {
+      //     return data
+      //   }
+      //   return data
+      // } else {
+      //   return data
+      // }
     })
     .then(apiResponse => {
       __logger.info('addUpdateBusinessProfile::apiREsponse', apiResponse)
       __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
-      if (apiResponse && apiResponse.code === 4032) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: 'Invalid url for profilePhotoUrl', data: {} })
-      }
-      if (apiResponse && apiResponse.code === 4031) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png' })
-      }
-      if (apiResponse && apiResponse.code === 4033) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
-      }
+      // if (apiResponse && apiResponse.code === 4032) {
+      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: 'Invalid url for profilePhotoUrl', data: {} })
+      // }
+      // if (apiResponse && apiResponse.code === 4031) {
+      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png' })
+      // }
+      // if (apiResponse && apiResponse.code === 4033) {
+      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
+      // }
       if (req.body.websites && req.body.websites !== [] && req.body.websites.length > websiteLimitByProvider[0].maxWebsiteAllowed) {
         __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', websiteLimitByProvider[0].maxWebsiteAllowed)
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Maximum website allowed by provider is: ' + websiteLimitByProvider[0].maxWebsiteAllowed, data: {} })
@@ -224,7 +226,8 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   const businessProfilePromise = q.defer()
   const errorFields = data.fieldErr
   const businessAccessProfileFields = ['facebookManagerId', 'phoneCode', 'phoneNumber', 'canReceiveSms', 'canReceiveVoiceCall', 'associatedWithIvr']
-  const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'profilePhotoUrl', 'city', 'postalCode']
+  const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'city', 'postalCode']
+  // const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'profilePhotoUrl', 'city', 'postalCode']
   data.businessAccessProfileCompletionStatus = true
   data.businessProfileCompletionStatus = true
   for (let key = 0; key < errorFields.length; key++) {
@@ -408,7 +411,7 @@ const updateProfilePic = (req, res) => {
     }
   })
 }
-
+/* Not in use */
 const updateProfilePicByUrl = (req, res) => {
   __logger.info('updateProfilePicByUrl::url', req.body.profilePic)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
@@ -476,7 +479,6 @@ const updateProfilePicByUrl = (req, res) => {
       })
   })
 }
-
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,

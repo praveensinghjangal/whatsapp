@@ -230,11 +230,11 @@ class validate {
           required: false,
           minLength: 1
         },
-        profilePhotoUrl: {
-          type: 'string',
-          required: false,
-          minLength: 1
-        },
+        // profilePhotoUrl: {
+        //   type: 'string',
+        //   required: false,
+        //   minLength: 1
+        // },
         serviceProviderId: {
           type: 'string',
           required: false,
@@ -345,12 +345,12 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
-        },
-        profilePhotoUrl: {
-          type: 'string',
-          required: true,
-          minLength: 1
         }
+        // profilePhotoUrl: {
+        //   type: 'string',
+        //   required: true,
+        //   minLength: 1
+        // }
       }
     }
     const formatedError = []
