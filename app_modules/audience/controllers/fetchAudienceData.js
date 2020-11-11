@@ -41,7 +41,7 @@ const getAudienceRecordList = (req, res) => {
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1
-  const ItemsPerPage = req.query.ItemsPerPage
+  const ItemsPerPage = req.query ? req.query.ItemsPerPage : 5
   const offset = ItemsPerPage * (requiredPage - 1)
   __logger.info('Get Offset value', offset)
   const {
