@@ -225,10 +225,8 @@ const updateTemplateStatus = () => {
   where message_template_id =? and  waba_information_id =?`
 }
 
-const getTemplateTableDataByTemplateIdOrTemplateName = (templateId, templateName, userId) => {
-  let query = ''
-  if (!templateId && templateName) {
-    query = `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
+const getTemplateTableDataByTemplateName = () => {
+  return `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
         wi.phone_number as "wabaPhoneNumber",
         mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
         mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
@@ -241,13 +239,15 @@ const getTemplateTableDataByTemplateIdOrTemplateName = (templateId, templateName
         mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
         mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
         from waba_information wi
-        left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.template_name = '${templateName}'
+        left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and lower(mt.template_name) = lower(?)
         left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true
         left JOIN message_template_language mtl ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
         left JOIN message_template_language mtl2 ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-        where wi.is_active = true and wi.user_id = '${userId}';`
-  } else {
-    query = `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
+        where wi.is_active = true and wi.user_id = ?;`
+}
+
+const getTemplateTableDataByTemplateId = () => {
+  return `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
     wi.phone_number as "wabaPhoneNumber",
     mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
     mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
@@ -260,13 +260,11 @@ const getTemplateTableDataByTemplateIdOrTemplateName = (templateId, templateName
     mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
     mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
     from waba_information wi
-    left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = '${templateId}'
+    left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = ?
     left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true
     left JOIN message_template_language mtl ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
     left JOIN message_template_language mtl2 ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-    where wi.is_active = true and wi.user_id = '${userId}';`
-  }
-  return query
+    where wi.is_active = true and wi.user_id = ?;`
 }
 
 module.exports = {
@@ -289,5 +287,6 @@ module.exports = {
   setTemplatesInRedisForWabaId,
   updateTemplateStatus,
   deleteTemplate,
-  getTemplateTableDataByTemplateIdOrTemplateName
+  getTemplateTableDataByTemplateName,
+  getTemplateTableDataByTemplateId
 }
