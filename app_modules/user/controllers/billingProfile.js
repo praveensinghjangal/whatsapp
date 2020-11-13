@@ -149,7 +149,7 @@ function insertBusinessBillingProfileInfo (userId, businessData, businessOldData
   return new Promise((resolve, reject) => {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createBusinessBillingProfile(), [userId, billingObj.billingName, billingObj.city, billingObj.state, billingObj.country, billingObj.addressLine1, billingObj.addressLine2, billingObj.contactNumber, billingObj.phoneCode, billingObj.postalCode, billingObj.panCard, billingObj.gstOrTaxNo, billingObj.billingInformationId, userId])
       .then(result => {
-        __logger.bind('result then 1', { result })
+        __logger.info('result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           queryResult = result
           return checkBusinessBillingProfileCompletionStatus(billingObj)
