@@ -17,9 +17,16 @@ const addUpdateTemplates = (req, res) => {
   let wabaInformationId = ''
   let oldStatus = ''
   let secondLangRequired = false
+  let ruleResponse = ''
   const statusService = new StatusService()
   validate.addUpdateTemplate(req.body)
-    .then(data => templateService.getTemplateTableDataByTemplateIdOrTemplateName(req.body.messageTemplateId, req.body.templateName, req.user.user_id))
+    .then(data => {
+      if (!req.body.messageTemplateId && req.body.templateName) {
+        return templateService.getTemplateTableDataByTemplateName(req.body.templateName, req.user.user_id)
+      } else {
+        return templateService.getTemplateTableDataByTemplateId(req.body.messageTemplateId, req.user.user_id)
+      }
+    })
     .then(wabaAndTemplateData => {
       __logger.info('add update template:: dbData then 2', { wabaAndTemplateData })
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
@@ -33,7 +40,7 @@ const addUpdateTemplates = (req, res) => {
         __logger.info('add update template:: will update')
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
       } else {
-        if (req.body.templateName === wabaAndTemplateData.templateName) {
+        if (req.body.templateName && wabaAndTemplateData && wabaAndTemplateData.templateName && req.body.templateName.toLowerCase() === wabaAndTemplateData.templateName.toLowerCase()) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_ADDED, data: {}, err: {} })
         } else {
           __logger.info('add update template:: will insert')
@@ -52,6 +59,7 @@ const addUpdateTemplates = (req, res) => {
     })
     .then(validationData => {
       __logger.info('add update template:: rule checked then 4', { validationData })
+      ruleResponse = validationData
       if (!validationData.complete) return false
       return statusService.changeStatusToComplete(messageTemplateId, oldStatus, req.user.user_id, wabaInformationId, secondLangRequired)
     })
@@ -59,7 +67,8 @@ const addUpdateTemplates = (req, res) => {
       __logger.info('add update template:: status marked as completed then 5', { statusChanged })
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
+      // __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isValid: ruleResponse.complete, remark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
       __logger.error('error: ', err)
