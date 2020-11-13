@@ -284,6 +284,7 @@ const WABA_PROFILE_STATUS = {
   accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' },
   pendinfForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' }
 }
+const CHAT_APP_BASE_PATH = '/helowhatsappchat/api'
 
 module.exports.RESPONSE_MESSAGES = require('./apiResponse')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -335,3 +336,4 @@ module.exports.TEMPLATE_EVALUATION_RESPONSE = TEMPLATE_EVALUATION_RESPONSE
 module.exports.TEMPLATE_ROLLBACK_STATUS_MAPPING = TEMPLATE_ROLLBACK_STATUS_MAPPING
 module.exports.WABA_PROFILE_STATUS = WABA_PROFILE_STATUS
 module.exports.TYNTEC_TEMPLATE_REPLY_STATUS = TYNTEC_TEMPLATE_REPLY_STATUS
+module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH

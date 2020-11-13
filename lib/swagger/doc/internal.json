@@ -78,7 +78,8 @@
    "paths": {
       "/chat/v1/messages": {
          "post": {
-            "isPublic": false,
+            "x-isPublic": false,
+            "x-module": "platform",
             "description": "This API is used to send mesages using a channel.\nThis API can send single as well as bulk messsages.",
             "summary": "This API is used to send mesages using a channel",
             "tags": [
@@ -319,6 +320,7 @@
       },
       "/chat/v1/messages/whatsapp/excel": {
          "post": {
+            "x-module": "platform",
             "description": "API to send bulk template message using excel",
             "summary": "whatsapp excel send template message",
             "tags": [
@@ -449,6 +451,7 @@
       },
       "/chat/v1/messages/tracking": {
          "post": {
+            "x-module": "platform",
             "description": "This API is used to store message status",
             "tags": [
                "message"
@@ -570,7 +573,8 @@
       },
       "/chat/v1/messages/tracking/{messageId}": {
          "get": {
-            "isPublic": false,
+            "x-isPublic": false,
+            "x-module": "platform",
             "summary": "Get Message Journey",
             "description": "Use this API to get complete journey of a message\nYou need to pass messageId in path",
             "tags": [
@@ -698,6 +702,7 @@
       },
       "/chat/v1/messages/status/count": {
          "get": {
+            "x-module": "platform",
             "summary": "Get Message Count",
             "description": "Use this API to get message status count",
             "tags": [
@@ -824,6 +829,7 @@
       },
       "/chat/v1/messages/status/{messageStatus}/list": {
          "get": {
+            "x-module": "platform",
             "summary": "Get Message List",
             "description": "Use this API to get message status list",
             "tags": [
@@ -973,6 +979,7 @@
       },
       "/chat/v1/messages/transaction": {
          "get": {
+            "x-module": "platform",
             "summary": "Get Incoming, Outgoing and Total Message Transaction Count",
             "description": "Use this API to get incoming, outgoing and total message transaction\ncount",
             "tags": [
@@ -1102,6 +1109,7 @@
       },
       "/chat/v1/messages/transaction/list": {
          "get": {
+            "x-module": "platform",
             "summary": "Get Message Transaction Type List",
             "description": "Use this API to get message transaction type list",
             "tags": [
@@ -1255,7 +1263,8 @@
          }
       },
       "/users/account": {
-         "put": {
+         "put":{
+            "x-module": "platform",
             "description": "API is used for adding and updating user account info",
             "summary": "add and update user account details",
             "tags": [
@@ -1375,6 +1384,7 @@
             "security": []
          },
          "get": {
+            "x-module": "platform",
             "summary": "gets account info",
             "description": "returns account info of user account and completion staus",
             "tags": [
@@ -1474,6 +1484,7 @@
       },
       "/users/accountType": {
          "get": {
+            "x-module": "platform",
             "description": "APi which returns dropdown of all account type",
             "summary": "dropdown of all account type",
             "tags": [
@@ -1569,6 +1580,7 @@
       },
       "/users/account/tokenKey": {
          "put": {
+            "x-module": "platform",
             "description": "API is used for updating user account token key",
             "summary": "update user account token key",
             "tags": [
@@ -1690,6 +1702,7 @@
       },
       "/users/billing": {
          "post": {
+            "x-module": "platform",
             "summary": "add or update billing details",
             "description": "add or update billing details",
             "tags": [
@@ -1809,6 +1822,7 @@
             "security": []
          },
          "get": {
+            "x-module": "platform",
             "summary": "get billing details",
             "description": "gets billing details",
             "tags": [
@@ -1906,6 +1920,7 @@
       },
       "/users/verification/email": {
          "post": {
+            "x-module": "platform",
             "summary": "API to send verification code by email",
             "description": "API to send verification code by email",
             "tags": [
@@ -1994,6 +2009,7 @@
             "security": []
          },
          "patch": {
+            "x-module": "platform",
             "summary": "validate code sent on email",
             "description": "validate email code sent on registered email",
             "tags": [
@@ -2120,6 +2136,7 @@
       },
       "/users/verification/sms": {
          "post": {
+            "x-module": "platform",
             "summary": "API to send verification code by sms",
             "description": "API to send verification code by sms",
             "tags": [
@@ -2208,6 +2225,7 @@
             "security": []
          },
          "patch": {
+            "x-module": "platform",
             "summary": "validate code sent on phone number",
             "description": "validate code sent on registered phone number",
             "tags": [
@@ -2334,6 +2352,7 @@
       },
       "/users/otp": {
          "post": {
+            "x-module": "platform",
             "summary": "API to send otp to user on their configured communication channel",
             "description": "API to send otp to user on their configured communication channel",
             "tags": [
@@ -2466,6 +2485,7 @@
             "security": []
          },
          "patch": {
+            "x-module": "platform",
             "summary": "API to validate otp code sent to the user",
             "description": "API to validate code sent to the user",
             "tags": [
@@ -2598,6 +2618,7 @@
       },
       "/users/otp/backup": {
          "patch": {
+            "x-module": "platform",
             "summary": "API to validate user via backup code and reset tfa on success",
             "description": "API to validate user via backup code and reset tfa on success",
             "tags": [
@@ -2730,6 +2751,7 @@
       },
       "/users/tfa": {
          "post": {
+            "x-module": "platform",
             "summary": "API to send otp code to user on their newly selected channel",
             "description": "API to send otp code to user on their newly selected channel",
             "tags": [
@@ -2888,6 +2910,7 @@
       },
       "/users/otp/new": {
          "patch": {
+            "x-module": "platform",
             "summary": "API to validate otp code sent to the user on their newly selected channel",
             "description": "API to validate code sent to the user on their newly selected channel",
             "tags": [
@@ -3046,6 +3069,7 @@
       },
       "/users/agreement": {
          "post": {
+            "x-module": "platform",
             "summary": "upload signed agreement",
             "description": "upload signed agreement",
             "tags": [
@@ -3178,6 +3202,7 @@
             "security": []
          },
          "get": {
+            "x-module": "platform",
             "summary": "download signed agreement",
             "description": "Download signed agreement\nLatest uploaded document wil be download",
             "tags": [
@@ -3245,6 +3270,7 @@
       },
       "/users/agreement/generate": {
          "get": {
+            "x-module": "platform",
             "summary": "generate agreement",
             "tags": [
                "agreement"
@@ -3311,6 +3337,7 @@
       },
       "/users/auth/login": {
          "post": {
+            "x-module": "platform",
             "summary": "login API",
             "description": "Login API for logging in and using another API's",
             "tags": [
@@ -3441,6 +3468,7 @@
       },
       "/users/signUp": {
          "post": {
+            "x-module": "platform",
             "summary": "sign up / create account",
             "description": "API to sign up / create account with viva connect helo-whatsapp",
             "tags": [
@@ -3552,6 +3580,7 @@
       },
       "/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a": {
          "post": {
+            "x-module": "platform",
             "summary": "Web hook API for tytntec",
             "description": "Web hook API for tytntec to receive incoming messages and store\nin queue",
             "tags": [
@@ -3629,6 +3658,7 @@
       },
       "/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e": {
          "post": {
+            "x-module": "platform",
             "summary": "Web hook API for tytntec message Status",
             "description": "Web hook API for tytntec to receive outgoing messages status and\nstore in queue",
             "tags": [
@@ -3706,6 +3736,7 @@
       },
       "/places/states/{stateId}/cities": {
          "get": {
+            "x-module": "platform",
             "description": "This API will return list of cities based on state ID passed in\nreq url",
             "summary": "get cities by state ID",
             "tags": [
@@ -3811,6 +3842,7 @@
       },
       "/places/countries/{countryId}/states": {
          "get": {
+            "x-module": "platform",
             "description": "This API returns list of states based on country id passed in request\nurl",
             "summary": "Get states list by country ID",
             "tags": [
@@ -3911,6 +3943,7 @@
       },
       "/places/countries": {
          "get": {
+            "x-module": "platform",
             "description": "This API returns list of countries",
             "summary": "Get countries list",
             "tags": [
@@ -4005,6 +4038,7 @@
       },
       "/plans": {
          "get": {
+            "x-module": "platform",
             "description": "API to get list of plans available with helo-whatsapp",
             "summary": "get plans",
             "tags": [
@@ -4103,6 +4137,7 @@
       },
       "/business/categories": {
          "get": {
+            "x-module": "platform",
             "description": "Gets list of business categories",
             "summary": "Get business categories",
             "tags": [
@@ -4253,6 +4288,7 @@
       },
       "/business/profile": {
          "get": {
+            "x-module": "platform",
             "description": "Gets business profile data",
             "summary": "Get business profile",
             "tags": [
@@ -4358,6 +4394,7 @@
             "security": []
          },
          "post": {
+            "x-module": "platform",
             "description": "API to add or update business profile",
             "summary": "add or update business profile",
             "tags": [
@@ -4492,6 +4529,7 @@
       },
       "/business/profile/accessInformation": {
          "post": {
+            "x-module": "platform",
             "description": "This api is used to add or update business access information",
             "summary": "Add or update business profile access information",
             "tags": [
@@ -4629,6 +4667,7 @@
       },
       "/business/profile/markManagerVerified": {
          "post": {
+            "x-module": "platform",
             "summary": "mark manager verified",
             "description": "This API marks manager verified",
             "tags": [
@@ -4762,7 +4801,8 @@
          }
       },
       "/business/profile/serviceProvider": {
-         "put": {
+         "put":{
+            "x-module": "platform",
             "description": "API is used for updating service provider id",
             "summary": "update service provier id",
             "tags": [
@@ -4884,6 +4924,7 @@
       },
       "/business/verification/phoneNumber": {
          "post": {
+            "x-module": "platform",
             "description": "Send verification code to verify waba number by sms or voice channel",
             "summary": "Send verification code for business number",
             "tags": [
@@ -5014,6 +5055,7 @@
             "security": []
          },
          "patch": {
+            "x-module": "platform",
             "description": "API to verify otp sent to user for business number verififcation",
             "summary": "verifiy code for business number",
             "tags": [
@@ -5143,6 +5185,7 @@
       },
       "/business/internal/wabaPhoneNumber": {
          "get": {
+            "x-module": "platform",
             "description": "Gets waba number from user id",
             "summary": "Get waba number from user id",
             "tags": [
@@ -5233,6 +5276,7 @@
       },
       "/business/internal/getUserIdAndApiKeyFromWabaNumber": {
          "get": {
+            "x-module": "platform",
             "description": "Gets user id and token key from waba number",
             "summary": "Gets user id and token key from waba number",
             "tags": [
@@ -5323,7 +5367,7 @@
          }
       },
       # "/business/profile/logo/url": {
-      #   "put": {
+      #   "put":{
       #       "description": "API to update business profile photo using url",
       #       "summary": "update business profile photo",
       #       "tags": [
@@ -5470,7 +5514,8 @@
       #   }
       # },
       "/business/profile/logo": {
-         "put": {
+         "put":{
+            "x-module": "platform",
             "summary": "upload profile photo",
             "description": "upload profile photo",
             "tags": [
@@ -5605,7 +5650,8 @@
       },
       "/templates": {
          "get": {
-            "isPublic": false,
+            "x-isPublic": false,
+            "x-module": "platform",
             "description": "This api returns list of templates based on filters\nfollowing are the list of template status :\nApproved\nDELETE_PENDING\nRequest Initiated\nSUBMITTED\nRejected\nREQUESTED\nPENDING",
             "summary": "Get template list",
             "tags": [
@@ -5711,7 +5757,8 @@
             "security": []
          },
          "post": {
-            "isPublic": false,
+            "x-isPublic": false,
+            "x-module": "platform",
             "description": "API to add or update template\nTo add template do not pass templateID to update template pass template ID along with parameters to update",
             "summary": "Add update template",
             "tags": [
@@ -5853,6 +5900,7 @@
       },
       "/templates/count": {
          "get": {
+            "x-module": "platform",
             "description": "This api returns templates count",
             "summary": "Get template count",
             "tags": [
@@ -5983,6 +6031,7 @@
       },
       "/templates/{templateId}": {
          "get": {
+            "x-module": "platform",
             "summary": "Get template Info",
             "description": "Use this API to get information of a template",
             "tags": [
@@ -6112,6 +6161,7 @@
             "security": []
          },
          "delete": {
+            "x-module": "platform",
             "summary": "Delete Template",
             "description": "Use this API to delete a template",
             "tags": [
@@ -6222,6 +6272,7 @@
       },
       "/templates/{templateId}/status": {
          "patch": {
+            "x-module": "platform",
             "summary": "API to update template status",
             "description": "API to template status",
             "tags": [
@@ -6376,6 +6427,7 @@
       },
       "/templates/{templateId}/submit": {
          "post": {
+            "x-module": "platform",
             "description": "API to send template for approval",
             "summary": "API to send template for approval",
             "tags": [
@@ -6516,6 +6568,7 @@
       },
       "/templates/{templateId}/submit/{evaluationResponse}": {
          "patch": {
+            "x-module": "platform",
             "summary": "API to evaluate template",
             "description": "API to evaluate template",
             "tags": [
@@ -6674,6 +6727,7 @@
       },
       "/templates/languages": {
          "get": {
+            "x-module": "platform",
             "description": "API to get list of languages available with helo-whatsapp",
             "summary": "get template languages",
             "tags": [
@@ -6780,6 +6834,7 @@
       },
       "/templates/types": {
          "get": {
+            "x-module": "platform",
             "description": "API to get list of template types available with helo-whatsapp",
             "summary": "Get template types",
             "tags": [
@@ -6868,6 +6923,7 @@
       },
       "/templates/categories": {
          "get": {
+            "x-module": "platform",
             "description": "API to get list of template categories available with helo-whatsapp",
             "summary": "get templates categories",
             "tags": [
@@ -6966,6 +7022,7 @@
       },
       "/templates/sample": {
          "get": {
+            "x-module": "platform",
             "description": "API to fetch sample template list based on filters\ncurrently accepts template name search and category id search",
             "summary": "get sample templates",
             "tags": [
@@ -7080,6 +7137,7 @@
       },
       "/templates/sample/{templateId}": {
          "get": {
+            "x-module": "platform",
             "description": "get info of a sample template by template id",
             "summary": "get sample templates info",
             "tags": [
@@ -7231,6 +7289,7 @@
       },
       "/templates/buttonType": {
          "get": {
+            "x-module": "platform",
             "summary": "get buttonType",
             "description": "get list of all available button types in helo-whatsapp",
             "tags": [
@@ -7319,6 +7378,7 @@
       },
       "/templates/headerType": {
          "get": {
+            "x-module": "platform",
             "summary": "get header Type",
             "description": "get list of all available header types in helo-whatsapp",
             "tags": [
@@ -7413,6 +7473,7 @@
       },
       "/templates/{templateId}/validate": {
          "get": {
+            "x-module": "platform",
             "summary": "Check validation of the template",
             "description": "Use this API to check template validation",
             "tags": [
@@ -7589,7 +7650,8 @@
       },
       "/audience": {
          "get": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "description": "This api returns list of templates based on filters\nfollowing\nare\nthe list of filters: \nphoneNumber\nfirstMessageActivation\nsegmentId\nchannel\noptinSourceId\noptin\ntempOptin",
             "summary": "Get audience list",
             "tags": [
@@ -7773,7 +7835,8 @@
             "security": []
          },
          "post": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "description": "API to add or update audience\nTo add audience do not pass audienceID to update template pass audience ID along with parameters to update",
             "summary": "Add update audience",
             "tags": [
@@ -7926,6 +7989,7 @@
       },
       "/audience/optin/excel": {
          "patch": {
+            "x-module": "platform",
             "description": "API to upload bulk audience data using excel",
             "summary": "whatsapp excel upload audience data",
             "tags": [
@@ -8067,7 +8131,8 @@
       },
       "/audience/{audienceId}": {
          "get": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "summary": "Get audience Info",
             "description": "Use this API to get information of a audience record\npass audienceId in path",
             "tags": [
@@ -8193,6 +8258,7 @@
       },
       "/audience/optin/segment": {
          "get": {
+            "x-module": "platform",
             "description": "This api returns list of segment",
             "summary": "Get segment list",
             "tags": [
@@ -8293,6 +8359,7 @@
             "security": []
          },
          "post": {
+            "x-module": "platform",
             "description": "API to add or update segment\nTo add segment do not pass segmentId to update segment pass segment ID along with parameters to update",
             "summary": "Add update segment",
             "tags": [
@@ -8436,6 +8503,7 @@
       },
       "/audience/optin/source": {
          "get": {
+            "x-module": "platform",
             "description": "This api returns list of optin",
             "summary": "Get optin source list",
             "tags": [
@@ -8548,6 +8616,7 @@
             "security": []
          },
          "post": {
+            "x-module": "platform",
             "description": "API to add or update optin\nTo add optin do not pass optinId to update optin pass optin ID along with parameters to update",
             "summary": "Add update optin",
             "tags": [
@@ -8691,7 +8760,8 @@
       },
       "/audience/optin": {
          "post": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "description": "API to update optin\nTo update optinSourceId pass optin source\nID along with parameters to update\nfollowing are the optin source list :\n1. Captured via any form/check-box/t&c - 154e25f4-44cd-4a48-984d-dbdce569d2c1\n2. When received by direct optin message on Whatsapp - 28614254-12c6-4f44-aa3c-20cf9e9589cb\n3. Optin added using API - 7ccc5ca2-4a8e-4a97-9b49-c5e258bbf649",
             "summary": "Update optin satus and add optin source id",
             "tags": [
@@ -8835,6 +8905,7 @@
       },
       "/audience/optout": {
          "patch": {
+            "x-module": "platform",
             "description": "API to update optin\n by phone Number",
             "summary": "Update optin satus by phone number",
             "tags": [
@@ -8977,6 +9048,7 @@
       },
       "/audience/optin/url": {
          "get": {
+            "x-module": "platform",
             "description": "This api returns optin url and qrCode of the url",
             "summary": "Get optin url",
             "tags": [
@@ -9070,6 +9142,7 @@
       },
       "/audience/optin/url/redirect/{wabaNumber}": {
          "get": {
+            "x-module": "platform",
             "description": "This api redirects to getOptinUrl",
             "summary": "Redirect to get optin url api",
             "tags": [
@@ -9160,6 +9233,7 @@
       },
       "/message-history/{messageId}": {
          "get": {
+            "x-module": "platform",
             "description": "get info of a message history by message id",
             "summary": "get message history info",
             "tags": [
@@ -9280,6 +9354,7 @@
       },
       "/message-history": {
          "post": {
+            "x-module": "platform",
             "description": "API to add message history\nTo add optin do not pass messageId",
             "summary": "Add message history",
             "tags": [
@@ -9428,7 +9503,8 @@
       },
       "/users/authorize": {
          "post": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "summary": "Authorize API",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -9562,7 +9638,8 @@
       },
       "/users/auth/forgetpassword": {
          "post": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "summary": "Authorize API",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -9706,7 +9783,8 @@
       },
       "/users/auth/changepassword": {
          "post": {
-            "isPublic": true,
+            "x-isPublic": true,
+            "x-module": "platform",
             "summary": "Authorize API",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -9843,8 +9921,9 @@
             }
          }
       },
-      "/helowhatsappchat/api/flowmessage/flow": {
+      "/flowmessage/flow": {
          "get": {
+            "x-module": "chatApp",
             "summary": "Get Identifier",
             "description": "Use this API to get identifier",
             "tags": [
@@ -9970,7 +10049,7 @@
             "security": []
          },
          "post": {
-            "isPublic": true,
+            "x-module": "chatApp",
             "summary": "This API is used to add update flow",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -10117,8 +10196,9 @@
             }
          }
       },
-      "/helowhatsappchat/api/flowmessage/flow/types": {
+      "/flowmessage/flow/types": {
          "get": {
+            "x-module": "chatApp",
             "summary": "Get Flow Types",
             "description": "Use this API to get flow types",
             "tags": [
@@ -10254,8 +10334,9 @@
             "security": []
          }
       },
-      "/helowhatsappchat/api/flowmessage/flow/identifier/cancel": {
+      "/flowmessage/flow/identifier/cancel": {
          "get": {
+            "x-module": "chatApp",
             "summary": "Get Cancel Identifiers",
             "description": "Use this API to get cancel identifiers",
             "tags": [
@@ -10363,9 +10444,9 @@
             "security": []
          }
       },
-      "/helowhatsappchat/api/flowmessage/chat": {
+      "/flowmessage/chat": {
          "post": {
-            "isPublic": true,
+            "x-module": "chatApp",
             "summary": "This API is used to send messages",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -10502,8 +10583,9 @@
             }
          }
       },
-      "/helowhatsappchat/api/flowmessage/chat/metadata": {
+      "/flowmessage/chat/metadata": {
          "get": {
+            "x-module": "chatApp",
             "summary": "Get Chat Meta Data",
             "description": "Use this API to get chat meta data",
             "tags": [
@@ -10604,7 +10686,7 @@
             "security": []
          },
          "post": {
-            "isPublic": true,
+            "x-module": "chatApp",
             "summary": "This API is used to add update metadata",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
@@ -10741,9 +10823,9 @@
             }
          }
       },
-      "/helowhatsappchat/api/flowmessage/flow/identifier/delete": {
+      "/flowmessage/flow/identifier/delete": {
          "patch": {
-            "isPublic": true,
+            "x-module": "chatApp",
             "summary": "THis API is used to delete identifier",
             "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
             "tags": [
