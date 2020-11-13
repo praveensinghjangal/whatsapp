@@ -47,7 +47,8 @@ schemes:
 paths:
   /chat/v1/messages:
     post:
-      isPublic: false
+      x-isPublic: false
+      x-module: platform
       description: |-
         This API is used to send mesages using a channel.
         This API can send single as well as bulk messsages.
@@ -201,6 +202,7 @@ paths:
       security: []
   /chat/v1/messages/whatsapp/excel:
     post:
+      x-module: platform
       description: API to send bulk template message using excel
       summary: whatsapp excel send template message
       tags:
@@ -291,6 +293,7 @@ paths:
       security: []
   /chat/v1/messages/tracking:
     post:
+      x-module: platform
       description: This API is used to store message status
       tags:
         - message
@@ -372,9 +375,10 @@ paths:
               data: {}
               error: {}
       security: []
-  '/chat/v1/messages/tracking/{messageId}':
+  /chat/v1/messages/tracking/{messageId}:
     get:
-      isPublic: false
+      x-isPublic: false
+      x-module: platform
       summary: Get Message Journey
       description: |-
         Use this API to get complete journey of a message
@@ -463,6 +467,7 @@ paths:
       security: []
   /chat/v1/messages/status/count:
     get:
+      x-module: platform
       summary: Get Message Count
       description: Use this API to get message status count
       tags:
@@ -546,6 +551,7 @@ paths:
       security: []
   '/chat/v1/messages/status/{messageStatus}/list':
     get:
+      x-module: platform
       summary: Get Message List
       description: Use this API to get message status list
       tags:
@@ -646,6 +652,7 @@ paths:
       security: []
   /chat/v1/messages/transaction:
     get:
+      x-module: platform
       summary: 'Get Incoming, Outgoing and Total Message Transaction Count'
       description: |-
         Use this API to get incoming, outgoing and total message transaction
@@ -736,6 +743,7 @@ paths:
       security: []
   /chat/v1/messages/transaction/list:
     get:
+      x-module: platform
       summary: Get Message Transaction Type List
       description: Use this API to get message transaction type list
       tags:
@@ -839,6 +847,7 @@ paths:
       security: []
   /users/account:
     put:
+      x-module: platform
       description: API is used for adding and updating user account info
       summary: add and update user account details
       tags:
@@ -921,6 +930,7 @@ paths:
               error: {}
       security: []
     get:
+      x-module: platform
       summary: gets account info
       description: returns account info of user account and completion staus
       tags:
@@ -994,6 +1004,7 @@ paths:
       security: []
   /users/accountType:
     get:
+      x-module: platform
       description: APi which returns dropdown of all account type
       summary: dropdown of all account type
       tags:
@@ -1057,6 +1068,7 @@ paths:
       security: []
   /users/account/tokenKey:
     put:
+      x-module: platform
       description: API is used for updating user account token key
       summary: update user account token key
       tags:
@@ -1140,6 +1152,7 @@ paths:
       security: []
   /users/billing:
     post:
+      x-module: platform
       summary: add or update billing details
       description: add or update billing details
       tags:
@@ -1222,6 +1235,7 @@ paths:
               error: {}
       security: []
     get:
+      x-module: platform
       summary: get billing details
       description: gets billing details
       tags:
@@ -1293,6 +1307,7 @@ paths:
       security: []
   /users/verification/email:
     post:
+      x-module: platform
       summary: API to send verification code by email
       description: API to send verification code by email
       tags:
@@ -1353,6 +1368,7 @@ paths:
               error: {}
       security: []
     patch:
+      x-module: platform
       summary: validate code sent on email
       description: validate email code sent on registered email
       tags:
@@ -1439,6 +1455,7 @@ paths:
       security: []
   /users/verification/sms:
     post:
+      x-module: platform
       summary: API to send verification code by sms
       description: API to send verification code by sms
       tags:
@@ -1499,6 +1516,7 @@ paths:
               error: {}
       security: []
     patch:
+      x-module: platform
       summary: validate code sent on phone number
       description: validate code sent on registered phone number
       tags:
@@ -1585,6 +1603,7 @@ paths:
       security: []
   /users/otp:
     post:
+      x-module: platform
       summary: API to send otp to user on their configured communication channel
       description: API to send otp to user on their configured communication channel
       tags:
@@ -1675,6 +1694,7 @@ paths:
               error: {}
       security: []
     patch:
+      x-module: platform
       summary: API to validate otp code sent to the user
       description: API to validate code sent to the user
       tags:
@@ -1766,6 +1786,7 @@ paths:
       security: []
   /users/otp/backup:
     patch:
+      x-module: platform
       summary: API to validate user via backup code and reset tfa on success
       description: API to validate user via backup code and reset tfa on success
       tags:
@@ -1857,6 +1878,7 @@ paths:
       security: []
   /users/tfa:
     post:
+      x-module: platform
       summary: API to send otp code to user on their newly selected channel
       description: API to send otp code to user on their newly selected channel
       tags:
@@ -1965,6 +1987,7 @@ paths:
       security: []
   /users/otp/new:
     patch:
+      x-module: platform
       summary: API to validate otp code sent to the user on their newly selected channel
       description: API to validate code sent to the user on their newly selected channel
       tags:
@@ -2073,6 +2096,7 @@ paths:
       security: []
   /users/agreement:
     post:
+      x-module: platform
       summary: upload signed agreement
       description: upload signed agreement
       tags:
@@ -2165,6 +2189,7 @@ paths:
               error: {}
       security: []
     get:
+      x-module: platform
       summary: download signed agreement
       description: |-
         Download signed agreement
@@ -2214,6 +2239,7 @@ paths:
       security: []
   /users/agreement/generate:
     get:
+      x-module: platform
       summary: generate agreement
       tags:
         - agreement
@@ -2260,6 +2286,7 @@ paths:
       security: []
   /users/auth/login:
     post:
+      x-module: platform
       summary: login API
       description: Login API for logging in and using another API's
       tags:
@@ -2349,6 +2376,7 @@ paths:
               error: {}
   /users/signUp:
     post:
+      x-module: platform
       summary: sign up / create account
       description: API to sign up / create account with viva connect helo-whatsapp
       tags:
@@ -2422,6 +2450,7 @@ paths:
               error: {}
   /web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a:
     post:
+      x-module: platform
       summary: Web hook API for tytntec
       description: |-
         Web hook API for tytntec to receive incoming messages and store
@@ -2476,6 +2505,7 @@ paths:
               error: {}
   /web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e:
     post:
+      x-module: platform
       summary: Web hook API for tytntec message Status
       description: |-
         Web hook API for tytntec to receive outgoing messages status and
@@ -2530,6 +2560,7 @@ paths:
               error: {}
   '/places/states/{stateId}/cities':
     get:
+      x-module: platform
       description: |-
         This API will return list of cities based on state ID passed in
         req url
@@ -2603,6 +2634,7 @@ paths:
       security: []
   '/places/countries/{countryId}/states':
     get:
+      x-module: platform
       description: |-
         This API returns list of states based on country id passed in request
         url
@@ -2673,6 +2705,7 @@ paths:
       security: []
   /places/countries:
     get:
+      x-module: platform
       description: This API returns list of countries
       summary: Get countries list
       tags:
@@ -2737,6 +2770,7 @@ paths:
               error: {}
   /plans:
     get:
+      x-module: platform
       description: API to get list of plans available with helo-whatsapp
       summary: get plans
       tags:
@@ -2805,6 +2839,7 @@ paths:
       security: []
   /business/categories:
     get:
+      x-module: platform
       description: Gets list of business categories
       summary: Get business categories
       tags:
@@ -2895,6 +2930,7 @@ paths:
       security: []
   /business/profile:
     get:
+      x-module: platform
       description: Gets business profile data
       summary: Get business profile
       tags:
@@ -2975,6 +3011,7 @@ paths:
               error: {}
       security: []
     post:
+      x-module: platform
       description: API to add or update business profile
       summary: add or update business profile
       tags:
@@ -3066,6 +3103,7 @@ paths:
       security: []
   /business/profile/accessInformation:
     post:
+      x-module: platform
       description: This api is used to add or update business access information
       summary: Add or update business profile access information
       tags:
@@ -3159,6 +3197,7 @@ paths:
       security: []
   /business/profile/markManagerVerified:
     post:
+      x-module: platform
       summary: mark manager verified
       description: This API marks manager verified
       tags:
@@ -3250,6 +3289,7 @@ paths:
       security: []
   /business/profile/serviceProvider:
     put:
+      x-module: platform
       description: API is used for updating service provider id
       summary: update service provier id
       tags:
@@ -3333,6 +3373,7 @@ paths:
       security: []
   /business/verification/phoneNumber:
     post:
+      x-module: platform
       description: Send verification code to verify waba number by sms or voice channel
       summary: Send verification code for business number
       tags:
@@ -3424,6 +3465,7 @@ paths:
               error: {}
       security: []
     patch:
+      x-module: platform
       description: API to verify otp sent to user for business number verififcation
       summary: verifiy code for business number
       tags:
@@ -3512,6 +3554,7 @@ paths:
       security: []
   /business/internal/wabaPhoneNumber:
     get:
+      x-module: platform
       description: Gets waba number from user id
       summary: Get waba number from user id
       tags:
@@ -3574,6 +3617,7 @@ paths:
       security: []
   /business/internal/getUserIdAndApiKeyFromWabaNumber:
     get:
+      x-module: platform
       description: Gets user id and token key from waba number
       summary: Gets user id and token key from waba number
       tags:
@@ -3637,6 +3681,7 @@ paths:
       security: []
   /business/profile/logo:
     put:
+      x-module: platform
       summary: upload profile photo
       description: upload profile photo
       tags:
@@ -3729,7 +3774,8 @@ paths:
       security: []
   /templates:
     get:
-      isPublic: false
+      x-isPublic: false
+      x-module: platform
       description: |-
         This api returns list of templates based on filters
         following are the list of template status :
@@ -3813,7 +3859,8 @@ paths:
               error: {}
       security: []
     post:
-      isPublic: false
+      x-isPublic: false
+      x-module: platform
       description: |-
         API to add or update template
         To add template do not pass templateID to update template pass template ID along with parameters to update
@@ -3910,6 +3957,7 @@ paths:
       security: []
   /templates/count:
     get:
+      x-module: platform
       description: This api returns templates count
       summary: Get template count
       tags:
@@ -3991,6 +4039,7 @@ paths:
       security: []
   '/templates/{templateId}':
     get:
+      x-module: platform
       summary: Get template Info
       description: Use this API to get information of a template
       tags:
@@ -4082,6 +4131,7 @@ paths:
               error: {}
       security: []
     delete:
+      x-module: platform
       summary: Delete Template
       description: Use this API to delete a template
       tags:
@@ -4156,6 +4206,7 @@ paths:
       security: []
   '/templates/{templateId}/status':
     patch:
+      x-module: platform
       summary: API to update template status
       description: API to template status
       tags:
@@ -4258,6 +4309,7 @@ paths:
       security: []
   '/templates/{templateId}/submit':
     post:
+      x-module: platform
       description: API to send template for approval
       summary: API to send template for approval
       tags:
@@ -4353,6 +4405,7 @@ paths:
       security: []
   '/templates/{templateId}/submit/{evaluationResponse}':
     patch:
+      x-module: platform
       summary: API to evaluate template
       description: API to evaluate template
       tags:
@@ -4458,6 +4511,7 @@ paths:
       security: []
   /templates/languages:
     get:
+      x-module: platform
       description: API to get list of languages available with helo-whatsapp
       summary: get template languages
       tags:
@@ -4526,6 +4580,7 @@ paths:
       security: []
   /templates/types:
     get:
+      x-module: platform
       description: API to get list of template types available with helo-whatsapp
       summary: Get template types
       tags:
@@ -4584,6 +4639,7 @@ paths:
       security: []
   /templates/categories:
     get:
+      x-module: platform
       description: API to get list of template categories available with helo-whatsapp
       summary: get templates categories
       tags:
@@ -4648,6 +4704,7 @@ paths:
       security: []
   /templates/sample:
     get:
+      x-module: platform
       description: |-
         API to fetch sample template list based on filters
         currently accepts template name search and category id search
@@ -4730,6 +4787,7 @@ paths:
       security: []
   '/templates/sample/{templateId}':
     get:
+      x-module: platform
       description: get info of a sample template by template id
       summary: get sample templates info
       tags:
@@ -4833,6 +4891,7 @@ paths:
       security: []
   /templates/buttonType:
     get:
+      x-module: platform
       summary: get buttonType
       description: get list of all available button types in helo-whatsapp
       tags:
@@ -4891,6 +4950,7 @@ paths:
       security: []
   /templates/headerType:
     get:
+      x-module: platform
       summary: get header Type
       description: get list of all available header types in helo-whatsapp
       tags:
@@ -4951,6 +5011,7 @@ paths:
       security: []
   '/templates/{templateId}/validate':
     get:
+      x-module: platform
       summary: Check validation of the template
       description: Use this API to check template validation
       tags:
@@ -5080,7 +5141,8 @@ paths:
       security: []
   /audience:
     get:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       description: |-
         This api returns list of templates based on filters
         following
@@ -5224,7 +5286,8 @@ paths:
               error: {}
       security: []
     post:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       description: |-
         API to add or update audience
         To add audience do not pass audienceID to update template pass audience ID along with parameters to update
@@ -5332,6 +5395,7 @@ paths:
       security: []
   /audience/optin/excel:
     patch:
+      x-module: platform
       description: API to upload bulk audience data using excel
       summary: whatsapp excel upload audience data
       tags:
@@ -5433,7 +5497,8 @@ paths:
       security: []
   '/audience/{audienceId}':
     get:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       summary: Get audience Info
       description: |-
         Use this API to get information of a audience record
@@ -5524,6 +5589,7 @@ paths:
       security: []
   /audience/optin/segment:
     get:
+      x-module: platform
       description: This api returns list of segment
       summary: Get segment list
       tags:
@@ -5589,6 +5655,7 @@ paths:
               error: {}
       security: []
     post:
+      x-module: platform
       description: |-
         API to add or update segment
         To add segment do not pass segmentId to update segment pass segment ID along with parameters to update
@@ -5687,6 +5754,7 @@ paths:
       security: []
   /audience/optin/source:
     get:
+      x-module: platform
       description: This api returns list of optin
       summary: Get optin source list
       tags:
@@ -5758,6 +5826,7 @@ paths:
               error: {}
       security: []
     post:
+      x-module: platform
       description: |-
         API to add or update optin
         To add optin do not pass optinId to update optin pass optin ID along with parameters to update
@@ -5856,7 +5925,8 @@ paths:
       security: []
   /audience/optin:
     post:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       description: |-
         API to update optin
         To update optinSourceId pass optin source
@@ -5960,6 +6030,7 @@ paths:
       security: []
   /audience/optout:
     patch:
+      x-module: platform
       description: |-
         API to update optin
          by phone Number
@@ -6057,6 +6128,7 @@ paths:
       security: []
   /audience/optin/url:
     get:
+      x-module: platform
       description: This api returns optin url and qrCode of the url
       summary: Get optin url
       tags:
@@ -6120,6 +6192,7 @@ paths:
       security: []
   '/audience/optin/url/redirect/{wabaNumber}':
     get:
+      x-module: platform
       description: This api redirects to getOptinUrl
       summary: Redirect to get optin url api
       tags:
@@ -6181,6 +6254,7 @@ paths:
       security: []
   '/message-history/{messageId}':
     get:
+      x-module: platform
       description: get info of a message history by message id
       summary: get message history info
       tags:
@@ -6262,6 +6336,7 @@ paths:
       security: []
   /message-history:
     post:
+      x-module: platform
       description: |-
         API to add message history
         To add optin do not pass messageId
@@ -6365,7 +6440,8 @@ paths:
       security: []
   /users/authorize:
     post:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       summary: Authorize API
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -6462,7 +6538,8 @@ paths:
               error: {}
   /users/auth/forgetpassword:
     post:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       summary: Authorize API
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -6564,7 +6641,8 @@ paths:
               error: {}
   /users/auth/changepassword:
     post:
-      isPublic: true
+      x-isPublic: true
+      x-module: platform
       summary: Authorize API
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -6661,8 +6739,9 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  /helowhatsappchat/api/flowmessage/flow:
+  /flowmessage/flow:
     get:
+      x-module: chatApp
       summary: Get Identifier
       description: Use this API to get identifier
       tags:
@@ -6744,7 +6823,7 @@ paths:
               error: {}
       security: []
     post:
-      isPublic: true
+      x-module: chatApp
       summary: This API is used to add update flow
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -6847,8 +6926,9 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  /helowhatsappchat/api/flowmessage/flow/types:
+  /flowmessage/flow/types:
     get:
+      x-module: chatApp
       summary: Get Flow Types
       description: Use this API to get flow types
       tags:
@@ -6925,8 +7005,9 @@ paths:
               data: {}
               error: {}
       security: []
-  /helowhatsappchat/api/flowmessage/flow/identifier/cancel:
+  /flowmessage/flow/identifier/cancel:
     get:
+      x-module: chatApp
       summary: Get Cancel Identifiers
       description: Use this API to get cancel identifiers
       tags:
@@ -6995,9 +7076,9 @@ paths:
               data: {}
               error: {}
       security: []
-  /helowhatsappchat/api/flowmessage/chat:
+  /flowmessage/chat:
     post:
-      isPublic: true
+      x-module: chatApp
       summary: This API is used to send messages
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -7094,8 +7175,9 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  /helowhatsappchat/api/flowmessage/chat/metadata:
+  /flowmessage/chat/metadata:
     get:
+      x-module: chatApp
       summary: Get Chat Meta Data
       description: Use this API to get chat meta data
       tags:
@@ -7163,7 +7245,7 @@ paths:
               error: {}
       security: []
     post:
-      isPublic: true
+      x-module: chatApp
       summary: This API is used to add update metadata
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
@@ -7260,9 +7342,9 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  /helowhatsappchat/api/flowmessage/flow/identifier/delete:
+  /flowmessage/flow/identifier/delete:
     patch:
-      isPublic: true
+      x-module: chatApp
       summary: THis API is used to delete identifier
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.

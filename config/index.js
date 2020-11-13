@@ -273,5 +273,9 @@ module.exports = {
       time: process.env.SCHEDULERS_UPDATE_TEMPLATE_STATUS_TIME,
       timeZone: process.env.SCHEDULERS_UPDATE_TEMPLATE_STATUS_TIMEZONE
     }
+  },
+  swaggerUrl: {
+    platform: process.env.BASE_URL ? process.env.BASE_URL + '/' + __constants.APP_NAME + '/api' : 'http://localhost:' + process.env.PORT + '/' + __constants.APP_NAME + '/api',
+    chatApp: process.env.CHAT_APP_URL + __constants.CHAT_APP_BASE_PATH
   }
 }
