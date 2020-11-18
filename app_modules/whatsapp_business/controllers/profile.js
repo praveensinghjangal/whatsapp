@@ -9,13 +9,13 @@ const fs = require('fs')
 const url = require('../../../lib/util/url')
 const { FileStream } = require('../../../lib/util/fileStream')
 const { FileDownload } = require('../../../lib/util/fileDownload')
-// Services
 const BusinessAccountService = require('../services/businesAccount')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
-// const apiResponse = require('../../../config/apiResponse')
+const _ = require('lodash')
+
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   __logger.info('getBusinessProfile:>>>>>>>>>>>>>')
@@ -80,10 +80,16 @@ const addupdateBusinessAccountInfo = (req, res) => {
         return businessAccountService.updateBusinessData(req.body, result.record)
       }
     })
-    .then(data => validate.isAddUpdateBusinessAccessInfoComplete(data))
     .then(data => {
-      __logger.info('After inserting or updating', data)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessAccessProfileCompletionStatus: data } })
+      let statusName = ''
+      _.each(__constants.WABA_PROFILE_STATUS, (val, key) => {
+        if (data.wabaProfileSetupStatusId && val.statusCode && val.statusCode === data.wabaProfileSetupStatusId) statusName = val.displayName
+      })
+      return statusName
+    })
+    .then(wabaProfileSetupStatus => {
+      __logger.info('After inserting or updating', wabaProfileSetupStatus)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { wabaProfileSetupStatus } })
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -107,37 +113,10 @@ const addUpdateBusinessProfile = (req, res) => {
       profileData = data
       return businessAccountService.getWebsiteLimitByProviderId(req.user.providerId)
     })
-    // .then(data => {
-    //   return data
-    //   // __logger.info('addUpdateBusinessProfile::profile pic url-----', req.body.profilePhotoUrl, profileData.record.profilePhotoUrl)
-    //   // if (profileData.record && profileData.record.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
-    //   //   if (req.body.profilePhotoUrl && req.body.profilePhotoUrl !== '' && req.body.profilePhotoUrl !== profileData.record.profilePhotoUrl) {
-    //   //     __logger.info('addUpdateBusinessProfile::Api called to update profile pic')
-    //   //     const url = __config.base_url + __constants.INTERNAL_END_POINTS.businessProfileLogoByUrl
-    //   //     const headers = {
-    //   //       Authorization: req.headers.authorization
-    //   //     }
-    //   //     return this.http.Put({ profilePic: req.body.profilePhotoUrl }, 'body', url, headers, true)
-    //   //   } else {
-    //   //     return data
-    //   //   }
-    //   //   return data
-    //   // } else {
-    //   //   return data
-    //   // }
-    // })
+
     .then(websiteLimitByProvider => {
       __logger.info('addUpdateBusinessProfile::apiREsponse', websiteLimitByProvider)
       __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
-      // if (apiResponse && apiResponse.code === 4032) {
-      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: 'Invalid url for profilePhotoUrl', data: {} })
-      // }
-      // if (apiResponse && apiResponse.code === 4031) {
-      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_TYPE, err: 'Profile pic only supports the following filetypes - jpg, jpeg, png' })
-      // }
-      // if (apiResponse && apiResponse.code === 4033) {
-      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: 'Add image with large size', data: {} })
-      // }
       const maxWebsiteAlwd = websiteLimitByProvider && websiteLimitByProvider[0] && websiteLimitByProvider[0].maxWebsiteAllowed ? websiteLimitByProvider[0].maxWebsiteAllowed : 0
       if (req.body.websites && req.body.websites !== [] && req.body.websites.length > maxWebsiteAlwd) {
         __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', maxWebsiteAlwd)
@@ -225,7 +204,6 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   const errorFields = data.fieldErr
   const businessAccessProfileFields = ['facebookManagerId', 'phoneCode', 'phoneNumber', 'canReceiveSms', 'canReceiveVoiceCall', 'associatedWithIvr']
   const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'city', 'postalCode']
-  // const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'profilePhotoUrl', 'city', 'postalCode']
   data.businessAccessProfileCompletionStatus = true
   data.businessProfileCompletionStatus = true
   for (let key = 0; key < errorFields.length; key++) {
@@ -401,7 +379,9 @@ const updateProfilePic = (req, res) => {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
           }
         })
-        .then(accountData => __util.send(res, accountData))
+        .then(accountData => {
+          return __util.send(res, accountData)
+        })
         .catch(err => {
           __logger.error('error: ', err)
           return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
