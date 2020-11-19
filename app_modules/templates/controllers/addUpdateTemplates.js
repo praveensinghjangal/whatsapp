@@ -102,7 +102,7 @@ const addUpdateTemplates = (req, res) => {
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)
       // __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isValid: ruleResponse.complete, remark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
       __logger.error('error: ', err)
