@@ -9,6 +9,11 @@ const __logger = require('../../../lib/logger')
 const fs = require('fs')
 const path = require('path')
 
+/**
+ * @namespace -Agreement-Controller-
+ * @description In this Conroller, API’s related to agreement for using vivaconnect helo-whatsapp platform
+ */
+
 const Storage = multer.diskStorage({
   destination: function (req, file, callback) {
     callback(null, __constants.PUBLIC_FOLDER_PATH + '/agreements')
@@ -61,6 +66,18 @@ const savFileDataInDataBase = (userId, fileName, filePath) => {
   return fileSaved.promise
 }
 
+/**
+ * @memberof -Agreement-Controller-
+ * @name UploadAgreement
+ * @path {POST} /users/agreement
+ * @description Bussiness Logic :- This API is used to upload the signed agreement
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @body {form-data} agreement=sample.pdf - Upload the file in form-data request, assign key as agreement and value as uploaded pdf
+ * @code {200} if the msg is success than agreement uploaded successfully.
+ * @author Danish Galiyara 25th May, 2020
+ * *** Last-Updated :- Danish Galiyara 2nd July, 2020 ***
+ */
+
 const uploadAgreement = (req, res) => {
   upload(req, res, function (err, data) {
     if (err) {
@@ -80,6 +97,18 @@ const uploadAgreement = (req, res) => {
     }
   })
 }
+
+/**
+ * @memberof -Agreement-Controller-
+ * @name GetAgreement
+ * @path {GET} /users/agreement
+ * @description Bussiness Logic :- This API is regarding download the signed agreement.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/downloadsignedagreement|GetAgreement}
+ * @code {200} if the msg is success than Download signed agreement Latest uploaded document wil be download.
+ * @author Danish Galiyara 25th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
 
 const getAgreement = (req, res) => {
   __logger.info('Inside getAgreement', req.user.user_id)
@@ -106,6 +135,17 @@ const getAgreement = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
+/**
+ * @memberof -Agreement-Controller-
+ * @name GenerateAgreement
+ * @path {GET} /users/agreement/generate
+ * @description Bussiness Logic :- This API Generate Agreement of Helo Whatsapp
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/generateagreement|GenerateAgreement}
+ * @code {200} if the msg is success than A pdf file will be downloaded.
+ * @author Danish Galiyara 26th May, 2020
+ * *** Last-Updated :- Danish Galiyara 26th May, 2020 ***
+ */
 
 const generateAgreement = (req, res) => {
   __logger.info('Inside generateAgreement', req.user.user_id)

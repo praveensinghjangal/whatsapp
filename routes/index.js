@@ -1,8 +1,3 @@
-/**
- *
- * @author deepak.ambekar [6/19/2017].
- */
-
 const dateUtil = require('date-format-utils')
 const __config = require('../config')
 const __logger = require('../lib/logger')
@@ -35,7 +30,6 @@ module.exports = function (app) {
 
   // region api routes
   const apiUrlPrefix = '/' + __config.api_prefix + '/api'
-
   app.use(apiUrlPrefix + '/chat/v1/messages', message)
   app.use(apiUrlPrefix + '/users', user)
   app.use(apiUrlPrefix + '/places', places)

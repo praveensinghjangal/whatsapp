@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "develop": "nodemon server.js",
+    "jsodoc": "./node_modules/.bin/jsdoc -c jsdoc.conf -d public/js-docs",
     "debug": "nodemon --inspect=9231 server.js"
   },
   "nodemonConfig": {
@@ -80,6 +81,8 @@
     "yamljs": "0.3.0"
   },
   "devDependencies": {
+    "jsdoc": "^3.6.6",
+    "jsdoc-http-plugin": "^0.3.2",
     "nodemon": "2.0.2",
     "standard": "14.3.3"
   }

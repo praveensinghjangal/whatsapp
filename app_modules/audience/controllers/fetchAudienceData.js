@@ -9,6 +9,26 @@ const _ = require('lodash')
 const q = require('q')
 const moment = require('moment')
 
+/**
+ * @namespace -Whatsapp-Audience-Controller-Fetch-Audience-Data-
+ * @description API’s related to whatsapp audience.
+ */
+
+/**
+ * @memberof -Whatsapp-Audience-Controller-Fetch-Audience-Data-
+ * @name GetAudienceRecordById
+ * @path {GET} /audience/{audienceId}
+ * @description Bussiness Logic :- Use this API to get information of a audience record pass audienceId in path
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+   <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/audience/GetAudienceRecordById|GetAudienceRecordById}
+ * @param {string} [audienceId=111] - Please provide audienceId in params.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - It will return the object containing all the audience information according to the audience Id.
+ * @code {200} if the msg is success than Returns info of a audience record.
+ * @author Arjun Bhole 9th July, 2020
+ * *** Last-Updated :- Arjun Bhole 29th July, 2020 2020 ***
+ */
 const getAudienceRecordById = (req, res) => {
   __logger.info('Get Audience Info API Called', req.params)
   const audienceService = new AudienceService()

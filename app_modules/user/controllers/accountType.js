@@ -5,6 +5,25 @@ const __db = require('../../../lib/db')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const queryProvider = require('../queryProvider')
 
+/**
+ * @namespace -Account-Type-Controller-
+ * @description In this Conroller , functionality related to Account Type exists.
+ */
+
+/**
+ * @memberof -Account-Type-Controller-
+ * @name GetAcountType
+ * @path {GET} /users/accountType
+ * @description Bussiness Logic :- This API returns the dropdown of all account type
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/accountProfile/accountType-dropdown|GetAcountType}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {array} metadata.data - Returns the array with user_account_type_id and type_name.
+ * @code {200} if the msg is success than Returns dropdown of all account type
+ * @author Arjun Bhole 25th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
 // Get Account Type
 const getAcountType = (req, res) => {
   __logger.info('Inside getAcountType', req.user)

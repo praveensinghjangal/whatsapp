@@ -1,9 +1,3 @@
-/**
- *
- * @author deepak.ambekar [7/5/2018].
- */
-
-
 const express = require('express');
 var basicRouter = express.Router(); // api which not required authentication
 var authRouter = express.Router(); // api which required authentication

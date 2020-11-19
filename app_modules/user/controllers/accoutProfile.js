@@ -11,6 +11,26 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const _ = require('lodash')
 
+/**
+ * @namespace -Profile-Account-Controller-
+ * @description In this Conroller profile account related API are build such as getAcountProfile, updateAcountProfile, checkAccountProfileCompletionStatus, generateAndUpdateTokenKey
+ */
+
+/**
+ * @memberof -Profile-Account-Controller-
+ * @name GetAcountProfile
+ * @path {GET} /users/account
+ * @description Bussiness Logic :- This API returns Profile account info.(Returns account info and its completition status)
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/accountProfile/generateAndUpdateTokenKey|GetAcountProfile}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - Returns the object with accountId,tokenKey,accountManagerName,name,email,city etc
+ * @code {200} if the msg is success than returns account info and its completition status.
+ * @author Arjun Bhole 15th May, 2020
+ * *** Last-Updated :- Danish Galiyara 30 July,2020 ***
+ */
+
 // Get Account Profile
 const getAcountProfile = (req, res) => {
   __logger.info('Inside getAcountProfile', req.user.user_id)
@@ -44,6 +64,27 @@ const getAcountProfile = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+
+/**
+ * @memberof -Profile-Account-Controller-
+ * @name UpdateAcountProfile
+ * @path {PUT} /users/account
+ * @description Bussiness Logic :- This API is use to update the profile's account with various attributes.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @body {string}  city- Provide the valid name of city
+ * @body {string}  state - Provide the valid name of the state
+ * @body {string}  country- Provide the valid name of the country
+ * @body {string}  addressLine1 - Provide the valid addressLine1
+ * @body {string}  addressLine2 - Provide the valid second addressLine1
+ * @body {string}  phoneCode= - Provide the valid phone code
+ * @body {string}  postalCode - Provide the valid postal code
+ * @body {string}  contactNumber - Provide the valid contact Number
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @code {200} if the msg is success than profiles account is updated than return completion status.
+ * @author Arjun Bhole 15th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
 
 // Update Account Prfofile
 
@@ -107,6 +148,21 @@ function checkAccountProfileCompletionStatus (data) {
   const checkCompleteStatus = new CheckInfoCompletionService()
   return checkCompleteStatus.checkAccountProfileStatus(data)
 }
+
+/**
+ * @memberof -Profile-Account-Controller-
+ * @name GenerateAndUpdateTokenKey
+ * @path {PUT} /users/account/tokenKey
+ * @description Bussiness Logic :- This API is used for updating user account token key..
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/accountProfile/generateAndUpdateTokenKey|GenerateAndUpdateTokenKey}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.tokenKey=sdvabsfbsbfdsdf3424fe342 - Returns the token key in data.
+ * @code {200} if the msg is success than token key is generated/updated and it is given in response .
+ * @author Arjun Bhole 29th July, 2020
+ * *** Last-Updated :- Javedkl11 16 September,2020 ***
+ */
 
 const generateAndUpdateTokenKey = (req, res) => {
   __logger.info('Inside generateAndUpdateTokenKey', req.user.user_id)
