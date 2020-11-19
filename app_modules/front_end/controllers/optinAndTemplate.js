@@ -6,6 +6,11 @@ const __logger = require('../../../lib/logger')
 const HttpService = require('../../../lib/http_service')
 const __config = require('../../../config')
 
+/**
+ * @namespace -GET-SET-OPTIN-&-Template-Controller-
+ * @description This Controller frontend functionality like get optin & template and add update optin & template
+ */
+
 const getOptinText = authToken => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
@@ -91,6 +96,21 @@ const callSetOptinTextApi = (optinText, authToken) => {
   return apiCalled.promise
 }
 
+/**
+ * @memberof -GET-SET-OPTIN-&-Template-Controller-
+ * @name GetOptinAndTemplate
+ * @path {GET} /frontend/addUpdateOptinMessageAndTemplate
+ * @description Bussiness Logic :- This API returns the template data and optin text
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.templateId - Returns the template ID
+ * @response {string} metadata.data.optinText - Returns the optin Text Data
+ * @code {200} if the msg is success than return all the templateId, optinText in array of json.
+ * @author Danish Galiyara 11th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23rd October,2020 ***
+ */
+
 const getOptinAndTemplate = (req, res) => {
   __logger.info('Get Optin And Template API called', req.body)
   const resData = {}
@@ -110,6 +130,21 @@ const getOptinAndTemplate = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+
+/**
+ * @memberof -GET-SET-OPTIN-&-Template-Controller-
+ * @name AddUpdateOptinAndTemplate
+ * @path {POST} /frontend/addUpdateOptinMessageAndTemplate
+ * @description Bussiness Logic :- This API is a wrapper of setting up the templateId with their otpin text (it will update the data or insert the data)
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @body {string}  templateId=register_thanks_converse - Provide the valid template Id
+ * @body {string}  optinText=helloviva1 - Provide the valid optin text.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  templateId and optinText updated or added successfully.
+ * @code {200} if the msg is success than your request is added or updated successfully.
+ * @author Danish Galiyara 11th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23rd October,2020 ***
+ */
 
 const addUpdateOptinAndTemplate = (req, res) => {
   __logger.info('Add Update Optin And Template API called', req.body)

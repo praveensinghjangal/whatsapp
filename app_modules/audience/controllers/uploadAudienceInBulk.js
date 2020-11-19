@@ -9,6 +9,11 @@ const request = require('request')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
 
+/**
+ * @namespace -Whatsapp-Audience-Controller-Upload-excel-to-upload-audience-data-
+ * @description API’s related to whatsapp audience.
+ */
+
 const callAddUpdateAudienceApi = (formattedBody, authToken) => {
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
@@ -126,6 +131,21 @@ const filter = function (req, file, cb) {
 const upload = multer({
   fileFilter: filter
 }).array('optinFile', 1)
+
+/**
+ * @memberof -Whatsapp-Audience-Controller-Upload-excel-to-upload-audience-data-
+ * @name UploadAudienceData
+ * @path {PATCH} /audience/optin/excel
+ * @description Bussiness Logic :- This API to upload bulk audience data using excel.
+ * Excel file with template parameters download sample file using
+   this link https://drive.google.com/file/d/1mKZTv84jgts9MijTp5-5ZUZ80xynD1M2/view?usp=sharing
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/audience/uploadAudienceData|UploadAudienceData}
+ * @body {form-data} optinFile=@/home/parvez/Arjun/Projects/OptinExcel.xlsx - Upload the file in form-data request, assign key as optinFile and value as uploaded xlsx file.
+ * @code {200} if the msg is success than the audience data uploaded successfully.
+ * @author Arjun Bhole 22nd July, 2020
+ * *** Last-Updated :- Arjun Bhole 23rd October, 2020 ***
+ */
 
 const uploadAudienceData = (req, res) => {
   __logger.info('inside uploadAudienceData::>>>>>>>>>>>>>>')

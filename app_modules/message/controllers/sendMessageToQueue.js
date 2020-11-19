@@ -17,6 +17,10 @@ const MessageHistoryService = require('../services/dbData')
 const RedirectService = require('../../integration/service/redirectService')
 const RedisService = require('../../../lib/redis_service/redisService')
 const request = require('request')
+/**
+ * @namespace -WhatsApp-Message-Controller-SendMessage-
+ * @description API’s related to whatsapp message.
+ */
 
 const updateAudience = (audienceNumber, audOptin, wabaNumber) => {
   const audUpdated = q.defer()
@@ -174,6 +178,21 @@ const ruleCheck = (data, wabaPhoneNumber) => {
   })
   return q.all(thePromises)
 }
+
+/**
+ * @memberof -WhatsApp-Message-Controller-SendMessage-
+ * @name SendMessageInQueue
+ * @path {POST} /chat/v1/messages
+ * @description Bussiness Logic :- This API is used to send mesages using a channel. This API can send single as well as bulk messsages.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message/send|SendMessageInQueue}
+ * @body {Array}  Array0fJson - This below Object is a sample Object for request body <br/>[ { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "location", "location": { "longitude": 7.4954884, "latitude": 51.5005765 } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "template", "template": { "templateId": "welcome", "language": { "policy": "deterministic", "code": "en" }, "components": [ { "type": "header", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] }, { "type": "body", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] }, { "type": "footer", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] } ] } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "media", "media": { "type": "image", "url": "https://i.ibb.co/kXgjphY/925869358s.png", "caption": "viva connect" } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "text", "text": "hello" } } ]
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {array} metadata.data - It will return the object containing messageId and acceptedAt.
+ * @code {200} if the msg is success than it Returns message ID.
+ * @author Danish Galiyara 18th june, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
 
 const controller = (req, res) => {
   __logger.info('sendMessageToQueue :: API to send message called')

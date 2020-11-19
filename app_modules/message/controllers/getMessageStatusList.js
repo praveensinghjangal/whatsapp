@@ -4,6 +4,30 @@ const __util = require('../../../lib/util')
 const ValidatonService = require('../services/validation')
 const DbServices = require('../services/dbData')
 
+/**
+ * @namespace -WhatsApp-Message-Controller-Transaction-Message-List-Status-
+ * @description API’s related to whatsapp message.
+ */
+
+/**
+ * @memberof -WhatsApp-Message-Controller-Transaction-Message-List-Status-
+ * @name getMessageStatusList
+ * @path {GET} /chat/v1/messages/status/{messageStatus}/list
+ * @description Bussiness Logic :- Use this API to get message status list
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message-history/getMessageList|getMessageStatusList}
+ * @param {string}  startDate - startDate needs to be entered here.
+ * @param {string}  endDate - endDate needs to be entered here
+ * @param {string}  messageStatus - status of a Message
+ * @param {string}  page - enter page number here
+ * @param {number}  ItemsPerPage   - enter records per page
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {array} metadata.data - In response we get array of json data consist of messageId,time and endConsumerNumber in each object.
+ * @code {200} if the msg is success than it Returns messageId, time and endConsumerNumber
+ * @author Javed K11 7th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23rd October, 2020 ***
+ */
+
 const getMessageStatusList = (req, res) => {
   __logger.info('Get Message Status List API Called', req.params, req.query)
   const dbServices = new DbServices()

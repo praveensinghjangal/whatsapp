@@ -12,3 +12,4 @@ package-lock.json
 public/agreements
 config/.env
 config/.env-stage
+public/js-docs
