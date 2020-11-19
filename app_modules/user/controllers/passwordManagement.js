@@ -10,6 +10,11 @@ const EmailTemplates = require('../../../lib/sendNotifications/emailTemplates')
 const __config = require('../../../config')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
+/**
+ * @namespace -Password-Management-Controller-
+ * @description Password management for Helo-Whatsapp Sign up API are placed here.
+ */
+
 const sendPasswordTokenByEmail = (token, email, firstName) => {
   const emailSent = q.defer()
   __logger.info('send ----------------->', token, email, firstName)
@@ -28,6 +33,19 @@ const sendPasswordTokenByEmail = (token, email, firstName) => {
     .catch(err => emailSent.reject(err))
   return emailSent.promise
 }
+
+/**
+ * @memberof -Password-Management-Controller-
+ * @name ForgetPassword
+ * @path {POST} /users/auth/forgetpassword
+ * @description Bussiness Logic :- If the User account password is forgot so /forgetpassword the API is used.
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/users/forgetPassword|ForgetPassword}
+ * @body {string}  email=habc@gmail.com - Provide the valid email.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg - Based on the requested requestBody it can be among thses three option [Link to set new password has been sent on your registered email/No record found/User does not exist].
+ * @author Danish Galiyara 2nd September, 2020
+ * *** Last-Updated :- Danish Galiyara 2nd September, 2020 ***
+ */
 
 const forgetPassword = (req, res) => {
   const userService = new UserService()
@@ -52,6 +70,20 @@ const forgetPassword = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
+
+/**
+ * @memberof -Password-Management-Controller-
+ * @name ChangePassword
+ * @path {POST} /users/auth/changepassword
+ * @description Bussiness Logic :- This API is used to reset the password.
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/users/changePassword|ChangePassword}
+ * @body {string}  newPassword=habc67 - Please provide the new password.
+ * @body {string}  token=asdasdasdsadm - Please provide the valid token.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg - It will return Success if the password reset successfully or it will give error msg as Invalid token  if the token is not valid.
+ * @author Danish Galiyara 2nd September, 2020
+ * *** Last-Updated :- Danish Galiyara 2nd September, 2020 ***
+ */
 
 const changePassword = (req, res) => {
   const userService = new UserService()

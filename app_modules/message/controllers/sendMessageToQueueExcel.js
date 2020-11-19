@@ -9,6 +9,11 @@ const multer = require('multer')
 const excelToJson = require('convert-excel-to-json')
 const request = require('request')
 
+/**
+ * @namespace -WhatsApp-Message-Controller-ExcelFile-
+ * @description API’s related to whatsapp message.
+ */
+
 const callSendToQueueApi = (formattedBody, authToken) => {
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
@@ -198,6 +203,21 @@ const filter = function (req, file, cb) {
     cb(err)
   }
 }
+
+/**
+ * @memberof -WhatsApp-Message-Controller-ExcelFile-
+ * @name UploadWhatsAppMessageExcel
+ * @path {POST} /chat/v1/messages/whatsapp/excel
+ * @description Bussiness Logic :- This API is used to send bulk template message using excel. <br/>
+ * Excel file with template parameters download sample file using
+   this link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message/whatsappexcelsendmessage|UploadWhatsAppMessageExcel}
+ * @body {form-data} messagefile - Upload the file in form-data request, assign key as messagefile and value as uploaded xlsx file.
+ * @code {200} if the msg is success than the message data uploaded successfully.
+ * @author Danish Galiyara 2nd July, 2020
+ * *** Last-Updated :- Javed kh11 6th October, 2020 ***
+ */
 
 const upload = multer({
   fileFilter: filter

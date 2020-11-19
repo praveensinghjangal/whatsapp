@@ -5,6 +5,22 @@ const __db = require('../../../lib/db')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const queryProvider = require('../queryProvider')
 
+/**
+ * @namespace -Whatsapp-Audience-Controller-Fetch-Segment-
+ * @description API’s related to whatsapp audience.
+ */
+
+/**
+ * @memberof  -Whatsapp-Audience-Controller-Fetch-Segment-
+ * @name GetSegmentData
+ * @path {GET} audience/optin/segment
+ * @description Bussiness Logic :- This API returns all the optin segment data.
+ * @response {string} ContentType=application/json - Response content type.
+ * @code {200} if the msg is success than it Returns all the optin segment data.
+ * @author Arjun Bhole 16th July, 2020
+ * *** Last-Updated :- Arjun Bhole 16th July, 2020 ***
+ */
+
 // Get Segment Data
 const getSegmentData = (req, res) => {
   __logger.info('Inside getSegmentData', req.user.userId)

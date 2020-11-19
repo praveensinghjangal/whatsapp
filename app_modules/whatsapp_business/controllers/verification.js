@@ -5,6 +5,24 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __util = require('../../../lib/util')
 
+/**
+ * @namespace -Whatsapp-Business-Account-(WABA)-Information-Verification-API-Controller-
+ * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
+ */
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Information-Verification-API-Controller-
+ * @name GenerateBusinessNumberVerificationCode
+ * @path {POST} /business/verification/phoneNumber
+ * @description Bussiness Logic :- This API SEND BUSINESS VERIFICATION CODE to business number.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @param {string}  verificationChannel=voice - Provide the valid channel name.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  Verification code send successfully.
+ * @code {200} if the msg is success than verification success message send.
+ * @author Danish Galiyara 4th June, 2020
+ * *** Last-Updated :- Ajun Bhole 23th October, 2020 ***
+ */
 const generateBusinessNumberVerificationCode = (req, res) => {
   __logger.info('API SEND SEND BUSINESS VERIFICATION CODE CALLED')
   const verificationService = new VerificationService()
@@ -49,6 +67,21 @@ const generateBusinessNumberVerificationCode = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Information-Verification-API-Controller-
+ * @name ValidateBusinessNumberVerificationCode
+ * @path {PATCH} /business/verification/phoneNumber
+ * @description Bussiness Logic :- This API verifiy code for business number. API to verify otp sent to user for business number verififcation
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/verifiycodeforbusinessnumber|ValidateBusinessNumberVerificationCode}
+ * @body {string}  code=3456- Provide the valid otp that you received.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Business phone number verified.
+ * @code {200} if the msg is success than verification success message.
+ * @author Danish Galiyara 4th June, 2020
+ * *** Last-Updated :- Danish Galiyara 4th June, 2020 ***
+ */
 
 const validateBusinessNumberVerificationCode = (req, res) => {
   __logger.info('validateBusinessNumberVerificationCode::>>>>>>>>>>...')

@@ -16,6 +16,11 @@ const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
 const _ = require('lodash')
 
+/**
+ * @namespace -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
+ */
+
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   __logger.info('getBusinessProfile:>>>>>>>>>>>>>')
@@ -58,6 +63,26 @@ const getBusinessProfile = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @name AddupdateBusinessAccountInfo
+ * @path {POST} /business/profile/accessInformation
+ * @description Bussiness Logic :-This api is used to add or update business access information.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/addupdatebusinessprofilraccessInformation|AddupdateBusinessAccountInfo}
+ * @body {string} facebookManagerId
+ * @body {string} phoneCode
+ * @body {string} phoneNumber
+ * @body {boolean} canReceiveSms=true
+ * @body {boolean} canReceiveVoiceCall=false
+ * @body {boolean} associatedWithIvr=false
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  Returns businessProfileCompletionStatus as true.
+ * @code {200} if the msg is success than Returns Status of business profile info completion.
+ * @author Arjun Bhole 3rd June, 2020
+ * *** Last-Updated :- Arjun Bhole 29th October, 2020 ***
+ */
+
 const addupdateBusinessAccountInfo = (req, res) => {
   __logger.info('Inside addupdateBusinessAccountInfo', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -96,6 +121,34 @@ const addupdateBusinessAccountInfo = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @name AddUpdateBusinessProfile
+ * @path {POST} /business/profile
+ * @description Bussiness Logic :- API to add or update business profile.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/add/updatebusinessprofile|AddUpdateBusinessProfile}
+ * @body {string} businessName
+ * @body {string} whatsappStatus
+ * @body {string} description
+ * @body {string} address
+ * @body {string} country
+ * @body {string} city
+ * @body {string} state
+ * @body {string} postalCode
+ * @body {string} email
+ * @body {string} businessCategoryId
+ * @body {string} serviceProviderId
+ * @body {string} apiKey
+ * @body {string} webHookPostUrl
+ * @body {string} optinText
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  Returns businessProfileCompletionStatus as true.
+ * @code {200} if the msg is success than Returns Status of business profile info completion.
+ * @author Danish Galiyara 3rd june, 2020
+ * *** Last-Updated :- Javed Kh11 29th October, 2020 ***
+ */
 
 // todo : add check if category id exists in master
 const addUpdateBusinessProfile = (req, res) => {
@@ -160,6 +213,21 @@ const addUpdateBusinessProfile = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @name MarkManagerVerified
+ * @path {POST} /business/profile/markManagerVerified
+ * @description Bussiness Logic :- This API marks manager verified
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/markmanagerverified|MarkManagerVerified}
+ * @body {boolean} businessManagerVerified=true
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  Returns businessVerificationCompletionStatus as true.
+ * @code {200} if the msg is success than Returns Status of business verification completion.
+ * @author Danish Galiyara 4th June, 2020
+ * *** Last-Updated :- Arjun Bhole 29th October, 2020 ***
+ */
 
 const markManagerVerified = (req, res) => {
   __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id)
@@ -236,6 +304,20 @@ function formatFinalStatus (queryResult, result) {
   return finalResult.promise
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @name UpdateServiceProviderId
+ * @path {PUT} /business/profile/serviceProvider
+ * @description Bussiness Logic :- This API is used for updating service provider id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/updateServiceProviderId|UpdateServiceProviderId}
+ * @body {string} serviceProviderId
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Returns Service Provider Id in response according to user Id.
+ * @code {200} if the msg is success than Returns Service Provider Id.
+ * @author Arjun Bhole 29th July, 2020
+ * *** Last-Updated :- Arjun Bhole 29th October, 2020 ***
+ */
 const updateServiceProviderId = (req, res) => {
   __logger.info('Inside updateServiceProviderId')
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
@@ -284,6 +366,19 @@ const updateWabaPhoneNumber = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @name AddUpdateOptinMessage
+ * @path {POST} /business/profile/optinmessage
+ * @description Bussiness Logic :- This API is used TO Add Update Optin Message.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @body {string} optinText
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Returns add/update the optin record and send the object in response according to user Id.
+ * @code {200} if the msg is success than Add/Update optin message is done
+ * @author Danish Galiyara 10th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
 
 const addUpdateOptinMessage = (req, res) => {
   __logger.info('API TO Add Update Optin Message', req.user.user_id)
@@ -345,6 +440,18 @@ const filter = function (req, file, cb) {
   }
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Profile-Controller-
+ * @name UpdateProfilePic
+ * @path {PUT} /business/profile/logo
+ * @description Bussiness Logic :- This API is used to upload profile photo.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/uploadprofilephoto|UpdateProfilePicUpdateProfilePic}
+ * @body {form-data} profilePicture - Upload the file in form-data request, assign key as profilePicture and value as profile photo file to update.
+ * @code {200} if the msg is success than profile picture uploaded successfully.
+ * @author Javed kh11 6th October, 2020
+ * *** Last-Updated :- Arjun Bhole 10th November, 2020 ***
+ */
 const upload = multer({
   fileFilter: filter
 }).array('profilePicture', 1)

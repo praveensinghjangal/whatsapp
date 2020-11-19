@@ -11,6 +11,24 @@ const _ = require('lodash')
 const authMiddleware = require('../../../middlewares/auth/authentication')
 const UserService = require('../services/dbData')
 
+/**
+ * @namespace -User-Verifications-Controller-
+ * @description In this Controller verification based functionality exist
+ */
+
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name generateEmailVerificationCode
+ * @path {POST} /users/verification/email
+ * @description Bussiness Logic :- This API generate email verification code by user Id
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @code {200} if the msg is success than code generate and send successfully
+ * @author Danish Galiyara May 19th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
+
 const generateEmailVerificationCode = (req, res) => {
   __logger.info('generateEmailVerificationCode::')
   const verificationService = new VerificationService()
@@ -44,6 +62,19 @@ const generateEmailVerificationCode = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
+
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name GenerateSmsVerificationCode
+ * @path {POST} /users/verification/sms
+ * @description Bussiness Logic :- This API generate SMS verification code by user Id
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @code {200} if the msg is success than code generate and send successfully
+ * @author Danish Galiyara May 19th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
 
 const generateSmsVerificationCode = (req, res) => {
   __logger.info('generateSmsVerificationCode::>>>>>>..')
@@ -79,6 +110,18 @@ const generateSmsVerificationCode = (req, res) => {
     })
 }
 
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name ValidateEmailVerificationCode
+ * @path {PATCH} /users/verification/email
+ * @description Bussiness Logic :- This APi is use to validate the code received from email.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/verification/validateEmailCode|ValidateEmailVerificationCode}
+ * @body {string}  code=1234 - Enter the valid code
+ * @code {200} if the msg is success than verification successfully done.
+ * @author Danish Galiyara 19th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
 const validateEmailVerificationCode = (req, res) => {
   __logger.info('validateEmailVerificationCode::>>>>>>..')
   const verificationService = new VerificationService()
@@ -106,6 +149,18 @@ const validateEmailVerificationCode = (req, res) => {
     })
 }
 
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name ValidateSmsVerificationCode
+ * @path {PATCH} /users/verification/sms
+ * @description Bussiness Logic :- This API is used to validate code sent on registered phone number.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/verification/validateSmsCode|ValidateSmsVerificationCode}
+ * @body {string}  code=1234 - Enter the valid code
+ * @code {200} if the msg is success than verification successfully done.
+ * @author Danish Galiyara 19th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
 const validateSmsVerificationCode = (req, res) => {
   __logger.info('validateSmsVerificationCode::>>>>>>..')
   const verificationService = new VerificationService()
@@ -199,6 +254,18 @@ const generateSmsOtpCode = (req, res) => {
     })
 }
 
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name SendOtpCode
+ * @path {POST} /users/otp
+ * @description Bussiness Logic :- This API use to send the otp code to the user.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @body {string}  userId=5ba82a3f-5d76-416e-8cf5-b85388e2a99a - Enter the valid userId
+ * @code {200} if the msg is success than the otp code is send to the user.
+ * @author Danish Galiyara 20th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
+
 const sendOtpCode = (req, res) => {
   __logger.info('sendOtpCode::>>>>>>..')
   const verificationService = new VerificationService()
@@ -262,6 +329,21 @@ const sendOtpCode = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
+
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name ValidateTFa
+ * @path {PATCH} /users/otp
+ * @description Bussiness Logic :- This APi is use to validate code sent to the user
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/2FA/validateTFa|ValidateTFa}
+ * @body {string}  code=1234 - Enter the valid code
+ * @body {string}  userId=1234 - Enter the userId
+ * @response {string} metadata.data.token  - If msg is success than return the token in response.
+ * @code {200} if the msg is success than verification successfully done and return token in reponse.
+ * @author Danish Galiyara 20th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
 
 const validateTFa = (req, res) => {
   __logger.info('validateTFa::>>>>>>..')
@@ -450,6 +532,23 @@ const addTempTfaDataBS = reqBody => {
   return dataAdded.promise
 }
 
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name AddTempTfaData
+ * @path {POST} /users/tfa
+ * @description Bussiness Logic :- API to send otp code to user on their newly selected channel (send otp code to user on their newly selected channel)
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/2FA/addTempTfaData|AddTempTfaData}
+ * @body {string}  tfaType=authenticator - Enter new 2FA type here
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.qrcode  - It will return the qrcode and secret key.
+ * @code {200} if the msg is success than it return success or already verified response
+ status.
+ * @author Danish Galiyara 2nd September, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
+
 const addTempTfaData = (req, res) => {
   __logger.info('addTempTfaData::>>>>>>..')
   req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -547,6 +646,23 @@ const validateTempTfaBs = reqBody => {
   return dataAdded.promise
 }
 
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name ValidateTempTFa
+ * @path {PATCH} /users/otp/new
+ * @description Bussiness Logic :- API to validate code sent to the user on their newly selected channel.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/2FA/validateTempTFa|validateTempTFa}
+ * @body {string}  code=34234
+ * @body {string}  userId=1234567890
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {array} metadata.data.backupCodes  - It will return a array of backup codes. <br/> sample :- [ { "code": 2000, "msg": "Success", "data": { "backupCodes": [ "f1c68a73-2acd-4930-a1c8-8297619026bd", "56c7107f-695c-4da8-9e14-680694d63a47", "7029ce06-1fec-4ef2-a67c-814295b98964", "3e659681-c4cc-4439-81cb-67b2a7128503", "aea5de74-6ae8-47d1-a630-7f656ec10c03" ] }, "error": null }]
+ * @code {200} if the msg is success than it return the backup codes in response.
+ * @author Danish Galiyara 21st September, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
+
 const validateTempTFa = (req, res) => {
   __logger.info('validateTempTFa::>>>>>>..')
   req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -557,6 +673,24 @@ const validateTempTFa = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
     })
 }
+
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name ValidateBackupCodeAndResetTfa
+ * @path {PATCH} /users/otp/backup
+ * @description Bussiness Logic :- API to validate user via backup code and reset tfa on success
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/2FA/validateBackupCodeAndResetTfa|ValidateBackupCodeAndResetTfa}
+ * @body {string}  backupCode=sadsadsadasdawd232wadasd
+ * @body {string}  userId=1234567890
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.token  - It will return a valid token
+ * @code {200} if the msg is success than it resetTfaData and return token in response
+ status.
+ * @author Danish Galiyara 21st September, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
 
 const validateBackupCodeAndResetTfa = (req, res) => {
   __logger.info('validateBackupCodeAndResetTfa::>>>>>>..')

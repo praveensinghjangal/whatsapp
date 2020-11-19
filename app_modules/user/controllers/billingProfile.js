@@ -11,6 +11,25 @@ const UserService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
 const CheckInfoCompletionService = require('../services/checkCompleteIncomplete')
 
+/**
+ * @namespace -Billing-Profile-Controller-
+ * @description In this controller, API related to User profile billing and their details are provided.
+ */
+
+/**
+ * @memberof -Billing-Profile-Controller-
+ * @name GetBusinessBilllingProfile
+ * @path {GET} /users/billing
+ * @description Bussiness Logic :- This API returns details regarding the billing of the particular profile with its GST number and Active plan.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - Returns the object with billing details and active plan.
+ * @code {200} if the msg is success than Returns billing info and its completion status.
+ * @author Arjun Bhole 15th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
+
 // Get Business Profile
 const getBusinessBilllingProfile = (req, res) => {
   __logger.info('Inside getBusinessBilllingProfile', req.user.user_id)
@@ -83,6 +102,33 @@ function updateBusinessBilllingProfile (userId, oldBusinessData, businessDataToB
       })
   })
 }
+
+/**
+ * @memberof -Billing-Profile-Controller-
+ * @name AddBusinessBillingProfile
+ * @path {POST} /users/billing
+ * @description Bussiness Logic :- This API add/update the data of the billing business profile entry.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+   <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/businessBillingProfile/getBillingData|AddBusinessBillingProfile}
+ * @body {string}  city- Provide the valid name of city
+ * @body {string}  state - Provide the valid name of the state
+ * @body {string}  country- Provide the valid name of the country
+ * @body {string}  addressLine1 - Provide the valid addressLine1
+ * @body {string}  addressLine2 - Provide the valid second addressLine1
+ * @body {string}  phoneCode - Provide the valid phone code
+ * @body {string}  postalCode - Provide the valid postal code
+ * @body {string}  contactNumber - Provide the valid contact Number
+ * @body {string}  userId - Provide the valid user Id
+ * @body {string}  GstOrTaxNo - Provide the valid GST or Tax no
+ * @body {string}  businessName - Provide the valid Business name
+ * @body {string}  panCard - Provide the valid Pan card details
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.complete - Returns the completion status.
+ * @code {200} if the msg is success than Add/Update process is excuted and Returns completion status.
+ * @author Arjun Bhole 22nd May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
 
 // Add Business Profile
 const addBusinessBilllingProfile = (req, res) => {

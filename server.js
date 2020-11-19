@@ -1,8 +1,3 @@
-/**
- *
- * @author deepak.ambekar [1/14/2019].
- */
-
 const _ = require('lodash')
 
 // process.env.BLUEBIRD_W_FORGOTTEN_RETURN = 0;

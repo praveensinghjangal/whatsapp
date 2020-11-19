@@ -6,6 +6,27 @@ const WabaService = require('../../whatsapp_business/services/businesAccount')
 // const RedisService = require('../../../lib/redis_service/redisService')
 const qrCodeService = require('../../../lib/util/qrCode')
 
+/**
+ * @namespace -Whatsapp-Audience-Controller-Fetch-Optin-URL-
+ * @description API’s related to whatsapp audience.
+ */
+
+/**
+ * @memberof -Whatsapp-Audience-Controller-Fetch-Optin-URL-
+ * @name GetOptinUrl
+ * @path {GET} /audience/optin/url
+ * @description Bussiness Logic :- This api returns optin url and qrCode of the url.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/audience/GetOptinUrl|GetOptinUrl}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.url - It will return the url something like https://wa.me/918080800808?text=helloviva1
+  * @response {string} metadata.data.qrCode - It will return the QRCode in response.
+ * @code {200} if the msg is success than return it will fetch Optin url by user Id.
+ * @author Arjun Bhole 1st September, 2020
+ * *** Last-Updated :- Arjun Bhole 23rd October, 2020 ***
+ */
+
 const getOptinUrl = (req, res) => {
   __logger.info('getOptinUrl::>>>>>>>>>>>>>>>>>>>>..')
   const userId = req.user ? req.user.user_id : 0

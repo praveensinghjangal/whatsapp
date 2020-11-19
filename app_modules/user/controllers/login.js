@@ -6,6 +6,27 @@ const __logger = require('../../../lib/logger')
 const authMiddleware = require('../../../middlewares/auth/authentication')
 const UserService = require('../services/dbData')
 
+/**
+ * @namespace -Login-Controller-
+ * @description Login API and login function.
+ */
+
+/**
+ * @memberof -Login-Controller-
+ * @name Login
+ * @path {POST} /users/auth/login
+ * @description Bussiness Logic :- Login API for logging in and using another API’s
+    <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/users/auth/login|Login}
+ * @body {string}  email - Provide the valid email for login.
+ * @body {string}  password - Provide the correct password for login.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.token - It will return the token that will be used in other supported API for Helo whatsapp.
+ * @code {200} if the msg is success, Returns auth token if credentials provided are correct.
+ * @author Arjun Bhole 11th May, 2020
+ * *** Last-Updated :- Arjun Bhole 23 October,2020 ***
+ */
+
 const controller = (req, res) => {
   __logger.info('Inside login')
 
