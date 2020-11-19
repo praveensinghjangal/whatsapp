@@ -21,7 +21,7 @@ const ValidatonService = require('../services/validation')
  * @param {string}  transactionType - transactionType to be entered here i.e incoming or outgoing
  * @response {string} ContentType=application/json - Response content type.
  * @response {number} metadata.data.incomingMessageCount - Counts of Incoming message
- * @response {number} metadata.data.outgoingMessageCount - Counts of Total message
+ * @response {number} metadata.data.outgoingMessageCount - Counts of Outgoing message
  * @response {number} metadata.data.totalMessageCount - Total Counts of message
  * @code {200} if the msg is success than it Returns counts of message transaction type
  * @author Javed K11 9th September, 2020

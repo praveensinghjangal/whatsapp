@@ -254,6 +254,18 @@ const generateSmsOtpCode = (req, res) => {
     })
 }
 
+/**
+ * @memberof -User-Verifications-Controller-
+ * @name SendOtpCode
+ * @path {POST} /users/otp
+ * @description Bussiness Logic :- This API use to send the otp code to the user.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @body {string}  userId=5ba82a3f-5d76-416e-8cf5-b85388e2a99a - Enter the valid userId
+ * @code {200} if the msg is success than the otp code is send to the user.
+ * @author Danish Galiyara 20th September, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
+
 const sendOtpCode = (req, res) => {
   __logger.info('sendOtpCode::>>>>>>..')
   const verificationService = new VerificationService()
