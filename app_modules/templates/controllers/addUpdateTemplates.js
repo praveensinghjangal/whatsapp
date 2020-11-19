@@ -9,17 +9,17 @@ const StatusService = require('../services/status')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 /**
- * @namespace -Template-Controller-Add-Update-
+ * @namespace -Template-Controller-
  * @description API’s related to whatsapp templates.
  */
 
 /**
- * @memberof -Template-Controller-Add-Update-
+ * @memberof -Template-Controller-
  * @name AddUpdateTemplates
  * @path {POST} /templates
  * @description Bussiness Logic :- API to add or update template,To add template do not pass templateID to update template pass template ID along with parameters to update.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
- <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/templates/Addupdatetemplate|addOrUpdateTemplate}
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/templates/Addupdatetemplate|AddUpdateTemplates}
  * @body {string} messageTemplateId=9bf57a21-a05c-47f4-82df-jki09v03deb9
  * @body {string} templateName=Welcome
  * @body {string} type=media_message_template

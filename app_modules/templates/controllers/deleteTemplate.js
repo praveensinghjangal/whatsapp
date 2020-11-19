@@ -5,6 +5,22 @@ const __db = require('../../../lib/db')
 const integrationService = require('../../../app_modules/integration/')
 const TemplateDbService = require('../services/dbData')
 
+/**
+ * @memberof -Template-Controller-
+ * @name DeleteTemplate
+ * @path {DELETE} /templates/{templateId}
+ * @description Bussiness Logic :- Use this API to delete a template.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/templates/deleteTemplate|DeleteTemplate}
+ * @param {string} templateId - Id of Template.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=success - Template is deleted.
+ * @code {200} if the msg is success thanTemplate is deleted.
+ * @author Arjun Bhole 10th October, 2020
+ * *** Last-Updated :- Arjun Bhole 10th October, 2020 ***
+ */
+
+ 
 const deleteTemplate = (req, res) => {
   __logger.info('Delete Template API Called', req.params)
   const wabaPhoneNumber = req.user ? req.user.wabaPhoneNumber : ''
