@@ -1,3 +1,10 @@
+
+
+/**
+ * @namespace <b> -API-RESPONSE- </b>
+ * @description Click the below link for all the API Response with its related status code
+ */
+
 module.exports = {
   INVALID_REQUEST: {
     status_code: 400,
