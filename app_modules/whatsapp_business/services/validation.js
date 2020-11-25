@@ -17,7 +17,8 @@ class validate {
         userId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -47,7 +48,8 @@ class validate {
         serviceProviderId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -80,7 +82,6 @@ class validate {
           minLength: 2,
           maxLength: 2,
           pattern: __constants.VALIDATOR.number
-
         },
         phoneNumber: {
           type: 'string',
@@ -88,7 +89,6 @@ class validate {
           minLength: 10,
           maxLength: 10,
           pattern: __constants.VALIDATOR.number
-
         }
       }
     }
@@ -119,7 +119,9 @@ class validate {
       properties: {
         facebookManagerId: {
           type: 'string',
-          required: true
+          required: true,
+          minLength:1,
+          maxLength:100
         },
         phoneCode: {
           type: 'string',
@@ -127,7 +129,6 @@ class validate {
           minLength: 2,
           maxLength: 2,
           pattern: __constants.VALIDATOR.number
-
         },
         phoneNumber: {
           type: 'string',
@@ -135,7 +136,6 @@ class validate {
           minLength: 10,
           maxLength: 10,
           pattern: __constants.VALIDATOR.number
-
         },
         canReceiveSms: {
           type: 'boolean',
@@ -178,37 +178,44 @@ class validate {
         businessName: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:80
         },
         whatsappStatus: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         description: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         address: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         country: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         city: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         state: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         postalCode: {
           type: 'string',
@@ -216,7 +223,6 @@ class validate {
           minLength: 6,
           maxLength: 8,
           pattern: __constants.VALIDATOR.number
-
         },
         email: {
           type: 'string',
@@ -228,7 +234,8 @@ class validate {
         businessCategoryId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         // profilePhotoUrl: {
         //   type: 'string',
@@ -238,21 +245,26 @@ class validate {
         serviceProviderId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         apiKey: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         webHookPostUrl: {
           type: 'string',
-          required: false
+          required: false,
+          minLength: 1,
+          maxLength:300
         },
         optinText: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:20
         },
         chatBotActivated: {
           type: 'boolean',
@@ -294,37 +306,44 @@ class validate {
         businessName: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:80
         },
         whatsappStatus: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         description: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         address: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         country: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         city: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         state: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         postalCode: {
           type: 'string',
@@ -332,19 +351,18 @@ class validate {
           minLength: 6,
           maxLength: 8,
           pattern: __constants.VALIDATOR.number
-
         },
         email: {
           type: 'string',
           required: true,
           minLength: 1,
           pattern: __constants.VALIDATOR.email
-
         },
         businessCategoryId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         }
         // profilePhotoUrl: {
         //   type: 'string',
@@ -385,7 +403,6 @@ class validate {
           minLength: 2,
           maxLength: 2,
           pattern: __constants.VALIDATOR.number
-
         },
         phoneNumber: {
           type: 'string',
@@ -393,7 +410,6 @@ class validate {
           minLength: 10,
           maxLength: 10,
           pattern: __constants.VALIDATOR.number
-
         },
         canReceiveSms: {
           type: 'boolean'

@@ -18,8 +18,8 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
+          maxLength:50,
           pattern: __constants.VALIDATOR.email
-
         },
         password: {
           type: 'string',
@@ -56,6 +56,7 @@ class validate {
           required: true,
           unique: true,
           minLength: 1,
+          maxLength:50,
           pattern: __constants.VALIDATOR.email
         },
         password: {
@@ -105,8 +106,8 @@ class validate {
           required: true,
           unique: true,
           minLength: 1,
+          maxLength:50,
           pattern: __constants.VALIDATOR.email
-
         },
         password: {
           type: 'string',
@@ -120,7 +121,8 @@ class validate {
         source: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:20
         }
       }
     }
@@ -150,7 +152,8 @@ class validate {
         userId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -182,26 +185,31 @@ class validate {
         city: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         state: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         country: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         addressLine1: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:250
         },
         addressLine2: {
           type: 'string',
-          required: false
+          required: false,
+          maxLength:250
         },
         contactNumber: {
           type: 'string',
@@ -216,7 +224,6 @@ class validate {
           minLength: 2,
           maxLength: 2,
           pattern: __constants.VALIDATOR.number
-
         },
         postalCode: {
           type: 'string',
@@ -229,22 +236,26 @@ class validate {
         firstName: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:30
         },
         lastName: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:30
         },
         accountManagerName: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:200
         },
         accountTypeId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -276,31 +287,37 @@ class validate {
         billingName: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:80
         },
         city: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         state: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         country: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         },
         addressLine1: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:250
         },
         addressLine2: {
           type: 'string',
-          required: false
+          required: false,
+          maxLength:250
         },
         contactNumber: {
           type: 'string',
@@ -315,7 +332,6 @@ class validate {
           minLength: 2,
           maxLength: 2,
           pattern: __constants.VALIDATOR.number
-
         },
         postalCode: {
           type: 'string',
@@ -323,17 +339,18 @@ class validate {
           minLength: 6,
           maxLength: 8,
           pattern: __constants.VALIDATOR.number
-
         },
         gstOrTaxNo: {
           type: 'string',
           required: false,
-          minLength: 5
+          minLength: 5,
+          maxLength:30
         },
         panCard: {
           type: 'string',
           required: false,
-          minLength: 10
+          minLength: 10,
+          maxLength:20
         }
       }
     }
@@ -363,7 +380,8 @@ class validate {
         apiKey: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         }
       }
     }
@@ -394,6 +412,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
+          maxLength:50,
           pattern: __constants.VALIDATOR.email
         }
       }

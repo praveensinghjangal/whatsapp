@@ -18,7 +18,8 @@ class validate {
         audienceId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -51,7 +52,6 @@ class validate {
           minLength: 10,
           maxLength: 25,
           pattern: __constants.VALIDATOR.number
-
         }
       }
     }
@@ -89,28 +89,31 @@ class validate {
         channel: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:30
         },
         optinSourceId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         segmentId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         chatFlowId: {
           type: 'string',
-          required: false
+          required: false,
+          maxLength:50
         },
         name: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 30
-
+          maxLength: 50
         },
         email: {
           type: 'string',
@@ -121,12 +124,14 @@ class validate {
         gender: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:20
         },
         country: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         }
 
       }
@@ -162,49 +167,52 @@ class validate {
           minLength: 10,
           maxLength: 25,
           pattern: __constants.VALIDATOR.number
-
         },
         channel: {
           type: 'string',
           required: true,
-          minLength: 1
-
+          minLength: 1,
+          maxLength:30
         },
         optinSourceId: {
           type: 'string',
-          required: false
+          required: false,
+          maxLength:50
         },
         segmentId: {
           type: 'string',
-          required: false
+          required: false,
+          maxLength:50
         },
         chatFlowId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         name: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 30
+          maxLength: 50
         },
         email: {
           type: 'string',
           required: false,
           minLength: 1,
           pattern: __constants.VALIDATOR.email
-
         },
         gender: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:20
         },
         country: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:60
         }
 
       }
@@ -241,17 +249,18 @@ class validate {
           minLength: 10,
           maxLength: 25,
           pattern: __constants.VALIDATOR.number
-
         },
         optinSourceId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         channel: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:30
         }
 
       }
@@ -286,7 +295,8 @@ class validate {
         segmentId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -346,7 +356,8 @@ class validate {
         segmentId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         segmentName: {
           type: 'string',
@@ -382,7 +393,8 @@ class validate {
         optinSourceId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -442,7 +454,8 @@ class validate {
         optinSourceId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         optinSource: {
           type: 'string',

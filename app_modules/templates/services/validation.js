@@ -18,7 +18,8 @@ class validate {
         wabaInformationId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -49,7 +50,8 @@ class validate {
         wabaInformationId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -82,53 +84,63 @@ class validate {
         messageTemplateId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         templateName: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          minLength:100
         },
         type: {
           type: 'string',
           required: false,
           minLength: 1,
+          maxLength:75,
           enum: _.map(__constants.TEMPLATE_TYPE, json => json.templateType.toLowerCase())
         },
         messageTemplateCategoryId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         messageTemplateStatusId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         messageTemplateLanguageId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         bodyText: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         headerText: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         footerText: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         mediaType: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         secondLanguageRequired: {
           type: 'boolean',
@@ -138,24 +150,28 @@ class validate {
         secondMessageTemplateLanguageId: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         secondLanguageBodyText: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:1024
         },
         headerType: {
           type: 'string',
           required: false,
           minLength: 1,
-          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase()),
+          maxLength:100
         },
         buttonType: {
           type: 'string',
           required: false,
           minLength: 1,
-          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase()),
+          maxLength:100
         },
         buttonData: {
           type: 'object',
@@ -182,7 +198,6 @@ class validate {
               minLength: 10,
               maxLength: 10,
               pattern: __constants.VALIDATOR.number
-
             },
             websiteButtontext: {
               type: 'string',
@@ -232,55 +247,66 @@ class validate {
         messageTemplateId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         templateName: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         type: {
           type: 'string',
           required: true,
           minLength: 1,
-          enum: _.map(__constants.TEMPLATE_TYPE, json => json.templateType.toLowerCase())
+          enum: _.map(__constants.TEMPLATE_TYPE, json => json.templateType.toLowerCase()),
+          maxLength:75
         },
         messageTemplateCategoryId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         messageTemplateStatusId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         messageTemplateLanguageId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         bodyText: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         headerText: {
           type: [null, 'string'],
-          required: false
+          required: false,
+          maxLength:500
         },
         footerText: {
           type: [null, 'string'],
-          required: false
+          required: false,
+          maxLength:500
         },
         mediaType: {
           type: [null, 'string'],
-          required: false
+          required: false,
+          maxLength:100
         },
         wabaInformationId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         secondLanguageRequired: {
           type: 'boolean',
@@ -289,11 +315,13 @@ class validate {
         },
         secondMessageTemplateLanguageId: {
           type: ['string', null],
-          required: false
+          required: false,
+          maxLength:50
         },
         secondLanguageBodyText: {
           type: [null, 'string'],
-          required: false
+          required: false,
+          maxLength:1024
         },
         headerType: {
           type: [null, 'string'],
@@ -331,7 +359,6 @@ class validate {
               minLength: 10,
               maxLength: 10,
               pattern: __constants.VALIDATOR.number
-
             },
             websiteButtontext: {
               type: 'string',
@@ -377,17 +404,20 @@ class validate {
         messageTemplateId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         templateName: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         type: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:75
         },
         categoryName: {
           type: 'string',
@@ -407,27 +437,32 @@ class validate {
         bodyText: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:1000
         },
         headerText: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         footerText: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:500
         },
         mediaType: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         },
         wabaInformationId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         secondLanguageRequired: {
           type: 'boolean',
@@ -442,7 +477,8 @@ class validate {
         secondLanguageBodyText: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:1024
         },
         headerType: {
           type: 'string',
@@ -480,7 +516,6 @@ class validate {
               minLength: 10,
               maxLength: 10,
               pattern: __constants.VALIDATOR.number
-
             },
             websiteButtontext: {
               type: 'string',
@@ -541,7 +576,8 @@ class validate {
         templateId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         }
       }
     }
@@ -572,17 +608,20 @@ class validate {
         templateId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         firstLocalizationNewStatusId: {
           type: 'string',
           required: !request.secondLocalizationNewStatusId,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         firstLocalizationOldStatusId: {
           type: 'string',
           required: !request.secondLocalizationNewStatusId,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         firstLocalizationRejectionReason: {
           type: [null, 'string'],
@@ -592,17 +631,20 @@ class validate {
         secondLocalizationNewStatusId: {
           type: 'string',
           required: !request.firstLocalizationNewStatusId,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         secondLocalizationOldStatusId: {
           type: 'string',
           required: !request.firstLocalizationNewStatusId,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         secondLocalizationRejectionReason: {
           type: [null, 'string'],
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength:100
         }
       }
     }
@@ -667,12 +709,14 @@ class validate {
         serviceProviderId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         userId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength:50
         },
         wabaNumber: {
           type: 'string',
