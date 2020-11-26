@@ -7,6 +7,8 @@ const Validator = require('jsonschema').Validator
 const v = new Validator()
 const addAudienceAndOptin = require('./audienceAndOptin')
 const RedisService = require('../../../lib/redis_service/redisService')
+const TrimService = require('../../../lib/trimService/trim')
+const trimInput = new TrimService()
 
 const validateInput = input => {
   const isvalid = q.defer()
@@ -47,7 +49,8 @@ const validateInput = input => {
   if (formatedError.length > 0) {
     isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
   } else {
-    isvalid.resolve(input)
+    trimInput.singleInputTrim(input)
+    .then(data => isvalid.resolve(data))
   }
   return isvalid.promise
 }
