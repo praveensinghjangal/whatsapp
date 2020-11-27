@@ -286,7 +286,7 @@ const WABA_PROFILE_STATUS = {
 }
 const CHAT_APP_BASE_PATH = '/helowhatsappchat/api'
 
-module.exports.RESPONSE_MESSAGES = require('./apiResponse')
+module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
 module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE
