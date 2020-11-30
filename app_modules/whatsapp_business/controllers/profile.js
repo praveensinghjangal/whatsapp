@@ -481,7 +481,7 @@ const filter = function (req, file, cb) {
  * @body {form-data} profilePicture - Upload the file in form-data request, assign key as profilePicture and value as profile photo file to update.
  * @code {200} if the msg is success than profile picture uploaded successfully.
  * @author Javed kh11 6th October, 2020
- * *** Last-Updated :- Arjun Bhole 10th November, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 30th November, 2020 ***
  */
 const upload = multer({
   fileFilter: filter
@@ -504,15 +504,19 @@ const updateProfilePic = (req, res) => {
         .then(results => {
           __logger.info('got result', results.record)
           if (results && results.record !== '') {
-            const reqBody = {
-              imageData: imageData,
-              userId,
-              phoneCode: results.record.phoneCode,
-              phoneNumber: results.record.phoneNumber
+            if (data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+              return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
+            } else {
+              const reqBody = {
+                imageData: imageData,
+                userId,
+                phoneCode: results.record.phoneCode,
+                phoneNumber: results.record.phoneNumber
+              }
+              results.record.userId = userId
+              businessAccountService.updateBusinessData(reqBody, results.record)
+              return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
             }
-            results.record.userId = userId
-            businessAccountService.updateBusinessData(reqBody, results.record)
-            return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
           } else {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
           }
@@ -595,6 +599,50 @@ const updateProfilePicByUrl = (req, res) => {
       })
   })
 }
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name allocateTemplatesToWaba
+ * @path {patch} /business/profile/template/allocate
+ * @description Bussiness Logic :- This API allocates the number of template user is allowed to create per WABA.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/markmanagerverified|MarkManagerVerified}
+ * @body {!number} templatesAllowed=10
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  Returns businessVerificationCompletionStatus as true.
+ * @code {200} if the msg is success than Returns Status of business verification completion.
+ * @author Danish Galiyara 30th November, 2020
+ * *** Last-Updated :- Danish Galiyara 30th November, 2020 ***
+ */
+
+const allocateTemplatesToWaba = (req, res) => {
+  __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id, req.body)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  validate.allocateTemplatesToWaba(req.body)
+    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => {
+      __logger.info('exists -----------------> then 2', data)
+      if (!data.exists) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      } else if (data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
+      } else {
+        __logger.info('time to checl if profile approved')
+        return businessAccountService.updateBusinessData(req.body, data.record || {})
+      }
+    })
+    .then(data => {
+      __logger.info('After Allocating templates', data)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -604,5 +652,6 @@ module.exports = {
   updateWabaPhoneNumber,
   addUpdateOptinMessage,
   updateProfilePic,
-  updateProfilePicByUrl
+  updateProfilePicByUrl,
+  allocateTemplatesToWaba
 }

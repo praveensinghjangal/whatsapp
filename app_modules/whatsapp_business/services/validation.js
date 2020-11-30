@@ -551,6 +551,37 @@ class validate {
     }
     return isvalid.promise
   }
+
+  allocateTemplatesToWaba (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/allocateTemplatesToWaba',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        templatesAllowed: {
+          type: 'number',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/allocateTemplatesToWaba')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
