@@ -6,6 +6,8 @@ ADD "package.json" /app/
 
 WORKDIR /app
 
+RUN apk add git
+
 RUN npm install --production
 
 RUN apk add --update tzdata && cp /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
