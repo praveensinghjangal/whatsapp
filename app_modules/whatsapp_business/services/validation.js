@@ -18,7 +18,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -49,7 +49,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -120,8 +120,8 @@ class validate {
         facebookManagerId: {
           type: 'string',
           required: true,
-          minLength:1,
-          maxLength:100
+          minLength: 1,
+          maxLength: 100
         },
         phoneCode: {
           type: 'string',
@@ -179,43 +179,43 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:80
+          maxLength: 80
         },
         whatsappStatus: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:500
+          maxLength: 500
         },
         description: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:1000
+          maxLength: 1000
         },
         address: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:1000
+          maxLength: 1000
         },
         country: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:100
+          maxLength: 100
         },
         city: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         state: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         postalCode: {
           type: 'string',
@@ -235,7 +235,7 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:100
+          maxLength: 100
         },
         // profilePhotoUrl: {
         //   type: 'string',
@@ -246,25 +246,25 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         apiKey: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:500
+          maxLength: 500
         },
         webHookPostUrl: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:300
+          maxLength: 300
         },
         optinText: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:20
+          maxLength: 20
         },
         chatBotActivated: {
           type: 'boolean',
@@ -307,43 +307,43 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:80
+          maxLength: 80
         },
         whatsappStatus: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:500
+          maxLength: 500
         },
         description: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:1000
+          maxLength: 1000
         },
         address: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:1000
+          maxLength: 1000
         },
         country: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:100
+          maxLength: 100
         },
         city: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         state: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         postalCode: {
           type: 'string',
@@ -362,7 +362,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:100
+          maxLength: 100
         }
         // profilePhotoUrl: {
         //   type: 'string',
@@ -386,7 +386,7 @@ class validate {
     return isvalid.promise
   }
 
-  isAddUpdateBusinessAccessInfoComplete (request) {
+  isAddUpdateBusinessAccessInfoComplete (request, isBmRequired = true) {
     const isvalid = q.defer()
     const schema = {
       id: '/isAddUpdateBusinessAccessInfoComplete',
@@ -412,13 +412,19 @@ class validate {
           pattern: __constants.VALIDATOR.number
         },
         canReceiveSms: {
-          type: 'boolean'
+          type: 'boolean',
+          required: true
         },
         canReceiveVoiceCall: {
-          type: 'boolean'
+          type: 'boolean',
+          required: true
         },
         associatedWithIvr: {
           type: 'boolean'
+        },
+        businessManagerVerified: {
+          type: 'boolean',
+          required: isBmRequired
         }
       }
     }
@@ -430,14 +436,13 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
-      isvalid.resolve(false)
+      isvalid.resolve({ complete: false, err: formatedError.length > 0 ? formatedError : 'Please make sure phone number entered can receive sms, call and the business manager is verified.' })
     } else {
       trimInput.singleInputTrim(request)
-      if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
-        isvalid.resolve(true)
-      }
-      if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
-        isvalid.resolve(false)
+      if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr || !request.businessManagerVerified)) {
+        isvalid.resolve({ complete: false, err: formatedError.length > 0 ? formatedError : 'Please make sure phone number entered can receive sms, call and the business manager is verified.' })
+      } else {
+        isvalid.resolve({ complete: true })
       }
     }
     return isvalid.promise
@@ -491,6 +496,48 @@ class validate {
     }
     const formatedError = []
     v.addSchema(schema, '/addUpdateOptinMessage')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
+
+  addUpdateBusinessAccessInfoInputCheck (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addUpdateBusinessAccessInfoInputCheck',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        wabaProfileSetupStatusId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        accessInfoRejectionReason: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 500
+        }
+      }
+    }
+    if (request.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.rejected.statusCode) {
+      schema.additionalProperties = true
+      schema.properties.accessInfoRejectionReason.required = true
+    }
+    const formatedError = []
+    v.addSchema(schema, '/addUpdateBusinessAccessInfoInputCheck')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')

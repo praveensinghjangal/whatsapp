@@ -6,12 +6,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const queryProvider = require('../queryProvider')
 
 /**
- * @namespace -Whatsapp-Business-Account-(WABA)-Information-Controller-
- * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
- */
-
-/**
- * @memberof -Whatsapp-Business-Account-(WABA)-Information-Controller-
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
  * @name GetBusinessCategory
  * @path {GET} /business/categories
  * @description Bussiness Logic :- Gets list of business categories.

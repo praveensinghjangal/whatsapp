@@ -375,7 +375,7 @@ paths:
               data: {}
               error: {}
       security: []
-  /chat/v1/messages/tracking/{messageId}:
+  '/chat/v1/messages/tracking/{messageId}':
     get:
       x-isPublic: false
       x-module: platform
@@ -3044,10 +3044,14 @@ paths:
               data:
                 type: object
             example:
-              code: 2000
-              msg: Success
-              data:
-                businessProfileCompletionStatus: true
+              - code: 2000
+                msg: Success
+                data:
+                  businessProfileCompletionStatus: true
+              - code: 3058
+                msg: Cannot process data in this current profile status.
+                data: {}
+                err: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3138,10 +3142,14 @@ paths:
               data:
                 type: object
             example:
-              code: 2000
-              msg: Success
-              data:
-                businessProfileCompletionStatus: true
+              - code: 2000
+                msg: Success
+                data:
+                  businessProfileCompletionStatus: true
+              - code: 3058
+                msg: Cannot process data in this current profile status.
+                data: {}
+                err: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3230,10 +3238,14 @@ paths:
               data:
                 type: object
             example:
-              code: 2000
-              msg: Success
-              data:
-                businessVerificationCompletionStatus: true
+              - code: 2000
+                msg: Success
+                data:
+                  businessVerificationCompletionStatus: true
+              - code: 3058
+                msg: Cannot process data in this current profile status.
+                data: {}
+                err: {}
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -3747,6 +3759,184 @@ paths:
                 msg: File size or pixel is less than expected
                 data: null
                 error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /business/profile/submit:
+    put:
+      x-module: platform
+      summary: Submit the business access info in submitted status for support team approval
+      description: Submit the business access info in submitted status for support team approval
+      tags:
+        - WABA
+      operationId: sendWabaAccessInfoForApproval
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: updation success message
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data: {}
+                error: null
+              - code: 3000
+                msg: No record found.
+                data: {}
+                error: null
+              - code: 3057
+                msg: Status cannot be changed in current state.
+                data: {}
+                error: null
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /business/profile/status:
+    put:
+      x-module: platform
+      summary: Update the status of the business access info
+      description: Update the status of the business access info
+      tags:
+        - WABA
+      operationId: updateWabaAccessInfoStatus
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/updateWabaAccessInfoStatusRequest'
+      responses:
+        '200':
+          description: updation success message
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data: {}
+                error: null
+              - code: 3000
+                msg: No record found.
+                data: {}
+                error: null
+              - code: 3057
+                msg: Status cannot be changed in current state.
+                data: {}
+                error: null
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
         '401':
           description: Invalid token in header
           headers: {}
@@ -7872,8 +8062,8 @@ definitions:
     title: addupdatebusinessprofilraccessInformationRequest
     example:
       facebookManagerId: my-manager-id
-      phoneCode: '+91'
-      phoneNumber: '123456'
+      phoneCode: '91'
+      phoneNumber: '1234567890'
       canReceiveSms: true
       canReceiveVoiceCall: false
       associatedWithIvr: false
@@ -8489,3 +8679,16 @@ definitions:
         type: string
       secondLocalizationRejectionReason:
         type: string
+  updateWabaAccessInfoStatusRequest:
+    title: updateWabaAccessInfoStatusRequest
+    example:
+      wabaProfileSetupStatusId: 7933d858-7bb7-47eb-90ec-269cbecc8c7a
+      accessInfoRejectionReason: Data provided is fake.
+    type: object
+    properties:
+      wabaProfileSetupStatusId:
+        type: string
+      accessInfoRejectionReason:
+        type: string
+    required:
+      - wabaProfileSetupStatusId

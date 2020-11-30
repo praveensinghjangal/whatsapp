@@ -6,12 +6,7 @@ const __logger = require('../../../lib/logger')
 const __util = require('../../../lib/util')
 
 /**
- * @namespace -Whatsapp-Business-Account-(WABA)-Information-Verification-API-Controller-
- * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
- */
-
-/**
- * @memberof -Whatsapp-Business-Account-(WABA)-Information-Verification-API-Controller-
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
  * @name GenerateBusinessNumberVerificationCode
  * @path {POST} /business/verification/phoneNumber
  * @description Bussiness Logic :- This API SEND BUSINESS VERIFICATION CODE to business number.
@@ -69,7 +64,7 @@ const generateBusinessNumberVerificationCode = (req, res) => {
 }
 
 /**
- * @memberof -Whatsapp-Business-Account-(WABA)-Information-Verification-API-Controller-
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
  * @name ValidateBusinessNumberVerificationCode
  * @path {PATCH} /business/verification/phoneNumber
  * @description Bussiness Logic :- This API verifiy code for business number. API to verify otp sent to user for business number verififcation

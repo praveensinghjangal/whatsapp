@@ -9,6 +9,8 @@ const router = express.Router()
 const businessCategoryController = require('./controllers/category')
 const businessProfileController = require('./controllers/profile')
 const businessVerificationController = require('./controllers/verification')
+const businessApprovalController = require('./controllers/senForApproval')
+const businessStatusUpdateController = require('./controllers/updateWabaAccessInfoStatus')
 
 // Routes
 // Business Category
@@ -30,4 +32,7 @@ router.post('/profile/optinmessage', authMiddleware.authenticate(authstrategy.jw
 
 router.put('/profile/logo', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.updateProfilePic)
 // router.put('/profile/logo/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.updateProfilePicByUrl)
+router.put('/profile/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessApprovalController.sendWabaAccessInfoForApproval)
+router.put('/profile/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessStatusUpdateController.updateWabaAccessInfoStatus)
+
 module.exports = router

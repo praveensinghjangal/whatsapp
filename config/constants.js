@@ -278,13 +278,22 @@ const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
   [TEMPLATE_STATUS.denied.statusCode]: TEMPLATE_STATUS.pending.statusCode
 }
 const WABA_PROFILE_STATUS = {
-  rejected: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c7a', displayName: 'Rejected' },
-  profileIncomplete: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c9b', displayName: 'Profile Incomplete / Pending For Submission' },
+  profileIncomplete: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c9b', displayName: 'Profile Incomplete' },
+  pendingForSubmission: { statusCode: 'fdfcce74-81a3-4d41-b526-212d256f9a20', displayName: 'Pending For Submission' },
   submitted: { statusCode: '91b6a637-11bb-4f35-ace7-41e959c8fbb7', displayName: 'Submitted' },
-  accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' },
-  pendinfForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' }
+  pendingForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' },
+  rejected: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c7a', displayName: 'Rejected' },
+  accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' }
 }
 const CHAT_APP_BASE_PATH = '/helowhatsappchat/api'
+const WABA_STATUS_MAPPING = {
+  [WABA_PROFILE_STATUS.profileIncomplete.statusCode]: [WABA_PROFILE_STATUS.pendingForSubmission.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
+  [WABA_PROFILE_STATUS.pendingForSubmission.statusCode]: [WABA_PROFILE_STATUS.submitted.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
+  [WABA_PROFILE_STATUS.submitted.statusCode]: [WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.pendingForApproval.statusCode],
+  [WABA_PROFILE_STATUS.pendingForApproval.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode],
+  [WABA_PROFILE_STATUS.rejected.statusCode]: [WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
+  [WABA_PROFILE_STATUS.accepted.statusCode]: []
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -337,3 +346,4 @@ module.exports.TEMPLATE_ROLLBACK_STATUS_MAPPING = TEMPLATE_ROLLBACK_STATUS_MAPPI
 module.exports.WABA_PROFILE_STATUS = WABA_PROFILE_STATUS
 module.exports.TYNTEC_TEMPLATE_REPLY_STATUS = TYNTEC_TEMPLATE_REPLY_STATUS
 module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH
+module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING

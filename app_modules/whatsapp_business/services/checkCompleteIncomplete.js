@@ -2,12 +2,10 @@ const q = require('q')
 const _ = require('lodash')
 const Validator = require('jsonschema').Validator
 const __constants = require('../../../config/constants')
-
 const v = new Validator()
 
 class checkCompleteIncomplete {
   // Business Profile Validation Schema
-
   validateBusinessProfile (request) {
     const isvalid = q.defer()
     const schema = {
@@ -26,7 +24,6 @@ class checkCompleteIncomplete {
           minLength: 2,
           maxLength: 2,
           pattern: __constants.VALIDATOR.number
-
         },
         phoneNumber: {
           type: 'string',
@@ -44,6 +41,9 @@ class checkCompleteIncomplete {
         associatedWithIvr: {
           type: 'boolean'
         },
+        businessManagerVerified: {
+          type: 'boolean'
+        },        
         businessName: {
           type: 'string',
           required: true,
@@ -74,7 +74,6 @@ class checkCompleteIncomplete {
           required: true,
           minLength: 1,
           pattern: __constants.VALIDATOR.email
-
         },
         businessCategory: {
           type: 'string',
@@ -97,7 +96,6 @@ class checkCompleteIncomplete {
           minLength: 6,
           maxLength: 8,
           pattern: __constants.VALIDATOR.number
-
         }
       }
     }
@@ -107,9 +105,7 @@ class checkCompleteIncomplete {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-
       const reFromatedErr = formatedErr[formatedErr.length - 1].split(' ')
-
       formatedError.push(formatedErr[formatedErr.length - 1])
       formatedFieldError.push(reFromatedErr[0])
     })
@@ -117,7 +113,7 @@ class checkCompleteIncomplete {
       isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr })
     } else {
       if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
-        isvalid.resolve({ complete: false, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr })
+        isvalid.resolve({ complete: false, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr ,businessManagerVerified : request.businessManagerVerified })
       }
       if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
         isvalid.resolve({ complete: true })
@@ -147,9 +143,7 @@ class checkCompleteIncomplete {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-
       const reFromatedErr = formatedErr[formatedErr.length - 1].split(' ')
-
       formatedError.push(formatedErr[formatedErr.length - 1])
       formatedFieldError.push(reFromatedErr[0])
     })
