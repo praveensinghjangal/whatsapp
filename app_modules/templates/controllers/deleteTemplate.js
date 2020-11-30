@@ -20,7 +20,6 @@ const TemplateDbService = require('../services/dbData')
  * *** Last-Updated :- Arjun Bhole 10th October, 2020 ***
  */
 
- 
 const deleteTemplate = (req, res) => {
   __logger.info('Delete Template API Called', req.params)
   const wabaPhoneNumber = req.user ? req.user.wabaPhoneNumber : ''

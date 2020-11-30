@@ -20,7 +20,7 @@ const csc = require('country-state-city').default
  * @response {array} metadata.data - Array of all the countries with its details
  * @code {200} if the msg is success than return List of all countries.
  * @author Arjun Bhole 27th May, 2020
- * *** Last-Updated :- Arjun Bhole 3rd September,2020 ***
+ * *** Last-Updated :- Danish Galiyara 30th November,2020 ***
  */
 
 const getAllCountries = (req, res) => {
@@ -31,7 +31,7 @@ const getAllCountries = (req, res) => {
     if (countries && countries.length > 0) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: countries })
     } else {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: [] })
     }
   } catch (err) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
@@ -51,7 +51,7 @@ const getAllCountries = (req, res) => {
  * @response {array} metadata.data - Array of all the states with it's respective countryId
  * @code {200} if the msg is success than return List of all states with country ID.
  * @author Arjun Bhole 27th May, 2020
- * *** Last-Updated :- Danish Galiyara 1st June,2020 ***
+ * *** Last-Updated :- Danish Galiyara 30th November,2020 ***
  */
 
 //  Get the list of states in country by the country id provided
@@ -63,10 +63,10 @@ const getStatesOfCountry = (req, res) => {
       if (states && states.length > 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: states })
       } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: [] })
       }
     } else {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: [] })
     }
   } catch (err) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
@@ -86,7 +86,7 @@ const getStatesOfCountry = (req, res) => {
  * @response {array} metadata.data - Array of all the cities with it's respective state_id.
  * @code {200} if the msg is success than return List of all cities with state_id.
  * @author Arjun Bhole 27th May, 2020
- * *** Last-Updated :- Danish Galiyara 1st June,2020 ***
+ * *** Last-Updated :- Danish Galiyara 30th November,2020 ***
  */
 
 //  Get the list of cities in states by the states id provided
@@ -99,10 +99,10 @@ const getCitiesOfState = (req, res) => {
       if (states && states.length > 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: states })
       } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: [] })
       }
     } else {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: [] })
     }
   } catch (err) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
