@@ -52,7 +52,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ statusCode: 'VE001', message: 'invalid input', error: formatedError })
     } else {
-      isvalid.resolve(request)
+      trimInput.singleInputTrim(request)
+      .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
