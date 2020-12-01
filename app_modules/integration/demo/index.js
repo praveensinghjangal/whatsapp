@@ -1,2 +1,4 @@
 const Messaage = require('./message')
-module.exports = { Messaage }
+const Template = require('./demoTemplate')
+const WabaAccount = require('./demoWabaAccount')
+module.exports = { Messaage, Template, WabaAccount }
