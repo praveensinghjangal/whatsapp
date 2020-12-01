@@ -41,7 +41,7 @@ const getWabaTableDataByUserId = () => {
   service_provider_id as "serviceProviderId",api_key as "apiKey",
   webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated", websites,
   user_account_id_by_provider as "serviceProviderUserAccountId", img_data as "imageData",
-  access_info_rejection_reason as "accessInfoRejectionReason"
+  access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed"
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
@@ -75,7 +75,8 @@ const updateWabaTableData = () => {
   waba_profile_setup_status_id =?,business_manager_verified=?,phone_verified =?,waba_information_id=?,
   updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?, 
   service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?,chatbot_activated=?,
-  user_account_id_by_provider=? ,websites=?,img_data=?, access_info_rejection_reason =?
+  user_account_id_by_provider=? ,websites=?,img_data=?, access_info_rejection_reason =?,
+  templates_allowed = ?
   where waba_information_id=? and user_id=?`
 }
 
