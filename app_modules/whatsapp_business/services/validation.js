@@ -185,13 +185,13 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 500
+          maxLength: 150
         },
         description: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 1000
+          maxLength: 300
         },
         address: {
           type: 'string',
@@ -313,13 +313,13 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength: 500
+          maxLength: 150
         },
         description: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength: 1000
+          maxLength: 300
         },
         address: {
           type: 'string',
