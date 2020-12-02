@@ -37,7 +37,9 @@ const getUserAccountProfile = () => {
 
 const updateUserAccountProfile = () => {
   return `update users set city= ?, state= ?, country= ?, address_line_1= ?,address_line_2= ?,
-  contact_number= ?, phone_code= ?, postal_code = ?,first_name= ?,last_name= ?, updated_on=now(),account_manager_name= ?,user_account_type_id= ?,updated_by= ? WHERE user_id= ? and is_active = true`
+  contact_number= ?, phone_code= ?, postal_code = ?,first_name= ?,last_name= ?, updated_on=now(),
+  account_manager_name= ?,user_account_type_id= ?,updated_by= ? ,phone_verified = ?
+  WHERE user_id= ? and is_active = true`
 }
 
 const updateTokenInAccountProfile = () => {
