@@ -217,9 +217,9 @@ class businesAccountService {
     }
     // this.deactivateWabaRecord(businessOldData.wabaInformationId, businessOldData.userId)
     // .then(data => this.insertBusinessData(businessOldData.userId, businessData, businessOldData))
-    if (businessData.phoneNumber && !businessOldData.phoneNumber) {
+    if ((businessData && businessData.phoneNumber && !businessOldData.phoneNumber) || (businessData && businessData.phoneNumber && businessData.phoneNumber !== businessOldData.phoneNumber)) {
       this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.update)
-        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber))
+        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId))
         .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData))
         .then(data => businessDataUpdated.resolve(data))
         .catch(err => businessDataUpdated.reject(err))
@@ -358,14 +358,16 @@ class businesAccountService {
     return dbData.promise
   }
 
-  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber) {
+  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId) {
     __logger.info('updateWabaNumberAndPhoneCode::>>>>>>>>>>>>>.')
     /* To do
        Update all the tables with waba Number
        currently updating only waba info table
     */
     const dataUpdated = q.defer()
-
+    if (wabaProfileSetupStatusId && (wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.submitted.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode)) {
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
+    }
     const wabaData = {
       phoneCode: phoneCode,
       phoneNumber: phoneNumber,
