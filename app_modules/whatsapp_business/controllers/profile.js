@@ -20,7 +20,7 @@ const WabaStatusService = require('../services/wabaStatusEngine')
 /**
  * @namespace -Whatsapp-Business-Account-(WABA)-Controller-
  * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
- *  * *** Last-Updated :- Arjun Bhole 20th November, 2020 ***
+ *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
  */
 
 // Get Business Profile
@@ -172,33 +172,35 @@ const addupdateBusinessAccountInfo = (req, res) => {
  * @body {string} businessCategoryId
  * @body {string} serviceProviderId
  * @body {string} apiKey
- * @body {string} webHookPostUrl
+ * @body {string} webhookPostUrl
  * @body {string} optinText
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  -  Returns businessProfileCompletionStatus as true.
  * @code {200} if the msg is success than Returns Status of business profile info completion.
  * @author Danish Galiyara 3rd june, 2020
- * *** Last-Updated :- Arjun Bhole 20th November, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
  */
 
 // todo : add check if category id exists in master
 const addUpdateBusinessProfile = (req, res) => {
   __logger.info('addUpdateBusinessProfile::API TO ADD/UPDATE BUSINESS PROFILE CALLED', req.user.user_id)
-  __logger.info('addUpdateBusinessProfile::PROVID===-', req.user.providerId, req.user.wabaPhoneNumber)
-  if (req.body && req.body.wabaProfileSetupStatusId && req.body.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
-    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
-  }
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
   this.http = new HttpService(60000)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let wabaProfileData = {}
   let profileData = {}
+  let providerId
   validate.addUpdateBusinessInfo(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
+      if (!data.exists || !data.record || !data.record.wabaProfileSetupStatusId || data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
+      }
       profileData = data
-      return businessAccountService.getWebsiteLimitByProviderId(req.user.providerId)
+      providerId = req.user.providerId || (profileData.exists ? profileData.record.serviceProviderId : '')
+      __logger.info('addUpdateBusinessProfile::PROVID===-', req.user.providerId, providerId, req.user.wabaPhoneNumber)
+      return businessAccountService.getWebsiteLimitByProviderId(providerId)
     })
     .then(websiteLimitByProvider => {
       __logger.info('addUpdateBusinessProfile::apiREsponse', websiteLimitByProvider)
@@ -222,7 +224,7 @@ const addUpdateBusinessProfile = (req, res) => {
       __logger.info('addUpdateBusinessProfile::ddddd----', data)
       if (wabaProfileData && wabaProfileData.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         __logger.info('addUpdateBusinessProfile::called tyntec api to update profile data---')
-        const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
+        const wabaAccountService = new integrationService.WabaAccount(providerId)
         return wabaAccountService.updateProfile(req.user.wabaPhoneNumber, wabaProfileData)
       } else {
         __logger.info('addUpdateBusinessProfile::status not accepted')
@@ -481,10 +483,11 @@ const filter = function (req, file, cb) {
  * @body {form-data} profilePicture - Upload the file in form-data request, assign key as profilePicture and value as profile photo file to update.
  * @code {200} if the msg is success than profile picture uploaded successfully.
  * @author Javed kh11 6th October, 2020
- * *** Last-Updated :- Danish Galiyara 30th November, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
  */
 const upload = multer({
-  fileFilter: filter
+  fileFilter: filter,
+  limits: { fileSize: __constants.FILE_MAX_UPLOAD_IN_BYTE }
 }).array('profilePicture', 1)
 
 const updateProfilePic = (req, res) => {
@@ -494,19 +497,26 @@ const updateProfilePic = (req, res) => {
   __logger.info('RTRT', req.user, req.user.user_id)
   upload(req, res, function (err, data) {
     __logger.info('Hello ----------->', data, err)
-    if (err) return res.send(err)
+    if (err) {
+      if (err.code === __constants.CUSTOM_CONSTANT.UPLOAD_ERROR_MSG.LIMIT_FILE_SIZE) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: { maxFileSizeInBytes: __constants.FILE_MAX_UPLOAD_IN_BYTE }, data: {} })
+      } else {
+        return res.send(err)
+      }
+    }
     if (!req.files || (req.files && !req.files[0])) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
       const imageData = req.files && req.files[0].buffer
-      const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
       businessAccountService.checkUserIdExist(userId)
         .then(results => {
           __logger.info('got result', results.record)
           if (results && results.record !== '') {
-            if (data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+            if (results.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
               return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
             } else {
+              const providerId = req.user.providerId || (results.exists ? results.record.serviceProviderId : '')
+              const wabaAccountService = new integrationService.WabaAccount(providerId)
               const reqBody = {
                 imageData: imageData,
                 userId,

@@ -194,7 +194,8 @@ const VALIDATOR = {
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
   aplphaNumericWithUnderscore: '^[a-z0-9_]+$',
-  fileExtType: /^(jpg|jpeg|png)$/
+  fileExtType: /^(jpg|jpeg|png)$/,
+  url: /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
@@ -294,6 +295,7 @@ const WABA_STATUS_MAPPING = {
   [WABA_PROFILE_STATUS.rejected.statusCode]: [WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
   [WABA_PROFILE_STATUS.accepted.statusCode]: []
 }
+const FILE_MAX_UPLOAD_IN_BYTE = 5000000
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -347,3 +349,4 @@ module.exports.WABA_PROFILE_STATUS = WABA_PROFILE_STATUS
 module.exports.TYNTEC_TEMPLATE_REPLY_STATUS = TYNTEC_TEMPLATE_REPLY_STATUS
 module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH
 module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
+module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE

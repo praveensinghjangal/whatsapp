@@ -75,7 +75,6 @@ class httpApiWorker {
         })
       })
     })
-    vm.app.use(bodyParser.json({ limit: '100mb' })) // to support JSON-encoded bodies
     vm.app.use(bodyParser.urlencoded({ // to support URL-encoded bodies
       extended: true,
       limit: '100mb'
@@ -83,7 +82,14 @@ class httpApiWorker {
     vm.app.use(cors(
       { exposedHeaders: ['Content-disposition'] }
     ))
-
+    vm.app.use((req, res, next) => {
+      bodyParser.json({ limit: '100mb' })(req, res, err => {
+        if (err) {
+          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, data: {} })
+        }
+        next()
+      })
+    })
     authMiddleware.initialize(vm.app)
     require('./../routes')(vm.app)
 

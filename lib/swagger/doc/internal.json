@@ -11818,7 +11818,7 @@
             "businessCategoryId": "bda36704-cde5-41c9-b039-e3841fa9229f",
             "serviceProviderId": "f1d44200-4b9d-4901-ae49-5035e0b14a5d",
             "apiKey": "test123",
-            "webHookPostUrl": "http://localhost:3000/helowhatsapp/message",
+            "webhookPostUrl": "http://localhost:3000/helowhatsapp/message",
             "optinText": "Hey"
          },
          "type": "object",
@@ -11859,7 +11859,7 @@
             "apiKey": {
                "type": "string"
             },
-            "webHookPostUrl": {
+            "webhookPostUrl": {
                "type": "string"
             },
             "optinText": {
