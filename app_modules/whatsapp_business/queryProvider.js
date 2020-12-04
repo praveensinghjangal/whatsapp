@@ -153,6 +153,26 @@ const updateProfilePicUrl = () => {
   set profile_photo_url= ?
   WHERE user_id=? and is_active = true`
 }
+
+/* Waba Number Mapping Queries For Audience */
+const getWabaIdFromAudWabaNoMapping = () => {
+  return `select waba_information_id as "wabaInformationId",
+  waba_phone_number as "wabaPhoneNumber",
+  aud_mapping_id as "audMappingId"
+  from audience_waba_no_mapping 
+  where waba_information_id = ? and is_active = 1`
+}
+
+const addAudWabaNoMappingData = () => {
+  return `insert into  audience_waba_no_mapping (aud_mapping_id,waba_phone_number,waba_information_id,created_by) 
+  values(?,?,?,?)`
+}
+
+const updateAudWabaNoMappingData = () => {
+  return `update audience_waba_no_mapping  
+  set waba_phone_number =?, updated_on = now(),updated_by=?
+  where waba_information_id = ? and is_active=1`
+}
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -170,5 +190,8 @@ module.exports = {
   getUserIdAndTokenKeyByWabaNumber,
   getWabaNumberAndOptinTextFromUserId,
   getWebsiteLimit,
-  updateProfilePicUrl
+  updateProfilePicUrl,
+  getWabaIdFromAudWabaNoMapping,
+  addAudWabaNoMappingData,
+  updateAudWabaNoMappingData
 }

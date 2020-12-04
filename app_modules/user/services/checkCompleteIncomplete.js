@@ -18,25 +18,25 @@ class checkCompleteIncomplete {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         state: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         country: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         addressLine1: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:250
+          maxLength: 250
         },
         contactNumber: {
           type: 'string',
@@ -56,7 +56,7 @@ class checkCompleteIncomplete {
           type: 'string',
           required: true,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
         }
       }
@@ -90,31 +90,31 @@ class checkCompleteIncomplete {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:80
+          maxLength: 80
         },
         city: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         state: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         country: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         addressLine1: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:250
+          maxLength: 250
         },
         contactNumber: {
           type: 'string',
@@ -134,20 +134,20 @@ class checkCompleteIncomplete {
           type: 'string',
           required: true,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
         },
         gstOrTaxNo: {
           type: 'string',
           required: false,
           minLength: 5,
-          maxLength:30
+          maxLength: 30
         },
         panCard: {
           type: 'string',
           required: true,
           minLength: 10,
-          maxLength:20
+          maxLength: 20
         }
       }
     }

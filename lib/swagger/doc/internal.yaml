@@ -4057,6 +4057,97 @@ paths:
               data: {}
               error: {}
       security: []
+  /business/wabaNoMapping:
+    post:
+      x-module: platform
+      description: API to add or update waba no mapping
+      summary: add or update waba no mapping table data
+      tags:
+        - WABA
+      operationId: addupdateWabaNoMappingForAudience
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: Body
+          in: body
+          required: true
+          description: ''
+          schema:
+            $ref: '#/definitions/addUpdateWabaNoMappingRequest'
+      responses:
+        '200':
+          description: Returns result of add udpate operation
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data: {}
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
   /templates:
     get:
       x-isPublic: false
@@ -8192,18 +8283,30 @@ definitions:
     title: allocateTemplatesToWabarequest
     example:
       templatesAllowed: 5
+      userId: sdffs34424234323
     type: object
     properties:
       templatesAllowed:
         type: number
+      userId:
+        type: string
     required:
       - templatesAllowed
+      - userId
   updateServiceProviderIdRequest:
     title: updateServiceProviderIdRequest
     example:
       serviceProviderId: e76a602e-37e3-4c5d-898f-56bf0c880f93
+      userId: sjldfhkhsdf669699877
     type: object
-    properties: {}
+    properties:
+      serviceProviderId:
+        type: string
+      userId:
+        type: string
+    required:
+      - serviceProviderId
+      - userId
   verifiycodeforbusinessnumberrequest:
     title: verifiycodeforbusinessnumberrequest
     example:
@@ -8789,11 +8892,29 @@ definitions:
     example:
       wabaProfileSetupStatusId: 7933d858-7bb7-47eb-90ec-269cbecc8c7a
       accessInfoRejectionReason: Data provided is fake.
+      userId: dfsdvsvefe342123ds2e2
     type: object
     properties:
       wabaProfileSetupStatusId:
         type: string
       accessInfoRejectionReason:
         type: string
+      userId:
+        type: string
     required:
       - wabaProfileSetupStatusId
+      - userId
+  addUpdateWabaNoMappingRequest:
+    title: updateWabaAccessInfoStatusRequest
+    example:
+      wabaInformationId: 7933d858-7bb7-47eb-90ec-269cbecc8c7a
+      wabaPhoneNumber: '2345323456'
+    type: object
+    properties:
+      wabaInformationId:
+        type: string
+      waaPhoneNumber:
+        type: string
+    required:
+      - wabaInformationId
+      - waaPhoneNumber

@@ -19,7 +19,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -90,24 +90,24 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:30
+          maxLength: 30
         },
         optinSourceId: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         segmentId: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         chatFlowId: {
           type: 'string',
           required: false,
-          maxLength:50
+          maxLength: 50
         },
         name: {
           type: 'string',
@@ -125,13 +125,13 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:20
+          maxLength: 20
         },
         country: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         }
 
       }
@@ -172,23 +172,23 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:30
+          maxLength: 30
         },
         optinSourceId: {
           type: 'string',
           required: false,
-          maxLength:50
+          maxLength: 50
         },
         segmentId: {
           type: 'string',
           required: false,
-          maxLength:50
+          maxLength: 50
         },
         chatFlowId: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         name: {
           type: 'string',
@@ -206,13 +206,13 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:20
+          maxLength: 20
         },
         country: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         }
 
       }
@@ -254,13 +254,13 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         channel: {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:30
+          maxLength: 30
         }
 
       }
@@ -296,7 +296,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -357,7 +357,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         segmentName: {
           type: 'string',
@@ -394,7 +394,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -455,7 +455,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         },
         optinSource: {
           type: 'string',

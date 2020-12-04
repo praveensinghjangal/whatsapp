@@ -10,7 +10,7 @@ const _ = require('lodash')
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
  * @name updateWabaAccessInfoStatus
- * @path {PUT} /business/profile/submit
+ * @path {PUT} /business/profile/status
  * @description Bussiness Logic :- This API sends the business access info to support team for approval.
  * when the access info is in submitted status
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
@@ -23,7 +23,7 @@ const _ = require('lodash')
  */
 const updateWabaAccessInfoStatus = (req, res) => {
   __logger.info('updateWabaAccessInfoStatus API called', req.body)
-  const userId = req.user ? req.user.user_id : ''
+  const userId = req.body && req.body.user_id ? req.body.user_id : ''
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
   const wabaStatusService = new WabaStatusService()

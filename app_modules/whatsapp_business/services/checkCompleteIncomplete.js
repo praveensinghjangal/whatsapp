@@ -43,7 +43,7 @@ class checkCompleteIncomplete {
         },
         businessManagerVerified: {
           type: 'boolean'
-        },        
+        },
         businessName: {
           type: 'string',
           required: true,
@@ -94,7 +94,7 @@ class checkCompleteIncomplete {
           type: 'string',
           required: true,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
         }
       }
@@ -113,7 +113,7 @@ class checkCompleteIncomplete {
       isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr })
     } else {
       if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
-        isvalid.resolve({ complete: false, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr ,businessManagerVerified : request.businessManagerVerified })
+        isvalid.resolve({ complete: false, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr, businessManagerVerified: request.businessManagerVerified })
       }
       if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
         isvalid.resolve({ complete: true })

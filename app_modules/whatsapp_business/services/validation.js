@@ -221,7 +221,7 @@ class validate {
           type: 'string',
           required: false,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
         },
         email: {
@@ -354,7 +354,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
         },
         email: {
@@ -534,6 +534,12 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 500
+        },
+        userId: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 50
         }
       }
     }
@@ -574,6 +580,44 @@ class validate {
     }
     const formatedError = []
     v.addSchema(schema, '/allocateTemplatesToWaba')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
+
+  wabaNoMappingInputCheck (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/wabaNoMappingInputCheck',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        wabaInformationId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        wabaPhoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 12
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/wabaNoMappingInputCheck')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')

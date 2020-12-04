@@ -11,6 +11,7 @@ const businessProfileController = require('./controllers/profile')
 const businessVerificationController = require('./controllers/verification')
 const businessApprovalController = require('./controllers/senForApproval')
 const businessStatusUpdateController = require('./controllers/updateWabaAccessInfoStatus')
+const addUpdateWabNoMappingController = require('./controllers/addUpdateWabNoMapping')
 
 // Routes
 // Business Category
@@ -34,5 +35,6 @@ router.patch('/verification/phoneNumber', authMiddleware.authenticate(authstrate
 router.get('/internal/wabaPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaNumberFromUserId)
 router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require('./controllers/internalAPI').getUserIdAndApiKeyFromWabaNumber)
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
+router.post('/wabaNoMapping', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateWabNoMappingController.addupdateWabaNoMappingForAudience)
 
 module.exports = router

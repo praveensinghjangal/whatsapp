@@ -128,7 +128,7 @@ const sendTemplateForEvaluaion = (req, res) => {
     const templateService = new integrationService.Template(req.user.providerId)
     const evaluationResponse = req.params ? req.params.evaluationResponse.toLowerCase() : ''
     if (!__constants.TEMPLATE_EVALUATION_RESPONSE.includes(evaluationResponse)) {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.EVALUTAION_CANNOT_BE_PROCEDDED, data: {} })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
     } else {
       templateDbService.getTemplateInfo(userId, templateId)
         .then(result => {
