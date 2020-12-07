@@ -7,7 +7,6 @@ class WabaStatusService {
     if (__constants.WABA_STATUS_MAPPING[oldStatusId] && __constants.WABA_STATUS_MAPPING[oldStatusId].includes(newStatusId)) return true
     return false
   }
-
 }
 
 module.exports = WabaStatusService

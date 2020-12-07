@@ -7,18 +7,18 @@ const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 
-class WabaNoMappingForAudienceService {
+class WabaNoMappingService {
   constructor () {
     this.validate = new ValidatonService()
     this.uniqueId = new UniqueId()
   }
 
   checkWabaIdExist (wabaInformationId) {
-    __logger.info('checkWabaIdExist::>>>>>>>>>>...')
+    __logger.info('checkWabaIdExist::>>>>>>>>>>...', wabaInformationId)
     const doesWabaIdExist = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaIdFromAudWabaNoMapping(), [wabaInformationId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaIdFromWabaNoMapping(), [wabaInformationId])
       .then(result => {
-        __logger.info('result then 2')
+        __logger.info('result then 2', result)
         if (result && result.length > 0) {
           doesWabaIdExist.resolve({ record: result[0], exists: true })
         } else {
@@ -32,29 +32,18 @@ class WabaNoMappingForAudienceService {
     return doesWabaIdExist.promise
   }
 
-  /**
- * @memberof -Whatsapp-Business-Account-(WABA)-Services-
- * @name addAudWabaNoMappingData
- * @description This service is used to check if record does not exists and then insert waba no mapping data .
- * @body {string} wabaInformationId
- * @body {string} userId
- * @body {object} wabaNoMappingData
- * @body {object} wabaNoMappingOldData
- * @response {object} wabaNoMappingObj  -  Object which is inserted in DB.
- * @author Arjun Bhole 3rd December, 2020
- *  * *** Last-Updated :- Arjun Bhole 3rd December, 2020 ***
- */
-  addAudWabaNoMappingData (wabaInformationId, wabaNoMappingData, wabaNoMappingOldData, userId) {
-    __logger.info('insertAudWabaNoMappingData::>>>>>>>>>>...', wabaNoMappingOldData)
+  /* Service to add the waba mapping data  */
+  addWabaNoMappingData (wabaInformationId, wabaNoMappingData, wabaNoMappingOldData, userId) {
+    __logger.info('addWabaNoMappingData::>>>>>>>>>>...', wabaNoMappingOldData)
     const dataInserted = q.defer()
-    __logger.info('Inputs insertAudWabaNoMappingData userId', wabaInformationId)
+    __logger.info('Inputs addWabaNoMappingData userId', wabaInformationId)
     const wabaNoMappingObj = {
       wabaInformationId: wabaNoMappingData && wabaNoMappingData.wabaInformationId ? wabaNoMappingData.wabaInformationId : wabaNoMappingOldData.wabaInformationId,
       wabaPhoneNumber: wabaNoMappingData && wabaNoMappingData.wabaPhoneNumber ? wabaNoMappingData.wabaPhoneNumber : wabaNoMappingOldData.wabaPhoneNumber,
       audMappingId: wabaNoMappingOldData && wabaNoMappingOldData.audMappingId ? wabaNoMappingOldData.audMappingId : this.uniqueId.uuid()
     }
     saveHistoryData(wabaNoMappingOldData, __constants.ENTITY_NAME.AUD_WABA_NO_MAPPING, wabaNoMappingOldData.wabaInformationId, userId)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudWabaNoMappingData(), [wabaNoMappingObj.audMappingId, wabaNoMappingObj.wabaPhoneNumber, wabaNoMappingObj.wabaInformationId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaNoMappingData(), [wabaNoMappingObj.audMappingId, wabaNoMappingObj.wabaPhoneNumber, wabaNoMappingObj.wabaInformationId, userId])
       .then(result => {
         __logger.info('Insert Result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -70,26 +59,16 @@ class WabaNoMappingForAudienceService {
     return dataInserted.promise
   }
 
-  /**
- * @memberof -Whatsapp-Business-Account-(WABA)-Services-
- * @name updateAudWabaNoMappingData
- * @description This service is used to check if record exists and then update waba no mapping data .
- * @body {string} userId
- * @body {object} wabaNoMappingData
- * @body {object} wabaNoMappingOldData
- * @response {object} wabaNoMappingObj  -  Object which is updated in DB.
- * @author Arjun Bhole 2nd December, 2020
- *  * *** Last-Updated :- Arjun Bhole 3rd December, 2020 ***
- */
-  updateAudWabaNoMappingData (userId, wabaNoMappingData, wabaNoMappingOldData) {
+  /* Service to update the waba mapping data  */
+  updateWabaNoMappingData (userId, wabaNoMappingData, wabaNoMappingOldData) {
     const dataUpdated = q.defer()
-    __logger.info('Inputs updateAudWabaNoMappingData userId', userId)
+    __logger.info('Inputs updateWabaNoMappingData userId', userId, wabaNoMappingData, wabaNoMappingOldData)
     saveHistoryData(wabaNoMappingOldData, __constants.ENTITY_NAME.AUD_WABA_NO_MAPPING, wabaNoMappingOldData.wabaInformationId, userId)
     const wabaNoMappingObj = {
       wabaInformationId: wabaNoMappingData && wabaNoMappingData.wabaInformationId ? wabaNoMappingData.wabaInformationId : wabaNoMappingOldData.wabaInformationId,
       wabaPhoneNumber: wabaNoMappingData && wabaNoMappingData.wabaPhoneNumber ? wabaNoMappingData.wabaPhoneNumber : wabaNoMappingOldData.wabaPhoneNumber
     }
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudWabaNoMappingData(), [wabaNoMappingObj.wabaPhoneNumber, userId, wabaNoMappingObj.wabaInformationId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaNoMappingData(), [wabaNoMappingObj.wabaPhoneNumber, userId, wabaNoMappingObj.wabaInformationId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(wabaNoMappingObj)
@@ -105,4 +84,4 @@ class WabaNoMappingForAudienceService {
   }
 }
 
-module.exports = WabaNoMappingForAudienceService
+module.exports = WabaNoMappingService

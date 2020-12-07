@@ -159,18 +159,25 @@ const getWabaPhoneNumber = () => {
   where waba_phone_number=? and is_active=true`
 }
 
-const addWabaNoInMappingTable = () => {
-  return `insert into audience_waba_no_mapping (aud_mapping_id,waba_phone_number,created_by)
-  values(?,?,?)`
+/* Waba Number Mapping Queries For Audience */
+const getWabaIdFromWabaNoMapping = () => {
+  return `select waba_information_id as "wabaInformationId",
+  waba_phone_number as "wabaPhoneNumber",
+  aud_mapping_id as "audMappingId"
+  from audience_waba_no_mapping 
+  where waba_information_id = ? and is_active = 1`
 }
 
-const updateWabaNoInMappingTable = () => {
-  return `UPDATE audience_waba_no_mapping
-  SET waba_phone_number=?, updated_on=CURRENT_TIMESTAMP,
-  updated_by=?
-  WHERE waba_phone_number=? and is_active = true`
+const addWabaNoMappingData = () => {
+  return `insert into  audience_waba_no_mapping (aud_mapping_id,waba_phone_number,waba_information_id,created_by) 
+  values(?,?,?,?)`
 }
 
+const updateWabaNoMappingData = () => {
+  return `update audience_waba_no_mapping  
+  set waba_phone_number =?, updated_on = now(),updated_by=?
+  where waba_information_id = ? and is_active=1`
+}
 module.exports = {
   getAudienceRecordList,
   getAudienceTableDataWithId,
@@ -187,7 +194,8 @@ module.exports = {
   addSegmentData,
   updateSegmentData,
   getWabaNumberFromDb,
-  updateWabaNoInMappingTable,
-  addWabaNoInMappingTable,
-  getWabaPhoneNumber
+  getWabaPhoneNumber,
+  getWabaIdFromWabaNoMapping,
+  addWabaNoMappingData,
+  updateWabaNoMappingData
 }

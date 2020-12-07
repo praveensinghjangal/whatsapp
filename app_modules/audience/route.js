@@ -21,6 +21,9 @@ const addUpdateSegmentController = require('./controllers/addUpdateSegment')
 const fetchOptinController = require('./controllers/fetchOptinSourceMaster')
 const addUpdateOptinController = require('./controllers/addUpdateOptinSourceMaster')
 
+// Waba Controller
+const addUpdateWabaNoMapping = require('./controllers/addUpdateWabaNoMapping')
+
 // Routes
 
 // Audience
@@ -42,5 +45,8 @@ router.get('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, a
 router.patch('/optin/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), bulkAudienceDataUploadController.uploadAudienceData)
 router.get('/optin/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchOptinUrlController.getOptinUrl)
 router.get('/optin/url/redirect/:wabaNumber', redirectToOptinUrlController.redirectToOptinUrl)
+
+// Waba
+router.post('/waba', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateWabaNoMapping.addUpdateWabaNoMapping)
 
 module.exports = router
