@@ -167,10 +167,10 @@ class validate {
           maxLength: 100
         },
         buttonType: {
-          type: 'string',
+          type: typeof request.buttonType === 'string' ? 'string' : null,
           required: false,
-          minLength: 1,
-          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase()),
+          minLength: request.buttonType ? 1 : 0,
+          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType ? json.buttonType.toLowerCase() : json.buttonType),
           maxLength: 100
         },
         buttonData: {
@@ -180,7 +180,7 @@ class validate {
           properties: {
             quickReply: {
               type: 'array',
-              required: false,
+              required: request.buttonType,
               minItems: 1,
               maxItems: 3,
               items: {

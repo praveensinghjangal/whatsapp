@@ -1,3 +1,9 @@
+/**
+ * @namespace -Template-Services-
+ * @description This Section contains services of templates send to whatsapp for approval
+ *  * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
+ */
+
 const q = require('q')
 const _ = require('lodash')
 const __constants = require('../../../config/constants')
@@ -13,6 +19,16 @@ class TemplateService {
     this.uniqueId = new UniqueId()
   }
 
+  /**
+ * @memberof -Template-Services-
+ * @name getTemplateTableDataAndWabaId
+ * @description This service is get template data and waba data by template ID and user ID.
+ * @body {string} messageTemplateId
+ * @body {string} userId
+ * @response {object} templateAndWabaData  -  Object which is fetched from DB.
+ * @author Danish Galiyara 5th June, 2020
+ *  * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
+ */
   getTemplateTableDataAndWabaId (messageTemplateId, userId) {
     __logger.info('inside get template by id service', messageTemplateId, userId)
     const templateData = q.defer()
@@ -161,6 +177,17 @@ class TemplateService {
     return templateAdded.promise
   }
 
+  /**
+ * @memberof -Template-Services-
+ * @name updateTemplate
+ * @description This service is used to update template data.
+ * @body {object} newData - Request body by API
+ * @body {object} oldData - Data present in DB
+ * @body {string} userId - ID fetchd from token by controller
+ * @response {object} templateData  -  Object which is updated in DB.
+ * @author Danish Galiyara 5th June, 2020
+ *  * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
+ */
   updateTemplate (newData, oldData, userId) {
     __logger.info('Updating template', newData)
     const dataUpdated = q.defer()
@@ -181,8 +208,8 @@ class TemplateService {
       secondLanguageBodyText: newData.secondLanguageBodyText || oldData.secondLanguageBodyText,
       secondLanguageFooterText: newData.secondLanguageFooterText || oldData.secondLanguageFooterText,
       headerType: newData.headerType || oldData.headerType,
-      buttonType: newData.buttonType || oldData.buttonType,
-      buttonData: newData.buttonData || oldData.buttonData,
+      buttonType: newData.buttonType ? newData.buttonType : (newData.buttonType === null ? null : oldData.buttonType),
+      buttonData: newData.buttonType === null ? {} : (newData.buttonData || oldData.buttonData),
       updatedBy: userId,
       messageTemplateId: newData.messageTemplateId,
       wabaInformationId: oldData.wabaInformationId

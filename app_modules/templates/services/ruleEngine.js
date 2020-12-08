@@ -104,7 +104,7 @@ class InternalClass {
   buttonDataPresent (td) {
     __logger.info('buttonDataPresent::')
     const valid = q.defer()
-    const buttonTypeArr = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+    const buttonTypeArr = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType ? json.buttonType.toLowerCase() : json.buttonType)
     if (td.buttonType && buttonTypeArr.includes(td.buttonType.toLowerCase()) && (!td.buttonData || _.isEmpty(td.buttonData))) {
       valid.reject('please provide button data of type json')
       return valid.promise
