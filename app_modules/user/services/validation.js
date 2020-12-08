@@ -18,7 +18,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50,
+          maxLength: 50,
           pattern: __constants.VALIDATOR.email
         },
         password: {
@@ -56,7 +56,7 @@ class validate {
           required: true,
           unique: true,
           minLength: 1,
-          maxLength:50,
+          maxLength: 50,
           pattern: __constants.VALIDATOR.email
         },
         password: {
@@ -106,7 +106,7 @@ class validate {
           required: true,
           unique: true,
           minLength: 1,
-          maxLength:50,
+          maxLength: 50,
           pattern: __constants.VALIDATOR.email
         },
         password: {
@@ -122,7 +122,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:20
+          maxLength: 20
         }
       }
     }
@@ -153,7 +153,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -186,30 +186,30 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         state: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         country: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         addressLine1: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:250
+          maxLength: 250
         },
         addressLine2: {
           type: 'string',
           required: false,
-          maxLength:250
+          maxLength: 250
         },
         contactNumber: {
           type: 'string',
@@ -229,7 +229,7 @@ class validate {
           type: 'string',
           required: false,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
 
         },
@@ -237,25 +237,25 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:30
+          maxLength: 30
         },
         lastName: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:30
+          maxLength: 30
         },
         accountManagerName: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:200
+          maxLength: 200
         },
         accountTypeId: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:50
+          maxLength: 50
         }
       }
     }
@@ -288,36 +288,36 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:80
+          maxLength: 80
         },
         city: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         state: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         country: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:60
+          maxLength: 60
         },
         addressLine1: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength:250
+          maxLength: 250
         },
         addressLine2: {
           type: 'string',
           required: false,
-          maxLength:250
+          maxLength: 250
         },
         contactNumber: {
           type: 'string',
@@ -337,20 +337,20 @@ class validate {
           type: 'string',
           required: false,
           minLength: 6,
-          maxLength: 8,
+          maxLength: 6,
           pattern: __constants.VALIDATOR.number
         },
         gstOrTaxNo: {
           type: 'string',
           required: false,
           minLength: 5,
-          maxLength:30
+          maxLength: 30
         },
         panCard: {
           type: 'string',
           required: false,
           minLength: 10,
-          maxLength:20
+          maxLength: 20
         }
       }
     }
@@ -381,7 +381,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:500
+          maxLength: 500
         }
       }
     }
@@ -412,7 +412,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength:50,
+          maxLength: 50,
           pattern: __constants.VALIDATOR.email
         }
       }

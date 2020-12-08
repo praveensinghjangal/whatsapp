@@ -153,6 +153,7 @@ const updateProfilePicUrl = () => {
   set profile_photo_url= ?
   WHERE user_id=? and is_active = true`
 }
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -171,4 +172,5 @@ module.exports = {
   getWabaNumberAndOptinTextFromUserId,
   getWebsiteLimit,
   updateProfilePicUrl
+
 }

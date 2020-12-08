@@ -16,6 +16,7 @@ const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
 const _ = require('lodash')
 const WabaStatusService = require('../services/wabaStatusEngine')
+const otherModuleCallService = require('../services/otherModuleCalls')
 
 /**
  * @namespace -Whatsapp-Business-Account-(WABA)-Controller-
@@ -83,7 +84,7 @@ const getBusinessProfile = (req, res) => {
  * @response {string} metadata.msg=Success  -  Returns businessProfileCompletionStatus as true.
  * @code {200} if the msg is success than Returns Status of business profile info completion.
  * @author Arjun Bhole 3rd June, 2020
- * *** Last-Updated :- Arjun Bhole 25th November, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
  */
 
 const addupdateBusinessAccountInfo = (req, res) => {
@@ -136,6 +137,11 @@ const addupdateBusinessAccountInfo = (req, res) => {
     })
     .then(data => {
       __logger.info('After Insert Update', data)
+      const qrynum = queryResult && queryResult.exists ? queryResult.record.phoneCode + queryResult.record.phoneNumber : null // if(qrynum != reqNum) call api
+      const reqNum = req.body.phoneCode && req.body.phoneNumber ? req.body.phoneCode + req.body.phoneNumber : null // if(qrynum != reqNum) call api
+      if (reqNum && reqNum !== null && qrynum !== reqNum) {
+        otherModuleCallService(reqNum, data.wabaInformationId, userId)
+      }
       let name = ''
       _.each(__constants.WABA_PROFILE_STATUS, (val, key) => {
         if (data.wabaProfileSetupStatusId && val.statusCode && val.statusCode === data.wabaProfileSetupStatusId) name = val.displayName
@@ -215,7 +221,7 @@ const addUpdateBusinessProfile = (req, res) => {
         return businessAccountService.insertBusinessData(userId, req.body, {})
       } else {
         __logger.info('addUpdateBusinessProfile::time to update')
-        return businessAccountService.updateBusinessData(req.body, profileData.record || {})
+        return businessAccountService.updateBusinessData(req.body, profileData.record || {}, req.headers.authorization)
       }
     })
     // call integration here in .then
@@ -294,7 +300,7 @@ const markManagerVerified = (req, res) => {
     .then(data => {
       __logger.info('datatatatata then 4', data)
       if (data) {
-        return businessAccountService.updateBusinessData(req.body, queryResult.record || {})
+        return businessAccountService.updateBusinessData(req.body, queryResult.record || {}, req.headers.authorization)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
       }
@@ -353,7 +359,7 @@ function formatFinalStatus (queryResult, result) {
  */
 const updateServiceProviderId = (req, res) => {
   __logger.info('Inside updateServiceProviderId')
-  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const userId = req.body && req.body.user_id ? req.body.user_id : 0
   const businessAccountService = new BusinessAccountService()
   const validationService = new ValidatonService()
 
@@ -443,7 +449,7 @@ const addUpdateOptinMessage = (req, res) => {
     .then(data => {
       __logger.info('data then 4 >>')
       if (data) {
-        return businessAccountService.updateBusinessData(req.body, record || {})
+        return businessAccountService.updateBusinessData(req.body, record || {}, req.headers.authorization)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_INFO_NOT_COMPLETE, err: {}, data: {} })
       }
@@ -524,7 +530,7 @@ const updateProfilePic = (req, res) => {
                 phoneNumber: results.record.phoneNumber
               }
               results.record.userId = userId
-              businessAccountService.updateBusinessData(reqBody, results.record)
+              businessAccountService.updateBusinessData(reqBody, results.record, req.headers.authorization)
               return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
             }
           } else {
@@ -629,7 +635,7 @@ const allocateTemplatesToWaba = (req, res) => {
   __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id, req.body)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
-  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const userId = req.body && req.body.user_id ? req.body.user_id : '0'
   validate.allocateTemplatesToWaba(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
@@ -640,7 +646,7 @@ const allocateTemplatesToWaba = (req, res) => {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
       } else {
         __logger.info('time to checl if profile approved')
-        return businessAccountService.updateBusinessData(req.body, data.record || {})
+        return businessAccountService.updateBusinessData(req.body, data.record || {}, req.headers.authorization)
       }
     })
     .then(data => {

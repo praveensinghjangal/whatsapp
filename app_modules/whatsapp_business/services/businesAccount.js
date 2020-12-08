@@ -80,7 +80,7 @@ class businesAccountService {
  * @body {object} businessOldData
  * @response {object} businessAccountObj  -  Object which is inserted in DB.
  * @author Arjun Bhole 3rd June, 2020
- *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
+ *  * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
  */
   insertBusinessData (userId, businessData, businessOldData) {
     __logger.info('insertBusinessData::>>>>>>>>>>...', businessOldData)
@@ -116,7 +116,6 @@ class businesAccountService {
       websites: businessData.websites ? businessData.websites : [],
       accessInfoRejectionReason: businessData.accessInfoRejectionReason ? businessData.accessInfoRejectionReason : businessOldData.accessInfoRejectionReason
     }
-
     this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.insert)
       .then((data) => {
         __logger.info('checkWabaNumberAlreadyExist Result', { data })
@@ -219,7 +218,7 @@ class businesAccountService {
     // .then(data => this.insertBusinessData(businessOldData.userId, businessData, businessOldData))
     if ((businessData && businessData.phoneNumber && !businessOldData.phoneNumber) || (businessData && businessData.phoneNumber && businessData.phoneNumber !== businessOldData.phoneNumber)) {
       this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.update)
-        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId))
+        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId, businessOldData.wabaInformationId))
         .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData))
         .then(data => businessDataUpdated.resolve(data))
         .catch(err => businessDataUpdated.reject(err))
@@ -358,7 +357,7 @@ class businesAccountService {
     return dbData.promise
   }
 
-  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId) {
+  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId, wabaInformationId) {
     __logger.info('updateWabaNumberAndPhoneCode::>>>>>>>>>>>>>.')
     /* To do
        Update all the tables with waba Number
@@ -369,12 +368,11 @@ class businesAccountService {
       dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
     }
     const wabaData = {
-      phoneCode: phoneCode,
-      phoneNumber: phoneNumber,
+      phoneCode,
+      phoneNumber,
       updatedBy: userId,
-      userId: userId
+      userId
     }
-
     const queryParam = []
     _.each(wabaData, (val) => queryParam.push(val))
     const validationService = new ValidatonService()

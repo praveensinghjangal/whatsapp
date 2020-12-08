@@ -116,7 +116,8 @@ const ENTITY_NAME = {
   MESSAGE_TEMPLATE_LIBRARY: 'message_template_library',
   USER_AGREEMENT_FILES: 'user_agreement_files',
   AUDIENCE: 'audience',
-  USERS_TFA: 'users_tfa'
+  USERS_TFA: 'users_tfa',
+  AUD_WABA_NO_MAPPING: 'audience_waba_no_mapping'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -172,7 +173,8 @@ const INTERNAL_END_POINTS = {
   redirectToWameUrl: '/helowhatsapp/api/audience/optin/url/redirect',
   userLogin: '/helowhatsapp/api/users/auth/login',
   updateTemplateStatus: '/helowhatsapp/api/templates/',
-  businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url'
+  businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url',
+  addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {

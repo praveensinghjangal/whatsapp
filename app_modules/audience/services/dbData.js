@@ -80,8 +80,14 @@ class AudienceService {
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
+        __logger.info('checkAndReturnWabaNumber::>>>>>>>>>>>>>>...', data)
+        return this.getWabaPhoneNumber(data)
+      })
+      .then(data => {
         __logger.info('WabaNum>>>>>>>>>>>>>>>>>>>>>>>> then 1', { data })
-        audienceData.wabaPhoneNumber = data
+        if (data && data.audMappingId) {
+          audienceData.wabaPhoneNumber = data.audMappingId
+        }
         if (newData.isIncomingMessage) {
           audienceData.firstMessageValue = this.formatToTimeStamp()
           audienceData.lastMessageValue = this.formatToTimeStamp()
@@ -115,7 +121,7 @@ class AudienceService {
 
   // waba
   updateAudienceDataService (newData, oldData) {
-    // __logger.info('update audience service called', newData)
+    __logger.info('update audience service called', newData)
     const audienceUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.userId)
     // this.updateAudience(newData, oldData)
@@ -142,8 +148,14 @@ class AudienceService {
 
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
+        __logger.info('checkAndReturnWabaNumber::>>>>>>>>>>>>>>...', data)
+        return this.getWabaPhoneNumber(data)
+      })
+      .then(data => {
         __logger.info('data then 1', { data })
-        audienceData.wabaPhoneNumber = data
+        if (data && data.audMappingId) {
+          audienceData.wabaPhoneNumber = data.audMappingId
+        }
         if (newData.isIncomingMessage) {
           audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : this.formatToTimeStamp()
           audienceData.lastMessageValue = this.formatToTimeStamp()
@@ -363,6 +375,22 @@ class AudienceService {
       })
       .catch(err => optinUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return optinUpdated.promise
+  }
+
+  getWabaPhoneNumber (data) {
+    const wabaPhoneNumber = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaPhoneNumber(), data)
+      .then(data => {
+        if (data && data.length > 0) {
+          wabaPhoneNumber.resolve({ audMappingId: data[0].audMappingId })
+        } else {
+          wabaPhoneNumber.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ACCOUNT_NOT_EXISTS, err: {} })
+        }
+      })
+      .catch(err => {
+        wabaPhoneNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return wabaPhoneNumber.promise
   }
 }
 
