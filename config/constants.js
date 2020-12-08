@@ -172,7 +172,7 @@ const INTERNAL_END_POINTS = {
   userLogin: '/helowhatsapp/api/users/auth/login',
   updateTemplateStatus: '/helowhatsapp/api/templates/',
   businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url',
-  addUpdateWabNoMapping: '/helowhatsapp/api/audience/waba'
+  addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {

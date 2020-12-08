@@ -16,6 +16,7 @@ const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
 const _ = require('lodash')
 const WabaStatusService = require('../services/wabaStatusEngine')
+const otherModuleCallService = require('../services/otherModuleCalls')
 
 /**
  * @namespace -Whatsapp-Business-Account-(WABA)-Controller-
@@ -83,7 +84,7 @@ const getBusinessProfile = (req, res) => {
  * @response {string} metadata.msg=Success  -  Returns businessProfileCompletionStatus as true.
  * @code {200} if the msg is success than Returns Status of business profile info completion.
  * @author Arjun Bhole 3rd June, 2020
- * *** Last-Updated :- Arjun Bhole 25th November, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
  */
 
 const addupdateBusinessAccountInfo = (req, res) => {
@@ -127,15 +128,20 @@ const addupdateBusinessAccountInfo = (req, res) => {
         req.body.accessInfoRejectionReason = null
       }
       if (queryResult && !queryResult.exists) {
-        return businessAccountService.insertBusinessData(userId, req.body, {}, req.headers.authorization)
+        return businessAccountService.insertBusinessData(userId, req.body, {})
       } else if (wabaStatusService.canUpdateWabaStatus(req.body.wabaProfileSetupStatusId, queryResult.record.wabaProfileSetupStatusId)) {
-        return businessAccountService.updateBusinessData(req.body, queryResult.record, req.headers.authorization)
+        return businessAccountService.updateBusinessData(req.body, queryResult.record)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
       }
     })
     .then(data => {
       __logger.info('After Insert Update', data)
+      const qrynum = queryResult && queryResult.exists ? queryResult.record.phoneCode + queryResult.record.phoneNumber : null // if(qrynum != reqNum) call api
+      const reqNum = req.body.phoneCode && req.body.phoneNumber ? req.body.phoneCode + req.body.phoneNumber : null // if(qrynum != reqNum) call api
+      if (reqNum && reqNum !== null && qrynum !== reqNum) {
+        otherModuleCallService(reqNum, data.wabaInformationId, userId)
+      }
       let name = ''
       _.each(__constants.WABA_PROFILE_STATUS, (val, key) => {
         if (data.wabaProfileSetupStatusId && val.statusCode && val.statusCode === data.wabaProfileSetupStatusId) name = val.displayName

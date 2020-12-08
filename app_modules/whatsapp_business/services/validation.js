@@ -613,6 +613,12 @@ class validate {
           required: true,
           minLength: 1,
           maxLength: 12
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
         }
       }
     }

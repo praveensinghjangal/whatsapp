@@ -14,14 +14,11 @@ const __constants = require('../../../config/constants')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const RedisService = require('../../../lib/redis_service/redisService')
 const _ = require('lodash')
-const HttpService = require('../../../lib/http_service')
-const __config = require('../../../config')
 
 class businesAccountService {
   constructor () {
     this.validate = new ValidatonService()
     this.uniqueId = new UniqueId()
-    this.http = new HttpService(60000)
   }
 
   deactivateWabaRecord (wabaInformationId, userId) {
@@ -83,9 +80,9 @@ class businesAccountService {
  * @body {object} businessOldData
  * @response {object} businessAccountObj  -  Object which is inserted in DB.
  * @author Arjun Bhole 3rd June, 2020
- *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
+ *  * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
  */
-  insertBusinessData (userId, businessData, businessOldData, authToken) {
+  insertBusinessData (userId, businessData, businessOldData) {
     __logger.info('insertBusinessData::>>>>>>>>>>...', businessOldData)
     const dataInserted = q.defer()
     __logger.info('Inputs insertBusinessData userId', userId)
@@ -119,12 +116,6 @@ class businesAccountService {
       websites: businessData.websites ? businessData.websites : [],
       accessInfoRejectionReason: businessData.accessInfoRejectionReason ? businessData.accessInfoRejectionReason : businessOldData.accessInfoRejectionReason
     }
-    const inputRequest = {
-      wabaPhoneNumber: businessAccountObj.phoneCode + businessAccountObj.phoneNumber,
-      wabaInformationId: businessAccountObj.wabaInformationId
-    }
-    __logger.info('InputReuqest::>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>..', inputRequest)
-    const headers = { Authorization: authToken }
     this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.insert)
       .then((data) => {
         __logger.info('checkWabaNumberAlreadyExist Result', { data })
@@ -134,7 +125,6 @@ class businesAccountService {
       .then(result => {
         __logger.info('Insert Result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
-          this.addUpdateWabNoMapping(inputRequest, headers)
           dataInserted.resolve(businessAccountObj)
         } else {
           dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
@@ -214,7 +204,7 @@ class businesAccountService {
     return dataUpdated.promise
   }
 
-  updateBusinessData (businessData, businessOldData, authToken) {
+  updateBusinessData (businessData, businessOldData) {
     __logger.info('Inputs updateBusinessData userId')
     const businessDataUpdated = q.defer()
     if (businessData && businessData.wabaProfileSetupStatusId && businessData.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.rejected.statusCode) {
@@ -228,7 +218,7 @@ class businesAccountService {
     // .then(data => this.insertBusinessData(businessOldData.userId, businessData, businessOldData))
     if ((businessData && businessData.phoneNumber && !businessOldData.phoneNumber) || (businessData && businessData.phoneNumber && businessData.phoneNumber !== businessOldData.phoneNumber)) {
       this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.update)
-        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId, businessOldData.wabaInformationId, authToken))
+        .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId, businessOldData.wabaInformationId))
         .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData))
         .then(data => businessDataUpdated.resolve(data))
         .catch(err => businessDataUpdated.reject(err))
@@ -367,18 +357,13 @@ class businesAccountService {
     return dbData.promise
   }
 
-  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId, wabaInformationId, authToken) {
+  updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId, wabaInformationId) {
     __logger.info('updateWabaNumberAndPhoneCode::>>>>>>>>>>>>>.')
     /* To do
        Update all the tables with waba Number
        currently updating only waba info table
     */
     const dataUpdated = q.defer()
-    const inputRequest = {
-      wabaPhoneNumber: phoneCode + phoneNumber,
-      wabaInformationId: wabaInformationId
-    }
-    const headers = { Authorization: authToken }
     if (wabaProfileSetupStatusId && (wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.submitted.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode)) {
       dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
     }
@@ -395,7 +380,6 @@ class businesAccountService {
       .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaPhoneNumberAndPhoneCodeByWabaIdAndUserId(), queryParam))
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          this.addUpdateWabNoMapping(inputRequest, headers)
           delete wabaData.updatedBy
           delete wabaData.wabaInformationId
           delete wabaData.userId
@@ -485,19 +469,6 @@ class businesAccountService {
         businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return businessDataFetched.promise
-  }
-
-  addUpdateWabNoMapping (inputRequest, headers) {
-    __logger.info('addUpdateWabNoMapping::>>>>>>>>>>>>>', inputRequest, headers)
-    const wabaNumberMappingResult = q.defer()
-    this.http = new HttpService(60000)
-    this.http.Post(inputRequest, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.addUpdateWabNoMapping, headers)
-      .then(apiRes => {
-        __logger.info('addUpdateWabNoMapping api response', apiRes)
-        wabaNumberMappingResult.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
-      })
-      .catch(err => wabaNumberMappingResult.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-    return wabaNumberMappingResult.promise
   }
 }
 

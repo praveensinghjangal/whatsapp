@@ -7,7 +7,7 @@ const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 
-class WabaNoMappingService {
+class WabDataService {
   constructor () {
     this.validate = new ValidatonService()
     this.uniqueId = new UniqueId()
@@ -84,4 +84,4 @@ class WabaNoMappingService {
   }
 }
 
-module.exports = WabaNoMappingService
+module.exports = WabDataService

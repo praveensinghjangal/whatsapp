@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
+const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 
 // Controller require section
 
@@ -47,6 +48,6 @@ router.get('/optin/url', authMiddleware.authenticate(authstrategy.jwt.name, auth
 router.get('/optin/url/redirect/:wabaNumber', redirectToOptinUrlController.redirectToOptinUrl)
 
 // Waba
-router.post('/waba', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateWabaNoMapping.addUpdateWabaNoMapping)
+router.post('/internal/waba', tokenBasedAuth, addUpdateWabaNoMapping.addUpdateWabaNoMapping)
 
 module.exports = router

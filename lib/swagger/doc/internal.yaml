@@ -6537,9 +6537,10 @@ paths:
               data: {}
               error: {}
       security: []
-  /audience/wabaNo:
+  /audience/internal/wabaNo:
     post:
       x-module: platform
+      x-isPublic: false
       description: API to add or update waba no mapping
       summary: add or update waba no mapping table data
       tags:
@@ -6553,7 +6554,7 @@ paths:
           in: header
           required: true
           type: string
-          description: user can obtain auth token by using login API
+          description: Internal token is required for this api
         - name: Body
           in: body
           required: true
@@ -8909,12 +8910,16 @@ definitions:
     example:
       wabaInformationId: 7933d858-7bb7-47eb-90ec-269cbecc8c7a
       wabaPhoneNumber: '2345323456'
+      userId: 2343afadfr3434-34efsf34324
     type: object
     properties:
       wabaInformationId:
         type: string
       waaPhoneNumber:
         type: string
+      userId:
+        type: string
     required:
       - wabaInformationId
       - waaPhoneNumber
+      - userId
