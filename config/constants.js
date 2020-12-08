@@ -134,6 +134,8 @@ const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Call To Action'
 }, {
   buttonType: 'Quick Reply'
+}, {
+  buttonType: null
 }]
 const MQ = {
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: 1, createChannel: true },

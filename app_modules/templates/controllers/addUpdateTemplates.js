@@ -11,6 +11,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 /**
  * @namespace -Template-Controller-
  * @description API’s related to whatsapp templates.
+ *  * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
  */
 
 /**
@@ -40,7 +41,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
  * @response {boolean} metadata.data.mediaTemplateComplete - It will return true
  * @code {200} if the msg is success than it Returns Status of template info completion
  * @author Danish Galiyara 5th June, 2020
- * *** Last-Updated :- Danish Galiyara 21st October, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
  */
 const addUpdateTemplates = (req, res) => {
   __logger.info('add update template API called', req.body)
@@ -102,7 +103,7 @@ const addUpdateTemplates = (req, res) => {
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)
       // __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
       __logger.error('error: ', err)
