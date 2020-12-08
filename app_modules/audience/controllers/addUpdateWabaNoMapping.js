@@ -14,7 +14,7 @@ const WabaDataService = require('../services/wabDataService')
  * @name AddUpdateWabaNoMapping
  * @path {POST} /audience/internal/waba
  * @description Bussiness Logic :-This api is used to add or update waba no mapping.
- * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user has to put internal token for this api. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/audience/addUpdateWabaNoMapping|AddUpdateWabaNoMapping}
  * @body {string} wabaInformationId
  * @body {string} wabaPhoneNumber
