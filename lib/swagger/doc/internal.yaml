@@ -6537,7 +6537,7 @@ paths:
               data: {}
               error: {}
       security: []
-  /audience/internal/wabaNo:
+  /audience/internal/waba:
     post:
       x-module: platform
       x-isPublic: false
