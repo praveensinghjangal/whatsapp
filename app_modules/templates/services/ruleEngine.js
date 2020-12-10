@@ -9,7 +9,7 @@ class InternalClass {
   quickReplyButtonValid (td) {
     __logger.info('quickReplyButtonValid::')
     const valid = q.defer()
-    if (td.buttonData && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[1].buttonType.toLowerCase()) {
+    if (td.buttonData && !_.isEmpty(td.buttonData) && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[1].buttonType.toLowerCase()) {
       if (!td.buttonData.quickReply) {
         valid.reject('please provide quick reply text')
         return valid.promise
@@ -70,7 +70,7 @@ class InternalClass {
   callToActionButtonValid (td) {
     __logger.info('callToActionButtonValid::')
     const valid = q.defer()
-    if (td.buttonData && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
+    if (td.buttonData && !_.isEmpty(td.buttonData) && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
       if (!td.buttonData.websiteButtontext) {
         valid.reject('please provide website button text')
         return valid.promise
@@ -105,7 +105,7 @@ class InternalClass {
     __logger.info('buttonDataPresent::')
     const valid = q.defer()
     const buttonTypeArr = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType ? json.buttonType.toLowerCase() : json.buttonType)
-    if (td.buttonType && buttonTypeArr.includes(td.buttonType.toLowerCase()) && (!td.buttonData || _.isEmpty(td.buttonData))) {
+    if (td.buttonType && !_.isEmpty(td.buttonData) && buttonTypeArr.includes(td.buttonType.toLowerCase()) && (!td.buttonData || _.isEmpty(td.buttonData))) {
       valid.reject('please provide button data of type json')
       return valid.promise
     }
@@ -283,6 +283,7 @@ module.exports = class RuleEngine {
         templateStatus.resolve({ complete: true })
       })
       .catch(err => {
+        console.log('eeeeeeeeeeeeeeeeee', err)
         __logger.info('err::', err)
         templateStatus.resolve({ complete: false, err: err })
       })
