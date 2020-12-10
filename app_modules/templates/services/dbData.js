@@ -298,6 +298,7 @@ class TemplateService {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         }
         if (data && statusEngine.canUpdateStatus(__constants.TEMPLATE_STATUS.deleted.statusCode, data.messageTemplateStatusId)) {
+          saveHistoryData(data, __constants.ENTITY_NAME.MESSAGE_TEMPLATE, data.messageTemplateId, userId)
           const templateData = {
             messageTemplateStatusId: __constants.TEMPLATE_STATUS.deleted.statusCode,
             firstLocalizationStatus: __constants.TEMPLATE_STATUS.deleted.statusCode,

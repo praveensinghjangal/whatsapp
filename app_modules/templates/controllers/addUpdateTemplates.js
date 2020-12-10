@@ -41,12 +41,13 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
  * @response {boolean} metadata.data.mediaTemplateComplete - It will return true
  * @code {200} if the msg is success than it Returns Status of template info completion
  * @author Danish Galiyara 5th June, 2020
- * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 10th December, 2020 ***
  */
 const addUpdateTemplates = (req, res) => {
   __logger.info('add update template API called', req.body)
   const validate = new ValidatonService()
   const templateService = new TemplateService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : ''
   let wabaPhoneNumber = ''
   let messageTemplateId = ''
   let wabaInformationId = ''
@@ -57,9 +58,9 @@ const addUpdateTemplates = (req, res) => {
   validate.addUpdateTemplate(req.body)
     .then(data => {
       if (!req.body.messageTemplateId && req.body.templateName) {
-        return templateService.getTemplateTableDataByTemplateName(req.body.templateName, req.user.user_id)
+        return templateService.getTemplateTableDataByTemplateName(req.body.templateName, userId)
       } else {
-        return templateService.getTemplateTableDataByTemplateId(req.body.messageTemplateId, req.user.user_id)
+        return templateService.getTemplateTableDataByTemplateId(req.body.messageTemplateId, userId)
       }
     })
     .then(wabaAndTemplateData => {
@@ -73,13 +74,13 @@ const addUpdateTemplates = (req, res) => {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_EDITED, data: {}, err: {} })
         }
         __logger.info('add update template:: will update')
-        return templateService.updateTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
+        return templateService.updateTemplateData(req.body, wabaAndTemplateData, userId)
       } else {
         if (req.body.templateName && wabaAndTemplateData && wabaAndTemplateData.templateName && req.body.templateName.toLowerCase() === wabaAndTemplateData.templateName.toLowerCase()) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_ADDED, data: {}, err: {} })
         } else {
           __logger.info('add update template:: will insert')
-          return templateService.addTemplateData(req.body, wabaAndTemplateData, req.user.user_id)
+          return templateService.addTemplateData(req.body, wabaAndTemplateData, userId)
         }
       }
     })
@@ -90,13 +91,13 @@ const addUpdateTemplates = (req, res) => {
       wabaInformationId = data.wabaInformationId
       oldStatus = data.messageTemplateStatusId
       secondLangRequired = data.secondLanguageRequired || false
-      return ruleEngine.checkAddTemplateRulesByTemplateId(data.messageTemplateId, req.user.user_id)
+      return ruleEngine.checkAddTemplateRulesByTemplateId(data.messageTemplateId, userId)
     })
     .then(validationData => {
       __logger.info('add update template:: rule checked then 4', { validationData })
       ruleResponse = validationData
       if (!validationData.complete) return false
-      return statusService.changeStatusToComplete(messageTemplateId, oldStatus, req.user.user_id, wabaInformationId, secondLangRequired)
+      return statusService.changeStatusToComplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
     })
     .then(statusChanged => {
       __logger.info('add update template:: status marked as completed then 5', { statusChanged })

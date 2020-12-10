@@ -21,11 +21,12 @@ const __logger = require('../../../lib/logger')
  * @response {object} metadata.data - After add/update of segment, It will return the object containing segmentName and segmentId.
  * @code {200} if the msg is success than it Returns the Status of segment info completion.
  * @author Arjun Bhole 16th July, 2020
- * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 10th December, 2020 ***
  */
 
 const addUpdateSegmentData = (req, res) => {
   __logger.info('add update segment API called')
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const validate = new ValidatonService()
   const segmentService = new SegmentService()
   validate.checkAddSegmentData(req.body)
@@ -33,9 +34,9 @@ const addUpdateSegmentData = (req, res) => {
     .then(segmentData => {
       __logger.info('Segment Data then 2', { segmentData })
       if (segmentData.segmentId) {
-        return segmentService.updateSegmentData(req.body, segmentData, req.user.user_id)
+        return segmentService.updateSegmentData(req.body, segmentData, userId)
       } else {
-        return segmentService.addSegmentData(req.body, segmentData, req.user.user_id)
+        return segmentService.addSegmentData(req.body, segmentData, userId)
       }
     })
     .then(data => {

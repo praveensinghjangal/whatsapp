@@ -17,17 +17,18 @@ const TemplateDbService = require('../services/dbData')
  * @response {string} metadata.msg=success - Template is deleted.
  * @code {200} if the msg is success thanTemplate is deleted.
  * @author Arjun Bhole 10th October, 2020
- * *** Last-Updated :- Arjun Bhole 10th October, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 10th December, 2020 ***
  */
 
 const deleteTemplate = (req, res) => {
   __logger.info('Delete Template API Called', req.params)
   const wabaPhoneNumber = req.user ? req.user.wabaPhoneNumber : ''
+  const userId = req.user ? req.user.user_id : ''
   if (req.user && req.user.providerId) {
     const templateService = new integrationService.Template(req.user.providerId)
     const templateDbService = new TemplateDbService()
     if (req.params && req.params.templateId) {
-      templateDbService.deleteTemplate(req.params.templateId, req.user.user_id)
+      templateDbService.deleteTemplate(req.params.templateId, userId)
         .then(data => {
           __db.redis.key_delete(req.params.templateId + '___' + wabaPhoneNumber)
           return templateService.deleteTemplate(wabaPhoneNumber, req.params.templateId)

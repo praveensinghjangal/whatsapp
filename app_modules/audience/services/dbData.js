@@ -284,7 +284,7 @@ class AudienceService {
 
   updateSegmentData (newData, oldData, userId) {
     const segmentUpdated = q.defer()
-
+    saveHistoryData(oldData, __constants.ENTITY_NAME.SEGMENT, oldData.segmentId, userId)
     const segmentData = {
       segmentName: newData.segmentName || oldData.segmentName,
       segmentId: newData.segmentId || oldData.segmentId
@@ -353,9 +353,9 @@ class AudienceService {
     return optinDataAdded.promise
   }
 
-  updateOptinSourceData (newData, oldData) {
+  updateOptinSourceData (newData, oldData, userId) {
     const optinUpdated = q.defer()
-
+    saveHistoryData(oldData, __constants.ENTITY_NAME.OPTION_SOURCE, oldData.optinSourceId, userId)
     const optinntData = {
       optinSource: newData.optinSource || oldData.optinSource,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId

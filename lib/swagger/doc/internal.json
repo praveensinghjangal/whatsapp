@@ -12380,12 +12380,12 @@
       "AddupdateOptinRequest": {
          "title": "AddupdateOptinRequest",
          "example": {
-            "optinId": "f194da3d-0b62-405e-a512-95797f4bcf41",
+            "optinSourceId": "f194da3d-0b62-405e-a512-95797f4bcf41",
             "optinSource": "test"
          },
          "type": "object",
          "properties": {
-            "optinId": {
+            "optinSourceId": {
                "type": "string"
             },
             "optinSource": {

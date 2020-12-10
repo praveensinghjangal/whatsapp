@@ -22,11 +22,12 @@ const __logger = require('../../../lib/logger')
  * @response {object} metadata.data - It will return the object containing optinSourceId and optinSource.
  * @code {200} if the msg is success than it Returns the Status of segment info completion.
  * @author Danish Galiyara 20th July, 2020
- * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 10th December, 2020 ***
  */
 
 const addUpdateOptinSourceData = (req, res) => {
-  __logger.info('add update segment API called')
+  __logger.info('add update optin API called')
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const validate = new ValidatonService()
   const optinService = new OptinService()
   validate.checkAddOptinSourceData(req.body)
@@ -34,7 +35,7 @@ const addUpdateOptinSourceData = (req, res) => {
     .then(optinData => {
       __logger.info('optinData::then 2', { optinData })
       if (optinData.optinSourceId) {
-        return optinService.updateOptinSourceData(req.body, optinData)
+        return optinService.updateOptinSourceData(req.body, optinData, userId)
       } else {
         return optinService.addOptinSourceData(req.body, optinData)
       }
