@@ -107,11 +107,28 @@ const flow = (req, res) => {
       })
     })
 }
+
+const getMenuBasedTemplateList = (req, res) => {
+  const http = new HttpService(60000)
+  const headers = {
+    Authorization: req.headers.authorization
+  }
+  __logger.info('calling  getMenuBasedTemplateList of chat api', headers)
+  http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.menuBasedTemplates, headers)
+    .then(data => res.send(data))
+    .catch(err => {
+      return __util.send(res, {
+        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+        err: err.err || err
+      })
+    })
+}
 module.exports = {
   getCategory,
   getFlow,
   getIdentifier,
   deleteEntireFlow,
   deleteIdentifier,
-  flow
+  flow,
+  getMenuBasedTemplateList
 }

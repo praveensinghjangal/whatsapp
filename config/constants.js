@@ -211,8 +211,8 @@ const CHAT_APP_ENDPOINTS = {
   getIdentifier: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/:identifierText',
   deleteFlow: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId',
   deleteIdentifier: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/:identifierText',
-  flow: '/helowhatsappchat/api/flowmessage/flow'
-
+  flow: '/helowhatsappchat/api/flowmessage/flow',
+  menuBasedTemplates: '/helowhatsappchat/api/flowmessage/flow/templates'
 }
 const TAG = {
   insert: 'insert',

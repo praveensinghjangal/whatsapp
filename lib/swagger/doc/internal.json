@@ -11547,7 +11547,121 @@
                }
             }
          }
-      }
+      },
+      "/flowmessage/flow/templates": {
+         "get": {
+            "x-module": "chatApp",
+            "summary": "Get Menu Based Template List",
+            "description": "Use this API to get menu based template list",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getTemplates",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns various flow types",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": [
+                                {
+                                    "flowTopic": "MOP",
+                                    "flowTopicId": "1b633f82-e262-44f0-a641-f1a4aa6be260",
+                                    "flowDescription": "Please select the options for channel registeration:"
+                                },
+                                {
+                                    "flowTopic": "ytfytdugvuy",
+                                    "flowTopicId": "1de3edda-9838-45f3-8d3b-a16c75d0a3da",
+                                    "flowDescription": "Please select the options for channel registeration:"
+                                }
+                            ]
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": []
+                        }                        
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
    },
    "definitions": {
       "sendrequest": {
