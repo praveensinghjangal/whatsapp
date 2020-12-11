@@ -205,7 +205,14 @@ const VALIDATOR = {
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
-  metadata: '/helowhatsappchat/api/flowmessage/chat/metadata'
+  metadata: '/helowhatsappchat/api/flowmessage/chat/metadata',
+  categories: '/helowhatsappchat/api/flowmessage/flow/categories',
+  getFlow: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId',
+  getIdentifier: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/:identifierText',
+  deleteFlow: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId',
+  deleteIdentifier: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/:identifierText',
+  flow: '/helowhatsappchat/api/flowmessage/flow'
+
 }
 const TAG = {
   insert: 'insert',
