@@ -117,7 +117,9 @@ const ENTITY_NAME = {
   USER_AGREEMENT_FILES: 'user_agreement_files',
   AUDIENCE: 'audience',
   USERS_TFA: 'users_tfa',
-  AUD_WABA_NO_MAPPING: 'audience_waba_no_mapping'
+  AUD_WABA_NO_MAPPING: 'audience_waba_no_mapping',
+  OPTION_SOURCE: 'optin_source',
+  SEGMENT: 'segment'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'

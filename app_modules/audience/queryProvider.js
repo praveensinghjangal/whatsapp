@@ -111,7 +111,7 @@ const getOptinSourceData = () => {
 const getOptinSourceDataById = () => {
   return `SELECT optin_source_id as "optinSourceId", optin_source as "optinSource"
   FROM optin_source
-  WHERE is_active= true and optin_source.optin_source_id = ? `
+  WHERE is_active= true and optin_source_id = ? `
 }
 
 const addOptinSourceData = () => {
