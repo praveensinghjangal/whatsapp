@@ -10337,281 +10337,6 @@
             }
          }
       },
-      "/flowmessage/flow": {
-         "get": {
-            "x-module": "chatApp",
-            "summary": "Get Identifier",
-            "description": "Use this API to get identifier",
-            "tags": [
-               "chat-app"
-            ],
-            "operationId": "fetchIdentifier",
-            "deprecated": false,
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "Authorization",
-                  "in": "header",
-                  "required": true,
-                  "type": "string",
-                  "description": "user can obtain auth token by using login API"
-               },
-               {
-                  "name": "flowTopic",
-                  "in": "query",
-                  "required": false,
-                  "type": "string",
-                  "description": "flowTopic needs to be entered here"
-               },
-               {
-                  "name": "parentIdentfierText",
-                  "in": "query",
-                  "required": false,
-                  "type": "string",
-                  "description": "parentIdentfierText needs to be entered here"
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "Returns various identifiers",
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": [
-                        {
-                           "code": 2000,
-                           "msg": "Success",
-                           "data": [
-                              {
-                                 "flowTopic": "account details"
-                              },
-                              {
-                                 "flowTopic": "account update"
-                              },
-                              {
-                                 "flowTopic": "health check"
-                              }
-                           ]
-                        },
-                        {
-                           "code": 3000,
-                           "msg": "No record found.",
-                           "data": null,
-                           "error": {}
-                        }
-                     ]
-                  }
-               },
-               "401": {
-                  "description": "Invalid token in header",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 4001,
-                        "msg": "Unauthorized access.",
-                        "data": null
-                     }
-                  }
-               },
-               "500": {
-                  "description": "in case of some exceptional error",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 5000,
-                        "msg": "Something went wrong. Please try again later.",
-                        "data": {},
-                        "error": {}
-                     }
-                  }
-               }
-            },
-            "security": []
-         },
-         "post": {
-            "x-module": "chatApp",
-            "summary": "This API is used to add update flow",
-            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
-            "tags": [
-               "chat-app"
-            ],
-            "operationId": "addUpdateFlow",
-            "deprecated": false,
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "Authorization",
-                  "in": "header",
-                  "required": true,
-                  "type": "string",
-                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
-               },
-               {
-                  "name": "Body",
-                  "in": "body",
-                  "required": true,
-                  "description": "",
-                  "schema": {
-                     "$ref": "#/definitions/addUpdateFlowRequest"
-                  }
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "Returns added or updated flow result",
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": [
-                        {
-                           "code": 2000,
-                           "msg": "Success",
-                           "data": {}
-                        },
-                        {
-                           "code": 3000,
-                           "msg": "No record found.",
-                           "data": {}
-                        },
-                        {
-                           "code": 3034,
-                           "msg": "Identifier Text Already Exists.",
-                           "data": {}
-                        },
-                        {
-                           "code": 3035,
-                           "msg": "Parent Identifier Text Does Not Exists.",
-                           "data": {}
-                        }
-                     ]
-                  }
-               },
-               "400": {
-                  "description": "Returns invalid request error in error array",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "array"
-                        }
-                     },
-                     "example": {
-                        "code": 4000,
-                        "msg": "Invalid request",
-                        "data": null,
-                        "error": [
-                           "invalid body error here"
-                        ]
-                     }
-                  }
-               },
-               "401": {
-                  "description": "Invalid token in request",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 4001,
-                        "msg": "Unauthorized access.",
-                        "data": null
-                     }
-                  }
-               },
-               "500": {
-                  "description": "in case of some exceptional error",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 5000,
-                        "msg": "Something went wrong. Please try again later.",
-                        "data": {},
-                        "error": {}
-                     }
-                  }
-               }
-            }
-         }
-      },
       "/flowmessage/flow/types": {
          "get": {
             "x-module": "chatApp",
@@ -10694,116 +10419,6 @@
                                  "optinEventHandler": "optinEventHandler"
                               }
                            ]
-                        }
-                     ]
-                  }
-               },
-               "401": {
-                  "description": "Invalid token in header",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 4001,
-                        "msg": "Unauthorized access.",
-                        "data": null
-                     }
-                  }
-               },
-               "500": {
-                  "description": "in case of some exceptional error",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 5000,
-                        "msg": "Something went wrong. Please try again later.",
-                        "data": {},
-                        "error": {}
-                     }
-                  }
-               }
-            },
-            "security": []
-         }
-      },
-      "/flowmessage/flow/identifier/cancel": {
-         "get": {
-            "x-module": "chatApp",
-            "summary": "Get Cancel Identifiers",
-            "description": "Use this API to get cancel identifiers",
-            "tags": [
-               "chat-app"
-            ],
-            "operationId": "getCancelonIdentifiers",
-            "deprecated": false,
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "Authorization",
-                  "in": "header",
-                  "required": true,
-                  "type": "string",
-                  "description": "user can obtain auth token by using login API"
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "Returns cancelled identifiers",
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": [
-                        {
-                           "code": 2000,
-                           "msg": "Success",
-                           "data": [
-                              {
-                                 "identifierText": "6"
-                              },
-                              {
-                                 "identifierText": "1"
-                              }
-                           ]
-                        },
-                        {
-                           "code": 3000,
-                           "msg": "No record found.",
-                           "data": []
                         }
                      ]
                   }
@@ -11239,15 +10854,15 @@
             }
          }
       },
-      "/flowmessage/flow/identifier/delete": {
-         "patch": {
+      "/flowmessage/flow/categories": {
+         "get": {
             "x-module": "chatApp",
-            "summary": "THis API is used to delete identifier",
-            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "summary": "get categories",
+            "description": "get menu based template categories list",
             "tags": [
                "chat-app"
             ],
-            "operationId": "deactivateFlowbyflowId",
+            "operationId": "getcategories",
             "deprecated": false,
             "produces": [
                "application/json"
@@ -11258,15 +10873,570 @@
                   "in": "header",
                   "required": true,
                   "type": "string",
-                  "description": "User needs to enter base64 encoded email and password,\nEmail & Password needs to be encoded in the following manner : 'email:password',\nformat for header value : \"Bearer[SPACE]base64EncodedTextOfEmailAndPassword\",\nexample for header value : \"Bearer MTIxQGdtYWlsLmFiY2Q=\"."
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns list of menu based categories",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": []
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/flowmessage/flow/:flowTopicId": {
+         "get": {
+            "x-module": "chatApp",
+            "summary": "Get entire flow",
+            "description": "Use to get the flow according to user id",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getFlowTopic",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "flowTopicId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic Id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Return list of flow based on the user Id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         },
+         "delete": {
+            "x-module": "chatApp",
+            "summary": "Delete flowTopicId",
+            "description": "Use this API to delete a flowTopicId",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "deleteFlowTopicId",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "flowTopicId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic Id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Delete a flow topic Id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/flowmessage/flow/:flowTopicId/:identifierText": {
+         "get": {
+            "x-module": "chatApp",
+            "summary": "Get identifier of the flow",
+            "description": "This API is used to get the identifier of the flow",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getFlowIdentifier",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "flowTopicId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic Id"
+               },
+               {
+                  "name": "identifierText",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow Identifier Id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Return Identifier details based on the user Id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         },
+         "delete": {
+            "x-module": "chatApp",
+            "summary": "Delete flowIdentifierText",
+            "description": "Use this API to delete a flowIdentifierText",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "deleteFlowIdentifierText",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "flowTopicId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic Id"
+               },
+               {
+                  "name": "identifierText",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow Identifier Id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Delete a identifier of flow topic",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/flowmessage/flow": {
+         "post": {
+            "x-module": "chatApp",
+            "summary": "This API is used to add and update the flow",
+            "description": "Use this api to add/update the flow of chat app as per the userId",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "addUpdateFlow",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
                },
                {
                   "name": "Body",
                   "in": "body",
                   "required": true,
-                  "description": "",
+                  "description": "Please provide the valid input request",
                   "schema": {
-                     "$ref": "#/definitions/deactivateFlowbyflowIdRequest"
+                     "$ref": "#/definitions/addUpdateFlow"
                   }
                }
             ],
@@ -12074,6 +12244,60 @@
          "required": [
             "templatesAllowed",
             "userId"
+         ]
+      },
+      "addUpdateFlow": {
+         "title": "addUpdateFlow",
+         "example": {
+            "flowTopic": "MTP",
+            "flowTopicId":"1de3edda-9838-45f3-8d3b-a16c75d0a3da",
+            "FlowDescription": "Please select the options for channel registeration:",
+            "flowCategoryId": "jodjwoiuedj-sjsdjsjjs",
+            "flows":  [
+                {
+                    "identifierText": "1",
+                    "event": "getRestData",
+                    "eventData": {
+                        "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/sampletext/deals",
+                        "requiredKeys": [],
+                        "transActionEndingIdentifier": "99"
+                    },
+                    "parentIdentifierText": null,
+                    "identifierDisplayName": "view challan"
+                },
+                {
+                    "identifierText": "10",
+                    "event": "process",
+                    "eventData": {
+                        "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/sampletext/deals",
+                        "requiredKeys": [],
+                        "transActionEndingIdentifier": "99"
+                    },
+                    "parentIdentifierText": null,
+                    "identifierDisplayName": "new challan"
+                },
+                {
+                  "identifierText": "99",
+                  "event": "end",
+                  "eventData": {},
+                  "parentIdentifierText": null,
+                  "identifierDisplayName": "end"
+              }
+            ]
+        },        
+         "type": "object",
+         "properties": {
+            "flowTopic" :{ "type": "string" },
+            "flowTopicId" :{ "type": "string" },
+            "FlowDescription" :{ "type": "string" },
+            "flowCategoryId" :{ "type": "string" }, 
+            "flow" : { "type" : "object"}          
+         },
+         "required": [
+            "flowTopic",
+            "FlowDescription",
+            "flowCategoryId",
+            "flow"
          ]
       },
       "updateServiceProviderIdRequest": {
