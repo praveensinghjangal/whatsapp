@@ -11546,9 +11546,7 @@
                   }
                }
             }
-         }
-      },
-      "/flowmessage/flow/templates": {
+         },
          "get": {
             "x-module": "chatApp",
             "summary": "Get Menu Based Template List",
@@ -11660,8 +11658,8 @@
                }
             },
             "security": []
-         }
-      },      
+         }         
+      }
    },
    "definitions": {
       "sendrequest": {
