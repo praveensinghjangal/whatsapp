@@ -7929,7 +7929,6 @@ paths:
               msg: Something went wrong. Please try again later.
               data: {}
               error: {}
-  /flowmessage/flow/templates:
     get:
       x-module: chatApp
       summary: Get Menu Based Template List
