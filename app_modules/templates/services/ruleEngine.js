@@ -291,7 +291,7 @@ module.exports = class RuleEngine {
   }
 
   checkAddTemplateRulesByTemplateId (templateId, userId) {
-    __logger.info('checkAddTemplateRulesByTemplateId::')
+    __logger.info('checkAddTemplateRulesByTemplateId::', templateId, userId)
     const rulePassed = q.defer()
     const templateService = new TemplateService()
     templateService.getTemplateInfo(userId, templateId)

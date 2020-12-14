@@ -40,11 +40,11 @@ const getTemplateInfo = () => {
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
-      JOIN message_template_category mtc
+      LEFT JOIN message_template_category mtc
         ON mtc.is_active = true and mtc.message_template_category_id = mt.message_template_category_id
-      JOIN message_template_status mts
+      LEFT JOIN message_template_status mts
         ON mts.is_active = true and mts.message_template_status_id = mt.message_template_status_id
-        LEFT JOIN message_template_language mtl
+      LEFT JOIN message_template_language mtl
         ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
       LEFT JOIN message_template_language mtl2
         ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
