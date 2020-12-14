@@ -12553,10 +12553,10 @@
          "type": "object",
          "properties": {
            "serviceProviderId":{
-             "type":string
+             "type":"string"
            },
            "userId":{
-             "type":string
+             "type":"string"
            }           
          },
          "required": [
@@ -13466,6 +13466,6 @@
             "comments",
             "userId"
          ]
-      },      
+      }
    }
 }
