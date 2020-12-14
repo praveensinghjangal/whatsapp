@@ -11660,7 +11660,7 @@
             "security": []
          }         
       },
-      "/flowmessage/internal/feedback": {
+      "/feedback": {
          "post": {
             "x-module": "chatApp",
             "summary": "This API is used to add the feedback",
@@ -13437,8 +13437,7 @@
             "userPhoneNumber":"1233333333",
             "wabaPhoneNumber":"4444444444",
             "ratings":4,
-            "comments":"Good Experience",
-            "userId":"158988680814912"
+            "comments":"Good Experience"
         },
          "type": "object",
          "properties": {
@@ -13454,18 +13453,13 @@
             },
             "comments": {
                "type": "string"
-            },
-            "userId": {
-               "type": "string"
             }
          },
          "required": [
             "userPhoneNumber",
             "wabaPhoneNumber",
             "ratings",
-            "comments",
-            "userId"
-         ]
+            "comments"         ]
       }
    }
 }
