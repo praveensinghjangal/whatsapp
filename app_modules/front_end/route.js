@@ -7,7 +7,7 @@ router.post('/addUpdateOptinMessageAndTemplate', authMiddleware.authenticate(aut
 router.get('/addUpdateOptinMessageAndTemplate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/optinAndTemplate').get)
 
 // api wrapper
-
+router.get('/flow/templates', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').getMenuBasedTemplateList)
 router.get('/flow/:flowTopicId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').getFlow)
 router.get('/flow/:flowTopicId/:identifierText', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').getIdentifier)
 router.get('/flow/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').getCategory)
