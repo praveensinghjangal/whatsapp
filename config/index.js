@@ -21,7 +21,7 @@ module.exports = {
     serverDocAccessKey: process.env.AUTH_CONFIG_API_AUTH_SERVER_DOC_ACCESS_KEY
   },
   logging: {
-    log_file: process.env.LOGGING_LOG_PATH + appName,
+    log_file: process.env.LOGGING_LOG_PATH + '/' + appName,
     console: process.env.LOGGING_CONSOLE === 'true',
     only_console: process.env.LOGGING_ONLY_CONSOLE === 'true',
     level: process.env.LOGGING_LEVEL,
