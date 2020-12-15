@@ -79,6 +79,7 @@
     "socket.io": "2.2.0",
     "speakeasy": "2.0.0",
     "uuid4": "1.1.4",
+    "viva-logger": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/viva-logger.git#1.0.0",
     "winston": "3.1.0",
     "winston-daily-rotate-file": "3.10.0",
     "yamljs": "0.3.0"
