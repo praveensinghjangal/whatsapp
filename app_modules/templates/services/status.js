@@ -306,13 +306,48 @@ class StatusService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplateStatus(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          statusChanged.resolve(true)
+          statusChanged.resolve(__constants.TEMPLATE_STATUS.complete)
         } else {
           statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
         __logger.error('changeStatusToComplete::error: ', err)
+        return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return statusChanged.promise
+  }
+
+  changeStatusToIncomplete (templateId, oldStatusId, userId, wabaInformationId, secondLanguageRequired) {
+    __logger.info('changeStatusToIncomplete::', { templateId, oldStatusId, userId, wabaInformationId, secondLanguageRequired })
+    const statusChanged = q.defer()
+    if (!this.canUpdateStatus(__constants.TEMPLATE_STATUS.incomplete.statusCode, oldStatusId)) {
+      statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_CHANGE_STATUS, err: { details: 'cannot change to a incomplete status from this current status' } })
+      return statusChanged.promise
+    }
+    const queryObj = {
+      templateStatus: __constants.TEMPLATE_STATUS.incomplete.statusCode,
+      firstLocalizationStatus: __constants.TEMPLATE_STATUS.incomplete.statusCode,
+      firstLocalizationRejectionReason: null,
+      secondLocalizationStatus: secondLanguageRequired ? __constants.TEMPLATE_STATUS.incomplete.statusCode : null,
+      secondLocalizationRejectionReason: null,
+      updatedBy: userId,
+      messageTemplateId: templateId,
+      wabaInformationId: wabaInformationId
+    }
+    const queryParam = []
+    _.each(queryObj, val => queryParam.push(val))
+    __logger.info('changeStatusToIncomplete::update status query', queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTemplateStatus(), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          statusChanged.resolve(__constants.TEMPLATE_STATUS.incomplete)
+        } else {
+          statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('changeStatusToIncomplete::error: ', err)
         return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return statusChanged.promise

@@ -98,8 +98,7 @@ const addUpdateTemplates = (req, res) => {
       __logger.info('add update template:: rule checked then 4', { validationData })
       ruleResponse = validationData
       if (!validationData.complete) {
-        // return statusService.changeStatusToComplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
-        return false
+        return statusService.changeStatusToIncomplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
       } else {
         return statusService.changeStatusToComplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
       }
@@ -109,10 +108,7 @@ const addUpdateTemplates = (req, res) => {
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)
       // __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
-      let statusName = _.find(__constants.TEMPLATE_STATUS, { statusCode: oldStatus })
-      statusName = statusName.displayName
-      console.log('stratus name', statusName)
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, messageTemplateStatusId: oldStatus, statusName: statusName, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, messageTemplateStatusId: statusChanged.statusCode, statusName: statusChanged.displayName, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
       console.log('eeeeeeeeeee', err)
