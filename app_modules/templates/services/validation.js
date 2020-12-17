@@ -187,6 +187,15 @@ class validate {
                 type: 'string'
               }
             },
+            secondLanguageQuickReply: {
+              type: 'array',
+              required: request.buttonType,
+              minItems: 1,
+              maxItems: 3,
+              items: {
+                type: 'string'
+              }
+            },
             phoneButtonText: {
               type: 'string',
               required: false,
@@ -205,6 +214,16 @@ class validate {
               minLength: 1
             },
             webAddress: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            secondLanguageWebsiteButtontext: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            secondLanguagePhoneButtonText: {
               type: 'string',
               required: false,
               minLength: 1
