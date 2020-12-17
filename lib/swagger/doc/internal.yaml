@@ -8006,7 +8006,7 @@ paths:
   /feedback:
     post:
       x-module: chatApp
-      summary: This API is used to add the feedback
+      summary: This API is used to add/update the feedback
       tags:
         - chat-app
       operationId: addFeedBack
@@ -8023,7 +8023,7 @@ paths:
           required: true
           description: ''
           schema:
-            $ref: '#/definitions/addFeedBackRequest'
+            $ref: '#/definitions/addUpdateFeedBackRequest'
       responses:
         '200':
           description: Returns thanks for providing feedback
@@ -9242,15 +9242,18 @@ definitions:
       - wabaInformationId
       - waaPhoneNumber
       - userId
-  addFeedBackRequest:
+  addUpdateFeedBackRequest:
     title: addFeedBackRequest
     example:
+      redirectUrl: 'httos://wbc.co'
       userPhoneNumber: '1233333333'
       wabaPhoneNumber: '4444444444'
       ratings: 4
       comments: Good Experience
     type: object
     properties:
+      redirectUrl:
+        type: string
       userPhoneNumber:
         type: string
       wabaPhoneNumber:

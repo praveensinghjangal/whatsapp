@@ -11663,7 +11663,7 @@
       "/feedback": {
          "post": {
             "x-module": "chatApp",
-            "summary": "This API is used to add the feedback",
+            "summary": "This API is used to add/update the feedback",
             "tags": [
                "chat-app"
             ],
@@ -11685,7 +11685,7 @@
                   "required": true,
                   "description": "",
                   "schema": {
-                     "$ref": "#/definitions/addFeedBackRequest"
+                     "$ref": "#/definitions/addUpdateFeedBackRequest"
                   }
                }
             ],
@@ -13431,9 +13431,10 @@
             "userId"
          ]         
       },
-      "addFeedBackRequest": {
+      "addUpdateFeedBackRequest": {
          "title": "addFeedBackRequest",
          "example":{
+            "redirectUrl":"httos://wbc.co",
             "userPhoneNumber":"1233333333",
             "wabaPhoneNumber":"4444444444",
             "ratings":4,
@@ -13441,6 +13442,9 @@
         },
          "type": "object",
          "properties": {
+            "redirectUrl": {
+               "type": "string"
+            },           
             "userPhoneNumber": {
                "type": "string"
             },
@@ -13459,7 +13463,8 @@
             "userPhoneNumber",
             "wabaPhoneNumber",
             "ratings",
-            "comments"         ]
+            "comments"         
+            ]
       }
    }
 }
