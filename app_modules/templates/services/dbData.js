@@ -129,6 +129,12 @@ class TemplateService {
       templateData.secondLanguageName = null
     }
 
+    if (!templateData.secondLanguageRequired && templateData.buttonData) {
+      if (templateData.buttonData.secondLanguageQuickReply) delete templateData.buttonData.secondLanguageQuickReply
+      if (templateData.buttonData.secondLanguageWebsiteButtontext) delete templateData.buttonData.secondLanguageWebsiteButtontext
+      if (templateData.buttonData.secondLanguagePhoneButtonText) delete templateData.buttonData.secondLanguagePhoneButtonText
+    }
+
     // If template type is standard then deleting the header text footer text and button data
     if (templateData.type === __constants.TEMPLATE_TYPE[0].templateType.toLowerCase()) {
       templateData.footerText = null
@@ -231,6 +237,12 @@ class TemplateService {
       templateData.headerText = null
       templateData.buttonData = null
       templateData.buttonType = null
+    }
+
+    if (!templateData.secondLanguageRequired && templateData.buttonData) {
+      if (templateData.buttonData.secondLanguageQuickReply) delete templateData.buttonData.secondLanguageQuickReply
+      if (templateData.buttonData.secondLanguageWebsiteButtontext) delete templateData.buttonData.secondLanguageWebsiteButtontext
+      if (templateData.buttonData.secondLanguagePhoneButtonText) delete templateData.buttonData.secondLanguagePhoneButtonText
     }
 
     // If template type is media then deleting the header text and footer text
