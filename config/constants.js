@@ -228,7 +228,8 @@ const TYNTEC_ENDPOINTS = {
   deleteTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
   getAccountPhoneNumberList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/phone-numbers',
   getCurrentProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
-  updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile'
+  updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
+  updateDefaultApp: '/chat-api/v2/applications/default'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -309,6 +310,16 @@ const WABA_STATUS_MAPPING = {
   [WABA_PROFILE_STATUS.accepted.statusCode]: []
 }
 const FILE_MAX_UPLOAD_IN_BYTE = 5000000
+const TYNTEC_MESSAGE_EVENTS = {
+  moMessage: 'MoMessage',
+  accepted: 'MessageStatus::accepted',
+  delivered: 'MessageStatus::delivered',
+  seen: 'MessageStatus::seen',
+  failed: 'MessageStatus::failed',
+  channelFailed: 'MessageStatus::channelFailed',
+  unknown: 'MessageStatus::unknown',
+  deleted: 'MessageStatus::deleted'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -363,3 +374,4 @@ module.exports.TYNTEC_TEMPLATE_REPLY_STATUS = TYNTEC_TEMPLATE_REPLY_STATUS
 module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH
 module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
 module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
+module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS

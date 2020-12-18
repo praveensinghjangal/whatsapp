@@ -35,4 +35,12 @@ router.get('/internal/wabaPhoneNumber', tokenBasedAuth, require('./controllers/i
 router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require('./controllers/internalAPI').getUserIdAndApiKeyFromWabaNumber)
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
 
+// router.get('/inttest', (req, res) => {
+//   const integrationService = require('../../app_modules/integration')
+//   const wabaService = new integrationService.WabaAccount('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+//   wabaService.setWebhook(req.body.wabaNumber, req.body.incomingMessageUrl, req.body.statusUrl)
+//     .then(data => res.send(data))
+//     .catch(err => res.send(err))
+// })
+
 module.exports = router

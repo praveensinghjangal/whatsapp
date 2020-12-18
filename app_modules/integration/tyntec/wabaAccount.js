@@ -7,6 +7,7 @@ const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
+const urlValidator = require('../../../lib/util/url')
 
 class WabaAccount {
   constructor () {
@@ -162,7 +163,6 @@ class WabaAccount {
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
           __logger.info('dataatatatat', data, typeof data)
-          url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateProfile
           url = url.split(':phoneNumber').join(data.id || '')
           __logger.info('URL====', url)
           headers = {
@@ -191,6 +191,73 @@ class WabaAccount {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
       return deferred.promise
     }
+  }
+
+  setWebhook (wabaNumber, incomingMessageUrl, statusUrl) {
+    __logger.info('inside setWebhook -->', wabaNumber, incomingMessageUrl, statusUrl)
+    const deferred = q.defer()
+    if (!wabaNumber || (!incomingMessageUrl && !statusUrl)) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide either incomingMessageUrl or statusUrl along with wabaNumber.' })
+      return deferred.promise
+    }
+    if (incomingMessageUrl && !urlValidator.isValidHttp(incomingMessageUrl)) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide valid https URL for incomingMessageUrl.' })
+      return deferred.promise
+    }
+    if (statusUrl && !urlValidator.isValidHttp(statusUrl)) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide valid https URL for statusUrl.' })
+      return deferred.promise
+    }
+    let headers = {}
+    let spId = ''
+    const url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateDefaultApp
+    const redisService = new RedisService()
+    redisService.getWabaDataByPhoneNumber(wabaNumber)
+      .then(data => {
+        __logger.info('dataatatatat', data, typeof data, 'API URL -->', url)
+        headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          apikey: data.apiKey
+        }
+        spId = data.serviceProviderId
+        const reqBody = { webhooks: [] }
+        if (incomingMessageUrl) {
+          reqBody.webhooks.push({
+            events: [__constants.TYNTEC_MESSAGE_EVENTS.moMessage],
+            callbackUrl: incomingMessageUrl
+          })
+        }
+        if (statusUrl) {
+          reqBody.webhooks.push({
+            events: [
+              __constants.TYNTEC_MESSAGE_EVENTS.accepted,
+              __constants.TYNTEC_MESSAGE_EVENTS.delivered,
+              __constants.TYNTEC_MESSAGE_EVENTS.seen,
+              __constants.TYNTEC_MESSAGE_EVENTS.failed,
+              __constants.TYNTEC_MESSAGE_EVENTS.channelFailed,
+              __constants.TYNTEC_MESSAGE_EVENTS.unknown,
+              __constants.TYNTEC_MESSAGE_EVENTS.deleted
+            ],
+            callbackUrl: statusUrl
+          })
+        }
+        __logger.info('request body -------->', reqBody)
+        return this.http.Patch(reqBody, url, headers, spId)
+      })
+      .then(defaultAccountUpdated => {
+        if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 204) {
+          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+        } else if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 404) {
+          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else if (defaultAccountUpdated && defaultAccountUpdated.body.status === 400) {
+          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+        } else {
+          return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: defaultAccountUpdated.statusCode, data: {} })
+        }
+      })
+      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return deferred.promise
   }
 }
 
