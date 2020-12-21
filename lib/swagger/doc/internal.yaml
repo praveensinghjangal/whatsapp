@@ -3401,8 +3401,10 @@ paths:
   "/business/profile/serviceProvider":
     put:
       x-module: platform
-      description: API is used for updating service provider id
-      summary: update service provier id
+      description: |-
+        This API is used for adding updating service provider details
+        This API also activates chatbot and sets webhooks in provier system
+      summary: add update service provier details
       tags:
       - WABA
       operationId: updateServiceProviderDetails
