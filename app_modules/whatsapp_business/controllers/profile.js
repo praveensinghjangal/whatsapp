@@ -17,7 +17,7 @@ const HttpService = require('../../../lib/http_service')
 const _ = require('lodash')
 const WabaStatusService = require('../services/wabaStatusEngine')
 const otherModuleCallService = require('../services/otherModuleCalls')
-
+const Hooks = require('../services/hooks')
 /**
  * @namespace -Whatsapp-Business-Account-(WABA)-Controller-
  * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
@@ -345,37 +345,40 @@ function formatFinalStatus (queryResult, result) {
 
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
- * @name UpdateServiceProviderId
+ * @name UpdateServiceProviderDetails
  * @path {PUT} /business/profile/serviceProvider
  * @description Bussiness Logic :- This API is used for updating service provider id.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
- <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/updateServiceProviderId|UpdateServiceProviderId}
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/updateServiceProviderDetails|UpdateServiceProviderDetails}
  * @body {string} serviceProviderId
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  - Returns Service Provider Id in response according to user Id.
  * @code {200} if the msg is success than Returns Service Provider Id.
  * @author Arjun Bhole 29th July, 2020
- * *** Last-Updated :- Arjun Bhole 29th October, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 21st December, 2020 ***
  */
-const updateServiceProviderId = (req, res) => {
-  __logger.info('Inside updateServiceProviderId')
-  const userId = req.body && req.body.user_id ? req.body.user_id : 0
+const updateServiceProviderDetails = (req, res) => {
+  __logger.info('Inside updateServiceProviderDetails')
+  const callerUserId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
   const validationService = new ValidatonService()
-
-  validationService.checkServiceProviderIdService(req.body)
-    .then(data => businessAccountService.getBusinessProfileInfo(userId))
+  const hooks = new Hooks()
+  let wabaData = {}
+  validationService.updateServiceProviderDetails(req.body)
+    .then(data => businessAccountService.getBusinessProfileInfo(req.body.userId))
     .then(results => {
-      __logger.info('Then 2')
+      __logger.info('Then 2 waba data')
       if (results && results.length > 0) {
-        saveHistoryData(results[0], __constants.ENTITY_NAME.WABA_INFORMATION, results[0].wabaInformationId, userId)
-        return businessAccountService.updateServiceProviderId(userId, req.body.serviceProviderId)
+        wabaData = results[0]
+        saveHistoryData(results[0], __constants.ENTITY_NAME.WABA_INFORMATION, results[0].wabaInformationId, callerUserId)
+        return businessAccountService.updateServiceProviderDetails(req.body.userId, req.body.serviceProviderId, req.body.apiKey, callerUserId)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(result => {
-      __logger.info('Then 3')
+      __logger.info('Then 3', result)
+      hooks.trigger(wabaData, wabaData.wabaProfileSetupStatusId, req.headers)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
@@ -664,7 +667,7 @@ module.exports = {
   addUpdateBusinessProfile,
   addupdateBusinessAccountInfo,
   markManagerVerified,
-  updateServiceProviderId,
+  updateServiceProviderDetails,
   updateWabaPhoneNumber,
   addUpdateOptinMessage,
   updateProfilePic,

@@ -320,6 +320,10 @@ const TYNTEC_MESSAGE_EVENTS = {
   unknown: 'MessageStatus::unknown',
   deleted: 'MessageStatus::deleted'
 }
+const WEB_HOOK_END_POINT = {
+  incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
+  messageStatus: '/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e"'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -375,3 +379,4 @@ module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH
 module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
 module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
 module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
+module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT

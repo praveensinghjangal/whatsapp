@@ -4973,7 +4973,7 @@
             "tags": [
                "WABA"
             ],
-            "operationId": "updateServiceProviderId",
+            "operationId": "updateServiceProviderDetails",
             "deprecated": false,
             "produces": [
                "application/json"
@@ -4992,7 +4992,7 @@
                   "required": true,
                   "description": "",
                   "schema": {
-                     "$ref": "#/definitions/updateServiceProviderIdRequest"
+                     "$ref": "#/definitions/updateServiceProviderDetailsRequest"
                   }
                }
             ],
@@ -5016,7 +5016,8 @@
                         "code": 2000,
                         "msg": "Success",
                         "data": {
-                           "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93"
+                           "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
+                           "apiKey":"asachdkuhsnjndfjdajncs"
                         }
                      }
                   }
@@ -12544,11 +12545,12 @@
             "flow"
          ]
       },
-      "updateServiceProviderIdRequest": {
-         "title": "updateServiceProviderIdRequest",
+      "updateServiceProviderDetailsRequest": {
+         "title": "updateServiceProviderDetailsRequest",
          "example": {
             "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
-            "userId":"sjldfhkhsdf669699877"
+            "userId":"sjldfhkhsdf669699877",
+            "apiKey":"asachdkuhsnjndfjdajncs"
          },
          "type": "object",
          "properties": {
@@ -12557,11 +12559,15 @@
            },
            "userId":{
              "type":"string"
+           }  ,
+           "apiKey":{
+             "type":"string"
            }           
          },
          "required": [
             "serviceProviderId",
-            "userId"
+            "userId",
+            "apiKey"
          ]         
       },
       "verifiycodeforbusinessnumberrequest": {

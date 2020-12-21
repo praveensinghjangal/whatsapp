@@ -38,10 +38,10 @@ class validate {
     return isvalid.promise
   }
 
-  checkServiceProviderIdService (request) {
+  updateServiceProviderDetails (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/checkServiceProviderIdService',
+      id: '/updateServiceProviderDetails',
       type: 'object',
       required: true,
       properties: {
@@ -50,11 +50,23 @@ class validate {
           required: true,
           minLength: 1,
           maxLength: 50
+        },
+        userId: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 50
+        },
+        apiKey: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 500
         }
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/checkServiceProviderIdService')
+    v.addSchema(schema, '/updateServiceProviderDetails')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')

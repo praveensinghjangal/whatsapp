@@ -254,21 +254,21 @@ class businesAccountService {
     return businessDataFetched.promise
   }
 
-  updateServiceProviderId (userId, serviceProviderId) {
-    __logger.info('updateServiceProviderId')
+  updateServiceProviderDetails (userId, serviceProviderId, apiKey, callerUserId) {
+    __logger.info('updateServiceProviderDetails', userId, serviceProviderId, apiKey)
     const dataUpdated = q.defer()
     const serviceProviderData = {
       serviceProviderId: serviceProviderId,
-      updatedBy: userId,
+      apiKey: apiKey,
+      updatedBy: callerUserId,
       userId: userId
     }
     const queryParam = []
     _.each(serviceProviderData, (val) => queryParam.push(val))
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateServiceProviderId(), queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateServiceProviderDetails(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete serviceProviderData.updatedBy
-          delete serviceProviderData.userId
           dataUpdated.resolve(serviceProviderData)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

@@ -46,9 +46,9 @@ const getWabaTableDataByUserId = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
-const updateServiceProviderId = () => {
+const updateServiceProviderDetails = () => {
   return `update waba_information
-  set service_provider_id = ?,updated_on=now(),updated_by=? 
+  set service_provider_id = ?,api_key = ?,updated_on=now(),updated_by=? 
   WHERE user_id=? and is_active = true`
 }
 
@@ -162,7 +162,7 @@ module.exports = {
   addWabaTableData,
   updateWabaTableData,
   setIsActiveFalseByWabaId,
-  updateServiceProviderId,
+  updateServiceProviderDetails,
   getUserIdFromWabaNumber,
   getWabaData,
   checkWabaNumberAlreadyExist,
