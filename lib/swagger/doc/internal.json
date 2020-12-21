@@ -4966,7 +4966,7 @@
          }
       },
       "/business/profile/serviceProvider": {
-         "put":{
+         "patch":{
             "x-module": "platform",
             "description": "This API is used for adding updating service provider details\nThis API also activates chatbot and sets webhooks in provier system",
             "summary": "add update service provier details",

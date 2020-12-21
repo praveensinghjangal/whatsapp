@@ -3399,7 +3399,7 @@ paths:
               error: {}
       security: []
   "/business/profile/serviceProvider":
-    put:
+    patch:
       x-module: platform
       description: |-
         This API is used for adding updating service provider details
