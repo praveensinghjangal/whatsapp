@@ -322,7 +322,7 @@ const TYNTEC_MESSAGE_EVENTS = {
 }
 const WEB_HOOK_END_POINT = {
   incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
-  messageStatus: '/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e"'
+  messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e"'
 }
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
