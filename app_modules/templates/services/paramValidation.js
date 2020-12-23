@@ -65,6 +65,7 @@ class TemplateParamValidationService {
             footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d}}/g) || []).length : 0,
             phoneNumber: singleObj.phone_number
           }
+          if (singleObj.header_type && singleObj.header_type !== 'text') dataObject.headerParamCount = dataObject.headerParamCount + 1
           __db.redis.set(dataObject.templateId + '_' + dataObject.phoneNumber, JSON.stringify(dataObject))
         })
       })
