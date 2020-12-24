@@ -275,7 +275,6 @@ class validate {
         webhookPostUrl: {
           type: 'string',
           required: false,
-          minLength: 1,
           maxLength: 300
         },
         optinText: {
