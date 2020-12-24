@@ -355,7 +355,7 @@ function formatFinalStatus (queryResult, result) {
  * @response {string} metadata.msg=Success  - Returns Service Provider Id in response according to user Id.
  * @code {200} if the msg is success than Returns Service Provider Id.
  * @author Arjun Bhole 29th July, 2020
- * *** Last-Updated :- Danish Galiyara 21st December, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 24th December, 2020 ***
  */
 const updateServiceProviderDetails = (req, res) => {
   __logger.info('Inside updateServiceProviderDetails')
@@ -370,15 +370,15 @@ const updateServiceProviderDetails = (req, res) => {
       __logger.info('Then 2 waba data')
       if (results && results.length > 0) {
         wabaData = results[0]
-        saveHistoryData(results[0], __constants.ENTITY_NAME.WABA_INFORMATION, results[0].wabaInformationId, callerUserId)
-        return businessAccountService.updateServiceProviderDetails(req.body.userId, req.body.serviceProviderId, req.body.apiKey, callerUserId)
+        return businessAccountService.updateServiceProviderDetails(req.body.userId, callerUserId, results[0], req.body)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(result => {
       __logger.info('Then 3', result)
-      hooks.trigger(wabaData, wabaData.wabaProfileSetupStatusId, req.headers)
+      _.each(result, (val, key) => { wabaData[key] = val })
+      if (req.body.serviceProviderUserAccountId || req.body.apiKey) hooks.trigger(wabaData, wabaData.wabaProfileSetupStatusId, req.headers)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {

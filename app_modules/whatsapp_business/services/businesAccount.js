@@ -254,12 +254,13 @@ class businesAccountService {
     return businessDataFetched.promise
   }
 
-  updateServiceProviderDetails (userId, serviceProviderId, apiKey, callerUserId) {
-    __logger.info('updateServiceProviderDetails', userId, serviceProviderId, apiKey)
+  updateServiceProviderDetails (userId, callerUserId, serviceProviderOldData, serviceProviderNewData) {
+    __logger.info('updateServiceProviderDetails', userId, callerUserId, serviceProviderOldData, serviceProviderNewData)
     const dataUpdated = q.defer()
     const serviceProviderData = {
-      serviceProviderId: serviceProviderId,
-      apiKey: apiKey,
+      serviceProviderId: serviceProviderNewData.serviceProviderId ? serviceProviderNewData.serviceProviderId : serviceProviderOldData.serviceProviderId,
+      apiKey: serviceProviderNewData.apiKey ? serviceProviderNewData.apiKey : serviceProviderOldData.apiKey,
+      serviceProviderUserAccountId: serviceProviderNewData.serviceProviderUserAccountId ? serviceProviderNewData.serviceProviderUserAccountId : serviceProviderOldData.serviceProviderUserAccountId,
       updatedBy: callerUserId,
       userId: userId
     }
@@ -268,6 +269,7 @@ class businesAccountService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateServiceProviderDetails(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
+          saveHistoryData(serviceProviderOldData, __constants.ENTITY_NAME.WABA_INFORMATION, serviceProviderOldData.wabaInformationId, callerUserId)
           delete serviceProviderData.updatedBy
           dataUpdated.resolve(serviceProviderData)
         } else {

@@ -47,19 +47,25 @@ class validate {
       properties: {
         serviceProviderId: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1,
           maxLength: 50
         },
         userId: {
           type: 'string',
-          required: false,
+          required: true,
           minLength: 1,
           maxLength: 50
         },
         apiKey: {
           type: 'string',
-          required: true,
+          required: false,
+          minLength: 1,
+          maxLength: 500
+        },
+        serviceProviderUserAccountId: {
+          type: 'string',
+          required: false,
           minLength: 1,
           maxLength: 500
         }

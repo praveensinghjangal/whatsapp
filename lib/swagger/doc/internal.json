@@ -1263,7 +1263,7 @@
          }
       },
       "/users/account": {
-         "put":{
+         "put": {
             "x-module": "platform",
             "description": "API is used for adding and updating user account info",
             "summary": "add and update user account details",
@@ -4439,20 +4439,20 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {
-                           "businessProfileCompletionStatus": true
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "businessProfileCompletionStatus": true
+                           }
+                        },
+                        {
+                           "code": 3058,
+                           "msg": "Cannot process data in this current profile status.",
+                           "data": {},
+                           "err": {}
                         }
-                     },
-                       {
-                        "code": 3058,
-                        "msg": "Cannot process data in this current profile status.",
-                        "data": {},
-                        "err":{}
-                     }                     
-                    ]
+                     ]
                   }
                },
                "400": {
@@ -4585,20 +4585,20 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {
-                           "businessProfileCompletionStatus": true
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "businessProfileCompletionStatus": true
+                           }
+                        },
+                        {
+                           "code": 3058,
+                           "msg": "Cannot process data in this current profile status.",
+                           "data": {},
+                           "err": {}
                         }
-                     },
-                       {
-                        "code": 3058,
-                        "msg": "Cannot process data in this current profile status.",
-                        "data": {},
-                        "err":{}
-                     }                       
-                    ]
+                     ]
                   }
                },
                "400": {
@@ -4728,20 +4728,20 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {
-                           "businessVerificationCompletionStatus": true
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "businessVerificationCompletionStatus": true
+                           }
+                        },
+                        {
+                           "code": 3058,
+                           "msg": "Cannot process data in this current profile status.",
+                           "data": {},
+                           "err": {}
                         }
-                     },
-                      {
-                        "code": 3058,
-                        "msg": "Cannot process data in this current profile status.",
-                        "data": {},
-                        "err":{}
-                      }
-                    ]
+                     ]
                   }
                },
                "400": {
@@ -4871,18 +4871,18 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {}
-                     },
-                      {
-                        "code": 3058,
-                        "msg": "Cannot process data in this current profile status.",
-                        "data": {},
-                        "err":{}
-                      }
-                    ]
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        },
+                        {
+                           "code": 3058,
+                           "msg": "Cannot process data in this current profile status.",
+                           "data": {},
+                           "err": {}
+                        }
+                     ]
                   }
                },
                "400": {
@@ -4966,7 +4966,7 @@
          }
       },
       "/business/profile/serviceProvider": {
-         "patch":{
+         "patch": {
             "x-module": "platform",
             "description": "This API is used for adding updating service provider details\nThis API also activates chatbot and sets webhooks in provier system",
             "summary": "add update service provier details",
@@ -5017,7 +5017,9 @@
                         "msg": "Success",
                         "data": {
                            "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
-                           "apiKey":"asachdkuhsnjndfjdajncs"
+                           "apiKey": "asachdkuhsnjndfjdajncs",
+                           "serviceProviderUserAccountId": "cdhdabhdkdk-acb3-4dfa-fsfddd-ddfdaaeeds",
+                           "userId": "sdcfd-fsssddsds-sdssada-hgjuujjg"
                         }
                      }
                   }
@@ -5533,7 +5535,7 @@
          }
       },
       "/business/profile/logo": {
-         "put":{
+         "put": {
             "x-module": "platform",
             "summary": "upload profile photo",
             "description": "upload profile photo",
@@ -5668,7 +5670,7 @@
          }
       },
       "/business/profile/submit": {
-         "put":{
+         "put": {
             "x-module": "platform",
             "summary": "Submit the business access info in submitted status for support team approval",
             "description": "Submit the business access info in submitted status for support team approval",
@@ -5706,25 +5708,25 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {},
-                        "error": null
-                     },
-                    {
-                        "code": 3000,
-                        "msg": "No record found.",
-                        "data": {},
-                        "error": null
-                     },
-                    {
-                        "code": 3057,
-                        "msg": "Status cannot be changed in current state.",
-                        "data": {},
-                        "error": null
-                     }                       
-                    ]
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {},
+                           "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {},
+                           "error": null
+                        },
+                        {
+                           "code": 3057,
+                           "msg": "Status cannot be changed in current state.",
+                           "data": {},
+                           "error": null
+                        }
+                     ]
                   }
                },
                "400": {
@@ -5794,7 +5796,7 @@
          }
       },
       "/business/profile/status": {
-         "put":{
+         "put": {
             "x-module": "platform",
             "summary": "Update the status of the business access info",
             "description": "Update the status of the business access info",
@@ -5822,7 +5824,7 @@
                   "schema": {
                      "$ref": "#/definitions/updateWabaAccessInfoStatusRequest"
                   }
-               }               
+               }
             ],
             "responses": {
                "200": {
@@ -5841,26 +5843,25 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {},
-                        "error": null
-                     },
-                      {
-                          "code": 3000,
-                          "msg": "No record found.",
-                          "data": {},
-                          "error": null
-                       },
-                      {
-                          "code": 3057,
-                          "msg": "Status cannot be changed in current state.",
-                          "data": {},
-                          "error": null
-                       }                   
-                     
-                    ]
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {},
+                           "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {},
+                           "error": null
+                        },
+                        {
+                           "code": 3057,
+                           "msg": "Status cannot be changed in current state.",
+                           "data": {},
+                           "error": null
+                        }
+                     ]
                   }
                },
                "400": {
@@ -9515,7 +9516,7 @@
       "/audience/internal/waba": {
          "post": {
             "x-module": "platform",
-            "x-isPublic": false,            
+            "x-isPublic": false,
             "description": "API to add or update waba no mapping",
             "summary": "add or update waba no mapping table data",
             "tags": [
@@ -9560,12 +9561,12 @@
                         }
                      },
                      "example": [
-                       {
-                        "code": 2000,
-                        "msg": "Success",
-                        "data": {}
-                     }
-                    ]
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {}
+                        }
+                     ]
                   }
                },
                "400": {
@@ -9647,7 +9648,7 @@
             },
             "security": []
          }
-      },       
+      },
       "/message-history/{messageId}": {
          "get": {
             "x-module": "platform",
@@ -11589,23 +11590,23 @@
                            "code": 2000,
                            "msg": "Success",
                            "data": [
-                                {
-                                    "flowTopic": "MOP",
-                                    "flowTopicId": "1b633f82-e262-44f0-a641-f1a4aa6be260",
-                                    "flowDescription": "Please select the options for channel registeration:"
-                                },
-                                {
-                                    "flowTopic": "ytfytdugvuy",
-                                    "flowTopicId": "1de3edda-9838-45f3-8d3b-a16c75d0a3da",
-                                    "flowDescription": "Please select the options for channel registeration:"
-                                }
-                            ]
+                              {
+                                 "flowTopic": "MOP",
+                                 "flowTopicId": "1b633f82-e262-44f0-a641-f1a4aa6be260",
+                                 "flowDescription": "Please select the options for channel registeration:"
+                              },
+                              {
+                                 "flowTopic": "ytfytdugvuy",
+                                 "flowTopicId": "1de3edda-9838-45f3-8d3b-a16c75d0a3da",
+                                 "flowDescription": "Please select the options for channel registeration:"
+                              }
+                           ]
                         },
                         {
                            "code": 3000,
                            "msg": "No record found.",
                            "data": []
-                        }                        
+                        }
                      ]
                   }
                },
@@ -11659,7 +11660,7 @@
                }
             },
             "security": []
-         }         
+         }
       },
       "/feedback": {
          "post": {
@@ -12475,7 +12476,7 @@
          "title": "allocateTemplatesToWabarequest",
          "example": {
             "templatesAllowed": 5,
-            "userId":"sdffs34424234323"
+            "userId": "sdffs34424234323"
          },
          "type": "object",
          "properties": {
@@ -12484,7 +12485,7 @@
             },
             "userId": {
                "type": "string"
-            }            
+            }
          },
          "required": [
             "templatesAllowed",
@@ -12495,48 +12496,58 @@
          "title": "addUpdateFlow",
          "example": {
             "flowTopic": "MTP",
-            "flowTopicId":"1de3edda-9838-45f3-8d3b-a16c75d0a3da",
+            "flowTopicId": "1de3edda-9838-45f3-8d3b-a16c75d0a3da",
             "FlowDescription": "Please select the options for channel registeration:",
             "flowCategoryId": "jodjwoiuedj-sjsdjsjjs",
-            "flows":  [
-                {
-                    "identifierText": "1",
-                    "event": "getRestData",
-                    "eventData": {
-                        "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/sampletext/deals",
-                        "requiredKeys": [],
-                        "transActionEndingIdentifier": "99"
-                    },
-                    "parentIdentifierText": null,
-                    "identifierDisplayName": "view challan"
-                },
-                {
-                    "identifierText": "10",
-                    "event": "process",
-                    "eventData": {
-                        "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/sampletext/deals",
-                        "requiredKeys": [],
-                        "transActionEndingIdentifier": "99"
-                    },
-                    "parentIdentifierText": null,
-                    "identifierDisplayName": "new challan"
-                },
-                {
+            "flows": [
+               {
+                  "identifierText": "1",
+                  "event": "getRestData",
+                  "eventData": {
+                     "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/sampletext/deals",
+                     "requiredKeys": [],
+                     "transActionEndingIdentifier": "99"
+                  },
+                  "parentIdentifierText": null,
+                  "identifierDisplayName": "view challan"
+               },
+               {
+                  "identifierText": "10",
+                  "event": "process",
+                  "eventData": {
+                     "url": "https://mock-helo-whatsapp-client-eqcdjlkqq6ic.runkit.sh/sampletext/deals",
+                     "requiredKeys": [],
+                     "transActionEndingIdentifier": "99"
+                  },
+                  "parentIdentifierText": null,
+                  "identifierDisplayName": "new challan"
+               },
+               {
                   "identifierText": "99",
                   "event": "end",
                   "eventData": {},
                   "parentIdentifierText": null,
                   "identifierDisplayName": "end"
-              }
+               }
             ]
-        },        
+         },
          "type": "object",
          "properties": {
-            "flowTopic" :{ "type": "string" },
-            "flowTopicId" :{ "type": "string" },
-            "FlowDescription" :{ "type": "string" },
-            "flowCategoryId" :{ "type": "string" }, 
-            "flow" : { "type" : "object"}          
+            "flowTopic": {
+               "type": "string"
+            },
+            "flowTopicId": {
+               "type": "string"
+            },
+            "FlowDescription": {
+               "type": "string"
+            },
+            "flowCategoryId": {
+               "type": "string"
+            },
+            "flow": {
+               "type": "object"
+            }
          },
          "required": [
             "flowTopic",
@@ -12549,26 +12560,30 @@
          "title": "updateServiceProviderDetailsRequest",
          "example": {
             "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
-            "userId":"sjldfhkhsdf669699877",
-            "apiKey":"asachdkuhsnjndfjdajncs"
+            "userId": "sjldfhkhsdf669699877",
+            "apiKey": "asachdkuhsnjndfjdajncs",
+            "serviceProviderUserAccountId": "bhsgsytwdu8oi-acb3-hbh-8b52-hgtgvgjuhw8uoee"
          },
          "type": "object",
          "properties": {
-           "serviceProviderId":{
-             "type":"string"
-           },
-           "userId":{
-             "type":"string"
-           }  ,
-           "apiKey":{
-             "type":"string"
-           }           
+            "serviceProviderId": {
+               "type": "string"
+            },
+            "userId": {
+               "type": "string"
+            },
+            "apiKey": {
+               "type": "string"
+            },
+            "serviceProviderUserAccountId": {
+               "type": "string"
+            }
          },
          "required": [
             "serviceProviderId",
             "userId",
             "apiKey"
-         ]         
+         ]
       },
       "verifiycodeforbusinessnumberrequest": {
          "title": "verifiycodeforbusinessnumberrequest",
@@ -13391,66 +13406,66 @@
       "updateWabaAccessInfoStatusRequest": {
          "title": "updateWabaAccessInfoStatusRequest",
          "example": {
-          "wabaProfileSetupStatusId":"7933d858-7bb7-47eb-90ec-269cbecc8c7a",
-          "accessInfoRejectionReason":"Data provided is fake.",
-          "userId":"dfsdvsvefe342123ds2e2"
-          },
+            "wabaProfileSetupStatusId": "7933d858-7bb7-47eb-90ec-269cbecc8c7a",
+            "accessInfoRejectionReason": "Data provided is fake.",
+            "userId": "dfsdvsvefe342123ds2e2"
+         },
          "type": "object",
          "properties": {
-           "wabaProfileSetupStatusId": {
-             "type":"string"
-           },
-           "accessInfoRejectionReason":{
-             "type":"string"
-           },
-           "userId":{
-             "type":"string"
-           }           
+            "wabaProfileSetupStatusId": {
+               "type": "string"
+            },
+            "accessInfoRejectionReason": {
+               "type": "string"
+            },
+            "userId": {
+               "type": "string"
+            }
          },
          "required": [
             "wabaProfileSetupStatusId",
             "userId"
-         ]         
+         ]
       },
       "addUpdateWabaNoMappingRequest": {
          "title": "updateWabaAccessInfoStatusRequest",
          "example": {
-          "wabaInformationId":"7933d858-7bb7-47eb-90ec-269cbecc8c7a",
-          "wabaPhoneNumber":"2345323456",
-          "userId":"2343afadfr3434-34efsf34324"
-          },
+            "wabaInformationId": "7933d858-7bb7-47eb-90ec-269cbecc8c7a",
+            "wabaPhoneNumber": "2345323456",
+            "userId": "2343afadfr3434-34efsf34324"
+         },
          "type": "object",
          "properties": {
-           "wabaInformationId": {
-             "type":"string"
-           },
-           "waaPhoneNumber":{
-             "type":"string"
-           },
-           "userId":{
-             "type":"string"
-           }           
+            "wabaInformationId": {
+               "type": "string"
+            },
+            "waaPhoneNumber": {
+               "type": "string"
+            },
+            "userId": {
+               "type": "string"
+            }
          },
          "required": [
             "wabaInformationId",
             "waaPhoneNumber",
             "userId"
-         ]         
+         ]
       },
       "addUpdateFeedBackRequest": {
          "title": "addFeedBackRequest",
-         "example":{
-            "redirectUrl":"httos://wbc.co",
-            "userPhoneNumber":"1233333333",
-            "wabaPhoneNumber":"4444444444",
-            "ratings":4,
-            "comments":"Good Experience"
-        },
+         "example": {
+            "redirectUrl": "httos://wbc.co",
+            "userPhoneNumber": "1233333333",
+            "wabaPhoneNumber": "4444444444",
+            "ratings": 4,
+            "comments": "Good Experience"
+         },
          "type": "object",
          "properties": {
             "redirectUrl": {
                "type": "string"
-            },           
+            },
             "userPhoneNumber": {
                "type": "string"
             },
@@ -13459,7 +13474,13 @@
             },
             "ratings": {
                "type": "number",
-               "enum":[1,2,3,4,5]
+               "enum": [
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+               ]
             },
             "comments": {
                "type": "string"
@@ -13469,8 +13490,8 @@
             "userPhoneNumber",
             "wabaPhoneNumber",
             "ratings",
-            "comments"         
-            ]
+            "comments"
+         ]
       }
    }
 }
