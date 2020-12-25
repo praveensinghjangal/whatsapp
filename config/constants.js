@@ -132,6 +132,8 @@ const TEMPLATE_HEADER_TYPE = [{
 },
 {
   templateHeaderType: 'Image'
+}, {
+  templateHeaderType: null
 }]
 const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Call To Action'
