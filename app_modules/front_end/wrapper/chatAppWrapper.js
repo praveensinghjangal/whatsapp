@@ -123,6 +123,43 @@ const getMenuBasedTemplateList = (req, res) => {
       })
     })
 }
+
+const evaluationResult = (req, res) => {
+  const http = new HttpService(60000)
+  const headers = {
+    Authorization: req.headers.authorization
+  }
+  __logger.info('calling patch evaluationResult of chat api', headers)
+  let url = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.evaluationResult
+  url = url.split(':flowTopicId').join(req.params.flowTopicId || '').split(':evaluationResponse').join(req.params.evaluationResponse || '')
+  http.Patch(req.body, url, headers)
+    .then(data => res.send(data))
+    .catch(err => {
+      return __util.send(res, {
+        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+        err: err.err || err
+      })
+    })
+}
+
+const activeTemplate = (req, res) => {
+  const http = new HttpService(60000)
+  const headers = {
+    Authorization: req.headers.authorization
+  }
+  __logger.info('calling patch activeTemplate of chat api', headers)
+  let url = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.activeTemplate
+  url = url.split(':flowTopicId').join(req.params.flowTopicId || '').split(':active').join(req.params.active || '')
+  http.Patch(req.body, url, headers)
+    .then(data => res.send(data))
+    .catch(err => {
+      return __util.send(res, {
+        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+        err: err.err || err
+      })
+    })
+}
+
 module.exports = {
   getCategory,
   getFlow,
@@ -130,5 +167,7 @@ module.exports = {
   deleteEntireFlow,
   deleteIdentifier,
   flow,
-  getMenuBasedTemplateList
+  getMenuBasedTemplateList,
+  evaluationResult,
+  activeTemplate
 }

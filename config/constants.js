@@ -132,6 +132,8 @@ const TEMPLATE_HEADER_TYPE = [{
 },
 {
   templateHeaderType: 'Image'
+}, {
+  templateHeaderType: null
 }]
 const TEMPLATE_BUTTON_TYPE = [{
   buttonType: 'Call To Action'
@@ -214,7 +216,9 @@ const CHAT_APP_ENDPOINTS = {
   deleteFlow: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId',
   deleteIdentifier: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/:identifierText',
   flow: '/helowhatsappchat/api/flowmessage/flow',
-  menuBasedTemplates: '/helowhatsappchat/api/flowmessage/flow'
+  menuBasedTemplates: '/helowhatsappchat/api/flowmessage/flow',
+  activeTemplate: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/active/:active',
+  evaluationResult: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/evaluate/:evaluationResponse'
 }
 const TAG = {
   insert: 'insert',
