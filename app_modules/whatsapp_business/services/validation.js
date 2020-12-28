@@ -586,7 +586,7 @@ class validate {
       id: '/allocateTemplatesToWaba',
       type: 'object',
       required: true,
-      additionalProperties: false,
+      additionalProperties: true,
       properties: {
         templatesAllowed: {
           type: 'number',

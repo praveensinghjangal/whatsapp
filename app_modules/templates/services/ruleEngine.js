@@ -180,7 +180,7 @@ class InternalClass {
   validHeaderType (td) {
     __logger.info('validHeaderType::')
     const valid = q.defer()
-    const headerTypeArr = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
+    const headerTypeArr = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType ? json.templateHeaderType.toLowerCase() : json.templateHeaderType)
     if (td.headerType && !headerTypeArr.includes(td.headerType.toLowerCase())) {
       valid.reject('please provide a valid template header type of enum values: ' + headerTypeArr.join(', '))
       return valid.promise

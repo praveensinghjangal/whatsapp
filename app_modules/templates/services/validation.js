@@ -250,8 +250,8 @@ class validate {
 
   isTemplateComplete (request) {
     const isvalid = q.defer()
-    const headereTypeEnum = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
-    const buttonTypeEnum = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+    const headereTypeEnum = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType ? json.templateHeaderType.toLowerCase() : json.templateHeaderType)
+    const buttonTypeEnum = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType ? json.buttonType.toLowerCase() : json.buttonType)
     headereTypeEnum.push(null)
     buttonTypeEnum.push(null)
     if (request && request.type) request.type = request.type.toLowerCase()
