@@ -638,9 +638,9 @@ const allocateTemplatesToWaba = (req, res) => {
   __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id, req.body)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
-  const userId = req.body && req.body.user_id ? req.body.user_id : '0'
+  const recordUpdatingUserId = req.user && req.user.user_id ? req.user.user_id : 0
   validate.allocateTemplatesToWaba(req.body)
-    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => businessAccountService.checkUserIdExist(req.body.userId))
     .then(data => {
       __logger.info('exists -----------------> then 2', data)
       if (!data.exists) {
@@ -649,7 +649,7 @@ const allocateTemplatesToWaba = (req, res) => {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
       } else {
         __logger.info('time to checl if profile approved')
-        return businessAccountService.updateBusinessData(req.body, data.record || {}, req.headers.authorization)
+        return businessAccountService.updateBusinessData(req.body, data.record || {}, recordUpdatingUserId)
       }
     })
     .then(data => {

@@ -554,7 +554,7 @@ class validate {
         },
         userId: {
           type: 'string',
-          required: false,
+          required: true,
           minLength: 1,
           maxLength: 50
         }
@@ -586,12 +586,18 @@ class validate {
       id: '/allocateTemplatesToWaba',
       type: 'object',
       required: true,
-      additionalProperties: true,
+      additionalProperties: false,
       properties: {
         templatesAllowed: {
           type: 'number',
           required: true,
           minLength: 1
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
         }
       }
     }

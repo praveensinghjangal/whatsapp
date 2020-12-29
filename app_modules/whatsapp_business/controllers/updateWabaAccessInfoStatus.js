@@ -22,13 +22,13 @@ const BusinessAccountService = require('../services/businesAccount')
  */
 const updateWabaAccessInfoStatus = (req, res) => {
   __logger.info('updateWabaAccessInfoStatus API called', req.body)
-  const userId = req.body && req.body.user_id ? req.body.user_id : ''
+  const recordUpdatingUserId = req.user && req.user.user_id ? req.user.user_id : 0
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
   const wabaStatusService = new WabaStatusService()
   let queryResult
   validate.addUpdateBusinessAccessInfoInputCheck(req.body)
-    .then(() => businessAccountService.checkUserIdExist(userId))
+    .then(() => businessAccountService.checkUserIdExist(req.body.userId))
     .then(result => {
       queryResult = result.record
       if (!result.exists) {
@@ -45,7 +45,7 @@ const updateWabaAccessInfoStatus = (req, res) => {
         accessInfoRejectionReason: req.body && req.body.accessInfoRejectionReason ? req.body.accessInfoRejectionReason : null
       }
       if (result && result.complete && reqBody.wabaProfileSetupStatusId !== queryResult.wabaProfileSetupStatusId && wabaStatusService.canUpdateWabaStatus(reqBody.wabaProfileSetupStatusId, queryResult.wabaProfileSetupStatusId)) {
-        return businessAccountService.updateBusinessData(reqBody, queryResult)
+        return businessAccountService.updateBusinessData(reqBody, queryResult, recordUpdatingUserId)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_CHANGED, data: {}, err: {} })
       }

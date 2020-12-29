@@ -149,12 +149,12 @@ class businesAccountService {
  *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
  */
   /* To do the handling of facebook manager id when null  */
-  updateBusinessInfo (userId, businessData, businessOldData) {
+  updateBusinessInfo (userId, businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
     const dataUpdated = q.defer()
     __logger.info('Inputs updateBusinessInfo userId', userId)
     // __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
     // __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
-    saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
+    saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, recordUpdatingUserId)
     const businessAccountObj = {
       facebookManagerId: typeof businessData.facebookManagerId === 'string' ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
@@ -188,7 +188,7 @@ class businesAccountService {
       templatesAllowed: businessData.templatesAllowed ? businessData.templatesAllowed : businessOldData.templatesAllowed
     }
     const redisService = new RedisService()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webhookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId, JSON.stringify(businessAccountObj.websites), businessAccountObj.imageData, businessAccountObj.accessInfoRejectionReason, businessAccountObj.templatesAllowed, businessAccountObj.wabaInformationId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabaTableData(), [businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, recordUpdatingUserId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.facebookManagerId, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webhookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId, JSON.stringify(businessAccountObj.websites), businessAccountObj.imageData, businessAccountObj.accessInfoRejectionReason, businessAccountObj.templatesAllowed, businessAccountObj.wabaInformationId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           if (businessAccountObj.phoneNumber) redisService.setDataInRedis(businessAccountObj.phoneNumber)
@@ -204,8 +204,8 @@ class businesAccountService {
     return dataUpdated.promise
   }
 
-  updateBusinessData (businessData, businessOldData) {
-    __logger.info('Inputs updateBusinessData userId')
+  updateBusinessData (businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
+    __logger.info('Inputs updateBusinessData userId', recordUpdatingUserId)
     const businessDataUpdated = q.defer()
     if (businessData && businessData.wabaProfileSetupStatusId && businessData.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.rejected.statusCode) {
       businessData.accessInfoRejectionReason = null
@@ -219,21 +219,21 @@ class businesAccountService {
     if ((businessData && businessData.phoneNumber && !businessOldData.phoneNumber) || (businessData && businessData.phoneNumber && businessData.phoneNumber !== businessOldData.phoneNumber)) {
       this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.update)
         .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId, businessOldData.wabaInformationId))
-        .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData))
+        .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData, recordUpdatingUserId))
         .then(data => businessDataUpdated.resolve(data))
         .catch(err => businessDataUpdated.reject(err))
     } else {
-      this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData)
+      this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData, recordUpdatingUserId)
         .then(data => businessDataUpdated.resolve(data))
         .catch(err => businessDataUpdated.reject(err))
     }
     return businessDataUpdated.promise
   }
 
-  processWabaDataUpdation (userId, businessData, businessOldData) {
+  processWabaDataUpdation (userId, businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
     __logger.info('processWabaDataUpdation')
     const processed = q.defer()
-    this.updateBusinessInfo(userId, businessData, businessOldData)
+    this.updateBusinessInfo(userId, businessData, businessOldData, recordUpdatingUserId)
       .then(insertedData => processed.resolve(insertedData))
       .catch(err => {
         __logger.error('error: ', err)
