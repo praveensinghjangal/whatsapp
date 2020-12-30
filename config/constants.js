@@ -330,6 +330,13 @@ const WEB_HOOK_END_POINT = {
   incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
   messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e'
 }
+const MENU_BASED_TEMPLATE_STATUS = {
+  requested: { statusCode: '59903410-b3c5-4312-a444-617f04f6116e', displayName: 'Requested' },
+  approved: { statusCode: '5a1ca5cb-0c8c-4919-8941-6c679260d5ff', displayName: 'Approved' },
+  inactive: { statusCode: '5c11540b-9c49-42b8-ac9e-0d70ad7696f7', displayName: 'Inactive' },
+  deleted: { statusCode: '7d33388e-f730-4f82-ae77-d09498543ec6', displayName: 'Deleted' },
+  rejected: { statusCode: 'a64ab539-eebd-4a04-81b0-76348e7eaf7c', displayName: 'Rejected' }
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -386,3 +393,4 @@ module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
 module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
 module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
+module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
