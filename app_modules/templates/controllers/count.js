@@ -42,7 +42,7 @@ const getTemplateCount = (req, res) => {
         }
       })
       __logger.info('Result ', { result })
-      return http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.menuBasedTemplates, req.headers)
+      return http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.menuBasedTemplates, { authorization: req.headers.authorization })
     })
     .then(apiRes => {
       __logger.info('menu based template list api response ---->', apiRes)
