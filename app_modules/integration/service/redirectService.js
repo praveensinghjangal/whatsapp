@@ -43,7 +43,7 @@ class RedirectService {
           Accept: 'application/json'
         }
         if (data && data.webhookPostUrl && url.isValid(data.webhookPostUrl)) {
-          return http.resolvePostmili(validPayload, 'body', data.webhookPostUrl, headers, data.serviceProviderId)
+          return http.resolvePost(validPayload, 'body', data.webhookPostUrl, headers, data.serviceProviderId)
         } else {
           return { notRedirected: true, type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: null }
         }
