@@ -21,8 +21,8 @@ class HttpRequest {
     __logger.info('request for HTTP post ', options)
     request(options, (error, response, body) => {
       __logger.info('response from api ', error, response, body)
-      const url = options.url.split('/').slice(3).join('/')
-      saveApiLog(serviceProviderId, url, options, response)
+      const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
+      saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
@@ -125,6 +125,32 @@ class HttpRequest {
       if (error) {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
+      } else {
+        deferred.resolve(response)
+      }
+    })
+    return deferred.promise
+  }
+
+  resolvePost (inputRequest, inputReqType, url, headers, serviceProviderId) {
+    const deferred = q.defer()
+    const options = {
+      method: 'POST',
+      url: url,
+      timeout: this.timeInSeconds,
+      headers: headers,
+      [inputReqType]: inputRequest,
+      json: true,
+      rejectUnauthorized: false
+    }
+    __logger.info('request for HTTP post ', options)
+    request(options, (error, response, body) => {
+      __logger.info('response from api ', error, response, body)
+      const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
+      saveApiLog(serviceProviderId, apiLogUrl, options, response)
+      if (error) {
+        __logger.error('errrrrrrrrrrrrr', error)
+        deferred.resolve({ err: true, error })
       } else {
         deferred.resolve(response)
       }
