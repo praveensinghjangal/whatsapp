@@ -472,6 +472,29 @@ class businesAccountService {
       })
     return businessDataFetched.promise
   }
+
+  getServiceProviderDetailsByUserId (userId) {
+    __logger.info('getServiceProviderDetailsByUserId::>>>>>>>>>>...', userId)
+    const serviceProviderData = q.defer()
+    this.validate.checkUserIdService({ userId })
+      .then(valResponse => {
+        __logger.info('valRespons then 1')
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProviderDetailsByUserId(), [userId])
+      })
+      .then(result => {
+        __logger.info('result then 2', result)
+        if (result && result.length > 0) {
+          return serviceProviderData.resolve({ record: result[0], exists: true })
+        } else {
+          return serviceProviderData.resolve({ record: result[0], exists: false })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in checkUserExistByUserId function: ', err)
+        serviceProviderData.reject(false)
+      })
+    return serviceProviderData.promise
+  }
 }
 
 module.exports = businesAccountService

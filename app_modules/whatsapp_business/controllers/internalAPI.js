@@ -89,8 +89,45 @@ const getUserIdAndApiKeyFromWabaNumber = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Information-Internal-API-Controller-
+ * @name GetServiceProviderDetailsByUserId
+ * @path {GET} /business/internal/wabaPhoneNumber
+ * @description Bussiness Logic :- This API returns waba service provider details from user id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/GetWabaServiceProviderDetailsByUserId|GetWabaServiceProviderDetailsByUserId}
+ * @param {string}  userId=3234  - user id needs to be entered here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  Returns Waba Number in ressponse.
+ * @code {200} if the msg is success than Returns Waba Number in ressponse.
+ * @author Danish Galiyara 4th January, 2021
+ * *** Last-Updated :- Danish Galiyara 4th January, 2021 ***
+ */
+
+const getServiceProviderDetailsByUserId = (req, res) => {
+  __logger.info('getWabaNumberFromUserId:>>>>>>>>>>>>>', req.query.userId)
+  if (!req.query.userId) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId' })
+  }
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getServiceProviderDetailsByUserId(req.query.userId)
+    .then(results => {
+      __logger.info('getWabaNumberFromUserId - Final Result then 1', results)
+      if (results && results.exists) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: results.record })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
+    .catch(err => {
+      __logger.error('getWabaNumberFromUserId - error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getWabaNumberFromUserId,
   getWabaDataFromDb,
-  getUserIdAndApiKeyFromWabaNumber
+  getUserIdAndApiKeyFromWabaNumber,
+  getServiceProviderDetailsByUserId
 }
