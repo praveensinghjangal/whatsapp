@@ -278,5 +278,6 @@ module.exports = {
     platform: process.env.BASE_URL ? process.env.BASE_URL + '/' + __constants.APP_NAME + '/api' : 'http://localhost:' + process.env.PORT + '/' + __constants.APP_NAME + '/api',
     chatApp: process.env.CHAT_APP_URL + __constants.CHAT_APP_BASE_PATH
   },
-  webHookUrl: process.env.WEB_HOOK_URL
+  webHookUrl: process.env.WEB_HOOK_URL,
+  heloOssUrl: process.env.HELO_OSS_URL
 }

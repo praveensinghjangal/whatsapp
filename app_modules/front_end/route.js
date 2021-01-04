@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
+// const authToken = require('../../middlewares/auth/tokenBasedAuth')
 
 router.post('/addUpdateOptinMessageAndTemplate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/optinAndTemplate').post)
 router.get('/addUpdateOptinMessageAndTemplate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/optinAndTemplate').get)
@@ -16,5 +17,8 @@ router.post('/flow', authMiddleware.authenticate(authstrategy.jwt.name, authstra
 router.patch('/flow/:flowTopicId/active/:active', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').activeTemplate)
 router.patch('/flow/:flowTopicId/evaluate/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').evaluationResult)
 router.delete('/flow/:flowTopicId/:identifierText', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/chatAppWrapper').deleteIdentifier)
+
+// router.post('/helo-oss/upload', authToken, require('./wrapper/heloOssWrapper').uploadFile)
+router.get('/helo-oss/:action/:fileName', require('./wrapper/heloOssWrapper').downloadFile)
 
 module.exports = router

@@ -337,6 +337,9 @@ const MENU_BASED_TEMPLATE_STATUS = {
   deleted: { statusCode: '7d33388e-f730-4f82-ae77-d09498543ec6', displayName: 'Deleted' },
   rejected: { statusCode: 'a64ab539-eebd-4a04-81b0-76348e7eaf7c', displayName: 'Rejected' }
 }
+const HELO_OSS_ENDPOINTS = {
+  download: '/helo-oss/api/object/:action/:fileName'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -394,3 +397,4 @@ module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
 module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
 module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
+module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
