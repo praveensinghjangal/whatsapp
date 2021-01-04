@@ -149,11 +149,22 @@ const getWebsiteLimit = () => {
   from service_provider 
   where service_provider_id = ? and is_active = 1`
 }
+
 /* Not in use */
 const updateProfilePicUrl = () => {
   return `update waba_information
   set profile_photo_url= ?
   WHERE user_id=? and is_active = true`
+}
+
+const getServiceProviderDetailsByUserId = () => {
+  return `SELECT waba_information_id as "wabaInformationId",user_id as "userId",
+  phone_code as "phoneCode",phone_number as "phoneNumber",
+  waba_profile_setup_status_id as "wabaProfileSetupStatusId",
+  service_provider_id as "serviceProviderId",api_key as "apiKey",
+  user_account_id_by_provider as "serviceProviderUserAccountId"
+  FROM waba_information wabainfo
+  where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
 module.exports = {
@@ -173,6 +184,6 @@ module.exports = {
   getUserIdAndTokenKeyByWabaNumber,
   getWabaNumberAndOptinTextFromUserId,
   getWebsiteLimit,
-  updateProfilePicUrl
-
+  updateProfilePicUrl,
+  getServiceProviderDetailsByUserId
 }
