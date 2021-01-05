@@ -38,7 +38,7 @@ const deleteTemplate = (req, res) => {
         })
         .catch(err => {
           __logger.error('deleteTemplateerror in delete template: ', err)
-          return __util.send(res, { type: err.type, err: err.err || err })
+          return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
         })
     } else {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['templateId and template status is required'] })

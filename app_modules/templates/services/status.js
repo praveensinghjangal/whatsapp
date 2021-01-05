@@ -16,7 +16,7 @@ const integrationService = require('../../integration')
 
 class StatusService {
   canUpdateStatus (newStatusId, oldStatusId) {
-    __logger.info('canUpdateStatus::', { TEMPLATE_STATUS_MAPPING: __constants.TEMPLATE_STATUS_MAPPING[oldStatusId], newStatusId })
+    __logger.info('canUpdateStatus::', oldStatusId, { TEMPLATE_STATUS_MAPPING: __constants.TEMPLATE_STATUS_MAPPING[oldStatusId], newStatusId })
     if (__constants.TEMPLATE_STATUS_MAPPING[oldStatusId] && __constants.TEMPLATE_STATUS_MAPPING[oldStatusId].includes(newStatusId)) return true
     return false
   }
