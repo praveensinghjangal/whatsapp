@@ -80,6 +80,10 @@ class Authentication {
     return [passport.authenticate(strategy, options), setWabaDataMiddleware]
   }
 
+  authenticateNoJwt (strategy, options) {
+    return passport.authenticate(strategy, options)
+  }
+
   setToken (data, expirySeconds) {
     return jwt.sign({ data }, this.opts.secretOrKey, { expiresIn: expirySeconds })
   }
