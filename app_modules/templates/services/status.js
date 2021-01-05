@@ -26,6 +26,7 @@ class StatusService {
     const statusChanged = q.defer()
     const validate = new ValidatonService()
     const templateService = new TemplateService()
+    let queryObj = {}
     validate.validateAndUpdateStatusService({ templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason })
       .then(data => {
         __logger.info('validateAndUpdateStatus::here to update sta  us then 1', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason, userId })
@@ -48,7 +49,7 @@ class StatusService {
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode) slrr = secondLocalizationRejectionReason
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.denied.statusCode) slrr = secondLocalizationRejectionReason
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.denied.statusCode) slrr = null
-          const queryObj = {
+          queryObj = {
             templateStatus: '',
             firstLocalizationStatus: firstLocalizationNewStatusId || templateData.firstLocalizationStatus,
             firstLocalizationRejectionReason: flrr || null,
@@ -72,7 +73,7 @@ class StatusService {
       .then(result => {
         __logger.info('result then 3 ')
         if (result && result.affectedRows && result.affectedRows > 0) {
-          statusChanged.resolve(true)
+          statusChanged.resolve(queryObj)
         } else {
           statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }

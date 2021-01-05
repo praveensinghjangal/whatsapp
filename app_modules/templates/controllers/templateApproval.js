@@ -230,4 +230,4 @@ function getTemplateStatusName (templateCode) {
   }
 }
 
-module.exports = { sendTemplateForApproval, sendTemplateForEvaluaion }
+module.exports = { sendTemplateForApproval, sendTemplateForEvaluaion, getTemplateStatusName }
