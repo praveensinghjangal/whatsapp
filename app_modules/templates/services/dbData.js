@@ -338,7 +338,7 @@ class TemplateService {
       })
       .catch(err => {
         __logger.error('error: ', err)
-        templateDeleted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        templateDeleted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
 
     return templateDeleted.promise
