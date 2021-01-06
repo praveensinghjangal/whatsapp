@@ -70,8 +70,6 @@ router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCod
 router.post('/otp', internalSessionOrTokenAuth, verificationController.sendOtpCode)
 router.patch('/otp', internalSessionOrTokenAuth, verificationController.validateTFa)
 router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateTempTFa)
-router.get('/otp/authenticator/:secretkey', internalSessionOrTokenAuth, verificationController.getOtpFromSecretKey)
-
 router.patch('/otp/backup', internalSessionOrTokenAuth, verificationController.validateBackupCodeAndResetTfa)
 router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.addTempTfaData)
 

@@ -434,18 +434,6 @@ class VerificationService {
     return base32
   }
 
-  createOtp (secret) {
-    __logger.info('createOtp:>>>>>>>>>>>>>', secret)
-    const data = {
-      code: speakeasy.totp({
-        secret: secret,
-        encoding: 'base32'
-      }),
-      time: (30 - Math.floor((new Date()).getTime() / 1000.0 % 30))
-    }
-    return data
-  }
-
   generateAuthenticatorQrcode (label, secretKey) {
     __logger.info('generateAuthenticatorQrcode:>>>>>>>>>>>>>')
     const authenticatorData = q.defer()
