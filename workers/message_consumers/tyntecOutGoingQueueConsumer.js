@@ -70,7 +70,7 @@ class MessageConsumer {
               messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.tyntec
             }
 
-            const messageService = new integrationService.Messaage(messageData.config.servicProviderId)
+            const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
             messageService.sendMessage(messageData.payload)
               .then(sendMessageRespose => saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messageId))
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))

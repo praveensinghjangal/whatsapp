@@ -18,7 +18,8 @@ const getBusinessProfile = () => {
   user_account_id_by_provider as "serviceProviderUserAccountId",
   service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
   webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
-  access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId"
+  access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
+  user_id as "userId,max_tps_to_provider as "maxTpsToProvider"
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
   LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true
@@ -41,7 +42,8 @@ const getWabaTableDataByUserId = () => {
   service_provider_id as "serviceProviderId",api_key as "apiKey",
   webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated", websites,
   user_account_id_by_provider as "serviceProviderUserAccountId", img_data as "imageData",
-  access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed"
+  access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed",
+  max_tps_to_provider as "maxTpsToProvider"
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
@@ -162,7 +164,8 @@ const getServiceProviderDetailsByUserId = () => {
   phone_code as "phoneCode",phone_number as "phoneNumber",
   waba_profile_setup_status_id as "wabaProfileSetupStatusId",
   service_provider_id as "serviceProviderId",api_key as "apiKey",
-  user_account_id_by_provider as "serviceProviderUserAccountId"
+  user_account_id_by_provider as "serviceProviderUserAccountId",
+  max_tps_to_provider as "maxTpsToProvider"
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
