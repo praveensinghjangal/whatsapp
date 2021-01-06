@@ -563,6 +563,30 @@ const addTempTfaData = (req, res) => {
     })
 }
 
+const getOtpFromSecretKey = (req, res) => {
+  __logger.info('getOtpFromSecretKey::>>>>>>..')
+  req.body.userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const secret = (req && req.params && req.params.secretkey) ? req.params.secretkey : ''
+  createOtp(secret)
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+    })
+}
+
+const createOtp = (secret) => {
+  const getCode = q.defer()
+  const verificationService = new VerificationService()
+  const code = verificationService.createOtp(secret)
+  if (code) {
+    getCode.resolve(code)
+  } else {
+    getCode.reject([])
+  }
+  return getCode.promise
+}
+
 const validateTempTfaBs = reqBody => {
   __logger.info('validateTempTfaBs::>>>>>>..')
   const dataAdded = q.defer()
@@ -743,5 +767,6 @@ module.exports = {
   addTempTfaData,
   addTempTfaDataBS,
   validateTempTFa,
+  getOtpFromSecretKey,
   validateBackupCodeAndResetTfa
 }
