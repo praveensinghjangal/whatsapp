@@ -6,10 +6,10 @@ const __logger = require('../../../lib/logger')
 const HttpService = require('../../../lib/http_service')
 
 class InternalFunctions {
-  setWebhookOfProvider (wabaNumber, providerId) {
+  setWebhookOfProvider (wabaNumber, providerId, maxTpsToProvider, userId) {
     const webHookApplied = q.defer()
     __logger.info('setWebhookOfProvider --> function called', wabaNumber, providerId)
-    const wabaAccountService = new integrationService.WabaAccount(providerId)
+    const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
     const incomingMessage = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.incomingMessage
     const nessageStatus = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.messageStatus
     __logger.info('setWebhookOfProvider --> fURL formed', incomingMessage, nessageStatus)
@@ -61,7 +61,7 @@ module.exports = class Hooks {
 
   onAccepted (wabaData, headers) {
     __logger.info('onAccepted called', wabaData, headers)
-    this.internalFunctions.setWebhookOfProvider(wabaData.phoneCode + wabaData.phoneNumber, wabaData.serviceProviderId)
+    this.internalFunctions.setWebhookOfProvider(wabaData.phoneCode + wabaData.phoneNumber, wabaData.serviceProviderId, wabaData.maxTpsToProvider, wabaData.userId)
     this.internalFunctions.activateChatBot(wabaData, headers)
   }
 

@@ -440,7 +440,8 @@ const validateTFa = (req, res) => {
       const payload = {
         user_id: userId,
         providerId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
-        wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : ''
+        wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : '',
+        maxTpsToProvider: userData && userData.rows && userData.rows[0] && userData.rows[0].maxTpsToProvider ? userData.rows[0].maxTpsToProvider : 10
       }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       const outData = { token }
@@ -744,7 +745,8 @@ const validateBackupCodeAndResetTfa = (req, res) => {
       const payload = {
         user_id: userId,
         providerId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
-        wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : ''
+        wabaPhoneNumber: userData && userData.rows && userData.rows[0] && userData.rows[0].wabaPhoneNumber ? userData.rows[0].wabaPhoneNumber : '',
+        maxTpsToProvider: userData && userData.rows && userData.rows[0] && userData.rows[0].maxTpsToProvider ? userData.rows[0].maxTpsToProvider : 10
       }
       const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { token, resetTfaData: true } })

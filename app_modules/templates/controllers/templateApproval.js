@@ -125,7 +125,7 @@ const sendTemplateForEvaluaion = (req, res) => {
   }
 
   if (req.user && req.user.providerId) {
-    const templateService = new integrationService.Template(req.user.providerId)
+    const templateService = new integrationService.Template(req.user.providerId, req.user.maxTpsToProvider, req.user.user_id)
     const evaluationResponse = req.params ? req.params.evaluationResponse.toLowerCase() : ''
     if (!__constants.TEMPLATE_EVALUATION_RESPONSE.includes(evaluationResponse)) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })

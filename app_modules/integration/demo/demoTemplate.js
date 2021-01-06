@@ -1,11 +1,10 @@
 const q = require('q')
-const HttpService = require('../service/httpService')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 
 class Template {
-  constructor () {
-    this.http = new HttpService(60000)
+  constructor (maxConcurrent, userId) {
+    this.http = ''
   }
 
   // when this service will be called we will call waba to get phone number to use here in redis

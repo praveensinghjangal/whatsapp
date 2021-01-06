@@ -25,7 +25,7 @@ const deleteTemplate = (req, res) => {
   const wabaPhoneNumber = req.user ? req.user.wabaPhoneNumber : ''
   const userId = req.user ? req.user.user_id : ''
   if (req.user && req.user.providerId) {
-    const templateService = new integrationService.Template(req.user.providerId)
+    const templateService = new integrationService.Template(req.user.providerId, req.user.maxTpsToProvider, req.user.user_id)
     const templateDbService = new TemplateDbService()
     if (req.params && req.params.templateId) {
       templateDbService.deleteTemplate(req.params.templateId, userId)
