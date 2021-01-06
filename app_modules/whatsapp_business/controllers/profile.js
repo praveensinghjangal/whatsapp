@@ -194,6 +194,7 @@ const addUpdateBusinessProfile = (req, res) => {
   const validate = new ValidatonService()
   this.http = new HttpService(60000)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   let wabaProfileData = {}
   let profileData = {}
   let providerId
@@ -230,7 +231,7 @@ const addUpdateBusinessProfile = (req, res) => {
       __logger.info('addUpdateBusinessProfile::ddddd----', data)
       if (wabaProfileData && wabaProfileData.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         __logger.info('addUpdateBusinessProfile::called tyntec api to update profile data---')
-        const wabaAccountService = new integrationService.WabaAccount(providerId)
+        const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
         return wabaAccountService.updateProfile(req.user.wabaPhoneNumber, wabaProfileData)
       } else {
         __logger.info('addUpdateBusinessProfile::status not accepted')
@@ -502,6 +503,7 @@ const upload = multer({
 const updateProfilePic = (req, res) => {
   __logger.info('updateProfilePic>>>>>>>>>>>>>>>...........')
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   const businessAccountService = new BusinessAccountService()
   __logger.info('RTRT', req.user, req.user.user_id)
   upload(req, res, function (err, data) {
@@ -525,7 +527,7 @@ const updateProfilePic = (req, res) => {
               return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
             } else {
               const providerId = req.user.providerId || (results.exists ? results.record.serviceProviderId : '')
-              const wabaAccountService = new integrationService.WabaAccount(providerId)
+              const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
               const reqBody = {
                 imageData: imageData,
                 userId,
@@ -555,7 +557,7 @@ const updateProfilePicByUrl = (req, res) => {
   __logger.info('updateProfilePicByUrl::url', req.body.profilePic)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
-  const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
+  const wabaAccountService = new integrationService.WabaAccount(req.user.providerId, req.user.maxTpsToProvider, userId)
   const fileStream = new FileStream()
   const fileDownload = new FileDownload()
   __logger.info('updateProfilePicByUrl::userId', req.user, req.user.user_id)

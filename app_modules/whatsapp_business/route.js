@@ -33,12 +33,24 @@ router.post('/verification/phoneNumber', authMiddleware.authenticate(authstrateg
 router.patch('/verification/phoneNumber', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessVerificationController.validateBusinessNumberVerificationCode)
 router.get('/internal/wabaPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaNumberFromUserId)
 router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require('./controllers/internalAPI').getUserIdAndApiKeyFromWabaNumber)
+router.get('/internal/getServiceProviderDetailsByUserId', tokenBasedAuth, require('./controllers/internalAPI').getServiceProviderDetailsByUserId)
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
 
 // router.get('/inttest', (req, res) => {
-//   const integrationService = require('../../app_modules/integration')
-//   const wabaService = new integrationService.WabaAccount('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-//   wabaService.setWebhook(req.body.wabaNumber, req.body.incomingMessageUrl, req.body.statusUrl)
+//   const Http = require('../integration/service/httpService')
+//   const http = new Http(600, 5, 'vvvvvvv')
+//   let token = ''
+//   const headers = {
+//     Authorization: 'Bearer Z2FsaXlhcmFkYW5pc2hAZ21haWwuY29tOlBhc3NAMTIz',
+//     'Content-Type': 'application/json'
+//   }
+//   //   const wabaService = new integrationService.WabaAccount('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
+//   http.Post({ apiKey: '2c368a44-b214-410f-a66f-38cf634beb18' }, 'body', 'http://localhost:3000/helowhatsapp/api/users/authorize', headers, 'test')
+//     .then(data => {
+//       token = data.body.data.apiToken
+//       const h2 = { Authorization: token }
+//       return http.Get('http://localhost:3000/helowhatsapp/api/users/account', h2, 'test')
+//     })
 //     .then(data => res.send(data))
 //     .catch(err => res.send(err))
 // })

@@ -1,9 +1,11 @@
+const _ = require('lodash')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
+const __config = require('../../../config')
 const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
-const _ = require('lodash')
+const HttpService = require('../../../lib/http_service')
 
 /**
  * @memberof -Template-Controller-
@@ -16,16 +18,17 @@ const _ = require('lodash')
  * @response {array} metadata.data.statusCount - In response we get array of json data consist of statusName and templateCount in each object.
  * @code {200} if the msg is success than it return the different templates count with statusName.
  * @author Arjun Bhole 5th June, 2020
- * *** Last-Updated :- Arjun Bhole 23rd October, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 30th December, 2020 ***
  */
 
 const getTemplateCount = (req, res) => {
   __logger.info('Get Templates Count API Called')
+  const http = new HttpService(60000)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const result = {}
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountByStatus(), [userId])
     .then(data => {
       __logger.info('formatAndReturnTemplateCount', { data })
-      const result = {}
       result.statusCount = []
       result.allocatedTemplateCount = data.length > 0 ? data[0].templates_allowed : 0
       result.usedTemplateCount = 0
@@ -39,6 +42,27 @@ const getTemplateCount = (req, res) => {
         }
       })
       __logger.info('Result ', { result })
+      return http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.menuBasedTemplates, { authorization: req.headers.authorization })
+    })
+    .then(apiRes => {
+      __logger.info('menu based template list api response ---->', apiRes)
+      if (apiRes && apiRes.code === __constants.RESPONSE_MESSAGES.SUCCESS.code && apiRes.data && apiRes.data.length > 0) {
+        result.usedTemplateCount += apiRes.data.length
+        _.each(__constants.MENU_BASED_TEMPLATE_STATUS, singleStatus => {
+          const recordData = _.filter(apiRes.data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
+          if (_.isEmpty(recordData)) {
+            const existsInDbTemplate = _.find(result.statusCount, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
+            if (!existsInDbTemplate) result.statusCount.push({ templateCount: 0, statusName: singleStatus.displayName })
+          } else {
+            const existsInDbTemplateIndex = _.findIndex(result.statusCount, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
+            if (result.statusCount[existsInDbTemplateIndex]) {
+              result.statusCount[existsInDbTemplateIndex].templateCount += recordData.length
+            } else {
+              result.statusCount.push({ templateCount: recordData.length, statusName: singleStatus.displayName })
+            }
+          }
+        })
+      }
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {

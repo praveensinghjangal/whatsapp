@@ -10,7 +10,7 @@ const callCompareAndUpdateStatusInBulk = (wipTicketList) => {
   const thePromises = []
   const statusService = new StatusService()
   wipTicketList.forEach(singleUserTicketList => {
-    p = p.then(() => statusService.compareAndUpdateStatus(singleUserTicketList.templateArray, singleUserTicketList.service_provider_id, singleUserTicketList.wabaNumber, singleUserTicketList.user_id))
+    p = p.then(() => statusService.compareAndUpdateStatus(singleUserTicketList.templateArray, singleUserTicketList.service_provider_id, singleUserTicketList.wabaNumber, singleUserTicketList.user_id, singleUserTicketList.maxTpsToProvider))
       .catch(err => {
         if (err && typeof err === 'object') err.valid = false
         return err
@@ -22,7 +22,7 @@ const callCompareAndUpdateStatusInBulk = (wipTicketList) => {
 
 const getWipTicketListPerUser = () => {
   const wipTicketList = q.defer()
-  const query = `select  group_concat(mt.message_template_id separator ',') as "templateArray", wi.user_id, CONCAT(wi.phone_code,wi.phone_number) as "wabaNumber", wi.service_provider_id 
+  const query = `select  group_concat(mt.message_template_id separator ',') as "templateArray", wi.user_id, CONCAT(wi.phone_code,wi.phone_number) as "wabaNumber", wi.service_provider_id , wi.max_tps_to_provider as "maxTpsToProvider"
 from message_template mt
 join waba_information wi on wi.waba_information_id = mt.waba_information_id and wi.is_active = 1
 where mt.is_active = 1 and wi.service_provider_id is not null and

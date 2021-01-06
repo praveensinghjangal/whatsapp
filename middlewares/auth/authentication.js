@@ -5,6 +5,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy
 const FacebookStrategy = require('passport-facebook').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const authConfig = require('../../config').authentication
+const setWabaDataMiddleware = require('../setWabaData')
 
 const cookieTokenExtractor = req => {
   var token = null
@@ -76,6 +77,10 @@ class Authentication {
   }
 
   authenticate (strategy, options) {
+    return [passport.authenticate(strategy, options), setWabaDataMiddleware]
+  }
+
+  authenticateNoJwt (strategy, options) {
     return passport.authenticate(strategy, options)
   }
 

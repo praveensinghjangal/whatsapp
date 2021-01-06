@@ -143,18 +143,18 @@ const TEMPLATE_BUTTON_TYPE = [{
   buttonType: null
 }]
 const MQ = {
-  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: 1, createChannel: true },
-  mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  delay_failed_to_redirect_10_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
-  delay_failed_to_redirect_20_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_20_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 20000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
-  delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
-  delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
-  delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 1, createChannel: true },
+  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: 25, createChannel: true },
+  mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: 25, createChannel: true },
+  mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
+  tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
+  delay_failed_to_redirect_10_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
+  delay_failed_to_redirect_20_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_20_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 20000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
+  delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
+  delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
+  delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
@@ -178,7 +178,8 @@ const INTERNAL_END_POINTS = {
   userLogin: '/helowhatsapp/api/users/auth/login',
   updateTemplateStatus: '/helowhatsapp/api/templates/',
   businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url',
-  addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba'
+  addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba',
+  getServiceProviderDetailsByUserId: '/helowhatsapp/api/business/internal/getServiceProviderDetailsByUserId'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -272,9 +273,10 @@ const TEMPLATE_STATUS_MAPPING = {
   [TEMPLATE_STATUS.complete.statusCode]: [TEMPLATE_STATUS.complete.statusCode, TEMPLATE_STATUS.incomplete.statusCode, TEMPLATE_STATUS.requested.statusCode, TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.requested.statusCode]: [TEMPLATE_STATUS.rejected.statusCode, TEMPLATE_STATUS.submitted.statusCode, TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.rejected.statusCode]: [TEMPLATE_STATUS.complete.statusCode, TEMPLATE_STATUS.deleted.statusCode],
-  [TEMPLATE_STATUS.submitted.statusCode]: [TEMPLATE_STATUS.submitFailed.statusCode, TEMPLATE_STATUS.pending.statusCode, TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.submitted.statusCode]: [TEMPLATE_STATUS.submitFailed.statusCode, TEMPLATE_STATUS.pending.statusCode, TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode, TEMPLATE_STATUS.deleted.statusCode, TEMPLATE_STATUS.partiallyApproved.statusCode],
   [TEMPLATE_STATUS.submitFailed.statusCode]: [TEMPLATE_STATUS.submitted.statusCode, TEMPLATE_STATUS.deleted.statusCode],
-  [TEMPLATE_STATUS.pending.statusCode]: [TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode, TEMPLATE_STATUS.deleted.statusCode],
+  [TEMPLATE_STATUS.pending.statusCode]: [TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.denied.statusCode, TEMPLATE_STATUS.deleted.statusCode, TEMPLATE_STATUS.partiallyApproved.statusCode],
+  [TEMPLATE_STATUS.partiallyApproved.statusCode]: [TEMPLATE_STATUS.approved.statusCode, TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.approved.statusCode]: [TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.denied.statusCode]: [TEMPLATE_STATUS.deleted.statusCode],
   [TEMPLATE_STATUS.deleted.statusCode]: []
@@ -329,6 +331,16 @@ const TYNTEC_MESSAGE_EVENTS = {
 const WEB_HOOK_END_POINT = {
   incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
   messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e'
+}
+const MENU_BASED_TEMPLATE_STATUS = {
+  requested: { statusCode: '59903410-b3c5-4312-a444-617f04f6116e', displayName: 'Requested' },
+  approved: { statusCode: '5a1ca5cb-0c8c-4919-8941-6c679260d5ff', displayName: 'Approved' },
+  inactive: { statusCode: '5c11540b-9c49-42b8-ac9e-0d70ad7696f7', displayName: 'Inactive' },
+  deleted: { statusCode: '7d33388e-f730-4f82-ae77-d09498543ec6', displayName: 'Deleted' },
+  rejected: { statusCode: 'a64ab539-eebd-4a04-81b0-76348e7eaf7c', displayName: 'Rejected' }
+}
+const HELO_OSS_ENDPOINTS = {
+  download: '/helo-oss/api/object/:action/:fileName'
 }
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
@@ -386,3 +398,5 @@ module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
 module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
 module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
+module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
+module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS

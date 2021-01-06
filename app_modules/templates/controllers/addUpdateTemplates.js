@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const ValidatonService = require('../services/validation')
 const TemplateService = require('../services/dbData')
 const __util = require('../../../lib/util')
@@ -42,7 +41,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
  * @response {boolean} metadata.data.mediaTemplateComplete - It will return true
  * @code {200} if the msg is success than it Returns Status of template info completion
  * @author Danish Galiyara 5th June, 2020
- * *** Last-Updated :- Danish Galiyara 14th December, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 3rd January, 2021 ***
  */
 const addUpdateTemplates = (req, res) => {
   __logger.info('add update template API called', req.body)

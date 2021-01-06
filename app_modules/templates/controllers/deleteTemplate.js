@@ -25,7 +25,7 @@ const deleteTemplate = (req, res) => {
   const wabaPhoneNumber = req.user ? req.user.wabaPhoneNumber : ''
   const userId = req.user ? req.user.user_id : ''
   if (req.user && req.user.providerId) {
-    const templateService = new integrationService.Template(req.user.providerId)
+    const templateService = new integrationService.Template(req.user.providerId, req.user.maxTpsToProvider, req.user.user_id)
     const templateDbService = new TemplateDbService()
     if (req.params && req.params.templateId) {
       templateDbService.deleteTemplate(req.params.templateId, userId)
@@ -38,7 +38,7 @@ const deleteTemplate = (req, res) => {
         })
         .catch(err => {
           __logger.error('deleteTemplateerror in delete template: ', err)
-          return __util.send(res, { type: err.type, err: err.err || err })
+          return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
         })
     } else {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['templateId and template status is required'] })

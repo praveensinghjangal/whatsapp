@@ -16,7 +16,7 @@ const integrationService = require('../../integration')
 
 class StatusService {
   canUpdateStatus (newStatusId, oldStatusId) {
-    __logger.info('canUpdateStatus::', { TEMPLATE_STATUS_MAPPING: __constants.TEMPLATE_STATUS_MAPPING[oldStatusId], newStatusId })
+    __logger.info('canUpdateStatus::', oldStatusId, { TEMPLATE_STATUS_MAPPING: __constants.TEMPLATE_STATUS_MAPPING[oldStatusId], newStatusId })
     if (__constants.TEMPLATE_STATUS_MAPPING[oldStatusId] && __constants.TEMPLATE_STATUS_MAPPING[oldStatusId].includes(newStatusId)) return true
     return false
   }
@@ -26,6 +26,7 @@ class StatusService {
     const statusChanged = q.defer()
     const validate = new ValidatonService()
     const templateService = new TemplateService()
+    let queryObj = {}
     validate.validateAndUpdateStatusService({ templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason })
       .then(data => {
         __logger.info('validateAndUpdateStatus::here to update sta  us then 1', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason, userId })
@@ -48,7 +49,7 @@ class StatusService {
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.rejected.statusCode) slrr = secondLocalizationRejectionReason
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId === __constants.TEMPLATE_STATUS.denied.statusCode) slrr = secondLocalizationRejectionReason
           if (secondLocalizationNewStatusId && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.rejected.statusCode && secondLocalizationNewStatusId !== __constants.TEMPLATE_STATUS.denied.statusCode) slrr = null
-          const queryObj = {
+          queryObj = {
             templateStatus: '',
             firstLocalizationStatus: firstLocalizationNewStatusId || templateData.firstLocalizationStatus,
             firstLocalizationRejectionReason: flrr || null,
@@ -72,7 +73,7 @@ class StatusService {
       .then(result => {
         __logger.info('result then 3 ')
         if (result && result.affectedRows && result.affectedRows > 0) {
-          statusChanged.resolve(true)
+          statusChanged.resolve(queryObj)
         } else {
           statusChanged.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
@@ -84,10 +85,10 @@ class StatusService {
     return statusChanged.promise
   }
 
-  singleStatusCompareAndChange (templateId, serviceProviderId, wabaNumber, userId) {
+  singleStatusCompareAndChange (templateId, serviceProviderId, wabaNumber, userId, maxTpsToProvider) {
     __logger.info('singleStatusCompareAndChange::', { templateId, serviceProviderId })
     const compared = q.defer()
-    const templateIntegrationService = new integrationService.Template(serviceProviderId)
+    const templateIntegrationService = new integrationService.Template(serviceProviderId, maxTpsToProvider, userId)
     const templateService = new TemplateService()
     let firstLocalizationStatusFromProvider = ''
     let secondLocalizationStatusFromProvider = ''
@@ -150,11 +151,11 @@ class StatusService {
     return compared.promise
   }
 
-  processBulkStatusCompareAndChange (templateIdArr, serviceProviderId, wabaNumber, userId) {
+  processBulkStatusCompareAndChange (templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider) {
     let p = q()
     const thePromises = []
     templateIdArr.forEach(singleTemplateId => {
-      p = p.then(() => this.singleStatusCompareAndChange(singleTemplateId, serviceProviderId, wabaNumber, userId))
+      p = p.then(() => this.singleStatusCompareAndChange(singleTemplateId, serviceProviderId, wabaNumber, userId, maxTpsToProvider))
         .catch(err => {
           if (err && typeof err === 'object') err.valid = false
           return err
@@ -164,12 +165,12 @@ class StatusService {
     return q.all(thePromises)
   }
 
-  compareAndUpdateStatus (templateIdArr, serviceProviderId, wabaNumber, userId) {
+  compareAndUpdateStatus (templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider = 10) {
     const comparedAndUpdated = q.defer()
     const validate = new ValidatonService()
     __logger.info('compareAndUpdateStatus::', { templateIdArr, serviceProviderId })
     validate.compareAndUpdateStatusService({ templateIdArr, serviceProviderId, wabaNumber, userId })
-      .then(valRes => this.processBulkStatusCompareAndChange(templateIdArr, serviceProviderId, wabaNumber, userId))
+      .then(valRes => this.processBulkStatusCompareAndChange(templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider))
       .then(result => {
         __logger.info('compareAndUpdateStatus::After bulk process', { result })
         const redisService = new RedisService()

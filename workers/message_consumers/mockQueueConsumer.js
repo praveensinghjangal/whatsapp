@@ -38,7 +38,7 @@ class MessageConsumer {
               messageData.payload.retryCount = 5
             }
 
-            const messageService = new integrationService.Messaage(messageData.config.servicProviderId)
+            const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
             messageService.sendMessage(messageData.payload)
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
