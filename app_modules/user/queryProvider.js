@@ -157,7 +157,7 @@ const saveUserAgreement = () => {
 }
 
 const getLatestAgreementByUserId = () => {
-  return `select file_path from user_agreement_files
+  return `select file_path,file_name from user_agreement_files
   where user_id = ? and is_active = true 
   order by created_on desc limit 1`
 }

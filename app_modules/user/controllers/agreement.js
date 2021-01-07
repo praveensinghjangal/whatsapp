@@ -7,7 +7,11 @@ const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const __logger = require('../../../lib/logger')
 const fs = require('fs')
-const path = require('path')
+const __config = require('../../../config')
+const HttpService = require('../../../lib/http_service')
+const http = new HttpService(60000)
+const { FileStream } = require('../../../lib/util/fileStream')
+const request = require('request')
 
 /**
  * @namespace -Agreement-Controller-
@@ -22,7 +26,8 @@ const Storage = multer.diskStorage({
     let fileExt = file.originalname.split('.')
     fileExt = '.' + fileExt[fileExt.length - 1]
     __logger.info('fileExt -->', fileExt)
-    callback(null, 'Agreement_' + req.user.user_id + '_' + Date.now() + fileExt)
+    callback(null, 'Agreement_' + req.user.user_id + fileExt)
+    // callback(null, 'Agreement_' + req.user.user_id + '_' + Date.now() + fileExt)
   }
 })
 
@@ -66,6 +71,33 @@ const savFileDataInDataBase = (userId, fileName, filePath) => {
   return fileSaved.promise
 }
 
+const uploadFileFtp = (header, fileName, filePath) => {
+  __logger.info('file----', fileName, filePath)
+  const fileUpload = q.defer()
+  const url = __config.heloOssUrl + __constants.HELO_OSS_ENDPOINTS.upload
+  const headers = {
+    Authorization: 'cc255782-1f94-43c9-b5ee-256eb0bf764f',
+    'Content-Type': 'multipart/form-data'
+  }
+  __logger.info('oss req obj', { url, headers })
+  http.Post({ object: fs.createReadStream(filePath) }, 'formData', url, headers)
+    .then(apiResponse => {
+      __logger.info('helo-oss api response---', apiResponse.body.code, apiResponse.body.data.url)
+      if (apiResponse.body.code === __constants.RESPONSE_MESSAGES.SUCCESS.code) {
+        __logger.info('success', apiResponse.body)
+        fileUpload.resolve(apiResponse.body)
+      } else {
+        __logger.info('fail', apiResponse.body)
+        fileUpload.reject({ type: __constants.RESPONSE_MESSAGES.UPLOAD_FAILED, data: {} })
+      }
+    })
+    .catch(err => {
+      __logger.error('error in uploading file to ftp -->', err)
+      fileUpload.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return fileUpload.promise
+}
+
 /**
  * @memberof -Agreement-Controller-
  * @name UploadAgreement
@@ -88,8 +120,18 @@ const uploadAgreement = (req, res) => {
       return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
     } else {
       __logger.info('file uploaded', req.files)
-      savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path)
-        .then(data => res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { } })))
+      __logger.info('filennnn', req.files[0].filename)
+      const fileStream = new FileStream()
+      uploadFileFtp(req.headers.authorization, req.files[0].filename, req.files[0].path)
+        .then(response => {
+          __logger.info('response from upload function', response)
+          const ftpUploadUrl = response && response.data && response.data.url ? response.data.url.split(':action').join('view') : ''
+          return savFileDataInDataBase(req.user.user_id, req.files[0].filename, ftpUploadUrl)
+        })
+        .then(data => {
+          fileStream.deleteFile(__constants.PUBLIC_FOLDER_PATH + '/agreements/' + req.files[0].filename, req.files[0].filename)
+          res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
+        })
         .catch(err => {
           __logger.error('file upload API error', err)
           res.send(__util.send(res, { type: err.type, err: err.err }))
@@ -116,16 +158,10 @@ const getAgreement = (req, res) => {
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getLatestAgreementByUserId(), [userId])
     .then(results => {
       __logger.info('Got result from db 1', { results })
-      const baseFileName = path.basename(results[0].file_path)
-      const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
       if (results && results.length > 0) {
         __logger.info('fileeeeeeeeeeeeeeeeeeee', results[0].file_path)
-        __logger.info('File Path Exist', fs.existsSync(finalPath))
-        if (fs.existsSync(finalPath)) {
-          res.download(results[0].file_path)
-        } else {
-          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
-        }
+        res.setHeader('content-disposition', 'attachment; filename=' + results[0].file_name || 'agreement.pdf')
+        request(results[0].file_path).pipe(res)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
@@ -135,6 +171,7 @@ const getAgreement = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
+
 /**
  * @memberof -Agreement-Controller-
  * @name GenerateAgreement

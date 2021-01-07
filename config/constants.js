@@ -340,7 +340,8 @@ const MENU_BASED_TEMPLATE_STATUS = {
   rejected: { statusCode: 'a64ab539-eebd-4a04-81b0-76348e7eaf7c', displayName: 'Rejected' }
 }
 const HELO_OSS_ENDPOINTS = {
-  download: '/helo-oss/api/object/:action/:fileName'
+  download: '/helo-oss/api/object/:action/:fileName',
+  upload: '/helo-oss/api/object/upload'
 }
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
