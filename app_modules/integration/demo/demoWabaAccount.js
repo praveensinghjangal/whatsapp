@@ -1,12 +1,11 @@
 const q = require('q')
-const HttpService = require('../service/httpService')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const urlValidator = require('../../../lib/util/url')
 
 class WabaAccount {
-  constructor () {
-    this.http = new HttpService(60000)
+  constructor (maxConcurrent, userId) {
+    this.http = ''
   }
 
   getAccountInfo (wabaNumber) {

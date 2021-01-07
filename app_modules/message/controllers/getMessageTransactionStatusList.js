@@ -40,9 +40,10 @@ const getMessageTransactionstatusList = (req, res) => {
   const ItemsPerPage = +req.query.ItemsPerPage
   const offset = ItemsPerPage * (requiredPage - 1)
   const flag = req.query.transactionType ? req.query.transactionType.toLowerCase() : null
+  const sort = req.query && req.query.sort ? req.query.sort : 'ASC'
   req.query.flag = flag
   validate.transactionValidator(req.query)
-    .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset))
+    .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort))
     .then(data => {
       __logger.info('Data------> then 2', data)
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }

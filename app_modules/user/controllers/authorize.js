@@ -30,7 +30,8 @@ const createAuthTokenByUserId = userId => {
           user_id: userId,
           providerId: businessData.record.serviceProviderId,
           wabaPhoneNumber: businessData.record.phoneCode.split('+').join('') + businessData.record.phoneNumber,
-          signature: new UniqueId().uuid()
+          signature: new UniqueId().uuid(),
+          maxTpsToProvider: businessData.record.maxTpsToProvider
         }
         const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.AUTH_TOKEN_30_MINS)
         return authToken.resolve(token)
