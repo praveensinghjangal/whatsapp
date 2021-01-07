@@ -12,6 +12,8 @@ const __config = require('../config')
 const __constants = require('../config/constants')
 const helmet = require('helmet')
 const authMiddleware = require('../middlewares/auth/authentication')
+var cluster = require('cluster')
+var numCPUs = 3
 
 class httpApiWorker {
   constructor () {
@@ -102,11 +104,16 @@ class httpApiWorker {
       })
       next(res)
     })
-
-    vm.app.server = http.createServer(vm.app)
+    if (cluster.isMaster) {
+      for (var i = 0; i < numCPUs; i++) {
+        cluster.fork()
+      }
+    } else {
+      vm.app.server = http.createServer(vm.app)
+      vm.app.server.listen(__config.port)
+      vm.app.server.timeout = __constants.SERVER_TIMEOUT
+    }
     const io = socketio.listen(vm.app.server)
-    vm.app.server.listen(__config.port)
-    vm.app.server.timeout = __constants.SERVER_TIMEOUT
     io.sockets.on('connection', (socket) => {
       socket.on('disconnect', () => {
       })

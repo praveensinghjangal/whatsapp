@@ -16,8 +16,8 @@ class MessageConsumer {
             const redirectService = new RedirectService()
             const mqDataReceived = mqData
             messageData = JSON.parse(mqData.content.toString())
-            // __logger.debug('retry sending payload queue consumeeeeeeeer::received:', { mqData })
-            __logger.debug('retry sending payload queue consumeeeeeeeer:: messageData received:', messageData)
+            // __logger.info('retry sending payload queue consumeeeeeeeer::received:', { mqData })
+            __logger.info('retry sending payload queue consumeeeeeeeer:: messageData received:', messageData)
             redirectService.webhookPost(messageData.wabaNumber, messageData)
             rmqObject.channel[queue].ack(mqDataReceived)
             // process.exit(1)

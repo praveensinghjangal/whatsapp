@@ -5,12 +5,12 @@ var routeName = "analytics ";
 var analyticsCtrl = require('../../app_module/queue/queueCtrl');
 
 function basicRoute(router) {
-    __logger.debug(routeName + "route (basic) initialized...");
+   __logger.info(routeName + "route (basic) initialized...");
     return router;
 }
 
 function authenticateRoute(router) {
-    __logger.debug(routeName + "route (authenticate) initialized...");
+   __logger.info(routeName + "route (authenticate) initialized...");
     router.post('/add/codeAnalytics/:queue_name', analyticsCtrl.sendToCodeAnalyticsQueue);
     router.post('/add/msgStatus', analyticsCtrl.sendToMsgStatusQueue);
     return router;

@@ -22,7 +22,7 @@ class downloadWorker {
       const queue = __constants.MQ.cdr_download_request.q_name
       __logger.info('Waiting for message...')
       rmq_object.channel[queue].consume(queue, (mq_message) => {
-        __logger.debug('received:', { mq_message: mq_message })
+       __logger.info('received:', { mq_message: mq_message })
         const query_data = JSON.parse(mq_message.content.toString())
 
         const campaign_id = query_data.data.campaign_id || null
@@ -44,7 +44,7 @@ class downloadWorker {
             if (err) throw err
             const data = { campaign_id: campaign_id, filename: filename, download_status: 'finished' }
             __db.mongo.__update('vb', 'download_status', { campaign_id: campaign_id }, data).then((results) => {
-              __logger.debug('Download Status successfully saved')
+             __logger.info('Download Status successfully saved')
               rmq_object.channel[queue].ack(mq_message)
             }).catch(err => {
               __logger.error('error: ', err)

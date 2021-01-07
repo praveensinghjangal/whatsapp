@@ -26,7 +26,7 @@ find('name', 'node').then(function (process_list) {
                 watch: true
             }, function (data) {
                 if(data['remote']['port'] === 5672) {
-                    __logger.debug(data['state'])
+                   __logger.info(data['state'])
                 }
             });
         }

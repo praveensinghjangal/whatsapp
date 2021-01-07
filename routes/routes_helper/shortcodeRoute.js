@@ -5,12 +5,12 @@ var routeName = "ssp ";
 var shortcodeCtrl = require('../../app_module/shortcode/shortcodeCtrl');
 
 function basicRoute(router) {
-    __logger.debug(routeName + "route (basic) initialized...");
+   __logger.info(routeName + "route (basic) initialized...");
     return router;
 }
 
 function authenticateRoute(router) {
-    __logger.debug(routeName + "route (authenticate) initialized...");
+   __logger.info(routeName + "route (authenticate) initialized...");
     router.post('/generate/:api_owner', shortcodeCtrl.getShortCodes);
     return router;
 }
