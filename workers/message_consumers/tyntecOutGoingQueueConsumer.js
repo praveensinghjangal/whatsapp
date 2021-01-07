@@ -64,8 +64,8 @@ class MessageConsumer {
           try {
             const mqDataReceived = mqData
             messageData = JSON.parse(mqData.content.toString())
-            __logger.debug('tynte outgoing queue consumer::received:', { mqData })
-            __logger.debug('tynte outgoing queue consumer:: messageData received:', messageData)
+            __logger.info('tynte outgoing queue consumer::received:', { mqData })
+            __logger.info('tynte outgoing queue consumer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
               messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.tyntec
             }

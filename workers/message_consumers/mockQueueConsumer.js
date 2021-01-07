@@ -34,8 +34,8 @@ class MessageConsumer {
           try {
             const mqDataReceived = mqData
             messageData = JSON.parse(mqData.content.toString())
-            __logger.debug('mock queue consumeeeeeeeer::received:', { mqData })
-            __logger.debug('mock queue consumeeeeeeeer:: messageData received:', messageData)
+            __logger.info('mock queue consumeeeeeeeer::received:', { mqData })
+            __logger.info('mock queue consumeeeeeeeer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
               messageData.payload.retryCount = 5
             }
@@ -48,7 +48,7 @@ class MessageConsumer {
                   serviceProviderId: messageData.config.servicProviderId,
                   deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
                   statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
-                  state: __constants.MESSAGE_STATUS.resourceAllocated,
+                  state: __constants.MESSAGE_STATUS.seen,
                   endConsumerNumber: messageData.payload.to,
                   businessNumber: messageData.payload.whatsapp.from
                 }
