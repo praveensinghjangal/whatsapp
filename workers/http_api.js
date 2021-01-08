@@ -104,7 +104,7 @@ class httpApiWorker {
       })
       next(res)
     })
-    if (cluster.isMaster) {
+    if (cluster.isMaster && numCPUs > 0) {
       for (var i = 0; i < numCPUs; i++) {
         cluster.fork()
       }
