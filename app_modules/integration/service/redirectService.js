@@ -1,5 +1,5 @@
 const q = require('q')
-const HttpService = require('./httpService')
+const HttpService = require('../../../lib/http_service')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __config = require('../../../config')
