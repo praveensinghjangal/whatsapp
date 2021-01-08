@@ -4,7 +4,7 @@ const bodyParser = require('body-parser')
 const cors = require('cors')
 const addRequestId = require('express-request-id')()
 const path = require('path')
-const socketio = require('socket.io')
+// const socketio = require('socket.io')
 const __db = require('../lib/db')
 const __logger = require('../lib/logger')
 const __util = require('../lib/util')
@@ -13,7 +13,7 @@ const __constants = require('../config/constants')
 const helmet = require('helmet')
 const authMiddleware = require('../middlewares/auth/authentication')
 var cluster = require('cluster')
-var numCPUs = 3
+var numCPUs = __config.clusterNumber || 0
 
 class httpApiWorker {
   constructor () {
@@ -113,11 +113,11 @@ class httpApiWorker {
       vm.app.server.listen(__config.port)
       vm.app.server.timeout = __constants.SERVER_TIMEOUT
     }
-    const io = socketio.listen(vm.app.server)
-    io.sockets.on('connection', (socket) => {
-      socket.on('disconnect', () => {
-      })
-    })
+    // const io = socketio.listen(vm.app.server)
+    // io.sockets.on('connection', (socket) => {
+    //   socket.on('disconnect', () => {
+    //   })
+    // })
     __logger.info('SERVER SWAGGER API-DOC URL: ' + __config.base_url + '/' + __config.api_prefix + '/api' + '/internal-docs/' + __config.authConfig.serverDocAccessKey + '  ')
     const stopGraceFully = () => {
       vm.stopExpressServer()

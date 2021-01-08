@@ -279,5 +279,6 @@ module.exports = {
     chatApp: process.env.CHAT_APP_URL + __constants.CHAT_APP_BASE_PATH
   },
   webHookUrl: process.env.WEB_HOOK_URL,
-  heloOssUrl: process.env.HELO_OSS_URL
+  heloOssUrl: process.env.HELO_OSS_URL,
+  clusterNumber: process.env.CLUSTER_NUMBER
 }

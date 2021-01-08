@@ -93,7 +93,7 @@ const REDIS_TTL = {
   wabaData: 900,
   templateData: 300
 }
-const SERVER_TIMEOUT = 20 * 60 * 1000
+const SERVER_TIMEOUT = 2 * 60 * 1000
 const ENTITY_NAME = {
   MESSAGE_TEMPLATE_CATEGORY: 'message_template_category',
   MESSAGE_TEMPLATE_LANGUAGE: 'message_template_language',
