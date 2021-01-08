@@ -103,7 +103,8 @@ const getIncomingOutgoingMessageCount = (transactionType) => {
 
 const getIncomingMessageTransaction = (sort) => {
   return `SELECT distinct(viva_message_id) as "messageId", created_on as "time",
-  payload ->"$.to" as "to", from_number as "from",payload ->"$.content.text" as "message"
+  payload ->"$.to" as "to", from_number as "from",payload ->"$.content.text" as "message",
+  payload ->"$.whatsapp.senderName" as "senderName"
     FROM incoming_message_payload
     where payload ->"$.to" = (select CONCAT(phone_code ,phone_number) 
     from waba_information where user_id = ? and is_active = 1)
