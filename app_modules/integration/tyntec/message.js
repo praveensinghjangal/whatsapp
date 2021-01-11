@@ -8,8 +8,8 @@ const RedisService = require('../../../lib/redis_service/redisService')
 const logger = require('../../../lib/logger')
 
 class Message {
-  constructor () {
-    this.http = new HttpService(60000)
+  constructor (maxConcurrent, userId) {
+    this.http = new HttpService(60000, maxConcurrent, userId)
   }
 
   sendMessage (payload) {

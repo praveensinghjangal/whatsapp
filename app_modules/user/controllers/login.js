@@ -49,7 +49,7 @@ const controller = (req, res) => {
       const userData = results[0]
       if (userData && userData.tfa_type) userData.tfa_type_display_name = __constants.TFA_TYPE_DISPLAYNAME[userData.tfa_type]
       if (userData.is_tfa_enabled === 0) {
-        const payload = { user_id: userData.user_id, providerId: userData.service_provider_id || '', wabaPhoneNumber: userData.wabaPhoneNumber }
+        const payload = { user_id: userData.user_id, providerId: userData.service_provider_id || '', wabaPhoneNumber: userData.wabaPhoneNumber, maxTpsToProvider: userData.maxTpsToProvider }
         const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.SESSION_TIME)
         return __util.send(res, { type: apiResponses.SUCCESS, data: { token: token, emailVerifiedStatus: userData.email_verified === 1, phoneVerifiedStatus: userData.phone_verified === 1, tncAccepted: userData.tnc_accepted === 1, role: userData.role_name, tfaType: userData.tfa_type, tfaTypeDisplayName: userData.tfa_type_display_name } })
       } else {

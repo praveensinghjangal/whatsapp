@@ -1,11 +1,11 @@
 const q = require('q')
-const HttpService = require('../service/httpService')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
+const urlValidator = require('../../../lib/util/url')
 
 class WabaAccount {
-  constructor () {
-    this.http = new HttpService(60000)
+  constructor (maxConcurrent, userId) {
+    this.http = ''
   }
 
   getAccountInfo (wabaNumber) {
@@ -61,6 +61,25 @@ class WabaAccount {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
       return deferred.promise
     }
+  }
+
+  setWebhook (wabaNumber, incomingMessageUrl, statusUrl) {
+    __logger.info('inside setWebhook -->', wabaNumber, incomingMessageUrl, statusUrl)
+    const deferred = q.defer()
+    if (!wabaNumber || (!incomingMessageUrl && !statusUrl)) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide either incomingMessageUrl or statusUrl along with wabaNumber.' })
+      return deferred.promise
+    }
+    if (incomingMessageUrl && !urlValidator.isValidHttp(incomingMessageUrl)) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide valid https URL for incomingMessageUrl.' })
+      return deferred.promise
+    }
+    if (statusUrl && !urlValidator.isValidHttp(statusUrl)) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide valid https URL for statusUrl.' })
+      return deferred.promise
+    }
+    deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+    return deferred.promise
   }
 }
 

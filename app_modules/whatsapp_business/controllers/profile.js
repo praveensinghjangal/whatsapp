@@ -17,7 +17,7 @@ const HttpService = require('../../../lib/http_service')
 const _ = require('lodash')
 const WabaStatusService = require('../services/wabaStatusEngine')
 const otherModuleCallService = require('../services/otherModuleCalls')
-
+const Hooks = require('../services/hooks')
 /**
  * @namespace -Whatsapp-Business-Account-(WABA)-Controller-
  * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
@@ -194,6 +194,7 @@ const addUpdateBusinessProfile = (req, res) => {
   const validate = new ValidatonService()
   this.http = new HttpService(60000)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   let wabaProfileData = {}
   let profileData = {}
   let providerId
@@ -230,7 +231,7 @@ const addUpdateBusinessProfile = (req, res) => {
       __logger.info('addUpdateBusinessProfile::ddddd----', data)
       if (wabaProfileData && wabaProfileData.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         __logger.info('addUpdateBusinessProfile::called tyntec api to update profile data---')
-        const wabaAccountService = new integrationService.WabaAccount(providerId)
+        const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
         return wabaAccountService.updateProfile(req.user.wabaPhoneNumber, wabaProfileData)
       } else {
         __logger.info('addUpdateBusinessProfile::status not accepted')
@@ -345,37 +346,40 @@ function formatFinalStatus (queryResult, result) {
 
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
- * @name UpdateServiceProviderId
+ * @name UpdateServiceProviderDetails
  * @path {PUT} /business/profile/serviceProvider
  * @description Bussiness Logic :- This API is used for updating service provider id.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
- <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/updateServiceProviderId|UpdateServiceProviderId}
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/updateServiceProviderDetails|UpdateServiceProviderDetails}
  * @body {string} serviceProviderId
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  - Returns Service Provider Id in response according to user Id.
  * @code {200} if the msg is success than Returns Service Provider Id.
  * @author Arjun Bhole 29th July, 2020
- * *** Last-Updated :- Arjun Bhole 29th October, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 24th December, 2020 ***
  */
-const updateServiceProviderId = (req, res) => {
-  __logger.info('Inside updateServiceProviderId')
-  const userId = req.body && req.body.user_id ? req.body.user_id : 0
+const updateServiceProviderDetails = (req, res) => {
+  __logger.info('Inside updateServiceProviderDetails')
+  const callerUserId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
   const validationService = new ValidatonService()
-
-  validationService.checkServiceProviderIdService(req.body)
-    .then(data => businessAccountService.getBusinessProfileInfo(userId))
+  const hooks = new Hooks()
+  let wabaData = {}
+  validationService.updateServiceProviderDetails(req.body)
+    .then(data => businessAccountService.getBusinessProfileInfo(req.body.userId))
     .then(results => {
-      __logger.info('Then 2')
+      __logger.info('Then 2 waba data')
       if (results && results.length > 0) {
-        saveHistoryData(results[0], __constants.ENTITY_NAME.WABA_INFORMATION, results[0].wabaInformationId, userId)
-        return businessAccountService.updateServiceProviderId(userId, req.body.serviceProviderId)
+        wabaData = results[0]
+        return businessAccountService.updateServiceProviderDetails(req.body.userId, callerUserId, results[0], req.body)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
     })
     .then(result => {
-      __logger.info('Then 3')
+      __logger.info('Then 3', result)
+      _.each(result, (val, key) => { wabaData[key] = val })
+      if (req.body.serviceProviderUserAccountId || req.body.apiKey) hooks.trigger(wabaData, wabaData.wabaProfileSetupStatusId, req.headers)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
@@ -499,6 +503,7 @@ const upload = multer({
 const updateProfilePic = (req, res) => {
   __logger.info('updateProfilePic>>>>>>>>>>>>>>>...........')
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   const businessAccountService = new BusinessAccountService()
   __logger.info('RTRT', req.user, req.user.user_id)
   upload(req, res, function (err, data) {
@@ -522,7 +527,7 @@ const updateProfilePic = (req, res) => {
               return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
             } else {
               const providerId = req.user.providerId || (results.exists ? results.record.serviceProviderId : '')
-              const wabaAccountService = new integrationService.WabaAccount(providerId)
+              const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
               const reqBody = {
                 imageData: imageData,
                 userId,
@@ -552,7 +557,7 @@ const updateProfilePicByUrl = (req, res) => {
   __logger.info('updateProfilePicByUrl::url', req.body.profilePic)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const businessAccountService = new BusinessAccountService()
-  const wabaAccountService = new integrationService.WabaAccount(req.user.providerId)
+  const wabaAccountService = new integrationService.WabaAccount(req.user.providerId, req.user.maxTpsToProvider, userId)
   const fileStream = new FileStream()
   const fileDownload = new FileDownload()
   __logger.info('updateProfilePicByUrl::userId', req.user, req.user.user_id)
@@ -635,9 +640,9 @@ const allocateTemplatesToWaba = (req, res) => {
   __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id, req.body)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
-  const userId = req.body && req.body.user_id ? req.body.user_id : '0'
+  const recordUpdatingUserId = req.user && req.user.user_id ? req.user.user_id : 0
   validate.allocateTemplatesToWaba(req.body)
-    .then(data => businessAccountService.checkUserIdExist(userId))
+    .then(data => businessAccountService.checkUserIdExist(req.body.userId))
     .then(data => {
       __logger.info('exists -----------------> then 2', data)
       if (!data.exists) {
@@ -646,7 +651,7 @@ const allocateTemplatesToWaba = (req, res) => {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
       } else {
         __logger.info('time to checl if profile approved')
-        return businessAccountService.updateBusinessData(req.body, data.record || {}, req.headers.authorization)
+        return businessAccountService.updateBusinessData(req.body, data.record || {}, recordUpdatingUserId)
       }
     })
     .then(data => {
@@ -664,7 +669,7 @@ module.exports = {
   addUpdateBusinessProfile,
   addupdateBusinessAccountInfo,
   markManagerVerified,
-  updateServiceProviderId,
+  updateServiceProviderDetails,
   updateWabaPhoneNumber,
   addUpdateOptinMessage,
   updateProfilePic,

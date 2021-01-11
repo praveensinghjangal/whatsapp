@@ -5,13 +5,12 @@ const __constants = require('../../../config/constants')
 const WabaStatusService = require('../services/wabaStatusEngine')
 const ValidatonService = require('../services/validation')
 const BusinessAccountService = require('../services/businesAccount')
-const _ = require('lodash')
 
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
  * @name updateWabaAccessInfoStatus
  * @path {PUT} /business/profile/status
- * @description Bussiness Logic :- This API sends the business access info to support team for approval.
+ * @description Bussiness Logic :- This API changes the profile status.
  * when the access info is in submitted status
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/status|UpdateAccessInfoStatus}
@@ -19,17 +18,17 @@ const _ = require('lodash')
  * @response {string} metadata.msg=Success  -  Returns wabaProfileSetupStatusId as Pending For Approval.
  * @code {200} if the msg is success than Returns business access info updated status.
  * @author Arjun Bhole 20th November, 2020
- * *** Last-Updated :- Arjun Bhole 23th November, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 21st December, 2020 ***
  */
 const updateWabaAccessInfoStatus = (req, res) => {
   __logger.info('updateWabaAccessInfoStatus API called', req.body)
-  const userId = req.body && req.body.user_id ? req.body.user_id : ''
+  const recordUpdatingUserId = req.user && req.user.user_id ? req.user.user_id : 0
   const validate = new ValidatonService()
   const businessAccountService = new BusinessAccountService()
   const wabaStatusService = new WabaStatusService()
   let queryResult
   validate.addUpdateBusinessAccessInfoInputCheck(req.body)
-    .then(() => businessAccountService.checkUserIdExist(userId))
+    .then(() => businessAccountService.checkUserIdExist(req.body.userId))
     .then(result => {
       queryResult = result.record
       if (!result.exists) {
@@ -46,7 +45,7 @@ const updateWabaAccessInfoStatus = (req, res) => {
         accessInfoRejectionReason: req.body && req.body.accessInfoRejectionReason ? req.body.accessInfoRejectionReason : null
       }
       if (result && result.complete && reqBody.wabaProfileSetupStatusId !== queryResult.wabaProfileSetupStatusId && wabaStatusService.canUpdateWabaStatus(reqBody.wabaProfileSetupStatusId, queryResult.wabaProfileSetupStatusId)) {
-        return businessAccountService.updateBusinessData(reqBody, queryResult)
+        return businessAccountService.updateBusinessData(reqBody, queryResult, recordUpdatingUserId)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_CHANGED, data: {}, err: {} })
       }

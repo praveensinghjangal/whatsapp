@@ -162,13 +162,13 @@ class MessgaeHistoryService {
     return messageStatus.promise
   }
 
-  getMessageTransactionList (userId, startDate, endDate, flag, ItemsPerPage, offset) {
+  getMessageTransactionList (userId, startDate, endDate, flag, ItemsPerPage, offset, sort) {
     __logger.info('getMessageTransactionList::>>>>>>>>>>>>')
     const messageStatus = q.defer()
     let qry = ''
     let qryParam = []
     if (flag === __constants.MESSAGE_TRANSACTION_TYPE[0]) {
-      qry = queryProvider.getIncomingMessageTransaction()
+      qry = queryProvider.getIncomingMessageTransaction(sort)
       qryParam = [userId, startDate, endDate, ItemsPerPage, offset, userId, startDate, endDate]
     } else if (flag === __constants.MESSAGE_TRANSACTION_TYPE[1]) {
       qry = queryProvider.getOutgoingMessageTransaction()

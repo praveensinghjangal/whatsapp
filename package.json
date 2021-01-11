@@ -7,7 +7,8 @@
     "start": "node ./bin/www",
     "develop": "nodemon server.js",
     "jsodoc": "./node_modules/.bin/jsdoc -c jsdoc.conf -d public/js-docs",
-    "debug": "nodemon --inspect=9231 server.js"
+    "debug": "nodemon --inspect=9231 server.js",
+    "v8Profile":"node --prof server.js"
   },
   "nodemonConfig": {
     "env": {
@@ -26,9 +27,10 @@
   },
   "dependencies": {
     "amqplib": "0.5.5",
-    "api-responses": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/api-responses.git#1.0.2",
+    "api-responses": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/api-responses.git#1.0.3",
     "async": "3.1.1",
     "aws-sdk": "2.682.0",
+    "bottleneck": "^2.19.5",
     "connect-timeout": "1.9.0",
     "convert-excel-to-json": "1.7.0",
     "cookie-parser": "1.4.3",
@@ -79,6 +81,7 @@
     "socket.io": "2.2.0",
     "speakeasy": "2.0.0",
     "uuid4": "1.1.4",
+    "viva-logger": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/viva-logger.git#1.0.1",
     "winston": "3.1.0",
     "winston-daily-rotate-file": "3.10.0",
     "yamljs": "0.3.0"

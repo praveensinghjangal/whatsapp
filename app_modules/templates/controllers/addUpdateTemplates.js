@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const ValidatonService = require('../services/validation')
 const TemplateService = require('../services/dbData')
 const __util = require('../../../lib/util')
@@ -42,7 +41,7 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
  * @response {boolean} metadata.data.mediaTemplateComplete - It will return true
  * @code {200} if the msg is success than it Returns Status of template info completion
  * @author Danish Galiyara 5th June, 2020
- * *** Last-Updated :- Danish Galiyara 14th December, 2020 ***
+ * *** Last-Updated :- Danish Galiyara 3rd January, 2021 ***
  */
 const addUpdateTemplates = (req, res) => {
   __logger.info('add update template API called', req.body)
@@ -98,8 +97,7 @@ const addUpdateTemplates = (req, res) => {
       __logger.info('add update template:: rule checked then 4', { validationData })
       ruleResponse = validationData
       if (!validationData.complete) {
-        // return statusService.changeStatusToComplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
-        return false
+        return statusService.changeStatusToIncomplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
       } else {
         return statusService.changeStatusToComplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
       }
@@ -109,10 +107,7 @@ const addUpdateTemplates = (req, res) => {
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)
       // __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
-      let statusName = _.find(__constants.TEMPLATE_STATUS, { statusCode: oldStatus })
-      statusName = statusName.displayName
-      console.log('stratus name', statusName)
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, messageTemplateStatusId: oldStatus, statusName: statusName, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, messageTemplateStatusId: statusChanged.statusCode, statusName: statusChanged.displayName, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
       console.log('eeeeeeeeeee', err)

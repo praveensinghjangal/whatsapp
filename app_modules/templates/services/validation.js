@@ -160,10 +160,10 @@ class validate {
           maxLength: 1024
         },
         headerType: {
-          type: 'string',
+          type: typeof request.headerType === 'string' ? 'string' : null,
           required: false,
           minLength: 1,
-          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase()),
+          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType ? json.templateHeaderType.toLowerCase() : json.templateHeaderType),
           maxLength: 100
         },
         buttonType: {
@@ -179,6 +179,15 @@ class validate {
           additionalProperties: false,
           properties: {
             quickReply: {
+              type: 'array',
+              required: request.buttonType,
+              minItems: 1,
+              maxItems: 3,
+              items: {
+                type: 'string'
+              }
+            },
+            secondLanguageQuickReply: {
               type: 'array',
               required: request.buttonType,
               minItems: 1,
@@ -208,6 +217,16 @@ class validate {
               type: 'string',
               required: false,
               minLength: 1
+            },
+            secondLanguageWebsiteButtontext: {
+              type: 'string',
+              required: false,
+              minLength: 1
+            },
+            secondLanguagePhoneButtonText: {
+              type: 'string',
+              required: false,
+              minLength: 1
             }
           }
         }
@@ -231,8 +250,8 @@ class validate {
 
   isTemplateComplete (request) {
     const isvalid = q.defer()
-    const headereTypeEnum = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
-    const buttonTypeEnum = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
+    const headereTypeEnum = _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType ? json.templateHeaderType.toLowerCase() : json.templateHeaderType)
+    const buttonTypeEnum = _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType ? json.buttonType.toLowerCase() : json.buttonType)
     headereTypeEnum.push(null)
     buttonTypeEnum.push(null)
     if (request && request.type) request.type = request.type.toLowerCase()
@@ -386,181 +405,6 @@ class validate {
       isvalid.resolve(false)
     } else {
       isvalid.resolve(true)
-    }
-    return isvalid.promise
-  }
-
-  checkTemplateInfoStatus (request) {
-    // __logger.info('Request', request)
-    const isvalid = q.defer()
-    if (request && request.type) request.type = request.type.toLowerCase()
-    if (request && request.headerType) request.headerType = request.headerType.toLowerCase()
-    if (request && request.buttonType) request.buttonType = request.buttonType.toLowerCase()
-    const schema = {
-      id: '/checkTemplateInfoStatus',
-      type: 'object',
-      required: true,
-      properties: {
-        messageTemplateId: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 50
-        },
-        templateName: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 100
-        },
-        type: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 75
-        },
-        categoryName: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        statusName: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        languageName: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        bodyText: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 1000
-        },
-        headerText: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 500
-        },
-        footerText: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 500
-        },
-        mediaType: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 100
-        },
-        wabaInformationId: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 50
-        },
-        secondLanguageRequired: {
-          type: 'boolean',
-          required: true,
-          minLength: 1
-        },
-        secondLanguageName: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        secondLanguageBodyText: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 1024
-        },
-        headerType: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType.toLowerCase())
-        },
-        buttonType: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType.toLowerCase())
-        },
-        buttonData: {
-          type: 'object',
-          required: true,
-          properties: {
-            quickReply: {
-              type: 'array',
-              required: true,
-              minItems: 1,
-              maxItems: 3,
-              items: {
-                type: 'string'
-              }
-            },
-            phoneButtonText: {
-              type: 'string',
-              required: true,
-              minLength: 1
-            },
-            phoneNumber: {
-              type: 'string',
-              required: true,
-              minLength: 10,
-              maxLength: 10,
-              pattern: __constants.VALIDATOR.number
-            },
-            websiteButtontext: {
-              type: 'string',
-              required: true,
-              minLength: 1
-            },
-            webAddress: {
-              type: 'string',
-              required: true,
-              minLength: 1
-            }
-          }
-        }
-      }
-    }
-
-    if (request.type === 'standard') {
-      delete schema.properties.headerText
-      delete schema.properties.footerText
-      delete schema.properties.mediaType
-    }
-    if (request.type === 'media message template') {
-      delete schema.properties.bodyText
-    }
-    if (request && request.buttonType === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLocaleLowerCase()) {
-      delete schema.properties.buttonData.properties.quickReply
-    }
-    if (request && request.buttonType === __constants.TEMPLATE_BUTTON_TYPE[1].buttonType.toLocaleLowerCase()) {
-      delete schema.properties.buttonData.properties.phoneButtonText
-      delete schema.properties.buttonData.properties.phoneNumber
-      delete schema.properties.buttonData.properties.websiteButtontext
-      delete schema.properties.buttonData.properties.webAddress
-    }
-    const formatedError = []
-    v.addSchema(schema, '/checkTemplateInfoStatus')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
-    })
-    if (formatedError.length > 0) {
-      isvalid.resolve({ complete: false, err: formatedError })
-    } else {
-      trimInput.bulkInputTrim(request)
-      isvalid.resolve({ complete: true })
     }
     return isvalid.promise
   }

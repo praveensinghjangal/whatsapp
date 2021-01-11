@@ -129,6 +129,12 @@ class TemplateService {
       templateData.secondLanguageName = null
     }
 
+    if (!templateData.secondLanguageRequired && templateData.buttonData) {
+      if (templateData.buttonData.secondLanguageQuickReply) delete templateData.buttonData.secondLanguageQuickReply
+      if (templateData.buttonData.secondLanguageWebsiteButtontext) delete templateData.buttonData.secondLanguageWebsiteButtontext
+      if (templateData.buttonData.secondLanguagePhoneButtonText) delete templateData.buttonData.secondLanguagePhoneButtonText
+    }
+
     // If template type is standard then deleting the header text footer text and button data
     if (templateData.type === __constants.TEMPLATE_TYPE[0].templateType.toLowerCase()) {
       templateData.footerText = null
@@ -186,7 +192,7 @@ class TemplateService {
  * @body {string} userId - ID fetchd from token by controller
  * @response {object} templateData  -  Object which is updated in DB.
  * @author Danish Galiyara 5th June, 2020
- *  * *** Last-Updated :- Danish Galiyara 8th December, 2020 ***
+ *  * *** Last-Updated :- Danish Galiyara 3rd January, 2021 ***
  */
   updateTemplate (newData, oldData, userId) {
     __logger.info('Updating template', newData)
@@ -207,7 +213,7 @@ class TemplateService {
       secondLanguageHeaderText: newData.secondLanguageHeaderText || oldData.secondLanguageHeaderText,
       secondLanguageBodyText: newData.secondLanguageBodyText || oldData.secondLanguageBodyText,
       secondLanguageFooterText: newData.secondLanguageFooterText || oldData.secondLanguageFooterText,
-      headerType: newData.headerType || oldData.headerType,
+      headerType: newData.headerType ? newData.headerType : (newData.headerType === null ? null : oldData.headerType),
       buttonType: newData.buttonType ? newData.buttonType : (newData.buttonType === null ? null : oldData.buttonType),
       buttonData: newData.buttonType === null ? {} : (newData.buttonData || oldData.buttonData),
       updatedBy: userId,
@@ -231,6 +237,12 @@ class TemplateService {
       templateData.headerText = null
       templateData.buttonData = null
       templateData.buttonType = null
+    }
+
+    if (!templateData.secondLanguageRequired && templateData.buttonData) {
+      if (templateData.buttonData.secondLanguageQuickReply) delete templateData.buttonData.secondLanguageQuickReply
+      if (templateData.buttonData.secondLanguageWebsiteButtontext) delete templateData.buttonData.secondLanguageWebsiteButtontext
+      if (templateData.buttonData.secondLanguagePhoneButtonText) delete templateData.buttonData.secondLanguagePhoneButtonText
     }
 
     // If template type is media then deleting the header text and footer text
@@ -326,7 +338,7 @@ class TemplateService {
       })
       .catch(err => {
         __logger.error('error: ', err)
-        templateDeleted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        templateDeleted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
 
     return templateDeleted.promise

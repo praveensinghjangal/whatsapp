@@ -8,14 +8,14 @@ function basicRoute(router) {
     router.post('/sspTestApi', sspCtrl.sspTestApi);
     router.post('/pingBack', sspCtrl.sspPingback);
 
-    __logger.debug(routeName + "route (basic) initialized...");
+   __logger.info(routeName + "route (basic) initialized...");
     return router;
 }
 
 function authenticateRoute(router) {
 //    router.get('/test', test);
 
-    __logger.debug(routeName + "route (authenticate) initialized...");
+   __logger.info(routeName + "route (authenticate) initialized...");
     return router;
 }
 

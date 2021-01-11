@@ -5,18 +5,18 @@ const providers = { // keep on adding providers here
 }
 // functions will be called as per provider
 class Messaage {
-  constructor (providerId) {
+  constructor (providerId, maxConcurrent, userId) {
     this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
-    this.message = new providers[this.providerName].Messaage()
+    this.message = new providers[this.providerName].Messaage(maxConcurrent, userId)
   }
 
   sendMessage (payload) { return this.message.sendMessage(payload) }
 }
 
 class Template {
-  constructor (providerId) {
+  constructor (providerId, maxConcurrent, userId) {
     this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
-    this.template = new providers[this.providerName].Template()
+    this.template = new providers[this.providerName].Template(maxConcurrent, userId)
   }
 
   addTemplate (data, wabaNumber) { return this.template.addTemplate(data, wabaNumber) }
@@ -29,9 +29,9 @@ class Template {
 }
 
 class WabaAccount {
-  constructor (providerId) {
+  constructor (providerId, maxConcurrent, userId) {
     this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
-    this.wabaAccount = new providers[this.providerName].WabaAccount()
+    this.wabaAccount = new providers[this.providerName].WabaAccount(maxConcurrent, userId)
   }
 
   getAccountInfo (wabaNumber) { return this.wabaAccount.getAccountInfo(wabaNumber) }
@@ -43,6 +43,8 @@ class WabaAccount {
   getCurrentProfile (wabaNumber) { return this.wabaAccount.getCurrentProfile(wabaNumber) }
 
   updateProfile (wabaNumber, bodyData) { return this.wabaAccount.updateProfile(wabaNumber, bodyData) }
+
+  setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
 }
 
 module.exports = { Messaage, Template, WabaAccount }

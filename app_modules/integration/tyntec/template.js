@@ -25,8 +25,8 @@ const mapStatusOfAllLocalization = localizationArray => {
 }
 
 class Template {
-  constructor () {
-    this.http = new HttpService(60000)
+  constructor (maxConcurrent, userId) {
+    this.http = new HttpService(60000, maxConcurrent, userId)
     this.dataMapper = new DataMapper()
   }
 

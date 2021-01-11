@@ -111,7 +111,7 @@ const checkIfNoExists = number => {
   return exists.promise
 }
 
-const sendToQueue = (data, providerId) => {
+const sendToQueue = (data, providerId, userId, maxTpsToProvider) => {
   const messageSent = q.defer()
   const uniqueId = new UniqueId()
   data.messageId = uniqueId.uuid()
@@ -119,6 +119,8 @@ const sendToQueue = (data, providerId) => {
     config: config.provider_config[providerId],
     payload: data
   }
+  queueData.config.userId = userId
+  queueData.config.maxTpsToProvider = maxTpsToProvider
   const planPriority = data.redisData.planPriority
   delete data.redisData
   rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
@@ -128,11 +130,11 @@ const sendToQueue = (data, providerId) => {
   return messageSent.promise
 }
 
-const sendToQueueBulk = (data, providerId) => {
+const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider) => {
   let p = q()
   const thePromises = []
   data.forEach(singleObject => {
-    p = p.then(() => sendToQueue(singleObject, providerId))
+    p = p.then(() => sendToQueue(singleObject, providerId, userId, maxTpsToProvider))
       .catch(err => err)
     thePromises.push(p)
   })
@@ -206,7 +208,7 @@ const controller = (req, res) => {
       if (invalidReq.length > 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
       } else {
-        return sendToQueueBulk(req.body, req.user.providerId)
+        return sendToQueueBulk(req.body, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider)
       }
     })
     .then(sendToQueueRes => {

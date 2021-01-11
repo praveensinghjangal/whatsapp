@@ -344,13 +344,15 @@ class validate {
           type: 'string',
           required: false,
           minLength: 5,
-          maxLength: 30
+          maxLength: 30,
+          pattern: __constants.VALIDATOR.gst
         },
         panCard: {
           type: 'string',
           required: false,
           minLength: 10,
-          maxLength: 20
+          maxLength: 20,
+          pattern: __constants.VALIDATOR.pan
         }
       }
     }

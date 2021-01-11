@@ -799,10 +799,18 @@ paths:
                 msg: Success
                 data:
                   rows:
-                    - messageId: 3764f600-b8ec-4111-b55f-7b8fb286cd0b
-                      time: '2020-09-03T05:25:54.000Z'
-                    - messageId: fdab9945-4c91-465b-a234-1b50b8a5e998
+                    - from: '917666777211'
+                      message: Hi
+                      messageId: 3764f600-b8ec-4111-b55f-7b8fb286cd0b
+                      time: '2020-09-03T09:43:54.000Z'
+                      to: '918080800808'
+                      senderName: Hiren
+                    - from: '917222777211'
+                      message: Hello
+                      messageId: fdab9945-4c91-465b-a234-1b50b8a5e998
                       time: '2020-09-03T09:42:25.000Z'
+                      to: '918080800808'
+                      senderName: Piyush
                   pagination:
                     totalPage: 56
                     currentPage: 1
@@ -3395,13 +3403,15 @@ paths:
               error: {}
       security: []
   /business/profile/serviceProvider:
-    put:
+    patch:
       x-module: platform
-      description: API is used for updating service provider id
-      summary: update service provier id
+      description: |-
+        This API is used for adding updating service provider details
+        This API also activates chatbot and sets webhooks in provier system
+      summary: add update service provier details
       tags:
         - WABA
-      operationId: updateServiceProviderId
+      operationId: updateServiceProviderDetails
       deprecated: false
       produces:
         - application/json
@@ -3416,7 +3426,7 @@ paths:
           required: true
           description: ''
           schema:
-            $ref: '#/definitions/updateServiceProviderIdRequest'
+            $ref: '#/definitions/updateServiceProviderDetailsRequest'
       responses:
         '200':
           description: Returns Service Provider Id
@@ -3434,6 +3444,9 @@ paths:
               msg: Success
               data:
                 serviceProviderId: e76a602e-37e3-4c5d-898f-56bf0c880f93
+                apiKey: asachdkuhsnjndfjdajncs
+                serviceProviderUserAccountId: cdhdabhdkdk-acb3-4dfa-fsfddd-ddfdaaeeds
+                userId: sdcfd-fsssddsds-sdssada-hgjuujjg
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -8006,7 +8019,7 @@ paths:
   /feedback:
     post:
       x-module: chatApp
-      summary: This API is used to add the feedback
+      summary: This API is used to add/update the feedback
       tags:
         - chat-app
       operationId: addFeedBack
@@ -8023,7 +8036,7 @@ paths:
           required: true
           description: ''
           schema:
-            $ref: '#/definitions/addFeedBackRequest'
+            $ref: '#/definitions/addUpdateFeedBackRequest'
       responses:
         '200':
           description: Returns thanks for providing feedback
@@ -8613,20 +8626,27 @@ definitions:
       - FlowDescription
       - flowCategoryId
       - flow
-  updateServiceProviderIdRequest:
-    title: updateServiceProviderIdRequest
+  updateServiceProviderDetailsRequest:
+    title: updateServiceProviderDetailsRequest
     example:
       serviceProviderId: e76a602e-37e3-4c5d-898f-56bf0c880f93
       userId: sjldfhkhsdf669699877
+      apiKey: asachdkuhsnjndfjdajncs
+      serviceProviderUserAccountId: bhsgsytwdu8oi-acb3-hbh-8b52-hgtgvgjuhw8uoee
     type: object
     properties:
       serviceProviderId:
         type: string
       userId:
         type: string
+      apiKey:
+        type: string
+      serviceProviderUserAccountId:
+        type: string
     required:
       - serviceProviderId
       - userId
+      - apiKey
   verifiycodeforbusinessnumberrequest:
     title: verifiycodeforbusinessnumberrequest
     example:
@@ -9242,15 +9262,18 @@ definitions:
       - wabaInformationId
       - waaPhoneNumber
       - userId
-  addFeedBackRequest:
+  addUpdateFeedBackRequest:
     title: addFeedBackRequest
     example:
+      redirectUrl: 'httos://wbc.co'
       userPhoneNumber: '1233333333'
       wabaPhoneNumber: '4444444444'
       ratings: 4
       comments: Good Experience
     type: object
     properties:
+      redirectUrl:
+        type: string
       userPhoneNumber:
         type: string
       wabaPhoneNumber:

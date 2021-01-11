@@ -11,7 +11,7 @@ module.exports = (req, res, next) => {
     const base64 = new Base64()
     const authTokenArr = req.headers.authorization.split(' ')
     if ((authTokenArr[0]) && (authTokenArr[0]).toLowerCase() === 'bearer') {
-      __logger.info('ppppppppppppppppp', authTokenArr)
+      // __logger.info('ppppppppppppppppp', authTokenArr)
       let str = base64.decode(authTokenArr[1] || '')
       str = str.split(':')
       const url = __config.base_url + __constants.INTERNAL_END_POINTS.userLogin

@@ -1,8 +1,10 @@
+const moment = require('moment')
+const q = require('q')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const integrationService = require('../../app_modules/integration')
-const q = require('q')
+const MessageHistoryService = require('../../app_modules/message/services/dbData')
 
 const sendToErrorQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -32,14 +34,26 @@ class MessageConsumer {
           try {
             const mqDataReceived = mqData
             messageData = JSON.parse(mqData.content.toString())
-            __logger.debug('mock queue consumeeeeeeeer::received:', { mqData })
-            __logger.debug('mock queue consumeeeeeeeer:: messageData received:', messageData)
+            __logger.info('mock queue consumeeeeeeeer::received:', { mqData })
+            __logger.info('mock queue consumeeeeeeeer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
               messageData.payload.retryCount = 5
             }
-
-            const messageService = new integrationService.Messaage(messageData.config.servicProviderId)
+            const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
             messageService.sendMessage(messageData.payload)
+              .then(data => {
+                const messageHistoryService = new MessageHistoryService()
+                const statusData = {
+                  messageId: messageData.payload.messageId,
+                  serviceProviderId: messageData.config.servicProviderId,
+                  deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+                  statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
+                  state: __constants.MESSAGE_STATUS.seen,
+                  endConsumerNumber: messageData.payload.to,
+                  businessNumber: messageData.payload.whatsapp.from
+                }
+                return messageHistoryService.addMessageHistoryDataService(statusData)
+              })
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
                 __logger.info('Error------------------------------->', err)

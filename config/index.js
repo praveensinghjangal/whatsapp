@@ -21,7 +21,7 @@ module.exports = {
     serverDocAccessKey: process.env.AUTH_CONFIG_API_AUTH_SERVER_DOC_ACCESS_KEY
   },
   logging: {
-    log_file: process.env.LOGGING_LOG_PATH + appName,
+    log_file: process.env.LOGGING_LOG_PATH + '/' + appName,
     console: process.env.LOGGING_CONSOLE === 'true',
     only_console: process.env.LOGGING_ONLY_CONSOLE === 'true',
     level: process.env.LOGGING_LEVEL,
@@ -277,5 +277,8 @@ module.exports = {
   swaggerUrl: {
     platform: process.env.BASE_URL ? process.env.BASE_URL + '/' + __constants.APP_NAME + '/api' : 'http://localhost:' + process.env.PORT + '/' + __constants.APP_NAME + '/api',
     chatApp: process.env.CHAT_APP_URL + __constants.CHAT_APP_BASE_PATH
-  }
+  },
+  webHookUrl: process.env.WEB_HOOK_URL,
+  heloOssUrl: process.env.HELO_OSS_URL,
+  clusterNumber: process.env.CLUSTER_NUMBER
 }

@@ -38,23 +38,41 @@ class validate {
     return isvalid.promise
   }
 
-  checkServiceProviderIdService (request) {
+  updateServiceProviderDetails (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/checkServiceProviderIdService',
+      id: '/updateServiceProviderDetails',
       type: 'object',
       required: true,
       properties: {
         serviceProviderId: {
           type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 50
+        },
+        userId: {
+          type: 'string',
           required: true,
           minLength: 1,
           maxLength: 50
+        },
+        apiKey: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 500
+        },
+        serviceProviderUserAccountId: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 500
         }
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/checkServiceProviderIdService')
+    v.addSchema(schema, '/updateServiceProviderDetails')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
@@ -257,7 +275,6 @@ class validate {
         webhookPostUrl: {
           type: 'string',
           required: false,
-          minLength: 1,
           maxLength: 300
         },
         optinText: {
@@ -537,7 +554,7 @@ class validate {
         },
         userId: {
           type: 'string',
-          required: false,
+          required: true,
           minLength: 1,
           maxLength: 50
         }
@@ -575,6 +592,12 @@ class validate {
           type: 'number',
           required: true,
           minLength: 1
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
         }
       }
     }
