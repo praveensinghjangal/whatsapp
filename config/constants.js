@@ -181,8 +181,8 @@ const INTERNAL_END_POINTS = {
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
   inProcess: 'in process',
-  resourceAllocated: 'resource allocated',
-  forwarded: 'forwarded',
+  // resourceAllocated: 'resource allocated',
+  // forwarded: 'forwarded',
   deleted: 'deleted',
   seen: 'seen',
   delivered: 'delivered',
