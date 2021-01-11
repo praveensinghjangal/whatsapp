@@ -26,4 +26,6 @@ EXPOSE 7777
 
 RUN ./node_modules/.bin/jsdoc -c ./jsdoc.conf -d public/js-docs
 
-CMD ["node", "server.js"]
+# CMD ["node", "server.js"]
+
+CMD ["node", "server2.js"]
