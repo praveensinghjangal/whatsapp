@@ -9,6 +9,7 @@ const EmailService = require('../../../lib/sendNotifications/email')
 const EmailTemplates = require('../../../lib/sendNotifications/emailTemplates')
 const __config = require('../../../config')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const passMgmt = require('../../../lib/util/password_mgmt')
 
 /**
  * @namespace -Password-Management-Controller-
@@ -109,4 +110,30 @@ const changePassword = (req, res) => {
     })
 }
 
-module.exports = { forgetPassword, changePassword }
+const resetPasssword = (req, res) => {
+  __logger.info('resetPassword function called::', req.body)
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const userService = new UserService()
+  const validate = new ValidatonService()
+  validate.resetPassword(req.body)
+    .then(data => userService.getPasswordByUserId(userId))
+    .then(result => {
+      __logger.info('result from db---', result)
+      const hashPassword = passMgmt.create_hash_of_password(req.body.oldPassword, result.saltKey.toLowerCase())
+      __logger.info('hash of oldPassword::', hashPassword)
+      if (hashPassword.passwordHash !== result.hashPass.toLowerCase()) { // todo : use bcrypt
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+      }
+      return userService.updatePassword(userId, req.body.newPassword)
+    })
+    .then(data => {
+      __logger.info('updated password for userId::', data)
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || {} })
+    })
+}
+
+module.exports = { forgetPassword, changePassword, resetPasssword }

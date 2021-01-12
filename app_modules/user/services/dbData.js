@@ -305,6 +305,25 @@ class UserData {
       .catch(err => userDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
     return userDataFetched.promise
   }
+
+  getPasswordByUserId (userId) {
+    __logger.info('getUSerDataByUserId>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPasswordByUserId(), [userId])
+      .then(result => {
+        __logger.info('Qquery Result', result[0])
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+        } else {
+          userDetails.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get user function: ', err)
+        userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData

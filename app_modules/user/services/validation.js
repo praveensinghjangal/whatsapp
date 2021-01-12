@@ -469,6 +469,59 @@ class validate {
     }
     return isvalid.promise
   }
+
+  resetPassword (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/resetPassword',
+      type: 'object',
+      required: true,
+      properties: {
+        oldPassword: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        newPassword: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          trim: true,
+          pattern: __constants.VALIDATOR.password
+        },
+        confirmNewPassword: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          trim: true,
+          pattern: __constants.VALIDATOR.password
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/resetPassword')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      if (formatedErr[1].includes('newPassword')) {
+        formatedError.push('Please provide newPassword with atleast 1 Uppercase letter, 1 special character and 2 numbers')
+      } else if (formatedErr[1].includes('confirmNewPassword')) {
+        formatedError.push('Please provide confirmNewPassword with atleast 1 Uppercase letter, 1 special character and 2 numbers')
+      } else {
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
+    })
+    if (request.newPassword && request.confirmNewPassword && request.newPassword !== request.confirmNewPassword) {
+      formatedError.push('newPassword & confirmNewPassword does not match')
+    }
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
