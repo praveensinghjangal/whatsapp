@@ -184,14 +184,22 @@ const INTERNAL_END_POINTS = {
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
   inProcess: 'in process',
-  // resourceAllocated: 'resource allocated',
-  // forwarded: 'forwarded',
+  resourceAllocated: 'resource allocated',
+  forwarded: 'forwarded',
   deleted: 'deleted',
   seen: 'seen',
   delivered: 'delivered',
   accepted: 'accepted',
   failed: 'failed'
 }
+const MESSAGE_STATUS_FOR_DISPLAY = [
+  MESSAGE_STATUS.inProcess,
+  MESSAGE_STATUS.accepted,
+  MESSAGE_STATUS.delivered,
+  MESSAGE_STATUS.seen,
+  MESSAGE_STATUS.deleted,
+  MESSAGE_STATUS.failed
+]
 const VALIDATOR = {
   email: '^(([^<>()\\[\\]\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
   password: '^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\\d]){2,})(?=(.*[\\W]){1,})(?!.*\\s).{8,}$',
@@ -400,3 +408,4 @@ module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
 module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
 module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
+module.exports.MESSAGE_STATUS_FOR_DISPLAY = MESSAGE_STATUS_FOR_DISPLAY
