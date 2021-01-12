@@ -36,8 +36,16 @@ const getMessageStatusCount = (req, res) => {
     .then(isvalid => dbServices.getMessageCount(userId, req.query.startDate, req.query.endDate))
     .then(data => {
       __logger.info('db count data ----->then 2', { data })
-      _.each(__constants.MESSAGE_STATUS, singleStatus => { if (!_.find(data, obj => obj.state.toLowerCase() === singleStatus.toLowerCase())) data.push({ state: singleStatus, stateCount: 0 }) })
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data })
+      const dataOut = []
+      _.each(__constants.MESSAGE_STATUS_FOR_DISPLAY, singleStatus => {
+        const statusData = _.find(data, obj => obj.state.toLowerCase() === singleStatus.toLowerCase())
+        if (!statusData) {
+          dataOut.push({ state: singleStatus, stateCount: 0 })
+        } else {
+          dataOut.push(statusData)
+        }
+      })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dataOut })
     })
     .catch(err => {
       __logger.error('error::getMessageStatusCount : ', err)
