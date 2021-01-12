@@ -263,6 +263,11 @@ const resetTfaData = () => {
   WHERE users_tfa_id = ? and is_active = true`
 }
 
+const getPasswordByUserId = () => {
+  return `select hash_password as "hashPass", salt_key as "saltKey" from users
+  where is_active  = 1 and user_id = ?`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -299,5 +304,6 @@ module.exports = {
   updateTfaData,
   addTempTfaData,
   updateTempTfaData,
-  resetTfaData
+  resetTfaData,
+  getPasswordByUserId
 }
