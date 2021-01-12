@@ -53,7 +53,7 @@ class validate {
       isvalid.reject({ statusCode: 'VE001', message: 'invalid input', error: formatedError })
     } else {
       trimInput.singleInputTrim(request)
-      .then(data => isvalid.resolve(data))
+        .then(data => isvalid.resolve(data))
     }
     return isvalid.promise
   }
@@ -478,6 +478,8 @@ class validate {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
         trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
         isvalid.resolve(request)
       }
     }
@@ -531,6 +533,8 @@ class validate {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
         trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
         isvalid.resolve(request)
       }
     }
