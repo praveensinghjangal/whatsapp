@@ -9932,7 +9932,7 @@
             "x-isPublic": true,
             "x-module": "platform",
             "summary": "Authorize API",
-            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 days.",
+            "description": "Authorize API to use API key and generate auth token to be used in other supported API's.\nToken generated using this API have validity of 30 minutes.",
             "tags": [
                "users"
             ],

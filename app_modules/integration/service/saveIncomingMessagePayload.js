@@ -50,7 +50,7 @@ const validateInput = input => {
     isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
   } else {
     trimInput.singleInputTrim(input)
-    .then(data => isvalid.resolve(data))
+      .then(data => isvalid.resolve(data))
   }
   return isvalid.promise
 }
