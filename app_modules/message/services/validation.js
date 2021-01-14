@@ -106,7 +106,8 @@ class validate {
               text: {
                 type: 'string',
                 required: false,
-                minLength: 1
+                minLength: 1,
+                maxLength: 4096
               },
               media: {
                 type: 'object',
@@ -127,7 +128,8 @@ class validate {
                   caption: {
                     type: 'string',
                     required: false,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 4096
                   },
                   filename: {
                     type: 'string',
