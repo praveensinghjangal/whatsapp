@@ -60,8 +60,8 @@ class StatusService {
             wabaInformationId: templateData.wabaInformationId
           }
           queryObj.templateStatus = queryObj.firstLocalizationStatus
-          if (queryObj.firstLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode || queryObj.secondLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode) queryObj.templateStatus = __constants.TEMPLATE_STATUS.partiallyApproved.statusCode
-          if (queryObj.firstLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode && queryObj.secondLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode) queryObj.templateStatus = __constants.TEMPLATE_STATUS.approved.statusCode
+          if (queryObj.firstLocalizationStatus && queryObj.secondLocalizationStatus && (queryObj.firstLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode || queryObj.secondLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode)) queryObj.templateStatus = __constants.TEMPLATE_STATUS.partiallyApproved.statusCode
+          if (queryObj.firstLocalizationStatus && queryObj.secondLocalizationStatus && queryObj.firstLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode && queryObj.secondLocalizationStatus === __constants.TEMPLATE_STATUS.approved.statusCode) queryObj.templateStatus = __constants.TEMPLATE_STATUS.approved.statusCode
           const queryParam = []
           _.each(queryObj, val => queryParam.push(val))
           __logger.info('validateAndUpdateStatus::update status query', queryParam)
@@ -126,15 +126,15 @@ class StatusService {
           oldSecondLocalizationStatus = data.secondLocalizationStatus
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
-          console.log('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else if (oldFirstLocalizationStatus) {
-          console.log('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('time to update only 1st status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, firstLocalizationStatusFromProvider, oldFirstLocalizationStatus, firstRejectReason, null, null, null, userId)
         } else if (oldSecondLocalizationStatus) {
-          console.log('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
+          __logger.info('time to update only 2nd status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
           this.notify(userId, notifyStatusData, data.templateName)
           return this.validateAndUpdateStatus(templateId, null, null, null, secondLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondRejectReason, userId)
         } else {
