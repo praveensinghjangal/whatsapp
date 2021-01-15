@@ -308,7 +308,8 @@ const markManagerVerified = (req, res) => {
     })
     .then(data => {
       __logger.info('After Marking Manager verified then 5', data)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessVerificationCompletionStatus: true } })
+      const wabaProfileSetupStatusObj = _.find(__constants.WABA_PROFILE_STATUS, obj => obj.statusCode.toLowerCase() === data.wabaProfileSetupStatusId.toLowerCase())
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { businessVerificationCompletionStatus: true, wabaProfileSetupStatus: wabaProfileSetupStatusObj.displayName, wabaProfileSetupStatusId: wabaProfileSetupStatusObj.statusCode } })
     })
     .catch(err => {
       __logger.error('error: ', err)

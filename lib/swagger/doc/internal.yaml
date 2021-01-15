@@ -6835,7 +6835,7 @@ paths:
       summary: Authorize API
       description: |-
         Authorize API to use API key and generate auth token to be used in other supported API's.
-        Token generated using this API have validity of 30 days.
+        Token generated using this API have validity of 30 minutes.
       tags:
         - users
       operationId: authorize

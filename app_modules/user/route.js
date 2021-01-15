@@ -25,7 +25,7 @@ router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name,
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
 router.post('/authorize', bearerTokenAuth, require('./controllers/authorize').authorize)
 router.post('/internal/authorize', tokenBasedAuth, require('./controllers/authorize').authorize)
-router.post('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/passwordManagement').resetPasssword)
+router.patch('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/passwordManagement').resetPasssword)
 
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {
