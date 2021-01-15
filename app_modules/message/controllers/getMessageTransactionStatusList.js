@@ -3,6 +3,8 @@ const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const DbServices = require('../services/dbData')
 const ValidatonService = require('../services/validation')
+const q = require('q')
+const integrationService = require('../../../app_modules/integration')
 
 /**
  * @namespace -WhatsApp-Message-Controller-Transaction-Status-
@@ -44,8 +46,9 @@ const getMessageTransactionstatusList = (req, res) => {
   req.query.flag = flag
   validate.transactionValidator(req.query)
     .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort))
+    .then(data => processMessage(data, req, userId, flag))
     .then(data => {
-      __logger.info('Data------> then 2', data)
+      __logger.info('Data------> then 2')
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })
@@ -53,6 +56,42 @@ const getMessageTransactionstatusList = (req, res) => {
       __logger.error('error::getMessageTransactionList : ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
+}
+
+const processMessage = async (data, req, userId, flag) => {
+  const messageProcessed = q.defer()
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
+  const wabaAccountService = new integrationService.WabaAccount(req.user.providerId, maxTpsToProvider, userId)
+  // console.log('processMessage---------------------->', data)
+
+  if (data && flag === 'incoming') {
+    // console.log('processMessage---------------------->', data)
+    data[0] = await Promise.all(data[0].map(async incomingMsg => {
+      // console.log('processMessage- message------------------>', message)
+      // console.log('processMessage- message------------------>', incomingMsg.incomingMsgId)
+      if (incomingMsg && incomingMsg.content && incomingMsg.content.contentType === 'media') {
+        // console.log('incomingMsg---------------------->', incomingMsg.content)
+        const media = await wabaAccountService.getMedia(req.user.wabaPhoneNumber, incomingMsg.content.media.mediaId)
+        // console.log('media-------------------------->', typeof media.data)
+        incomingMsg[incomingMsg.content.media.type] = media.data
+        incomingMsg.contentType = incomingMsg.content.contentType
+        incomingMsg.mediaType = incomingMsg.content.media.type
+        delete incomingMsg.content
+        return incomingMsg
+      } else {
+        incomingMsg.contentType = incomingMsg.content.contentType
+        incomingMsg.message = incomingMsg.content.text
+        delete incomingMsg.content
+        return incomingMsg
+      }
+    })
+    )
+    // console.log('Final MEssages????????????????????', finalMessages)
+    messageProcessed.resolve(data)
+  } else {
+    messageProcessed.resolve(data)
+  }
+  return messageProcessed.promise
 }
 
 module.exports = getMessageTransactionstatusList

@@ -45,6 +45,8 @@ class WabaAccount {
   updateProfile (wabaNumber, bodyData) { return this.wabaAccount.updateProfile(wabaNumber, bodyData) }
 
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
+
+  getMedia (wabaNumber, mediaId) { return this.wabaAccount.getMedia(wabaNumber, mediaId) }
 }
 
 module.exports = { Messaage, Template, WabaAccount }

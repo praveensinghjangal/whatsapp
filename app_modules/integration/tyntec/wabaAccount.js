@@ -259,6 +259,43 @@ class WabaAccount {
       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return deferred.promise
   }
+
+  getMedia (wabaNumber, mediaId) {
+    __logger.info('wabaNumber', wabaNumber)
+    const deferred = q.defer()
+    if (wabaNumber) {
+      const redisService = new RedisService()
+      redisService.getWabaDataByPhoneNumber(wabaNumber)
+        .then(data => {
+          __logger.info('getMedia then 1', data, typeof data)
+          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getMedia
+          url = url.split(':mediaId').join(mediaId || '')
+          __logger.info('URL====', url)
+          const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            apikey: data.apiKey
+          }
+          return this.http.Get(url, headers, data.serviceProviderId)
+        })
+        .then((mediaData) => {
+          __logger.info('mediaData then 2', { mediaData })
+          if (mediaData) {
+            // if (mediaData && mediaData.constructor.name.toLowerCase() === 'object') {
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: mediaData })
+          } else if (mediaData && mediaData.status === 404) {
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          } else {
+            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: mediaData.whatsAppAccountId || mediaData, data: {} })
+          }
+        })
+        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      return deferred.promise
+    } else {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
+      return deferred.promise
+    }
+  }
 }
 
 module.exports = WabaAccount
