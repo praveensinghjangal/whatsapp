@@ -75,6 +75,7 @@ const getBusinessProfile = (req, res) => {
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/addupdatebusinessprofilraccessInformation|AddupdateBusinessAccountInfo}
  * @body {string} facebookManagerId
+ * @body {string} businessName
  * @body {string} phoneCode
  * @body {string} phoneNumber
  * @body {boolean} canReceiveSms=true
@@ -84,7 +85,7 @@ const getBusinessProfile = (req, res) => {
  * @response {string} metadata.msg=Success  -  Returns businessProfileCompletionStatus as true.
  * @code {200} if the msg is success than Returns Status of business profile info completion.
  * @author Arjun Bhole 3rd June, 2020
- * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
+ * *** Last-Updated :- Arjun Bhole 15th Jan, 2020 ***
  */
 
 const addupdateBusinessAccountInfo = (req, res) => {
@@ -108,6 +109,7 @@ const addupdateBusinessAccountInfo = (req, res) => {
       if (result && result.exists) {
         const finalObj = {
           facebookManagerId: req.body && req.body.facebookManagerId ? req.body.facebookManagerId : result.record.facebookManagerId,
+          businessName: req.body && req.body.businessName ? req.body.businessName : result.record.businessName,
           phoneCode: req.body && req.body.phoneCode ? req.body.phoneCode : result.record.phoneCode,
           phoneNumber: req.body && req.body.phoneNumber ? req.body.phoneNumber : result.record.phoneNumber,
           canReceiveSms: req.body && typeof req.body.canReceiveSms === 'boolean' ? req.body.canReceiveSms : result.record.canReceiveSms,
@@ -166,7 +168,6 @@ const addupdateBusinessAccountInfo = (req, res) => {
  * @description Bussiness Logic :- API to add or update business profile.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/add/updatebusinessprofile|AddUpdateBusinessProfile}
- * @body {string} businessName
  * @body {string} whatsappStatus
  * @body {string} description
  * @body {string} address
@@ -322,7 +323,8 @@ function computeBusinessAccessAndBusinessProfleCompleteStatus (data) {
   // __logger.info('Input Data ', data)
   const businessProfilePromise = q.defer()
   const errorFields = data.fieldErr
-  const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'city', 'postalCode']
+  const businessProfileFields = ['whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'city', 'postalCode']
+  // const businessProfileFields = ['businessName', 'whatsappStatus', 'description', 'address', 'country', 'email', 'businessCategory', 'city', 'postalCode']
   data.businessAccessProfileCompletionStatus = true
   data.businessProfileCompletionStatus = true
   for (let key = 0; key < errorFields.length; key++) {

@@ -141,6 +141,12 @@ class validate {
           minLength: 1,
           maxLength: 100
         },
+        businessName: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 80
+        },
         phoneCode: {
           type: 'string',
           required: false,
@@ -195,7 +201,7 @@ class validate {
       properties: {
         businessName: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1,
           maxLength: 80
         },
@@ -327,7 +333,7 @@ class validate {
       properties: {
         businessName: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1,
           maxLength: 80
         },
@@ -418,6 +424,12 @@ class validate {
         facebookManagerId: {
           type: 'string',
           required: true
+        },
+        businessName: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 80
         },
         phoneCode: {
           type: 'string',
