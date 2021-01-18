@@ -114,8 +114,8 @@ class StatusService {
 
         const notifyStatusData = {
           secondLanguageRequired: data.secondLanguageRequired ? data.secondLanguageRequired : null,
-          firstLocalizationStatus: data.firstLocalizationStatus ? data.firstLocalizationStatus : null,
-          secondLocalizationStatus: data.secondLocalizationStatus ? data.secondLocalizationStatus : null,
+          firstLocalizationStatus: data.firstLocalizationStatus ? this.getTemplateStatusName(data.firstLocalizationStatus) : null,
+          secondLocalizationStatus: data.secondLocalizationStatus ? this.getTemplateStatusName(data.secondLocalizationStatus) : null,
           firstLocalizationRejectionReason: data.firstLocalizationRejectionReason ? data.firstLocalizationRejectionReason : null,
           secondLocalizationRejectionReason: data.secondLocalizationRejectionReason ? data.secondLocalizationRejectionReason : null
         }
@@ -270,7 +270,7 @@ class StatusService {
         ? statusData.secondLocalizationRejectionReason : null
     }
     userService.getEmailAndFirstNameFromUserId(userId)
-      .then(userData => emailService.sendEmail([userData.email], emailSubject + templateName,
+      .then(userData => emailService.sendEmail([userData.email], emailSubject + ' - ' + templateName,
         emailTemplates.templateStatusUpdate(statusData, userData.firstName, templateName)))
       .then(data => {
         __logger.info('Email Contents>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', { data })
@@ -352,6 +352,19 @@ class StatusService {
         return statusChanged.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return statusChanged.promise
+  }
+
+  getTemplateStatusName (templateCode) {
+    const result = _(__constants.TEMPLATE_STATUS)
+      .filter(c => c.statusCode === templateCode)
+      .map('displayName')
+      .value()
+
+    if (result && result.length > 0) {
+      return result[0]
+    } else {
+      return null
+    }
   }
 }
 
