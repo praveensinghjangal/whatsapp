@@ -64,7 +64,7 @@ class WabaAccount {
   }
 
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) {
-    __logger.info('inside setWebhook -->', wabaNumber, incomingMessageUrl, statusUrl)
+    __logger.info('inside setWebhook demo -->', wabaNumber, incomingMessageUrl, statusUrl)
     const deferred = q.defer()
     if (!wabaNumber || (!incomingMessageUrl && !statusUrl)) {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide either incomingMessageUrl or statusUrl along with wabaNumber.' })

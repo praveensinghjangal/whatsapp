@@ -223,7 +223,7 @@ const addUpdateBusinessProfile = (req, res) => {
         return businessAccountService.insertBusinessData(userId, req.body, {})
       } else {
         __logger.info('addUpdateBusinessProfile::time to update')
-        return businessAccountService.updateBusinessData(req.body, profileData.record || {}, req.headers.authorization)
+        return businessAccountService.updateBusinessData(req.body, profileData.record || {}, userId)
       }
     })
     // call integration here in .then
@@ -302,7 +302,7 @@ const markManagerVerified = (req, res) => {
     .then(data => {
       __logger.info('datatatatata then 4', data)
       if (data) {
-        return businessAccountService.updateBusinessData(req.body, queryResult.record || {}, req.headers.authorization)
+        return businessAccountService.updateBusinessData(req.body, queryResult.record, userId)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
       }
@@ -456,7 +456,7 @@ const addUpdateOptinMessage = (req, res) => {
     .then(data => {
       __logger.info('data then 4 >>')
       if (data) {
-        return businessAccountService.updateBusinessData(req.body, record || {}, req.headers.authorization)
+        return businessAccountService.updateBusinessData(req.body, record || {}, userId)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUSINESS_INFO_NOT_COMPLETE, err: {}, data: {} })
       }
