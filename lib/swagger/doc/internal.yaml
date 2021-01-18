@@ -8575,24 +8575,21 @@ definitions:
   add/updatebusinessprofilerequest:
     title: add/updatebusinessprofilerequest
     example:
-      businessName: vivaconnect
       whatsappStatus: available
       description: available 24/7
       address: 'some address '
-      country: IN
-      city: mumbai
-      state: maharashtra
+      country: '101'
+      city: '785'
+      state: '12'
       postalCode: '400001'
       email: 123@gmail.com
       businessCategoryId: bda36704-cde5-41c9-b039-e3841fa9229f
       serviceProviderId: f1d44200-4b9d-4901-ae49-5035e0b14a5d
       apiKey: test123
-      webhookPostUrl: 'http://localhost:3000/helowhatsapp/message'
+      webhookPostUrl: 'http://www.exampl.com'
       optinText: Hey
     type: object
     properties:
-      businessName:
-        type: string
       whatsappStatus:
         type: string
       description:
@@ -8619,12 +8616,11 @@ definitions:
         type: string
       optinText:
         type: string
-    required:
-      - businessName
   addupdatebusinessprofilraccessInformationRequest:
     title: addupdatebusinessprofilraccessInformationRequest
     example:
       facebookManagerId: my-manager-id
+      businessName: test
       phoneCode: '91'
       phoneNumber: '1234567890'
       canReceiveSms: true
@@ -8633,6 +8629,8 @@ definitions:
     type: object
     properties:
       facebookManagerId:
+        type: string
+      businessName:
         type: string
       phoneCode:
         type: string
@@ -8646,6 +8644,12 @@ definitions:
         type: boolean
     required:
       - facebookManagerId
+      - businessName
+      - phoneCode
+      - phoneNumber
+      - canReceiveSms
+      - canReceiveVoiceCall
+      - associatedWithIvr
   markmanagerverifiedrequest:
     title: markmanagerverifiedrequest
     example:

@@ -112,10 +112,10 @@ class checkCompleteIncomplete {
     if (formatedError.length > 0) {
       isvalid.resolve({ complete: false, err: formatedError, fieldErr: formatedFieldError, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr })
     } else {
-      if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || request.associatedWithIvr)) {
+      if (request && (!request.canReceiveSms || !request.canReceiveVoiceCall || !request.businessName || request.associatedWithIvr)) {
         isvalid.resolve({ complete: false, canReceiveSms: request.canReceiveSms, canReceiveVoiceCall: request.canReceiveVoiceCall, associatedWithIvr: request.associatedWithIvr, businessManagerVerified: request.businessManagerVerified })
       }
-      if (request && request.canReceiveSms && request.canReceiveVoiceCall) {
+      if (request && request.canReceiveSms && request.canReceiveVoiceCall && request.businessName) {
         isvalid.resolve({ complete: true })
       }
     }
