@@ -111,14 +111,14 @@ class InternalService {
   addQuickReplyButton (body, td) {
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.buttonType && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[1].buttonType.toLowerCase()) {
       const buttonArr = []
-      _.each(td.buttonData.quickReply, str => buttonArr.push({ type: 'QUICK_REPLY', text: str }))
+      _.each(td.buttonData.quickReply, str => { if (str) buttonArr.push({ type: 'QUICK_REPLY', text: str }) })
       body.localizations[0].components.push({
         type: 'BUTTONS',
         buttons: buttonArr
       })
       if (td.secondLanguageRequired) {
         const seconfLangButtonArr = []
-        _.each(td.buttonData.secondLanguageQuickReply, str => seconfLangButtonArr.push({ type: 'QUICK_REPLY', text: str }))
+        _.each(td.buttonData.secondLanguageQuickReply, str => { if (str) seconfLangButtonArr.push({ type: 'QUICK_REPLY', text: str }) })
         body.localizations[1].components.push({
           type: 'BUTTONS',
           buttons: seconfLangButtonArr
