@@ -64,7 +64,7 @@ const processMessage = async (data, req, userId, flag) => {
   const wabaAccountService = new integrationService.WabaAccount(req.user.providerId, maxTpsToProvider, userId)
   // console.log('processMessage---------------------->', data)
 
-  if (data && flag === 'incoming') {
+  if (data && data.length > 0 && flag === 'incoming') {
     // console.log('processMessage---------------------->', data)
     data[0] = await Promise.all(data[0].map(async incomingMsg => {
       // console.log('processMessage- message------------------>', message)

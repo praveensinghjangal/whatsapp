@@ -280,13 +280,12 @@ class WabaAccount {
         })
         .then((mediaData) => {
           __logger.info('mediaData then 2', { mediaData })
-          if (mediaData) {
-            // if (mediaData && mediaData.constructor.name.toLowerCase() === 'object') {
+          if (mediaData && mediaData.status === 200) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: mediaData })
           } else if (mediaData && mediaData.status === 404) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
           } else {
-            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: mediaData.whatsAppAccountId || mediaData, data: {} })
+            return deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
           }
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
