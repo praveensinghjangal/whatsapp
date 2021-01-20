@@ -65,6 +65,7 @@ class validate {
       type: 'array',
       required: true,
       minItems: 1,
+      maxItems: 500,
       items: {
         type: 'object',
         required: true,

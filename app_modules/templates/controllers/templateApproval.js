@@ -184,8 +184,8 @@ const sendTemplateForEvaluaion = (req, res) => {
           if (oldTemplateData && oldTemplateData.templateName) {
             const notifyStatusData = {
               secondLanguageRequired: oldTemplateData.secondLanguageRequired ? oldTemplateData.secondLanguageRequired : null,
-              firstLocalizationStatus: reqBody.firstLocalizationNewStatusId ? getTemplateStatusName(reqBody.firstLocalizationNewStatusId) : null,
-              secondLocalizationStatus: reqBody.secondLocalizationNewStatusId ? getTemplateStatusName(reqBody.secondLocalizationNewStatusId) : null,
+              firstLocalizationStatus: reqBody.firstLocalizationNewStatusId ? statusService.getTemplateStatusName(reqBody.firstLocalizationNewStatusId) : null,
+              secondLocalizationStatus: reqBody.secondLocalizationNewStatusId ? statusService.getTemplateStatusName(reqBody.secondLocalizationNewStatusId) : null,
               firstLocalizationRejectionReason: reqBody.firstLocalizationRejectionReason ? reqBody.firstLocalizationRejectionReason : null,
               secondLocalizationRejectionReason: reqBody.secondLocalizationRejectionReason ? reqBody.secondLocalizationRejectionReason : null
             }
@@ -217,17 +217,4 @@ const sendTemplateForEvaluaion = (req, res) => {
   }
 }
 
-function getTemplateStatusName (templateCode) {
-  const result = _(__constants.TEMPLATE_STATUS)
-    .filter(c => c.statusCode === templateCode)
-    .map('displayName')
-    .value()
-
-  if (result && result.length > 0) {
-    return result[0]
-  } else {
-    return null
-  }
-}
-
-module.exports = { sendTemplateForApproval, sendTemplateForEvaluaion, getTemplateStatusName }
+module.exports = { sendTemplateForApproval, sendTemplateForEvaluaion }
