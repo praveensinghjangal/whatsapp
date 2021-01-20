@@ -11,6 +11,8 @@ class Messaage {
   }
 
   sendMessage (payload) { return this.message.sendMessage(payload) }
+
+  getMedia (wabaNumber, mediaId) { return this.message.getMedia(wabaNumber, mediaId) }
 }
 
 class Template {
@@ -45,8 +47,6 @@ class WabaAccount {
   updateProfile (wabaNumber, bodyData) { return this.wabaAccount.updateProfile(wabaNumber, bodyData) }
 
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
-
-  getMedia (wabaNumber, mediaId) { return this.wabaAccount.getMedia(wabaNumber, mediaId) }
 }
 
 module.exports = { Messaage, Template, WabaAccount }

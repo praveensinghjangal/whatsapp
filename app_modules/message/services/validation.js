@@ -543,6 +543,36 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkMediaIdExist (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkMediaIdExist',
+      type: 'object',
+      required: true,
+      properties: {
+        mediaId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkMediaIdExist')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
