@@ -262,8 +262,9 @@ class WabaAccount {
 
   getMedia (wabaNumber, mediaId) {
     __logger.info('wabaNumber', wabaNumber)
+    __logger.info('mediaId', mediaId)
     const deferred = q.defer()
-    if (wabaNumber) {
+    if (wabaNumber && mediaId) {
       const redisService = new RedisService()
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
@@ -289,6 +290,9 @@ class WabaAccount {
           }
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      return deferred.promise
+    } else if (!mediaId) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing MediaId' })
       return deferred.promise
     } else {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
