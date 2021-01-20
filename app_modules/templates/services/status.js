@@ -100,8 +100,8 @@ class StatusService {
         if (result && result.code === __constants.RESPONSE_MESSAGES.SUCCESS.code) {
           firstLocalizationStatusFromProvider = result.data && result.data.localizations && result.data.localizations[0] && result.data.localizations[0].messageTemplateStatusId ? result.data.localizations[0].messageTemplateStatusId : null
           secondLocalizationStatusFromProvider = result.data && result.data.localizations && result.data.localizations[1] && result.data.localizations[1].messageTemplateStatusId ? result.data.localizations[1].messageTemplateStatusId : null
-          firstRejectReason = result.data && result.data.localizations && result.data.localizations[0] && result.data.localizations[0].rejectionReason ? result.data.localizations[0].rejectionReason : null
-          secondRejectReason = result.data && result.data.localizations && result.data.localizations[1] && result.data.localizations[1].rejectionReason ? result.data.localizations[1].rejectionReason : null
+          firstRejectReason = result.data && result.data.localizations && result.data.localizations[0] && result.data.localizations[0].rejectionReason ? result.data.localizations[0].rejectionReason : 'Rejected by Facebook without providing a reason.'
+          secondRejectReason = result.data && result.data.localizations && result.data.localizations[1] && result.data.localizations[1].rejectionReason ? result.data.localizations[1].rejectionReason : 'Rejected by Facebook without providing a reason.'
           return templateService.getTemplateTableDataAndWabaId(templateId, userId)
         } else {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: result.error || result })
