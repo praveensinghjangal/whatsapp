@@ -58,18 +58,16 @@ class Message {
           let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getMedia
           url = url.split(':mediaId').join(mediaId || '')
           __logger.info('URL====', url)
-          const headers = {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
-          }
-          return this.http.Get(url, headers, data.serviceProviderId)
+          const headers = { apikey: data.apiKey }
+          return this.http.getMedia(url, headers, data.serviceProviderId)
         })
         .then((mediaData) => {
           // __logger.info('mediaData then 2', { mediaData })
-          if (mediaData) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: mediaData })
-          } else if (mediaData && mediaData.status === 404) {
+          if (mediaData.statusCode === __constants.RESPONSE_MESSAGES.SUCCESS.status_code) {
+            const prefix = 'data:' + mediaData.headers['content-type'] + ';base64,'
+            const img = Buffer.from(mediaData.body, 'binary').toString('base64')//  var img = new Buffer.from(body.toString(), "binary").toString("base64");
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: prefix + img })
+          } else if (mediaData && mediaData.statusCode === __constants.RESPONSE_MESSAGES.NOT_FOUND.status_code) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
           } else {
             return deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })

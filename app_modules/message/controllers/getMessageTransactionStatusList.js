@@ -3,7 +3,6 @@ const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const DbServices = require('../services/dbData')
 const ValidatonService = require('../services/validation')
-const q = require('q')
 
 /**
  * @namespace -WhatsApp-Message-Controller-Transaction-Status-
@@ -26,8 +25,8 @@ const q = require('q')
  * @response {object} metadata.data - In response we get array of json data consist of messageId,time in each object.
  * @code {200} if the msg is success than it Returns list of message transaction type
 ..
- * @author Javed K11 9th September, 2020
- * *** Last-Updated :- Javed K11 9th September, 2020 ***
+ * @author Javed Khan 9th September, 2020
+ * *** Last-Updated :- Danish Galiyara 21st January, 2021 ***
  */
 
 const getMessageTransactionstatusList = (req, res) => {
@@ -45,7 +44,6 @@ const getMessageTransactionstatusList = (req, res) => {
   req.query.flag = flag
   validate.transactionValidator(req.query)
     .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort))
-    .then(data => processMessage(data, flag))
     .then(data => {
       __logger.info('Data------> then 2')
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
@@ -55,36 +53,6 @@ const getMessageTransactionstatusList = (req, res) => {
       __logger.error('error::getMessageTransactionList : ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
-}
-
-const processMessage = (data, flag) => {
-  const messageProcessed = q.defer()
-  console.log('processMessage---------------------->', data)
-
-  if (data && data.length > 0 && flag === 'incoming') {
-    // console.log('processMessage---------------------->', data)
-    data[0] = data[0].map(incomingMsg => {
-      if (incomingMsg && incomingMsg.content && incomingMsg.content.contentType === 'media') {
-        // console.log('incomingMsg---------------------->', incomingMsg.content)
-        // console.log('media-------------------------->', typeof media.data)
-        incomingMsg.mediaId = incomingMsg.content && incomingMsg.content.media ? incomingMsg.content.media.mediaId : ''
-        incomingMsg.contentType = incomingMsg.content && incomingMsg.content.media ? incomingMsg.content.contentType : 'media'
-        incomingMsg.mediaType = incomingMsg.content && incomingMsg.content.media ? incomingMsg.content.media.type : ''
-        delete incomingMsg.content
-        return incomingMsg
-      } else {
-        incomingMsg.contentType = incomingMsg.content ? incomingMsg.content.contentType : 'text'
-        incomingMsg.message = incomingMsg.content ? incomingMsg.content.text : ''
-        delete incomingMsg.content
-        return incomingMsg
-      }
-    })
-    // console.log('Final MEssages????????????????????', finalMessages)
-    messageProcessed.resolve(data)
-  } else {
-    messageProcessed.resolve(data)
-  }
-  return messageProcessed.promise
 }
 
 module.exports = getMessageTransactionstatusList

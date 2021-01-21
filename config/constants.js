@@ -245,7 +245,7 @@ const TYNTEC_ENDPOINTS = {
   getCurrentProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
   updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phon,eNumber/settings/profile',
   updateDefaultApp: '/chat-api/v2/applications/default',
-  getMedia: 'chat-api/v2/media/:mediaId'
+  getMedia: '/chat-api/v2/media/:mediaId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
