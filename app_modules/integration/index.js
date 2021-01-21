@@ -11,6 +11,8 @@ class Messaage {
   }
 
   sendMessage (payload) { return this.message.sendMessage(payload) }
+
+  getMedia (wabaNumber, mediaId) { return this.message.getMedia(wabaNumber, mediaId) }
 }
 
 class Template {
