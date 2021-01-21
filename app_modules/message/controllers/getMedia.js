@@ -34,7 +34,7 @@ const getMedia = (req, res) => {
   const validate = new ValidatonService()
   validate.checkMediaIdExist(req.params)
     .then(() => mediaService.getMedia(req.user.wabaPhoneNumber, mediaId))
-    .then(mediaData => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: mediaData }))
+    .then(mediaData => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: mediaData.data }))
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err || {} })
