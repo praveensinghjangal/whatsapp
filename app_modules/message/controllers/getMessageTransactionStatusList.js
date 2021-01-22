@@ -26,7 +26,7 @@ const ValidatonService = require('../services/validation')
  * @code {200} if the msg is success than it Returns list of message transaction type
 ..
  * @author Javed Khan 9th September, 2020
- * *** Last-Updated :- Danish Galiyara 21st January, 2021 ***
+ * *** Last-Updated :- Danish Galiyara 22nd January, 2021 ***
  */
 
 const getMessageTransactionstatusList = (req, res) => {

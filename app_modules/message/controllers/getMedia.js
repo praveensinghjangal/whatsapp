@@ -1,5 +1,4 @@
 const __logger = require('../../../lib/logger')
-const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const ValidatonService = require('../services/validation')
 const integrationService = require('../../../app_modules/integration')
@@ -22,7 +21,7 @@ const integrationService = require('../../../app_modules/integration')
  * @code {200} if the msg is success then it returns media
 ..
  * @author Arjun Bhole 20th January, 2021
- * *** Last-Updated :- Arjun Bhole 20th January, 2021 ***
+ * *** Last-Updated :- Danish Galiyara 21st January, 2021 ***
  */
 
 const getMedia = (req, res) => {
