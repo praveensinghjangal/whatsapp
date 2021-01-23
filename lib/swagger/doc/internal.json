@@ -5936,6 +5936,628 @@
                }
             },
             "security": []
+         },
+         "get": {
+            "x-module": "platform",
+            "description": "Gets list of business profile status",
+            "summary": "Get business profile status",
+            "tags": [
+               "WABA"
+            ],
+            "operationId": "getBusinessProfileStatusList",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "List of all business profile status",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": [
+                           {
+                              "wabaProfileStatusId": "7933d858-7bb7-47eb-90ec-269cbecc8c7a",
+                              "statusName": "Rejected"
+                           },
+                           {
+                              "wabaProfileStatusId": "7933d858-7bb7-47eb-90ec-269cbecc8c9b",
+                              "statusName": "Profile Incomplete"
+                           },
+                           {
+                              "wabaProfileStatusId": "91b6a637-11bb-4f35-ace7-41e959c8fbb7",
+                              "statusName": "Submitted"
+                           },
+                           {
+                              "wabaProfileStatusId": "b2aacfbc-12da-4748-bae9-b4ec26e37840",
+                              "statusName": "Accepted"
+                           },
+                           {
+                              "wabaProfileStatusId": "dce5d2a6-7ef0-4e6c-a428-55d6da50caf8",
+                              "statusName": "Pending For Approval"
+                           },
+                           {
+                              "wabaProfileStatusId": "fdfcce74-81a3-4d41-b526-212d256f9a20",
+                              "statusName": "Pending For Submission"
+                           }
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/business/profile/:statusId": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get details of waba profile",
+            "description": "Use to get waba profile data according to waba profile set-up status id",
+            "tags": [
+               "WABA"
+            ],
+            "operationId": "getProfileListByStatusId",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "statusId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "waba profile set-up status id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Return list of waba profile based on the waba profile set-up status id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data":
+                              [
+                               {
+                                  "wabaInformationId": "46ba9a21-bf54-4eed-af87-83eded954289",
+                                  "phoneNumber": "3211111112",
+                                  "phoneCode": "91",
+                                  "facebookManagerId": "test-fb-id",
+                                  "userId": "902eff7e-cb1c-4c03-aebf-fb4801fc6fa8",
+                                  "businessName": null
+                               },
+                               {
+                                  "wabaInformationId": "4c02e538-4f04-47f1-a8e7-95b338e17a2a",
+                                  "phoneNumber": "5353535353",
+                                  "phoneCode": "91",
+                                  "facebookManagerId": "metalurgy-fb-id",
+                                  "userId": "935043c4-5bbc-4b54-8d2a-a8188a69ef0d",
+                                  "businessName": "Metallurgy"
+                              },
+                               {
+                                  "wabaInformationId": "554bc0a7-7356-4ab8-9111-9706ff70a9d7",
+                                  "phoneNumber": "2568945541",
+                                  "phoneCode": "91",
+                                  "facebookManagerId": "test business",
+                                  "userId": "ea271ccf-abec-40f2-82ad-9e453d1efed1",
+                                  "businessName": "test business"
+                              }
+                             ],
+                             "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/business/profile/info/:wabaId": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get business profile data",
+            "description": "Use to get business profile data according to waba information id",
+            "tags": [
+               "WABA"
+            ],
+            "operationId": "getProfileDataByWabaId",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "wabaId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "waba information id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Return list of waba profile based on the waba profile set-up status id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                               "wabaInformationId": "f742d535-4161-4a11-b99f-0c97154b720d",
+                                "phoneNumber": "8080800808",
+                                "phoneCode": "91",
+                                "facebookManagerId": "12111111111111",
+                                "businessName": "The G.O.A.T. business company",
+                                "email": "Support@Viaconnect.com",
+                                "businessCategory": "Other",
+                                "businessCategoryId": "bda36704-cde5-41c9-b039-e3841fa9229f",
+                                "state": "22",
+                                "whatsappStatus": "available up-date 24*7",
+                                "description": "awesome solutions for all",
+                                "profilePhotoUrl": "https://stage-whatsapp.helo.ai/assets/img/gallery/login.png",
+                                "address": "Internet",
+                                "country": "101",
+                                "canReceiveSms": true,
+                                "canReceiveVoiceCall": true,
+                                "associatedWithIvr": false,
+                                "wabaProfileSetupStatus": "Accepted",
+                                "businessManagerVerified": true,
+                                "phoneVerified": 1,
+                                "city": "2707",
+                                "postalCode": "400093",
+                                "serviceProviderId": "f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+                                "serviceProviderUserAccountId": "b6210d0f-acb3-4dfa-8b52-0972c8045706",
+                                "serviceProviderName": "Tyntec",
+                                "apiKey": "Kt2JDlVUm6hgz4oVEM5dwAw1BDrdUXwK",
+                                "maxWebsiteAllowed": 2,
+                                "webhookPostUrl": null,
+                                "optinText": "helloviva1",
+                                "chatBotActivated": 1,
+                                "websites": [
+                                    "https://stage-whatsapp.helo.ai",
+                                    "https://whatsapp.helo.ai"
+                                ],
+                                "imageData": {
+                                    "type": "Buffer",
+                                    "data": []
+                                },
+                                "accessInfoRejectionReason": null,
+                                "wabaProfileSetupStatusId": "b2aacfbc-12da-4748-bae9-b4ec26e37840",
+                                "userId": "158988680814912",
+                                "maxTpsToProvider": 15
+                             },
+                             "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/business/profile/template/allocate/:userId": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get count of template allocated to user",
+            "description": "Use to get count of template allocated to user according to userId",
+            "tags": [
+               "WABA"
+            ],
+            "operationId": "getCountTemplateAllocated",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "userId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "user_id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns count of template allocated based on user_id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "templateAllocated": 10
+                           },
+                           "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/business/serviceprovider": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get service provider data",
+            "description": "Use to get service provider data",
+            "tags": [
+               "WABA"
+            ],
+            "operationId": "getServiceProviderDetails",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns service provider details",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": [
+                                {
+                                  "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
+                                  "serviceProviderName": "Demo"
+                                },
+                                {
+                                  "serviceProviderId": "f1d44200-4b9d-4901-ae49-5035e0b14a5d",
+                                  "serviceProviderName": "Tyntec"
+                                }
+                             ],
+                             "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
          }
       },
       "/templates": {
@@ -7884,6 +8506,288 @@
                            "invalid body error here"
                         ]
                      }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/templates/list/:templateStatusId": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get template list",
+            "description": "Use to get template list according to message template status id",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "getTemplateListByStatusId",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "templateStatusId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "message template status id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Return list of template based on the message template status id",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": [
+                                  {
+                                      "messageTemplateId": "a808a7ed_7a96_4fc8_b318_3b8537809bbf",
+                                      "templateName": "qw",
+                                      "type": "standard message template"
+                                  },
+                                  {
+                                      "messageTemplateId": "b4e538eb_1d0a_42d8_adf4_783d425db283",
+                                      "templateName": "fvfv",
+                                      "type": "media message template"
+                                  },
+                                  {
+                                      "messageTemplateId": "f0742c1b-c967-4ea1-9670-af9423c47512",
+                                      "templateName": "temp_12",
+                                      "type": null
+                                  },
+                                  {
+                                      "messageTemplateId": "f75e5324_8e63_4bd1_8b7e_08e7993cae91",
+                                      "templateName": "rfe",
+                                      "type": "standard message template"
+                                  }
+                             ],
+                             "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/templates/status": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get all template status list",
+            "description": "Use to get template status list",
+            "tags": [
+               "templates"
+            ],
+            "operationId": "getTemplateStatusList",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Return list of all template status ",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": 
+                              [
+                                {
+                                  "messageTemplateStatusId": "1cc8cc1f-282a-4431-8618-43effb1ef7c0",
+                                  "statusName": "Rejected"
+                                },
+                                {
+                                    "messageTemplateStatusId": "1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9",
+                                    "statusName": "Approved"
+                                },
+                                {
+                                    "messageTemplateStatusId": "27993dbb-e966-4f3a-a2b4-1adb28b05a8a",
+                                    "statusName": "Denied"
+                                },
+                                {
+                                    "messageTemplateStatusId": "3dd78583-9acd-42e8-b9f3-0413b3a339eb",
+                                    "statusName": "Requested"
+                                },
+                                {
+                                    "messageTemplateStatusId": "512155a0-9006-4a0d-89d0-b023d887bd9a",
+                                    "statusName": "Submit-Failed"
+                                },
+                                {
+                                    "messageTemplateStatusId": "588cff76-d6d1-49a3-8280-8c2c1d99bb81",
+                                    "statusName": "Partially Approved"
+                                },
+                                {
+                                    "messageTemplateStatusId": "90789bf2-6142-4750-bca8-2e25a9a7e4aa",
+                                    "statusName": "Deleted"
+                                },
+                                {
+                                    "messageTemplateStatusId": "9d2560a6-732e-4ac2-b1fa-47f89a28b6dd",
+                                    "statusName": "Pending"
+                                },
+                                {
+                                    "messageTemplateStatusId": "b4414c85-5f80-4e8d-98bc-44bbc05b14b1",
+                                    "statusName": "Submitted"
+                                },
+                                {
+                                    "messageTemplateStatusId": "c71a8387-80e0-468b-9ee3-abb5ec328176",
+                                    "statusName": "Complete"
+                                },
+                                {
+                                    "messageTemplateStatusId": "d11a8387-80e0-468b-9ee3-abb5eckil980",
+                                    "statusName": "Incomplete"
+                                }
+                              ],
+                              "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }
+                     ]
                   }
                },
                "401": {
