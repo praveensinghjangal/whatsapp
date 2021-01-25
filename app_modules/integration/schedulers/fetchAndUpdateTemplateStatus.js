@@ -28,7 +28,7 @@ join waba_information wi on wi.waba_information_id = mt.waba_information_id and 
 where mt.is_active = 1 and wi.service_provider_id is not null and
 (mt.first_localization_status in ('${__constants.TEMPLATE_STATUS.partiallyApproved.statusCode}','${__constants.TEMPLATE_STATUS.submitted.statusCode}','${__constants.TEMPLATE_STATUS.pending.statusCode}') or 
 mt.second_localization_status in ('${__constants.TEMPLATE_STATUS.partiallyApproved.statusCode}','${__constants.TEMPLATE_STATUS.submitted.statusCode}','${__constants.TEMPLATE_STATUS.pending.statusCode}'))
-GROUP By wi.user_id `
+GROUP By wi.user_id,wi.phone_code,wi.phone_number ,wi.service_provider_id,wi.max_tps_to_provider`
   __logger.info('SCHEDULER::udateTicketStatus::Inside scheduler fuction to update status')
   __db.mysql.query(__constants.HW_MYSQL_NAME, query, [])
     .then(result => {
