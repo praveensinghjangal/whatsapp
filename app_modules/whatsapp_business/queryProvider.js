@@ -170,6 +170,52 @@ const getServiceProviderDetailsByUserId = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
+const getBusinessProfileListByStatusId = () => {
+  return `select waba_information_id as 'wabaInformationId',phone_number as 'phoneNumber',
+  phone_code as 'phoneCode',facebook_manager_id as 'facebookManagerId', user_id as "userId",
+  business_name as 'businessName' from waba_information
+  where waba_profile_setup_status_id = ? and is_active = true`
+}
+
+const getProfileByWabaId = () => {
+  return `SELECT waba_information_id as "wabaInformationId", phone_number as "phoneNumber", phone_code as "phoneCode", 
+  facebook_manager_id as "facebookManagerId", business_name as "businessName", email, 
+  bcat.category_name as "businessCategory",bcat.business_category_id as "businessCategoryId",
+  state, whatsapp_status as "whatsappStatus", description, profile_photo_url as "profilePhotoUrl",
+  address, country, can_receive_sms as "canReceiveSms", can_receive_voice_call as "canReceiveVoiceCall",
+  associated_with_ivr as "associatedWithIvr", wabaprof.status_name as "wabaProfileSetupStatus",
+  business_manager_verified as "businessManagerVerified", phone_verified as "phoneVerified", city,
+  postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
+  user_account_id_by_provider as "serviceProviderUserAccountId",
+  service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
+  webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
+  access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
+  wabainfo.user_id as "userId",wabainfo.max_tps_to_provider as "maxTpsToProvider"
+  FROM waba_information wabainfo
+  LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
+  LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true
+  LEFT JOIN service_provider sp on wabainfo.service_provider_id = sp.service_provider_id and sp.is_active  = true
+  where wabainfo.waba_information_id = ? and wabainfo.is_active = true`
+}
+
+const getWabaStatus = () => {
+  return `select waba_profile_setup_status_id as "wabaProfileStatusId", status_name as "statusName" from waba_profile_setup_status
+  where is_active = true`
+}
+
+const getTemplateAllocatedCount = () => {
+  // return `select count(distinct (mt.message_template_id)) as "templateAllocated" from waba_information wi join message_template mt on wi.waba_information_id = mt.waba_information_id
+  // where wi.user_id = ? and mt.is_active = 1 and wi.is_active = 1`
+  return `select templates_allowed as "templateAllocated" from waba_information
+  where user_id = ? and is_active = true;`
+}
+
+const getServiceProviderData = () => {
+  return `select service_provider_id as "serviceProviderId", service_provider_name as "serviceProviderName"
+  from service_provider
+  where is_active = true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -188,5 +234,10 @@ module.exports = {
   getWabaNumberAndOptinTextFromUserId,
   getWebsiteLimit,
   updateProfilePicUrl,
-  getServiceProviderDetailsByUserId
+  getServiceProviderDetailsByUserId,
+  getBusinessProfileListByStatusId,
+  getProfileByWabaId,
+  getWabaStatus,
+  getTemplateAllocatedCount,
+  getServiceProviderData
 }

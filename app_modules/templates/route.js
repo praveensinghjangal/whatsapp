@@ -1,5 +1,4 @@
 const express = require('express')
-const __logger = require('../../lib/logger')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
@@ -13,6 +12,7 @@ const templatesCountController = require('./controllers/count')
 const addUpdateTemplateController = require('./controllers/addUpdateTemplates')
 const templateApprovalController = require('./controllers/templateApproval')
 const deleteTemplateController = require('./controllers/deleteTemplate')
+const templateStatusController = require('./controllers/templateStatus')
 
 // Routes
 // Template Type
@@ -56,6 +56,11 @@ router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstr
 //     .then(data => res.send(data))
 //     .catch(err => res.send(err))
 // })
+
+// Template list by statusId & status list
+router.get('/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateStatusController.getTemplateStatusList)
+router.get('/list/:templateStatusId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateStatusController.getTemplateListByStatusId)
+
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateTemplateController.addUpdateTemplates)
 router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateHeaderTypes)
 router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateButtonTypes)

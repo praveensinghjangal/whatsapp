@@ -16,6 +16,9 @@ const businessStatusUpdateController = require('./controllers/updateWabaAccessIn
 // Business Category
 router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessCategoryController.getBusinessCategory)
 
+// Service Provider
+router.get('/serviceprovider', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getServiceProviderDetails)
+
 // Business Profile
 router.get('/profile', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getBusinessProfile)
 router.post('/profile', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.addUpdateBusinessProfile)
@@ -28,7 +31,11 @@ router.put('/profile/logo', authMiddleware.authenticate(authstrategy.jwt.name, a
 // router.put('/profile/logo/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.updateProfilePicByUrl)
 router.put('/profile/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessApprovalController.sendWabaAccessInfoForApproval)
 router.put('/profile/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessStatusUpdateController.updateWabaAccessInfoStatus)
+router.get('/profile/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getWabaProfileStatus)
+router.get('/profile/template/allocate/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getCountTemplateAllocated)
 router.patch('/profile/template/allocate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.allocateTemplatesToWaba)
+router.get('/profile/info/:wabaId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getProfileByWabaId)
+router.get('/profile/:statusId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessProfileController.getProfileListByStatusId)
 router.post('/verification/phoneNumber', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessVerificationController.generateBusinessNumberVerificationCode)
 router.patch('/verification/phoneNumber', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), businessVerificationController.validateBusinessNumberVerificationCode)
 router.get('/internal/wabaPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaNumberFromUserId)
