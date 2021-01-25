@@ -13,7 +13,7 @@
    "tags": [
       {
          "name": "message",
-         "description": "API's to send bulk messages to end user"
+         "description": "API's related to messages"
       },
       {
          "name": "accountProfile",
