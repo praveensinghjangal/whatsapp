@@ -24,6 +24,21 @@ const Hooks = require('../services/hooks')
  *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
  */
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name getBusinessProfile
+ * @path {get} /business/profile
+ * @description Bussiness Logic :- This API returns waba business profile details from user id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getBusinessProfile|getBusinessProfile}
+ * @param {string}  userId=3234  - user id needs to be entered here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get array of json data in each object.
+ * @code {200} if the msg is success than Returns array of object.
+ * @author Danish Galiyara 30th November, 2020
+ * *** Last-Updated :- Danish Galiyara 30th November, 2020 ***
+ */
+
 // Get Business Profile
 const getBusinessProfile = (req, res) => {
   __logger.info('getBusinessProfile:>>>>>>>>>>>>>')
@@ -667,6 +682,163 @@ const allocateTemplatesToWaba = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetProfileListByStatusId
+ * @path {get} /business/profile/:statusId
+ * @description Bussiness Logic :- This API returns waba profile details based on waba status id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getProfileListByStatusId|getProfileListByStatusId}
+ * @param {string}  statusId=b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid wabaProfile statusId here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get array of json data consist of wabaInformationId, phoneNumber, phoneCode, facebookManagerId, userId and businessName in each object.
+ * @code {200} if the msg is success than Returns wabaInformationId, phoneNumber, phoneCode, facebookManagerId, userId and businessName.
+ * @author Javed Khan 22nd January, 2021
+ * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ */
+
+const getProfileListByStatusId = (req, res) => {
+  __logger.info('called api to get wabaProfile list', req.params)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  // console.log('status', __constants.WABA_PROFILE_STATUS)
+  // if (!req.params) return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'statusId is required' })
+  validate.getWabaProfileListByStatusId(req.params)
+    .then(data => businessAccountService.getBusinessProfileListByStatusId(req.params.statusId))
+    .then(dbData => {
+      __logger.info('wabaProfile list', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetProfileByWabaId
+ * @path {get} /business/profile/info/:wabaId
+ * @description Bussiness Logic :- This API returns waba profile details based on waba_information_id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getProfileByWabaId|getProfileByWabaId}
+ * @param {string}  wabaId=f742d535-4161-4a11-b99f-0c97154b720d - Please provide valid wabaId here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get array of json data in each object.
+ * @code {200} if the msg is success than Returns array of object.
+ * @author Javed Khan 22nd January, 2021
+ * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ */
+
+const getProfileByWabaId = (req, res) => {
+  __logger.info('called api to get wabaProfileData by wabaId------', req.params)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  validate.getProfileDataByWabaId(req.params)
+    .then(data => businessAccountService.getProfileDataByWabaId(req.params.wabaId))
+    .then(dbData => {
+      __logger.info('data from db', dbData)
+      dbData[0].canReceiveSms = dbData[0].canReceiveSms === 1
+      dbData[0].canReceiveVoiceCall = dbData[0].canReceiveVoiceCall === 1
+      dbData[0].associatedWithIvr = dbData[0].associatedWithIvr === 1
+      dbData[0].businessManagerVerified = dbData[0].businessManagerVerified === 1
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData[0] })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetWabaProfileStatus
+ * @path {get} /business/profile/status
+ * @description Bussiness Logic :- This API returns all status of waba profile.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getWabaProfileStatus|getWabaProfileStatus}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get array of json data consist of wabaProfileStatusId, statusName in each object.
+ * @response {array} metadata.data - Array of all the waba_profile_status with its waba_profile_setup_status_id and status_name.
+ * @code {200} if the msg is success than Returns wabaProfileStatusId and statusName.
+ * @author Javed Khan 22nd January, 2021
+ * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ */
+
+const getWabaProfileStatus = (req, res) => {
+  __logger.info('called funcion to get all wabaProfile status')
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getWabaStatus()
+    .then(dbData => {
+      __logger.info('db Data', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetCountTemplateAllocated
+ * @path {get} /business/profile/template/templateAllocated/:userId
+ * @description Bussiness Logic :- This API returns count of template allocated to user using userId.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getCountTemplateAllocated|getCountTemplateAllocated}
+ * @param {string}  userId=935043c4-5bbc-4b54-8d2a-a8188a69ef0d - Please provide valid userId here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response returns templateAllocated count.
+ * @code {200} if the msg is success than Returns templateAllocated.
+ * @author Javed Khan 22nd January, 2021
+ * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ */
+
+const getCountTemplateAllocated = (req, res) => {
+  __logger.info('inside function to get template allocated count', req.params)
+  const businessAccountService = new BusinessAccountService()
+  const validate = new ValidatonService()
+  console.log('------', typeof req.params.userId)
+  validate.getTemplateAllocated(req.params)
+    .then(data => businessAccountService.getCountTempAllocated(req.params.userId))
+    .then(dbData => {
+      __logger.info('db Data result', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetServiceProviderDetails
+ * @path {get} /business/getServiceProviderDetails
+ * @description Bussiness Logic :- This API returns service provider details.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getServiceProviderDetails|getServiceProviderDetails}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get array of json data consist of serviceProviderId, serviceProviderName in each object.
+ * @code {200} if the msg is success than Returns serviceProviderId and serviceProviderName.
+ * @author Javed Khan 22nd January, 2021
+ * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ */
+
+const getServiceProviderDetails = (req, res) => {
+  __logger.info('called api to get service provider details')
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getServiceProviderData()
+    .then(dbData => {
+      __logger.info('db result', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -677,5 +849,10 @@ module.exports = {
   addUpdateOptinMessage,
   updateProfilePic,
   updateProfilePicByUrl,
-  allocateTemplatesToWaba
+  allocateTemplatesToWaba,
+  getProfileListByStatusId,
+  getProfileByWabaId,
+  getWabaProfileStatus,
+  getCountTemplateAllocated,
+  getServiceProviderDetails
 }

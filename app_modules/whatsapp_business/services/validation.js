@@ -672,6 +672,98 @@ class validate {
     }
     return isvalid.promise
   }
+
+  getWabaProfileListByStatusId (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getWabaProfileListByStatusId',
+      type: 'object',
+      required: true,
+      properties: {
+        statusId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getWabaProfileListByStatusId')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  getProfileDataByWabaId (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getProfileByWabaId',
+      type: 'object',
+      required: true,
+      properties: {
+        wabaId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getProfileByWabaId')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      console.log('errrrrrr', formatedError)
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  getTemplateAllocated (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getTemplateAllocatedCount',
+      type: 'object',
+      required: true,
+      properties: {
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getTemplateAllocatedCount')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      console.log('errrrrrr', formatedError)
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

@@ -495,6 +495,94 @@ class businesAccountService {
       })
     return serviceProviderData.promise
   }
+
+  getBusinessProfileListByStatusId (statusId) {
+    __logger.info('getBusinessProfileListByStatusId::>>>>>>>>>>>>>.')
+    const status = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(), [statusId])
+      .then(result => {
+        if (result && result.length === 0) {
+          status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        } else {
+          __logger.info('db result', result)
+          status.resolve(result)
+        }
+      }).catch(err => {
+        __logger.error('error::getWabaProfileByStatusId : ', err)
+        status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return status.promise
+  }
+
+  getProfileDataByWabaId (wabaId) {
+    __logger.info('getBusinessProfileByWabaId::>>>>>>>.')
+    const status = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getProfileByWabaId(), [wabaId])
+      .then(result => {
+        if (result && result.length === 0) {
+          status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        } else {
+          __logger.info('db result', result[0])
+          status.resolve(result)
+        }
+      }).catch(err => {
+        __logger.error('error::getBusinessProfileByWabaId : ', err)
+        status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return status.promise
+  }
+
+  getWabaStatus () {
+    __logger.info('getWabaStatus::>>>>>>>.')
+    const status = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaStatus(), [])
+      .then(result => {
+        if (result && result.length === 0) {
+          status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        } else {
+          __logger.info('db result', result)
+          status.resolve(result)
+        }
+      }).catch(err => {
+        __logger.error('error::getWabaStatus : ', err)
+        status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return status.promise
+  }
+
+  getCountTempAllocated (userId) {
+    const status = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateAllocatedCount(), [userId])
+      .then(result => {
+        if (result && result.length === 0) {
+          status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        } else {
+          __logger.info('db result', result[0])
+          status.resolve(result[0])
+        }
+      }).catch(err => {
+        __logger.error('error::getBusinessProfileByWabaId : ', err)
+        status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return status.promise
+  }
+
+  getServiceProviderData () {
+    const providerDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProviderData(), [])
+      .then(result => {
+        if (result && result.length === 0) {
+          providerDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        } else {
+          __logger.info('db result', result)
+          providerDetails.resolve(result)
+        }
+      }).catch(err => {
+        __logger.error('error::getBusinessProfileByWabaId : ', err)
+        providerDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return providerDetails.promise
+  }
 }
 
 module.exports = businesAccountService

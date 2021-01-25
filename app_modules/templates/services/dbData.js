@@ -383,6 +383,44 @@ class TemplateService {
       })
     return templateData.promise
   }
+
+  getTemplateListByStatusId (statusId) {
+    __logger.info('inside get template list by statusId', statusId)
+    const templateData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateByStatusId(), [statusId])
+      .then(result => {
+        __logger.info('Qquery Result', { result })
+        if (result && result.length > 0) {
+          templateData.resolve(result)
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template by statusId function: ', err)
+        templateData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateData.promise
+  }
+
+  getTemplateStatusList () {
+    __logger.info('inside get template list function')
+    const templateData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateStatusList(), [])
+      .then(result => {
+        __logger.info('Qquery Result', { result })
+        if (result && result.length > 0) {
+          templateData.resolve(result)
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template status list function: ', err)
+        templateData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateData.promise
+  }
 }
 
 module.exports = TemplateService
