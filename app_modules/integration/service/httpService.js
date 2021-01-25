@@ -71,6 +71,30 @@ class HttpRequestOg {
     return deferred.promise
   }
 
+  getMediaDoNotUse (url, headers, serviceProviderId) {
+    const deferred = q.defer()
+    const options = {
+      method: 'GET',
+      url: url,
+      timeout: this.timeInSeconds,
+      headers: headers,
+      rejectUnauthorized: false,
+      encoding: 'binary'
+    }
+    request(options, (error, response, body) => {
+      // __logger.info('response from api ', error, response, body)
+      const url = options.url.split('/').slice(3).join('/')
+      saveApiLog(serviceProviderId, url, options, response)
+      if (error) {
+        __logger.error('errrrrrrrrrrrrr', error)
+        deferred.reject(error)
+      } else {
+        deferred.resolve(response)
+      }
+    })
+    return deferred.promise
+  }
+
   patchDoNotUse (inputRequest, url, headers, serviceProviderId) {
     const deferred = q.defer()
     const options = {
@@ -182,6 +206,7 @@ class HttpRequest extends HttpRequestOg {
     this.Patch = this.rateLimitter.wrap(this.patchDoNotUse)
     this.Delete = this.rateLimitter.wrap(this.deleteDoNotUse)
     this.resolvePost = this.rateLimitter.wrap(this.ResolvePostDoNotUse)
+    this.getMedia = this.rateLimitter.wrap(this.getMediaDoNotUse)
   }
 }
 

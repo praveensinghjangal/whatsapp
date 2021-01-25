@@ -25,12 +25,12 @@ const ValidatonService = require('../services/validation')
  * @response {object} metadata.data - In response we get array of json data consist of messageId,time in each object.
  * @code {200} if the msg is success than it Returns list of message transaction type
 ..
- * @author Javed K11 9th September, 2020
- * *** Last-Updated :- Javed K11 9th September, 2020 ***
+ * @author Javed Khan 9th September, 2020
+ * *** Last-Updated :- Danish Galiyara 22nd January, 2021 ***
  */
 
 const getMessageTransactionstatusList = (req, res) => {
-  __logger.info('Get Message Transaction List API Called', req.query)
+  __logger.info('Get Message Transaction List API Called', req.query, req.user)
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -45,7 +45,7 @@ const getMessageTransactionstatusList = (req, res) => {
   validate.transactionValidator(req.query)
     .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort))
     .then(data => {
-      __logger.info('Data------> then 2', data)
+      __logger.info('Data------> then 2')
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })

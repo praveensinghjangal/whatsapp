@@ -54,7 +54,7 @@ class UserData {
           userId = this.uniqueId.uuid()
           const passwordSalt = passMgmt.genRandomString(16)
           const hashPassword = passMgmt.create_hash_of_password(password, passwordSalt).passwordHash
-          const accountTypeId = __constants.ACCOUNT_PLAN_TYPE.Prepaid
+          const accountTypeId = __constants.ACCOUNT_PLAN_TYPE.Postpaid
           const userRole = __constants.USER_ROLE_ID.admin
           return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createUser(), [email, hashPassword, userId, passwordSalt, source, userId, tncAccepted, this.uniqueId.uuid(), accountTypeId, userRole])
         } else {

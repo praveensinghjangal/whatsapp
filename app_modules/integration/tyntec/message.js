@@ -5,7 +5,7 @@ const tyntectConfig = __config.integration.tyntec
 const saveMessageApiLog = require('../service/saveMessageApiLog')
 const __constants = require('../../../config/constants')
 const RedisService = require('../../../lib/redis_service/redisService')
-const logger = require('../../../lib/logger')
+const __logger = require('../../../lib/logger')
 
 class Message {
   constructor (maxConcurrent, userId) {
@@ -21,7 +21,7 @@ class Message {
 
     redisService.getWabaDataByPhoneNumber(payload.whatsapp.from)
       .then(data => {
-        logger.info('called to send message', payload)
+        __logger.info('called to send message', payload)
         spId = data.serviceProviderId
         const headers = {
           'Content-Type': 'application/json',
@@ -29,12 +29,12 @@ class Message {
           apikey: data.apiKey
         }
         reqObj = { headers, payload }
-        logger.info('tyntec send message api request', reqObj)
+        __logger.info('tyntec send message api request', reqObj)
         return this.http.Post(payload, 'body', tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.sendMessage, headers, spId)
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
-        logger.info('tyntec send message api response', apiRes)
+        __logger.info('tyntec send message api response', apiRes)
         saveMessageApiLog(payload.messageId, apiRes.messageId, spId, 'sendMessage', reqObj, apiRes, payload.to)
         if (apiRes.messageId) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes })
@@ -44,6 +44,44 @@ class Message {
       })
       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return deferred.promise
+  }
+
+  getMedia (wabaNumber, mediaId) {
+    __logger.info('wabaNumber', wabaNumber)
+    __logger.info('mediaId', mediaId)
+    const deferred = q.defer()
+    if (wabaNumber && mediaId) {
+      const redisService = new RedisService()
+      redisService.getWabaDataByPhoneNumber(wabaNumber)
+        .then(data => {
+          __logger.info('getMedia then 1', data, typeof data)
+          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getMedia
+          url = url.split(':mediaId').join(mediaId || '')
+          __logger.info('URL====', url)
+          const headers = { apikey: data.apiKey }
+          return this.http.getMedia(url, headers, data.serviceProviderId)
+        })
+        .then((mediaData) => {
+          // __logger.info('mediaData then 2', { mediaData })
+          if (mediaData.statusCode === __constants.RESPONSE_MESSAGES.SUCCESS.status_code) {
+            const prefix = 'data:' + mediaData.headers['content-type'] + ';base64,'
+            const img = Buffer.from(mediaData.body, 'binary').toString('base64')//  var img = new Buffer.from(body.toString(), "binary").toString("base64");
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: prefix + img })
+          } else if (mediaData && mediaData.statusCode === __constants.RESPONSE_MESSAGES.NOT_FOUND.status_code) {
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          } else {
+            return deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+          }
+        })
+        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      return deferred.promise
+    } else if (!mediaId) {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing MediaId' })
+      return deferred.promise
+    } else {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
+      return deferred.promise
+    }
   }
 }
 
