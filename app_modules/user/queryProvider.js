@@ -265,7 +265,20 @@ const resetTfaData = () => {
 
 const getPasswordByUserId = () => {
   return `select hash_password as "hashPass", salt_key as "saltKey" from users
-  where is_active  = 1 and user_id = ?`
+  where is_active = true and user_id = ?`
+}
+
+const getAccountProfileList = () => {
+  return `select user_id as "accountId",first_name as "firstName",last_name as "lastName",email,
+  phone_code as "phoneCode",contact_number as "contactNumber"
+  from users where is_active = true
+  order by created_on desc limit ? offset ?;
+  select count(1) as "totalCount" from users where is_active = true;`
+}
+
+const updateAccountManagerName = () => {
+  return `update users set account_manager_name = ?
+  where user_id = ? and is_active = true`
 }
 
 module.exports = {
@@ -305,5 +318,7 @@ module.exports = {
   addTempTfaData,
   updateTempTfaData,
   resetTfaData,
-  getPasswordByUserId
+  getPasswordByUserId,
+  getAccountProfileList,
+  updateAccountManagerName
 }

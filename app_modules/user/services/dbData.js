@@ -324,6 +324,63 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getAccountProfileByUserId (userId) {
+    __logger.info('getUSerDataByUserId>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
+      .then(result => {
+        __logger.info('Qquery Result', result[0])
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userDetails.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get user details by userId function: ', err)
+        userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return userDetails.promise
+  }
+
+  getAccountProfileList (ItemsPerPage, offset) {
+    __logger.info('getAccountProfileList>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAccountProfileList(), [ItemsPerPage, offset])
+      .then(result => {
+        __logger.info('Qquery Result')
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userDetails.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get account profile list function: ', err)
+        userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return userDetails.promise
+  }
+
+  updateAccountManagerName (accountManagerName, userId) {
+    __logger.info('updateAccountManagerName>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAccountManagerName(), [accountManagerName, userId])
+      .then(result => {
+        __logger.info('Qquery Result', result)
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          userDetails.resolve(result)
+        } else {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in updateAccountManagerName function: ', err)
+        userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData
