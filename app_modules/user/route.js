@@ -56,6 +56,9 @@ router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authst
 router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAcountProfile)
 router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
 router.put('/account/tokenKey', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.generateAndUpdateTokenKey)
+router.get('/account/info', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAccountProfileByUserId)
+router.get('/account/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAccountProfileList)
+router.patch('/account/accountManager', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAccountManagerName)
 
 // Billing Profile routes
 router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.getBusinessBilllingProfile)

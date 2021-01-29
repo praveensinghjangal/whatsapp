@@ -522,6 +522,37 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkUserAccountManager (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkUserAccountManager',
+      type: 'object',
+      required: true,
+      properties: {
+        accountManagerName: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 200
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkUserAccountManager')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

@@ -189,6 +189,32 @@ class MessgaeHistoryService {
       })
     return messageStatus.promise
   }
+
+  getOutgoingTransactionListBySearchFilters (userId, startDate, endDate, ItemsPerPage, offset, endUserNumber) {
+    __logger.info('getOutgoingTransactionListBySearchFilters::>>>>>>>>>>>>', endUserNumber)
+    const messageStatus = q.defer()
+    let queryParams = [userId, startDate, endDate]
+    if (endUserNumber) queryParams.push(endUserNumber)
+    queryParams = queryParams.concat(queryParams) // duplicated values of array for inner query for max msgId
+    queryParams.push(ItemsPerPage, offset) // added offset and item per page
+    queryParams = queryParams.concat(queryParams) // duplicated values of array for count query
+    queryParams.splice(queryParams.length - 2, 2) //  removed offset and item per page from count query
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOutgoingTransactionListBySearchFilters(!!endUserNumber), queryParams)
+      .then(result => {
+        if (result && result[0] && result[0].length > 0) {
+          __logger.info('Res----', result)
+          messageStatus.resolve(result)
+        } else {
+          __logger.info('Failed to get Data')
+          messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get outgoing message transaction list function: ', err)
+        messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return messageStatus.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

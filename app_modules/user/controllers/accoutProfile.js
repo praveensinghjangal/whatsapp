@@ -204,9 +204,115 @@ const generateAndUpdateTokenKey = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Profile-Account-Controller-
+ * @name GetAccountProfileByUserId
+ * @path {GET} /users/account/info
+ * @description Bussiness Logic :- This API returns Profile account info.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/accountProfile/getAccountProfileByUserId|GetAccountProfileByUserId}
+ * @param {string}  userId - Enter userId
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - Returns the object with accountId,tokenKey,accountManagerName,name,email,city etc
+ * @code {200} if the msg is success than returns account info.
+ * @author Javed Khan 25th January, 2021
+ * *** Last-Updated :- Javed Khan 25th January, 2021 ***
+ */
+
+const getAccountProfileByUserId = (req, res) => {
+  __logger.info('inside getAccountProfileByUserId:: ', req.query)
+  const userService = new UserService()
+  const validate = new ValidatonService()
+  validate.checkUserIdService(req.query)
+    .then(data => userService.getAccountProfileByUserId(req.query.userId))
+    .then(dbData => {
+      __logger.info('db result:: ', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Profile-Account-Controller-
+ * @name GetAccountProfileList
+ * @path {GET} /users/account/list
+ * @description Bussiness Logic :- This API returns array of users list.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/accountProfile/getAccountProfileList|GetAccountProfileList}
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of accountId, firstName,lastName,email,phoneCode,contactNumber etc. in each object.
+ * @code {200} if the msg is success than returns list of account details.
+ * @author Javed Khan 25th January, 2021
+ * *** Last-Updated :- Javed Khan 25th January, 2021 ***
+ */
+
+const getAccountProfileList = (req, res) => {
+  __logger.info('inside getAccountList api:: ', req.query)
+  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page field is required with value as number' })
+  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field is required with value as number' })
+  if (+req.query.ItemsPerPage <= 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field value should be greater than zero' })
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const ItemsPerPage = +req.query.ItemsPerPage
+  const offset = ItemsPerPage * (requiredPage - 1)
+  __logger.info('Get Offset value', offset, ItemsPerPage)
+  const userService = new UserService()
+  userService.getAccountProfileList(ItemsPerPage, offset)
+    .then(dbData => {
+      __logger.info('db result', dbData[1][0])
+      const pagination = { totalPage: Math.ceil(dbData[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: dbData[0], pagination } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Profile-Account-Controller-
+ * @name UpdateAccountManagerName
+ * @path {PATCH} /users/account/accountManager
+ * @description Bussiness Logic :- This API is use to update the profile's account manager name.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ *<br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/accountProfile/updateAccountManagerName|UpdateAccountManagerName}
+ * @body {string}  accountManagerName- Provide valid name for account manager
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @code {200} if the msg is success than profiles account manager name is updated.
+ * @author Javed Khan 25th January, 2021
+ * *** Last-Updated :- Javed Khan 25th January, 2021 ***
+ */
+
+const updateAccountManagerName = (req, res) => {
+  __logger.info('inside updateAccountManagerName:: ', req.body)
+  const userService = new UserService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  validate.checkUserAccountManager(req.body)
+    .then(data => userService.updateAccountManagerName(req.body.accountManagerName, userId))
+    .then(dbData => {
+      __logger.info('db result:: ', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getAcountProfile,
   updateAcountProfile,
   checkAccountProfileCompletionStatus,
-  generateAndUpdateTokenKey
+  generateAndUpdateTokenKey,
+  getAccountProfileByUserId,
+  getAccountProfileList,
+  updateAccountManagerName
 }

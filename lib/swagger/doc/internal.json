@@ -1377,6 +1377,163 @@
             "security": []
          }
       },
+      "/chat/v1/messages/transaction/outgoing/list": {
+         "get": {
+            "x-module": "platform",
+            "summary": "Get Outgoing Message Transaction List",
+            "description": "Use this API to get outgoing message transaction list",
+            "tags": [
+               "message-history"
+            ],
+            "operationId": "getOutgoingMessageTransactionListByFilter",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "startDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "startDate needs to be entered here"
+               },
+               {
+                  "name": "endDate",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "endDate needs to be entered here"
+               },
+               {
+                  "name": "endUserNumber",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "endUserNumber phone number to be entered here"
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter page number here"
+               },
+               {
+                  "name": "ItemsPerPage",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter records per page"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns list of message transaction type",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "rows": [
+                                  {
+                                      "messageId": "47c3b7e1-d257-4901-89cd-bf853d7a082d",
+                                      "time": "2021-01-08T04:53:07.000Z",
+                                      "status": "seen"
+                                  },
+                                  {
+                                      "messageId": "665e3be9-fcc6-4de8-af6d-05a68139ac68",
+                                      "time": "2021-01-08T05:37:02.000Z",
+                                      "status": "seen"
+                                  }
+                              ],
+                              "pagination": {
+                                 "totalPage": 5,
+                                 "currentPage": 1
+                              }
+                           },
+                           "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
       "/users/account": {
          "put": {
             "x-module": "platform",
@@ -3691,6 +3848,386 @@
                   }
                }
             }
+         }
+      },
+      "/users/account/info": {
+         "get": {
+            "x-module": "platform",
+            "summary": "gets account info",
+            "description": "returns account info of user using userId",
+            "tags": [
+               "accountProfile"
+            ],
+            "operationId": "getAccountProfileByUserId",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "userId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "user id needs to be entered here"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns account info",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                          {
+                            "code": 2000,
+                            "msg": "Success",
+                            "data": {
+                               "accountId": "158944412352512",
+                               "accountManagerName": "abc@gmail.com",
+                               "tokenKey": null,
+                               "email": "abc@gmail.com",
+                               "accountType": "Prepaid",
+                               "city": "6462",
+                               "state": "180",
+                               "country": "6",
+                               "addressLine1": "VIVAPLEX, PLOT NO C 7",
+                               "addressLine2": "MIDC ROAD, ANDHERI EAST",
+                               "contactNumber": "90998789999",
+                               "phoneCode": "India",
+                               "postalCode": "400093",
+                               "firstName": "abc",
+                               "lastName": "def",
+                               "maxTpsToProvider": 15
+                            },
+                            "error": null
+                          },
+                          {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                        }
+                       ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/users/account/list": {
+         "get": {
+            "x-module": "platform",
+            "summary": "gets list of users",
+            "description": "returns list of users accounts with user details",
+            "tags": [
+               "accountProfile"
+            ],
+            "operationId": "getAccountProfileList",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter page number here"
+               },
+               {
+                  "name": "ItemsPerPage",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "enter records per page"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns array of users account info",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+                          "rows": [
+                              {
+                                "userId": "5fdc0198-e1ea-4f6d-8370-6686836601c9",
+                                "firstName": "Unmesh",
+                                "lastName": "Mishra",
+                                "email": "yqd41688@zwoho.com",
+                                "phoneCode": "91",
+                                "contactNumber": "3444443444"
+                              },
+                              {
+                                "userId": "276f60d3-03b8-4394-9233-555ba43f7d29",
+                                "firstName": null,
+                                "lastName": null,
+                                "email": "jasminefaujdar74@gmail.com",
+                                "phoneCode": null,
+                                "contactNumber": null
+                              },
+                              {
+                                "userId": "fe5ccdba-a3a4-478e-a5fa-bdb87c95638a",
+                                "firstName": null,
+                                "lastName": null,
+                                "email": "jasmine.faujdar@vivaconnect.co",
+                                "phoneCode": null,
+                                "contactNumber": null
+                              }
+                            ],
+                            "pagination": {
+                            "totalPage": 4,
+                            "currentPage": 1
+                          }
+                        },
+                        "error": null
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+          "security": []
+         }
+      },
+      "/users/account/accountManager": {
+         "patch": {
+            "x-module": "platform",
+            "summary": "API to update users account manager name",
+            "description": "API to update users account manager name using userId",
+            "tags": [
+               "accountProfile"
+            ],
+            "operationId": "updateUserAccountManagerName",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/updateAccountManagerName"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "updating users account manager name",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {},
+                        "error": null
+                     }
+                  }
+               },
+                "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
          }
       },
       "/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a": {
@@ -14673,6 +15210,21 @@
             "newPassword",
             "confirmNewPassword"
          ]
+      },
+      "updateAccountManagerName": {
+         "title": "updateAccountManagerName",
+         "example": {
+           "accountManagerName":"galiyaradanish@gmail.com"
+         },
+         "type": "object",
+         "properties": {
+            "accountManagerName": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "accountManagerName"
+            ]
       }
    }
 }

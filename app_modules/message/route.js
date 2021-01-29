@@ -15,5 +15,6 @@ router.get('/status/:status/list', authMiddleware.authenticate(authstrategy.jwt.
 router.get('/transaction', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageIncomingOutgoingCount'))
 router.get('/transaction/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMessageTransactionStatusList'))
 router.get('/media/:mediaId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getMedia'))
+router.get('/transaction/outgoing/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/getOutgoingTransactionListBySearchFilters'))
 
 module.exports = router

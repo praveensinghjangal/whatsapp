@@ -155,6 +155,43 @@ const getOutgoingMessageTransaction = () => {
   and mh.created_on BETWEEN ? AND ?;`
 }
 
+const getOutgoingTransactionListBySearchFilters = (endUserNumberRequired) => {
+  return `select mh.message_id as "messageId",mh.status_time as "time", mh.state as "status"
+  from message_history mh 
+  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
+  where mh.is_active = 1
+  and mh.id IN (
+   SELECT MAX(mh1.id)
+   FROM message_history mh1
+   join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
+   where mh1.is_active = 1
+   and wi1.user_id = ?
+   and mh1.created_on BETWEEN ? AND ?
+   ${endUserNumberRequired ? 'and mh1.end_consumer_number = ?' : ''}  
+   GROUP BY mh1.message_id)
+  and wi.user_id = ?
+  and mh.created_on BETWEEN ? AND ?
+  ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''} 
+  order by mh.created_on desc limit ? offset ?;
+  select count(1) as "totalCount"
+  from message_history mh 
+  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
+  where mh.is_active = 1
+  and mh.id IN (
+   SELECT MAX(mh1.id)
+   FROM message_history mh1
+   join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
+   where mh1.is_active = 1
+   and wi1.user_id = ?
+   and mh1.created_on BETWEEN ? AND ?
+   ${endUserNumberRequired ? 'and mh1.end_consumer_number = ?' : ''}  
+   GROUP BY mh1.message_id)
+  and wi.user_id = ?
+  and mh.created_on BETWEEN ? AND ?
+  ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''}  
+  ;`
+}
+
 module.exports = {
   getMessageTableDataWithId,
   addMessageHistoryData,
@@ -163,5 +200,6 @@ module.exports = {
   getMessageStatusList,
   getIncomingOutgoingMessageCount,
   getIncomingMessageTransaction,
-  getOutgoingMessageTransaction
+  getOutgoingMessageTransaction,
+  getOutgoingTransactionListBySearchFilters
 }
