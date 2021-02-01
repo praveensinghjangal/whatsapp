@@ -351,6 +351,7 @@ const MENU_BASED_TEMPLATE_STATUS = {
 const HELO_OSS_ENDPOINTS = {
   download: '/helo-oss/api/object/:action/:fileName'
 }
+const MESSAGE_TYPE = ['session', 'template']
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -410,3 +411,4 @@ module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
 module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
 module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
 module.exports.MESSAGE_STATUS_FOR_DISPLAY = MESSAGE_STATUS_FOR_DISPLAY
+module.exports.MESSAGE_TYPE = MESSAGE_TYPE
