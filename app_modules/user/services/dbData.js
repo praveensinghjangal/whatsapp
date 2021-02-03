@@ -381,6 +381,25 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getAgreementByStatusId (agreementStatus, ItemsPerPage, offset) {
+    __logger.info('getAgreementByStatusId>>>')
+    const userAgreement = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementByStatusId(), [agreementStatus, ItemsPerPage, offset, agreementStatus])
+      .then(result => {
+        __logger.info('Qquery Result')
+        if (result && result[0] && result[0].length === 0) {
+          userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userAgreement.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getAgreementByStatusId function: ', err)
+        userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return userAgreement.promise
+  }
 }
 
 module.exports = UserData
