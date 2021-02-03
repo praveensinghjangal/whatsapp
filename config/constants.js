@@ -243,7 +243,7 @@ const TYNTEC_ENDPOINTS = {
   deleteTemplate: '/chat-api/v2/channels/whatsapp/accounts/:accountId/templates/:templateId',
   getAccountPhoneNumberList: '/chat-api/v2/channels/whatsapp/accounts/:accountId/phone-numbers',
   getCurrentProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
-  updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phon,eNumber/settings/profile',
+  updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
   updateDefaultApp: '/chat-api/v2/applications/default',
   getMedia: '/chat-api/v2/media/:mediaId'
 }
