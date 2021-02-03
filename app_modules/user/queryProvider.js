@@ -28,9 +28,10 @@ const getUserAccountProfile = () => {
   u.contact_number as "contactNumber",u.phone_code as "phoneCode", u.postal_code as "postalCode", u.first_name as "firstName",
   u.last_name as "lastName",u.tps, u.phone_verified as "phoneVerified", u.email_verified as "emailVerified", ut.tfa_type as "tfaType",
   uaf.user_agreement_files_id  as "userAgreementFilesId",wi.service_provider_id as "serviceProviderId", CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
-  wi.max_tps_to_provider as "maxTpsToProvider"
+  wi.max_tps_to_provider as "maxTpsToProvider", asi.status_name as "agreementStatus"
   from users u
   left join user_agreement_files uaf on u.user_id = uaf.user_id and uaf.user_agreement_files_id = (SELECT user_agreement_files_id from user_agreement_files where is_active = 1 and user_id = u.user_id order by created_on desc limit 1) and uaf.is_active = true
+  left join agreement_status asi on uaf.agreement_status_id = asi.agreement_status_id and asi.is_active = true
   left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
   left join users_tfa ut on u.user_id = ut.user_id and ut.is_active = true
   left join waba_information wi on wi.user_id = u.user_id and wi.is_active = true
@@ -154,8 +155,8 @@ const markUserSmsVerified = () => {
 }
 
 const saveUserAgreement = () => {
-  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path,created_by)
-  values (?,?,?,?,?)`
+  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path ,agreement_status_id ,created_by)
+  values (?,?,?,?,?,?)`
 }
 
 const getLatestAgreementByUserId = () => {
@@ -281,6 +282,18 @@ const updateAccountManagerName = () => {
   where user_id = ? and is_active = true`
 }
 
+const getAgreementByStatusId = () => {
+  return `select u.first_name as "firstName", ua.created_on as "uploadedOn"
+  from user_agreement_files ua
+  join users u on u.user_id = ua.user_id and u.is_active = true
+  where ua.agreement_status_id = ? and ua.is_active = true
+  order by ua.created_on desc limit ? offset ?;
+  select count(1) as "totalCount"
+  from user_agreement_files ua
+  where ua.agreement_status_id = ?
+  and ua.is_active = true;`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -320,5 +333,6 @@ module.exports = {
   resetTfaData,
   getPasswordByUserId,
   getAccountProfileList,
-  updateAccountManagerName
+  updateAccountManagerName,
+  getAgreementByStatusId
 }
