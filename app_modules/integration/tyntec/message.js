@@ -62,7 +62,7 @@ class Message {
           return this.http.getMedia(url, headers, data.serviceProviderId)
         })
         .then((mediaData) => {
-          // __logger.info('mediaData then 2', { mediaData })
+          __logger.info('mediaData then 2')
           if (mediaData.statusCode === __constants.RESPONSE_MESSAGES.SUCCESS.status_code) {
             const prefix = 'data:' + mediaData.headers['content-type'] + ';base64,'
             const img = Buffer.from(mediaData.body, 'binary').toString('base64')//  var img = new Buffer.from(body.toString(), "binary").toString("base64");
@@ -73,7 +73,10 @@ class Message {
             return deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
           }
         })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+        .catch(err => {
+          __logger.error('Integration layer getMedia::error: ', err)
+          deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        })
       return deferred.promise
     } else if (!mediaId) {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing MediaId' })

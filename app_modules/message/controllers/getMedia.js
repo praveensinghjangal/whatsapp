@@ -35,7 +35,7 @@ const getMedia = (req, res) => {
     .then(() => messageService.getMedia(req.user.wabaPhoneNumber, mediaId))
     .then(mediaData => __util.send(res, { type: mediaData, data: mediaData.data }))
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('getMedia::error: ', err)
       return __util.send(res, { type: err.type, err: err.err || {} })
     })
 }
