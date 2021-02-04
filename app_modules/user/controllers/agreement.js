@@ -8,6 +8,8 @@ const queryProvider = require('../queryProvider')
 const __logger = require('../../../lib/logger')
 const fs = require('fs')
 const path = require('path')
+const UserService = require('../services/dbData')
+const ValidatonService = require('../services/validation')
 
 /**
  * @namespace -Agreement-Controller-
@@ -46,11 +48,11 @@ const upload = multer({
   storage: Storage
 }).array('agreement', 1)
 
-const savFileDataInDataBase = (userId, fileName, filePath) => {
+const savFileDataInDataBase = (userId, fileName, filePath, agreementStatus) => {
   const fileSaved = q.defer()
   const uniqueId = new UniqueId()
-  __logger.info('Save file data function ', userId, fileName, filePath)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, userId])
+  __logger.info('Save file data function ', userId, fileName, filePath, agreementStatus)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, agreementStatus, userId])
     .then(result => {
       __logger.info('Save file data function db result ', { result })
       if (result && result.affectedRows && result.affectedRows > 0) {
@@ -87,8 +89,8 @@ const uploadAgreement = (req, res) => {
     if (!req.files || (req.files && !req.files[0])) {
       return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
     } else {
-      __logger.info('file uploaded', req.files)
-      savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path)
+      __logger.info('file uploaded', req.files, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode)
+      savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode)
         .then(data => res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { } })))
         .catch(err => {
           __logger.error('file upload API error', err)
@@ -152,4 +154,46 @@ const generateAgreement = (req, res) => {
   res.download(__constants.PUBLIC_FOLDER_PATH + '/agreements/agreement.pdf')
 }
 
-module.exports = { uploadAgreement, getAgreement, generateAgreement }
+/**
+ * @memberof -Agreement-Controller-
+ * @name getAgreementListByStatusId
+ * @path {GET} /users/agreement/list
+ * @description Bussiness Logic :- This API returns list of agreement using agreement status id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementListByStatusId|GetAgreementListByStatusId}
+ * @param {string}  agreementStatus - Enter agreement status Id here
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of user firstName and created_on
+  * @code {200} if the msg is success than returns list of agreement details.
+ * @author Javed Khan 2nd February, 2021
+ * *** Last-Updated :- Javed Khan 2nd February, 2021 ***
+ */
+
+const getAgreementListByStatusId = (req, res) => {
+  __logger.info('called api to getAgreementByStatusId:: ', req.query)
+  const userService = new UserService()
+  const validate = new ValidatonService()
+  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page field is required with value as number' })
+  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field is required with value as number' })
+  if (+req.query.ItemsPerPage <= 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field value should be greater than zero' })
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const ItemsPerPage = +req.query.ItemsPerPage
+  const offset = ItemsPerPage * (requiredPage - 1)
+  __logger.info('Get Offset & ItemsPerPage value', offset, ItemsPerPage)
+  validate.checkAgreementStatusId(req.query)
+    .then(isvalid => userService.getAgreementByStatusId(req.query.agreementStatus, ItemsPerPage, offset))
+    .then(dbData => {
+      __logger.info('dbData result', dbData[1][0])
+      const pagination = { totalPage: Math.ceil(dbData[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: dbData[0], pagination } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId }

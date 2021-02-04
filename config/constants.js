@@ -352,6 +352,11 @@ const HELO_OSS_ENDPOINTS = {
   download: '/helo-oss/api/object/:action/:fileName'
 }
 const MESSAGE_TYPE = ['session', 'template']
+const AGREEMENT_STATUS = {
+  pendingForApproval: { statusCode: '53bbbfb9-4559-4956-928c-35fb0e34c00b', displayName: 'Pending For Approval' },
+  approved: { statusCode: 'f7252fa6-409b-4525-9f91-191839883bac', displayName: 'Approved' },
+  rejected: { statusCode: '85e72f46-1b86-41d6-99be-28e762f16f98', displayName: 'Rejected' }
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -412,3 +417,4 @@ module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
 module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
 module.exports.MESSAGE_STATUS_FOR_DISPLAY = MESSAGE_STATUS_FOR_DISPLAY
 module.exports.MESSAGE_TYPE = MESSAGE_TYPE
+module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
