@@ -214,7 +214,8 @@ class validate {
                               text: {
                                 type: 'string',
                                 required: false,
-                                minLength: 1
+                                minLength: 1,
+                                pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
                                 type: 'object',
@@ -321,8 +322,13 @@ class validate {
     v.addSchema(schema, '/sendMessageToQueue')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
+      if (err.split('"/^(?:(.)(?!\\\\s\\\\s\\\\s\\\\s)(?!\\\\n)(?!\\\\t))*$/g"').length > 1) {
+        const formatedErr = 'Template variable parameter of text cannot contain new line, tab or more than 3 spaces'
+        formatedError.push(formatedErr)
+      } else {
+        const formatedErr = err.split('.')
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
