@@ -121,9 +121,11 @@ class StatusService {
         }
         if (data.firstLocalizationStatus !== firstLocalizationStatusFromProvider) {
           oldFirstLocalizationStatus = data.firstLocalizationStatus
+          notifyStatusData.firstLocalizationStatus = firstLocalizationStatusFromProvider
         }
         if (data.secondLanguageRequired && data.secondLocalizationStatus !== secondLocalizationStatusFromProvider) {
           oldSecondLocalizationStatus = data.secondLocalizationStatus
+          notifyStatusData.secondLocalizationStatus = secondLocalizationStatusFromProvider
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
           __logger.info('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
