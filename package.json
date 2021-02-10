@@ -8,7 +8,8 @@
     "develop": "nodemon server.js",
     "jsodoc": "./node_modules/.bin/jsdoc -c jsdoc.conf -d public/js-docs",
     "debug": "nodemon --inspect=9231 server.js",
-    "v8Profile":"node --prof server.js"
+    "v8Profile": "node --prof server.js",
+    "standard": "standard"
   },
   "nodemonConfig": {
     "env": {
@@ -25,6 +26,9 @@
     },
     "delay": "1500"
   },
+  "pre-commit": [
+    "standard"
+  ],
   "dependencies": {
     "amqplib": "0.5.5",
     "api-responses": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/api-responses.git#1.0.3",
@@ -88,6 +92,7 @@
   },
   "devDependencies": {
     "nodemon": "2.0.2",
+    "pre-commit": "^1.2.2",
     "standard": "14.3.3"
   }
 }
