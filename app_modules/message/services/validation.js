@@ -119,7 +119,7 @@ class validate {
                     type: 'string',
                     required: true,
                     minLength: 1,
-                    enum: ['image', 'document', 'video']
+                    enum: ['image', 'document', 'video', 'sticker', 'audio']
                   },
                   url: {
                     type: 'string',
@@ -226,7 +226,7 @@ class validate {
                                     type: 'string',
                                     required: true,
                                     minLength: 1,
-                                    enum: ['image', 'document', 'video']
+                                    enum: ['image', 'document', 'video', 'sticker', 'audio']
                                   },
                                   url: {
                                     type: 'string',
