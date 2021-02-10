@@ -47,7 +47,7 @@ const getMessageStatusCount = (req, res) => {
           dataOut.push(statusData)
         }
       })
-      __util.send(res, { type: dataPresent ? __constants.RESPONSE_MESSAGES.SUCCESS : __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: dataPresent ? dataOut : {} })
+      __util.send(res, { type: dataPresent ? __constants.RESPONSE_MESSAGES.SUCCESS : __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: dataPresent ? dataOut : null, err: dataPresent ? null : {} })
     })
     .catch(err => {
       __logger.error('error::getMessageStatusCount : ', err)
