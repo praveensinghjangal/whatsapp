@@ -37,15 +37,17 @@ const getMessageStatusCount = (req, res) => {
     .then(data => {
       __logger.info('db count data ----->then 2', { data })
       const dataOut = []
+      let dataPresent = false
       _.each(__constants.MESSAGE_STATUS_FOR_DISPLAY, singleStatus => {
         const statusData = _.find(data, obj => obj.state.toLowerCase() === singleStatus.toLowerCase())
         if (!statusData) {
           dataOut.push({ state: singleStatus, stateCount: 0 })
         } else {
+          dataPresent = statusData.stateCount > 0
           dataOut.push(statusData)
         }
       })
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dataOut })
+      __util.send(res, { type: dataPresent ? __constants.RESPONSE_MESSAGES.SUCCESS : __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: dataPresent ? dataOut : {} })
     })
     .catch(err => {
       __logger.error('error::getMessageStatusCount : ', err)
