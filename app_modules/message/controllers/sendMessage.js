@@ -1,10 +1,10 @@
 const integrationService = require('../../integration')
-const ValidatonService = require('../services/validation')
+// const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 
 const controller = (req, res) => {
-  const validate = new ValidatonService()
+  // const validate = new ValidatonService()
   req.jwtToken = { providerId: 'f1d44200-4b9d-4901-ae49-5035e0b14a5d' } // todo: replace with actual jwt data
   // validate.sendMessage(req.body)
   //   .then(data => {

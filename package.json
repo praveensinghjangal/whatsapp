@@ -29,6 +29,11 @@
   "pre-commit": [
     "standard"
   ],
+  "standard": {
+    "ignore": [
+      "/lib/"
+    ]
+  },
   "dependencies": {
     "amqplib": "0.5.5",
     "api-responses": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/api-responses.git#1.0.3",

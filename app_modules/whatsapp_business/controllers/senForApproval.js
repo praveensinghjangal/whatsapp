@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')

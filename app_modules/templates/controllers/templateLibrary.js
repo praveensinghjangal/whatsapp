@@ -4,7 +4,6 @@ const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 
-
 /**
  * @memberof -Template-Controller-
  * @name GetSampleTemplateList

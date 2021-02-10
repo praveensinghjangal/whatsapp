@@ -8,7 +8,6 @@ const integrationService = require('../../integration/')
 const TemplateService = require('../services/dbData')
 const StatusService = require('../../templates/services/status')
 const request = require('request')
-const _ = require('lodash')
 const q = require('q')
 
 const updateTemplateStatus = (reqBody, authToken) => {
