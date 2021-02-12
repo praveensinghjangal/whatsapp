@@ -30,12 +30,13 @@ const getOptinText = authToken => {
   return apiCalled.promise
 }
 
-const callSetTemplateId = (templateId, defaultmessageData, authToken) => {
+const callSetTemplateId = (templateId, defaultmessageData, serviceFulfillmentMessage, authToken) => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
   const inputRequest = {
     defaultMessage: defaultmessageData || '.',
-    templateId: templateId
+    templateId: templateId,
+    serviceFulfillmentMessage
   }
   const headers = { Authorization: authToken }
   __logger.info('calling set metadata api', inputRequest, headers)
@@ -152,7 +153,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinTextApi(req.body.optinText, req.headers.authorization))
     .then(data => getTemplateIdData(req.headers.authorization))
-    .then(data => callSetTemplateId(req.body.templateId, data.data.chatDefaultMessage, req.headers.authorization))
+    .then(data => callSetTemplateId(req.body.templateId, data.data.chatDefaultMessage, data.data.serviceFulfillmentMessage, req.headers.authorization))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {
       __logger.error('error: ', err)
