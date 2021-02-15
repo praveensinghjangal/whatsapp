@@ -114,18 +114,16 @@ class StatusService {
 
         const notifyStatusData = {
           secondLanguageRequired: data.secondLanguageRequired ? data.secondLanguageRequired : null,
-          firstLocalizationStatus: data.firstLocalizationStatus ? this.getTemplateStatusName(data.firstLocalizationStatus) : null,
-          secondLocalizationStatus: data.secondLocalizationStatus ? this.getTemplateStatusName(data.secondLocalizationStatus) : null,
           firstLocalizationRejectionReason: data.firstLocalizationRejectionReason ? data.firstLocalizationRejectionReason : null,
           secondLocalizationRejectionReason: data.secondLocalizationRejectionReason ? data.secondLocalizationRejectionReason : null
         }
         if (data.firstLocalizationStatus !== firstLocalizationStatusFromProvider) {
           oldFirstLocalizationStatus = data.firstLocalizationStatus
-          notifyStatusData.firstLocalizationStatus = firstLocalizationStatusFromProvider
+          notifyStatusData.firstLocalizationStatus = firstLocalizationStatusFromProvider ? this.getTemplateStatusName(firstLocalizationStatusFromProvider) : null
         }
         if (data.secondLanguageRequired && data.secondLocalizationStatus !== secondLocalizationStatusFromProvider) {
           oldSecondLocalizationStatus = data.secondLocalizationStatus
-          notifyStatusData.secondLocalizationStatus = secondLocalizationStatusFromProvider
+          notifyStatusData.secondLocalizationStatus = secondLocalizationStatusFromProvider ? this.getTemplateStatusName(secondLocalizationStatusFromProvider) : null
         }
         if (oldFirstLocalizationStatus && oldSecondLocalizationStatus) {
           __logger.info('time to update status ', { oldFirstLocalizationStatus, firstLocalizationStatusFromProvider, oldSecondLocalizationStatus, secondLocalizationStatusFromProvider })
@@ -275,7 +273,7 @@ class StatusService {
       .then(userData => emailService.sendEmail([userData.email], emailSubject + ' - ' + templateName,
         emailTemplates.templateStatusUpdate(statusData, userData.firstName, templateName)))
       .then(data => {
-        __logger.info('Email Contents>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', { data })
+        // __logger.info('Email Contents>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', { data })
         notificationSent.resolve(data)
       })
       .catch(err => {
