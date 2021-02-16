@@ -513,7 +513,7 @@ class validate {
           pattern: __constants.VALIDATOR.timeStamp,
           minLength: 1
         },
-        flag: {
+        transactionType: {
           type: 'string',
           required: true,
           enum: __constants.MESSAGE_TRANSACTION_TYPE

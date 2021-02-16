@@ -83,20 +83,12 @@ const getIncomingOutgoingMessageCount = (transactionType) => {
     and created_on BETWEEN ? AND ?;`
   }
   if (transactionType !== __constants.MESSAGE_TRANSACTION_TYPE[0]) {
-    query += `select count(distinct(mh.message_id)) as "outgoingMessageCount"
-    from message_history mh 
-    join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
-    where mh.is_active = 1
-    and mh.id IN (
-     SELECT MAX(mh1.id)
-     FROM message_history mh1
-     join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
-     where mh1.is_active = 1
-     and wi1.user_id = ?
-     and mh1.created_on BETWEEN ? AND ?
-     GROUP BY mh1.message_id)
-    and wi.user_id = ?
-    and mh.created_on BETWEEN ? AND ?;`
+    query += `select count(1) as "count",message_type as "messageType"
+    from service_provider_message_api_log spmal
+    join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = spmal.request->>"$.payload.whatsapp.from" and wi.is_active = true
+    where wi.user_id = ?
+    and spmal.created_on BETWEEN ? AND ?
+    group by spmal.message_type;`
   }
   return query
 }
