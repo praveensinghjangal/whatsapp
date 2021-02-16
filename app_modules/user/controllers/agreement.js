@@ -196,4 +196,34 @@ const getAgreementListByStatusId = (req, res) => {
     })
 }
 
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId }
+/**
+ * @memberof -Agreement-Controller-
+ * @name GetAgreementById
+ * @path {GET} /users/agreement/:agreementId
+ * @description Bussiness Logic :- This API returns agreement info based on the agreement id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementInfoById|getAgreementInfoById}
+ * @param {string}  agreementId=b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid agreementId here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get object as json data consist of agreementStatus, userId, uploadedOn, updatedOn.
+ * @code {200} if the msg is success than Returns agreementStatus, userId, uploadedOn, updatedOn.
+ * @author Arjun Bhole 16th February, 2021
+ * *** Last-Updated :- Arjun Bhole 16th February, 2021 ***
+ */
+
+const getAgreementInfoById = (req, res) => {
+  __logger.info('called api to get agreement info', req.params)
+  const userService = new UserService()
+  const validate = new ValidatonService()
+  validate.getAgreementInfoById(req.params)
+    .then(data => userService.getAgreementInfoById(req.params.agreementId))
+    .then(dbData => {
+      __logger.info('Agreement Data', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err || err })
+    })
+}
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById }

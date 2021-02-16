@@ -3339,6 +3339,111 @@
             "security": []
          }
       },
+      "/users/agreement/{agreementId}": {
+         "get": {
+            "x-module": "platform",
+            "summary": "get agreement info",
+            "description": "Fetch the agreement info by agreementId provided",
+            "tags": [
+               "agreement"
+            ],
+            "operationId": "getAgreementInfoById",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "agreementId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "Agreement Id"
+               }               
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns agreement info",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                          "code": 2000,
+                          "msg": "Success",
+                          "data": {
+                            "agreementStatus": "Pending For Approval",
+                            "userId": "a33ac2ab-eac0-4649-a843-8e5b65c3d46a",
+                            "uploadedOn": "2021-02-14T18:32:25.000Z",
+                            "updatedOn": null
+                          },
+                          "error": null
+                      },
+                      {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": null,
+                           "error": {}
+                      }
+                    ]
+                      
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
       "/users/agreement": {
          "post": {
             "x-module": "platform",

@@ -294,6 +294,15 @@ const getAgreementByStatusId = () => {
   and ua.is_active = true;`
 }
 
+const getAgreementInfoById = () => {
+  return `select ags.status_name as "agreementStatus",
+  user_id as "userId", uaf.created_on as "uploadedOn", uaf.updated_on as "updatedOn"
+  from user_agreement_files uaf
+  left join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id 
+  and ags.is_active=true and uaf.is_active=true
+  where user_agreement_files_id=? and uaf.is_active=true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -334,5 +343,6 @@ module.exports = {
   getPasswordByUserId,
   getAccountProfileList,
   updateAccountManagerName,
-  getAgreementByStatusId
+  getAgreementByStatusId,
+  getAgreementInfoById
 }

@@ -400,6 +400,25 @@ class UserData {
       })
     return userAgreement.promise
   }
+
+  getAgreementInfoById (agreementId) {
+    __logger.info('getAgreementInfoById>>>')
+    const userAgreement = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId])
+      .then(result => {
+        __logger.info('Query Result')
+        if (result && result.length === 0) {
+          userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userAgreement.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getAgreementInfoById function: ', err)
+        userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return userAgreement.promise
+  }
 }
 
 module.exports = UserData
