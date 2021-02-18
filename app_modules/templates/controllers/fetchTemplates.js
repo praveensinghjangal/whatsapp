@@ -120,10 +120,42 @@ const checksForTemplate = (templateData) => {
   return dataValidated.promise
 }
 
+const getTemplateInfoByUserIdAndTemplateId = (req, res) => {
+  __logger.info('Get getTemplateInfoByUserIdAndTemplateId API Called', req.params)
+  const ruleEngine = new RuleEngine()
+  let finalResult
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.params.userId, req.params.templateId])
+    .then(result => {
+      __logger.info('getTemplateInfoByUserIdAndTemplateId then 1', { result })
+      if (result && result.length === 0) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      } else {
+        result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
+        finalResult = result
+        return ruleEngine.getTemplateCompletionStatus(result[0])
+      }
+    })
+    .then(data => {
+      __logger.info('getTemplateInfoByUserIdAndTemplateId data then 2', { data })
+      finalResult[0].isTemplateValid = data.complete
+      finalResult[0].invalidRemark = data.err && data.err.err ? data.err.err : null
+      return checksForTemplate(finalResult[0])
+    })
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult }))
+    .catch(err => {
+      __logger.error('getTemplateInfoByUserIdAndTemplateId error in create get template info: ', err)
+      if (err && err.type && err.type.code && err.type.code === __constants.RESPONSE_MESSAGES.ALL_STATUS_NOT_UPDATED.code) {
+        err = { type: err.err[0], data: {} }
+      }
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getTemplateList,
   getTemplateInfo,
   getTemplateTypes,
   getTemplateHeaderTypes,
-  getTemplateButtonTypes
+  getTemplateButtonTypes,
+  getTemplateInfoByUserIdAndTemplateId
 }

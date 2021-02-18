@@ -139,15 +139,26 @@ class MessgaeHistoryService {
   getIncomingOutgoingMessageCount (userId, startDate, endDate, flag) {
     __logger.info('getIncomingOutgoingMessageCount::>>>>>>>>>>>>')
     const messageStatus = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate, userId, startDate, endDate])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
         if (result && result.length > 0) {
-          let dataCount = {}
-          if (flag) {
-            dataCount = result[0]
+          const dataCount = { outgoingMessageCount: { session: 0, template: 0, total: 0 }, incomingMessageCount: 0 }
+          if (flag === __constants.MESSAGE_TRANSACTION_TYPE[0]) {
+            dataCount.incomingMessageCount = result[0].incomingMessageCount
           } else {
-            dataCount = { incomingMessageCount: result[0][0].incomingMessageCount, outgoingMessageCount: result[1][0].outgoingMessageCount, totalMessageCount: result[0][0].incomingMessageCount + result[1][0].outgoingMessageCount }
+            let outgoingTotal = 0
+            let loopObj = result
+            if (flag !== __constants.MESSAGE_TRANSACTION_TYPE[1]) {
+              dataCount.incomingMessageCount = result[0][0].incomingMessageCount
+              loopObj = result[1]
+            }
+            _.each(loopObj, singleRow => {
+              dataCount.outgoingMessageCount[singleRow.messageType] = singleRow.count
+              outgoingTotal += singleRow.count
+            })
+            dataCount.outgoingMessageCount.total = outgoingTotal
           }
+          dataCount.totalMessageCount = dataCount.outgoingMessageCount.total + dataCount.incomingMessageCount
           __logger.info('Res----', result, dataCount)
           messageStatus.resolve(dataCount)
         } else {

@@ -33,10 +33,9 @@ const getIncomingOutgoingMessageCount = (req, res) => {
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const flag = req.query.transactionType ? req.query.transactionType.toLowerCase() : ''
-  req.query.flag = flag
+  req.query.transactionType = req.query.transactionType ? req.query.transactionType.toLowerCase() : ''
   validate.transactionValidator(req.query)
-    .then(invalid => dbServices.getIncomingOutgoingMessageCount(userId, req.query.startDate, req.query.endDate, flag))
+    .then(invalid => dbServices.getIncomingOutgoingMessageCount(userId, req.query.startDate, req.query.endDate, req.query.transactionType))
     .then(data => {
       __logger.info('Incoming -----then 2', { data })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data })
