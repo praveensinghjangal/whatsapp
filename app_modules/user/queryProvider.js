@@ -295,14 +295,35 @@ const getAgreementByStatusId = () => {
 }
 
 const getAgreementInfoById = () => {
-  return `select ags.status_name as "agreementStatus",
-  user_id as "userId", uaf.created_on as "uploadedOn", uaf.updated_on as "updatedOn"
+  return `select ags.status_name as "agreementStatus",uaf.agreement_status_id as "agreementStatusId",
+  user_id as "userId",uaf.rejection_reason as "rejectionReason",uaf.created_on as "uploadedOn", uaf.updated_on as "updatedOn"
   from user_agreement_files uaf
   left join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id 
   and ags.is_active=true and uaf.is_active=true
-  where user_agreement_files_id=? and uaf.is_active=true`
+  where user_agreement_files_id=? and user_id=? and uaf.is_active=true`
 }
 
+const getAgreementInfoByUserId = () => {
+  return `select ags.status_name as "agreementStatus",uaf.agreement_status_id as "agreementStatusId",
+  user_id as "userId",uaf.rejection_reason as "rejectionReason" ,uaf.created_on as "uploadedOn", uaf.updated_on as "updatedOn",
+  user_agreement_files_id as "userAgreementFileId"
+  from user_agreement_files uaf
+  left join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id 
+  and ags.is_active=true and uaf.is_active=true
+  where user_id=? and uaf.is_active=true`
+}
+
+const updateUserAgreementStatus = () => {
+  return `update user_agreement_files set 
+  agreement_status_id=? ,updated_by=?, updated_on=now() ,
+  rejection_reason = ?
+  where is_active=true and user_agreement_files_id =?`
+}
+const updateAgreement = () => {
+  return `update user_agreement_files set file_name=? ,file_path=? ,
+  agreement_status_id =?,updated_by=?,updated_on=now()
+  where user_id=? and is_active=true`
+}
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -344,5 +365,8 @@ module.exports = {
   getAccountProfileList,
   updateAccountManagerName,
   getAgreementByStatusId,
-  getAgreementInfoById
+  getAgreementInfoById,
+  getAgreementInfoByUserId,
+  updateUserAgreementStatus,
+  updateAgreement
 }
