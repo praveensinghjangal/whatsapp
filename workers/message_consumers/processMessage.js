@@ -47,7 +47,7 @@ const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
       if (data && data.data && data.data.length > 0) {
         const contiuneToProcessMsg = data.data.filter(i => __constants.CONTINUE_SENDING_MESSAGE_STATUS.indexOf(i.state) >= 0).length
         if (!contiuneToProcessMsg) {
-          __db.redis.setex(messageData.payload.whatsapp.sendAfterId, JSON.stringify(messageData.payload), __constants.REDIS_TTL.wabaData)
+          __db.redis.setex(messageData.payload.whatsapp.sendAfterId, JSON.stringify(messageData.payload), __constants.REDIS_TTL.childMessage)
             .then(response => {
               return saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, true)
             })

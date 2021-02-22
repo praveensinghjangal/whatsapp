@@ -92,7 +92,7 @@ const REDIS_TTL = {
   userConfig: 300,
   wabaData: 900,
   templateData: 300,
-  chatData: 360
+  childMessage: 360
 }
 const SERVER_TIMEOUT = 2 * 60 * 1000
 const ENTITY_NAME = {
