@@ -49,7 +49,7 @@ const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
       if (data && data.data && data.data.length > 0) {
         contiuneToProcessMsg = data.data.filter(i => __constants.CONTINUE_SENDING_MESSAGE_STATUS.indexOf(i.state) >= 0).length
         if (!contiuneToProcessMsg) {
-          return __db.redis.setex(messageData.payload.sendAfterMessageId, JSON.stringify(messageData.payload), __constants.REDIS_TTL.childMessage)
+          return __db.redis.setex(messageData.payload.sendAfterMessageId, JSON.stringify(messageData), __constants.REDIS_TTL.childMessage)
         } else {
           return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
         }
