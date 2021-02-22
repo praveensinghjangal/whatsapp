@@ -226,6 +226,25 @@ class MessgaeHistoryService {
       })
     return messageStatus.promise
   }
+
+  getVivaMsgIdByserviceProviderMsgId (rmqObject) {
+    const messageId = q.defer()
+    const msgIdDbCheck = rmqObject.messageId || null
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getVivaMsgIdByserviceProviderMsgId(), [msgIdDbCheck])
+      .then(result => {
+        if (result && result[0] && result[0].message_id) {
+          messageId.resolve({ messageId: result[0].message_id })
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getVivaMsgIdByserviceProviderMsgId db call')
+          messageId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getVivaMsgIdByserviceProviderMsgId db call:', err)
+        messageId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return messageId.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

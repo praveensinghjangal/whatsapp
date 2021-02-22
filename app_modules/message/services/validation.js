@@ -79,6 +79,10 @@ class validate {
             type: 'boolean',
             required: false
           },
+          sendAfterMessageId: {
+            type: 'string',
+            required: false
+          },
           channels: {
             type: 'array',
             required: true,
