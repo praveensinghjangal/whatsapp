@@ -280,5 +280,6 @@ module.exports = {
   },
   webHookUrl: process.env.WEB_HOOK_URL,
   heloOssUrl: process.env.HELO_OSS_URL,
-  clusterNumber: process.env.CLUSTER_NUMBER
+  clusterNumber: process.env.CLUSTER_NUMBER,
+  mqObjectKey: process.env.MQ_OBJECT_KEY
 }

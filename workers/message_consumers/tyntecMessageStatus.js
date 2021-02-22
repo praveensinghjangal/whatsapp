@@ -13,6 +13,26 @@ const sendToTyntecMessageStatusQueue = (message, queueObj) => {
   return messageRouted.promise
 }
 
+const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
+  const messageHistoryService = new MessageHistoryService()
+  let messageId
+  messageHistoryService.getVivaMsgIdByserviceProviderMsgId(queueDataobject)
+    .then(messageData => {
+      if (messageData && messageData.messageId) {
+        messageId = messageData.messageId
+        return __db.redis.get(messageId)
+      }
+    })
+    .then(data => {
+      if (data) {
+        __db.redis.key_delete(messageId)
+        queueObj.sendToQueue(__constants.MQ.tyntecOutgoingSync, data)
+      }
+    })
+    .catch(err => {
+      __logger.error('error in pendingMessageMechanism of async data:', err)
+    })
+}
 class TyntecConsumer {
   startServer () {
     const queue = __constants.MQ.tyntecMessageStatus.q_name
@@ -24,6 +44,9 @@ class TyntecConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageData = JSON.parse(mqData.content.toString())
+            if (__constants.CONTINUE_SENDING_MESSAGE_STATUS.includes(messageData.status.toLowerCase())) {
+              pendingMessageToSendMechanism(messageData, rmqObject)
+            }
             let statusData = {}
             // __logger.info('incoming!!!!!!!!!!!!!!!!!!', messageData)
             const redirectService = new RedirectService()
