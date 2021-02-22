@@ -36,33 +36,41 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus) => {
 }
 
 const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
+  const messageRouted = q.defer()
   const http = new HttpService(60000)
   const headers = {
     Authorization: __config.authTokens[0]
   }
   let url = __config.base_url + __constants.INTERNAL_END_POINTS.getMessageHistory
-  url = url.split(':messageId').join(messageData.payload.whatsapp.sendAfterId || '')
+  url = url.split(':messageId').join(messageData.payload.sendAfterMessageId || '')
+  let contiuneToProcessMsg = true
   http.Get(url, headers)
     .then(data => {
       if (data && data.data && data.data.length > 0) {
-        const contiuneToProcessMsg = data.data.filter(i => __constants.CONTINUE_SENDING_MESSAGE_STATUS.indexOf(i.state) >= 0).length
+        contiuneToProcessMsg = data.data.filter(i => __constants.CONTINUE_SENDING_MESSAGE_STATUS.indexOf(i.state) >= 0).length
         if (!contiuneToProcessMsg) {
-          __db.redis.setex(messageData.payload.whatsapp.sendAfterId, JSON.stringify(messageData.payload), __constants.REDIS_TTL.childMessage)
-            .then(response => {
-              return saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, true)
-            })
-            .catch(err => {
-              __logger.error('saveAndSendMessageStatus & Redis Set Data::error: ', err)
-            })
+          return __db.redis.setex(messageData.payload.sendAfterMessageId, JSON.stringify(messageData.payload), __constants.REDIS_TTL.childMessage)
         } else {
           return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
         }
+      } else {
+        return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
       }
     })
+    .then(response => {
+      if (!contiuneToProcessMsg) return saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, true)
+      return true
+    })
+    .then(statusRes => {
+      if (!contiuneToProcessMsg) return rmqObject.channel[queue].ack(mqData)
+      return true
+    })
+    .then(ackRes => messageRouted.resolve('done!'))
     .catch(err => {
       rmqObject.channel[queue].ack(mqData)
       __logger.error('callApiAndSendToQueue Async::error: ', err)
     })
+  return messageRouted.promise
 }
 
 const sendToRespectiveProviderQueue = (message, queueObj, queue, mqData) => {
@@ -90,7 +98,7 @@ class ProcessQueueConsumer {
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
               const messageData = JSON.parse(mqData.content.toString())
-              if (messageData && messageData.payload && messageData.payload.whatsapp && messageData.payload.whatsapp.sendAfterId) {
+              if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
                 return callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
               } else {
                 return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
