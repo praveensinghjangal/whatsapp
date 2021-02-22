@@ -441,18 +441,18 @@ class UserData {
     return userAgreement.promise
   }
 
-  insertAgreement (newData, endUserId, userId) {
+  insertAgreement (newData, userId, callerUserId) {
     __logger.info('Inserting agreement')
     const dataInserted = q.defer()
     const uniqueId = new UniqueId()
     const agreementStatusEngine = new AgreementStatusEngine()
     const agreementData = {
       user_agreement_files_id: uniqueId.uuid(),
-      userId: endUserId,
+      userId: userId,
       fileName: (newData && newData.fileName) ? newData.fileName : null,
       filePath: (newData && newData.filePath) ? newData.filePath : null,
       agreementStatusId: (newData && newData.agreementStatusId) ? newData.agreementStatusId : null,
-      createdBy: userId
+      createdBy: callerUserId
     }
     const queryParam = []
     _.each(agreementData, (val) => queryParam.push(val))
@@ -477,7 +477,7 @@ class UserData {
     return dataInserted.promise
   }
 
-  updateAgreement (newData, oldData, endUserId, userId) {
+  updateAgreement (newData, oldData, userId, callerUserId) {
     __logger.info('Updating agreement')
     const dataUpdated = q.defer()
     const agreementStatusEngine = new AgreementStatusEngine()
@@ -485,8 +485,12 @@ class UserData {
       fileName: newData.fileName ? newData.fileName : oldData.fileName,
       filePath: newData.filePath ? newData.filePath : oldData.filePath,
       agreementStatusId: newData.agreementStatusId ? newData.agreementStatusId : oldData.agreementStatusId,
-      userId: endUserId,
-      updatedBy: userId
+      updatedBy: callerUserId,
+      rejectionReason: newData.rejectionReason ? newData.rejectionReason : oldData.rejectionReason,
+      userId: userId
+    }
+    if (agreementData.agreementStatusId && agreementData.agreementStatusId !== __constants.AGREEMENT_STATUS.rejected.statusCode) {
+      agreementData.rejectionReason = null
     }
     const queryParam = []
     _.each(agreementData, (val) => queryParam.push(val))

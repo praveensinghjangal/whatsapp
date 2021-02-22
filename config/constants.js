@@ -180,7 +180,7 @@ const INTERNAL_END_POINTS = {
   businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url',
   addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba',
   getServiceProviderDetailsByUserId: '/helowhatsapp/api/business/internal/getServiceProviderDetailsByUserId',
-  updateAgreementStatus: '/helowhatsapp/api/user/agreement/status'
+  updateAgreementStatus: '/helowhatsapp/api/users/agreement/status'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -365,7 +365,7 @@ const AGREEMENT_STATUS_MAPPING = {
   [AGREEMENT_STATUS.pendingForDownload.statusCode]: [AGREEMENT_STATUS.pendingForUpload.statusCode],
   [AGREEMENT_STATUS.pendingForUpload.statusCode]: [AGREEMENT_STATUS.pendingForApproval.statusCode, AGREEMENT_STATUS.pendingForUpload.statusCode],
   [AGREEMENT_STATUS.pendingForApproval.statusCode]: [AGREEMENT_STATUS.approved.statusCode, AGREEMENT_STATUS.rejected.statusCode],
-  [AGREEMENT_STATUS.rejected.statusCode]: [AGREEMENT_STATUS.pendingForUpload.statusCode, AGREEMENT_STATUS.pendingForDownload.statusCode, AGREEMENT_STATUS.pendingForApproval.statusCode],
+  [AGREEMENT_STATUS.rejected.statusCode]: [AGREEMENT_STATUS.pendingForUpload.statusCode, AGREEMENT_STATUS.pendingForApproval.statusCode],
   [AGREEMENT_STATUS.approved.statusCode]: []
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']

@@ -42,7 +42,7 @@ const getAcountProfile = (req, res) => {
       // __logger.info('Then 1', results)
       if (results && results.length > 0) {
         queryResult = results[0]
-        queryResult.isAgreementUploaded = !!(queryResult && queryResult.userAgreementFilesId)
+        queryResult.isAgreementUploaded = !!((queryResult && queryResult.agreementStatusId && queryResult.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForApproval))
         if (queryResult.tfaType) queryResult.tfaTypeDisplayName = __constants.TFA_TYPE_DISPLAYNAME[queryResult.tfaType]
         return checkAccountProfileCompletionStatus(queryResult)
       } else {

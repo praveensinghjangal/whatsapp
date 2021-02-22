@@ -2,15 +2,11 @@ const q = require('q')
 const multer = require('multer')
 const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
-const UniqueId = require('../../../lib/util/uniqueIdGenerator')
-const __db = require('../../../lib/db')
-const queryProvider = require('../queryProvider')
 const __logger = require('../../../lib/logger')
 const fs = require('fs')
 const path = require('path')
 const UserService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
-const AgreementStatusEngine = require('../services/status')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const HttpService = require('../../../lib/http_service')
 const __config = require('../../../config')
@@ -55,7 +51,7 @@ const upload = multer({
 const updateAgreementStatus = (reqBody, authToken) => {
   __logger.info('calling updateAgreementStatus api ::>>>>>>>>>>>>>>>>>.')
   const http = new HttpService(60000)
-  const url = __config.base_url + __constants.INTERNAL_END_POINTS.updateAgreementStatus + '/status'
+  const url = __config.base_url + __constants.INTERNAL_END_POINTS.updateAgreementStatus
   __logger.info('reqBody updateAgreementStatus :: >>>>>>>>>>>>>>>>>>>>>>>>', reqBody)
   const options = {
     url,
@@ -63,29 +59,25 @@ const updateAgreementStatus = (reqBody, authToken) => {
     headers: { Authorization: authToken },
     json: true
   }
-  return http.Patch(options.reqBody, options.url, options.headers)
+  return http.Patch(options.body, options.url, options.headers)
 }
 
-const savFileDataInDataBase = (userId, fileName, filePath, agreementStatus, autToken) => {
+const savFileDataInDataBase = (userId, fileName, filePath, agreementStatusId, autToken) => {
   const fileSaved = q.defer()
-  const uniqueId = new UniqueId()
-  __logger.info('Save file data function ', userId, fileName, filePath, agreementStatus)
+  __logger.info('Save file data function ', userId, fileName, filePath, agreementStatusId)
   const reqBody = {
-    agreementStatusId: agreementStatus,
-    userId: userId
+    agreementStatusId: agreementStatusId,
+    userId: userId,
+    fileName,
+    filePath
   }
   updateAgreementStatus(reqBody, autToken)
-    .then((data) => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, userId]))
     .then(result => {
-      __logger.info('Save file data function db result ', { result })
-      if (result && result.affectedRows && result.affectedRows > 0) {
-        fileSaved.resolve(true)
-      } else {
-        fileSaved.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
-      }
+      __logger.info('update Agreement Status result ', { result })
+      fileSaved.resolve(true)
     })
     .catch(err => {
-      __logger.error('save file data function error -->', err)
+      __logger.error('update Agreement data function error -->', err)
       fileSaved.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
     })
   return fileSaved.promise
@@ -114,10 +106,10 @@ const uploadAgreement = (req, res) => {
     } else {
       __logger.info('file uploaded', req.files, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode)
       savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, req.headers.authorization)
-        .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { } }))
+        .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, statusName: __constants.AGREEMENT_STATUS.pendingForApproval.displayName } }))
         .catch(err => {
           __logger.error('file upload API error', err)
-          __util.send(res, { type: err.type, err: err.err })
+          return __util.send(res, { type: err.type, err: err.err })
         })
     }
   })
@@ -138,21 +130,24 @@ const uploadAgreement = (req, res) => {
 const getAgreement = (req, res) => {
   __logger.info('Inside getAgreement', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getLatestAgreementByUserId(), [userId])
-    .then(results => {
-      __logger.info('Got result from db 1', { results })
-      const baseFileName = path.basename(results[0].file_path)
-      const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
-      if (results && results.length > 0) {
-        __logger.info('fileeeeeeeeeeeeeeeeeeee', results[0].file_path)
+  const userService = new UserService()
+  userService.getAgreementInfoByUserId(userId)
+    .then(data => {
+      if (!data) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+      if (data && (data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForDownload.statusCode || data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForUpload.statusCode)) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_FILE_CANNOT_BE_VIEWED, err: {}, data: {} })
+      } else {
+        const baseFileName = path.basename(data.filePath)
+        const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
+        __logger.info('fileeeeeeeeeeeeeeeeeeee', data.filePath)
         __logger.info('File Path Exist', fs.existsSync(finalPath))
         if (fs.existsSync(finalPath)) {
-          res.download(results[0].file_path)
+          res.download(data.filePath)
         } else {
-          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         }
-      } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     })
     .catch(err => {
@@ -235,7 +230,7 @@ const getAgreementListByStatusId = (req, res) => {
  */
 
 const getAgreementInfoById = (req, res) => {
-  __logger.info('called api to get agreement info', req.params)
+  __logger.info('api to get agreement info called', req.params)
   const userService = new UserService()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
@@ -269,42 +264,22 @@ const getAgreementInfoById = (req, res) => {
  */
 
 const evaluateAgreement = (req, res) => {
-  const userService = new UserService()
-  const validate = new ValidatonService()
-  const agreementStatusEngine = new AgreementStatusEngine()
-  const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const inputData = {
-    agreementStatus: req.query.agreementStatus,
+    agreementStatusId: (req.query.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[0]) ? __constants.AGREEMENT_STATUS.approved.statusCode : __constants.AGREEMENT_STATUS.rejected.statusCode,
     userId: req.body.userId,
     rejectionReason: (req.body && req.body.rejectionReason) ? req.body.rejectionReason : ''
   }
-  if (inputData.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[0]) {
+  if (req.query && req.query.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[0]) {
     inputData.rejectionReason = null
   }
-  let agreementInfo
-  let agreementStatus
-  validate.checkAgreementInput(inputData)
-    .then(() => userService.getAgreementInfoByUserId(inputData.userId))
-    .then((data) => {
-      if (data) {
-        agreementInfo = data
-        agreementStatus = (req.query.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[0]) ? __constants.AGREEMENT_STATUS.approved.statusCode : __constants.AGREEMENT_STATUS.rejected.statusCode
-        return agreementStatusEngine.canUpdateAgreementStatus(agreementStatus, data.agreementStatusId)
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
-      }
-    })
-    .then(data => {
-      __logger.info('Agreement Data', { data })
-      if (typeof data === 'boolean' && data === false) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, data: {} })
-      } else {
-        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateUserAgreementStatus(), [agreementStatus, userId, inputData.rejectionReason, agreementInfo.userAgreementFileId])
-      }
-    })
+  updateAgreementStatus(inputData, req.headers.authorization)
     .then((data) => {
       __logger.info('Query Data')
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: agreementStatus } })
+      if (data && data.code === 2000) {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: inputData.agreementStatusId } })
+      } else {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: {} })
+      }
     })
     .catch(err => {
       __logger.error('error: ', err)
