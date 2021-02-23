@@ -274,11 +274,11 @@ const evaluateAgreement = (req, res) => {
   }
   updateAgreementStatus(inputData, req.headers.authorization)
     .then((data) => {
-      __logger.info('Query Data')
+      __logger.info('Query Data', data)
       if (data && data.code === 2000) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: inputData.agreementStatusId } })
       } else {
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: {} })
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: data.data || null, err: data.error || null })
       }
     })
     .catch(err => {
