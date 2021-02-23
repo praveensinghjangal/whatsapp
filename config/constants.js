@@ -91,7 +91,8 @@ const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
   userConfig: 300,
   wabaData: 900,
-  templateData: 300
+  templateData: 300,
+  childMessage: 360
 }
 const SERVER_TIMEOUT = 2 * 60 * 1000
 const ENTITY_NAME = {
@@ -155,7 +156,8 @@ const MQ = {
   delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
-  retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: 1, createChannel: true }
+  retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
+  tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: 15, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5
@@ -180,7 +182,8 @@ const INTERNAL_END_POINTS = {
   businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url',
   addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba',
   getServiceProviderDetailsByUserId: '/helowhatsapp/api/business/internal/getServiceProviderDetailsByUserId',
-  updateAgreementStatus: '/helowhatsapp/api/users/agreement/status'
+  updateAgreementStatus: '/helowhatsapp/api/users/agreement/status',
+  getMessageHistory: '/helowhatsapp/api/chat/v1/messages/tracking/:messageId'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -191,7 +194,8 @@ const MESSAGE_STATUS = {
   seen: 'seen',
   delivered: 'delivered',
   accepted: 'accepted',
-  failed: 'failed'
+  failed: 'failed',
+  pending: 'waiting for pending delivery'
 }
 const MESSAGE_STATUS_FOR_DISPLAY = [
   MESSAGE_STATUS.inProcess,
@@ -369,6 +373,7 @@ const AGREEMENT_STATUS_MAPPING = {
   [AGREEMENT_STATUS.approved.statusCode]: []
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
+const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -432,3 +437,4 @@ module.exports.MESSAGE_TYPE = MESSAGE_TYPE
 module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
 module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
 module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
+module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS

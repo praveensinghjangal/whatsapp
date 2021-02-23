@@ -4,6 +4,7 @@ const __db = require('../../lib/db')
 const integrationService = require('../../app_modules/integration')
 const q = require('q')
 const moment = require('moment')
+const __config = require('../../config')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 
@@ -54,47 +55,53 @@ const sendToTyntecOutgoingQueue = (message, queueObj) => {
 
 class MessageConsumer {
   startServer () {
-    const queue = __constants.MQ.tyntecOutgoing.q_name
-    let messageData
-    __db.init()
-      .then(result => {
-        const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('tynte outgoing queue consumer::Waiting for message...')
-        rmqObject.channel[queue].consume(queue, mqData => {
-          try {
-            const mqDataReceived = mqData
-            messageData = JSON.parse(mqData.content.toString())
-            __logger.info('tynte outgoing queue consumer::received:', { mqData })
-            __logger.info('tynte outgoing queue consumer:: messageData received:', messageData)
-            if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
-              messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.tyntec
-            }
+    const queueObj = __constants.MQ[__config.mqObjectKey]
+    if (queueObj && queueObj.q_name) {
+      const queue = queueObj.q_name
+      let messageData
+      __db.init()
+        .then(result => {
+          const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
+          __logger.info('tynte outgoing queue consumer::Waiting for message...')
+          rmqObject.channel[queue].consume(queue, mqData => {
+            try {
+              const mqDataReceived = mqData
+              messageData = JSON.parse(mqData.content.toString())
+              __logger.info('tynte outgoing queue consumer::received:', { mqData })
+              __logger.info('tynte outgoing queue consumer:: messageData received:', messageData)
+              if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
+                messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.tyntec
+              }
 
-            const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
-            messageService.sendMessage(messageData.payload)
-              .then(sendMessageRespose => saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messageId))
-              .then(data => rmqObject.channel[queue].ack(mqDataReceived))
-              .catch(err => {
-                __logger.error('tynte outgoing queue consumer::error: ', err)
-                if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
-                  messageData.payload.retryCount--
-                  sendToTyntecOutgoingQueue(messageData, rmqObject)
-                } else {
-                  messageData.err = err
-                  sendToErrorQueue(messageData, rmqObject)
-                }
-                rmqObject.channel[queue].ack(mqDataReceived)
-              })
-          } catch (err) {
-            __logger.error('tynte outgoing queue consumer::error while parsing: ', err)
-            rmqObject.channel[queue].ack(mqData)
-          }
-        }, { noAck: false })
-      })
-      .catch(err => {
-        __logger.error('tynte outgoing queue consumer::error: ', err)
-        process.exit(1)
-      })
+              const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+              messageService.sendMessage(messageData.payload)
+                .then(sendMessageRespose => saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messageId))
+                .then(data => rmqObject.channel[queue].ack(mqDataReceived))
+                .catch(err => {
+                  __logger.error('tynte outgoing queue consumer::error: ', err)
+                  if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
+                    messageData.payload.retryCount--
+                    sendToTyntecOutgoingQueue(messageData, rmqObject)
+                  } else {
+                    messageData.err = err
+                    sendToErrorQueue(messageData, rmqObject)
+                  }
+                  rmqObject.channel[queue].ack(mqDataReceived)
+                })
+            } catch (err) {
+              __logger.error('tynte outgoing queue consumer::error while parsing: ', err)
+              rmqObject.channel[queue].ack(mqData)
+            }
+          }, { noAck: false })
+        })
+        .catch(err => {
+          __logger.error('tynte outgoing queue consumer::error: ', err)
+          process.exit(1)
+        })
+    } else {
+      __logger.error('tynte outgoing queue consumer::error: no such queue object exists with name', __config.mqObjectKey)
+      process.exit(1)
+    }
 
     this.stop_gracefully = function () {
       __logger.info('stopping all resources gracefully')

@@ -183,6 +183,10 @@ const getOutgoingTransactionListBySearchFilters = (endUserNumberRequired) => {
   ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''}  
   ;`
 }
+const getVivaMsgIdByserviceProviderMsgId = () => {
+  return `SELECT message_id 
+  FROM helo_whatsapp.message_history where service_provider_message_id = ? and is_active = true limit 1`
+}
 
 module.exports = {
   getMessageTableDataWithId,
@@ -193,5 +197,6 @@ module.exports = {
   getIncomingOutgoingMessageCount,
   getIncomingMessageTransaction,
   getOutgoingMessageTransaction,
-  getOutgoingTransactionListBySearchFilters
+  getOutgoingTransactionListBySearchFilters,
+  getVivaMsgIdByserviceProviderMsgId
 }
