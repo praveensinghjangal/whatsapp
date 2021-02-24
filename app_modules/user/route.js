@@ -3,7 +3,6 @@ const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 const authstrategy = require('../../config').authentication.strategy
-const userConfiMiddleware = require('../../middlewares/setUserConfig').setUserConfig
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
 const bearerTokenAuth = require('../../middlewares/auth/bearerTokenAuth')
 const __logger = require('../../lib/logger')
@@ -84,7 +83,7 @@ router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, au
 // Agreement Routes
 router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.generateAgreement)
 router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.uploadAgreement)
-router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, userConfiMiddleware, agreementController.getAgreement)
+router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreement)
 router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreementListByStatusId)
 
 module.exports = router
