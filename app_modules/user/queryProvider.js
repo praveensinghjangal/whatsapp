@@ -26,7 +26,7 @@ const getUserAccountProfile = () => {
   return `select u.user_id as "accountId",u.email as "accountManagerName",token_key as "tokenKey",u.email,
   type_name as "accountType" ,u.city, u.state, u.country, u.address_line_1 as "addressLine1",u.address_line_2 as "addressLine2",
   u.contact_number as "contactNumber",u.phone_code as "phoneCode", u.postal_code as "postalCode", u.first_name as "firstName",
-  u.last_name as "lastName",wi.tps, u.phone_verified as "phoneVerified", u.email_verified as "emailVerified", ut.tfa_type as "tfaType",
+  u.last_name as "lastName",u.tps, u.phone_verified as "phoneVerified", u.email_verified as "emailVerified", ut.tfa_type as "tfaType",
   uaf.user_agreement_files_id  as "userAgreementFilesId",wi.service_provider_id as "serviceProviderId", CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
   wi.max_tps_to_provider as "maxTpsToProvider", asi.status_name as "agreementStatus",uaf.agreement_status_id as "agreementStatusId",
   uaf.rejection_reason as "agreementRejectionReason"
