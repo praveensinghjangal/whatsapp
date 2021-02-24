@@ -3,7 +3,6 @@ const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 const router = express.Router()
-// const userConfiMiddleware = require('../../middlewares/setUserConfig')
 
 // Controller require section
 const businessCategoryController = require('./controllers/category')

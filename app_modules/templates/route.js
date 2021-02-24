@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
+const endUserConfigMiddleware = require('../../middlewares/setUserConfig').setEndUserConfig
 const authstrategy = require('../../config').authentication.strategy
 
 // Controller require section
@@ -68,7 +69,7 @@ router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, au
 router.get('/:userId/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfoByUserIdAndTemplateId)
 router.get('/:templateId/validate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/checkTemplateRulesByTemplateId'))
 router.post('/:templateId/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateApprovalController.sendTemplateForApproval)
-router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateApprovalController.sendTemplateForEvaluaion)
+router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), endUserConfigMiddleware, templateApprovalController.sendTemplateForEvaluaion)
 router.patch('/:templateId/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/status').updateTemplateStatus)
 router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), deleteTemplateController.deleteTemplate)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)

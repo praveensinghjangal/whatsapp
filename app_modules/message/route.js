@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
-const userConfiMiddleware = require('../../middlewares/setUserConfig')
+const userConfiMiddleware = require('../../middlewares/setUserConfig').setUserConfig
 const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
 

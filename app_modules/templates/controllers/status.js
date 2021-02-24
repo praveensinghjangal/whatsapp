@@ -6,8 +6,9 @@ const StatusEngine = require('../services/status')
 const updateTemplateStatus = (req, res) => {
   __logger.info('Inside updateTemplateStatus', req.body, req.params.templateId)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const callerUserId = (req && req.body && req.body.callerUserId) ? req.body.callerUserId : null
   const statusEngine = new StatusEngine()
-  statusEngine.validateAndUpdateStatus(req.params.templateId, req.body.firstLocalizationNewStatusId, req.body.firstLocalizationOldStatusId, req.body.firstLocalizationRejectionReason, req.body.secondLocalizationNewStatusId, req.body.secondLocalizationOldStatusId, req.body.secondLocalizationRejectionReason, userId)
+  statusEngine.validateAndUpdateStatus(req.params.templateId, req.body.firstLocalizationNewStatusId, req.body.firstLocalizationOldStatusId, req.body.firstLocalizationRejectionReason, req.body.secondLocalizationNewStatusId, req.body.secondLocalizationOldStatusId, req.body.secondLocalizationRejectionReason, userId, callerUserId)
     .then(validateAndUpdateStatusRes => {
       __logger.info('updateTemplateStatus :: service response', validateAndUpdateStatusRes)
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { messageTemplateStatusId: validateAndUpdateStatusRes.templateStatus, statusName: statusEngine.getTemplateStatusName(validateAndUpdateStatusRes.templateStatus) } })
