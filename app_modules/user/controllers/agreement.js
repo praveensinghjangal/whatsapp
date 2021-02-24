@@ -156,6 +156,7 @@ const getAgreement = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
+
 /**
  * @memberof -Agreement-Controller-
  * @name GenerateAgreement
@@ -218,32 +219,44 @@ const getAgreementListByStatusId = (req, res) => {
 /**
  * @memberof -Agreement-Controller-
  * @name GetAgreementById
- * @path {GET} /users/agreement/:agreementId
- * @description Bussiness Logic :- This API returns agreement info based on the agreement id.
+ * @path {GET} /users/agreement/:userId
+ * @description Bussiness Logic :- This API returns agreement file based on the user id.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  * <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementInfoById|getAgreementInfoById}
- * @param {string} agreementId  b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid agreementId here.
+ * @param {string} userId  b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid userId.
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  -  In response we get object as json data consist of agreementStatus, userId, uploadedOn, updatedOn.
  * @code {200} if the msg is success than Returns agreementStatus, userId, uploadedOn, updatedOn.
- * @author Arjun Bhole 16th February, 2021
- * *** Last-Updated :- Arjun Bhole 16th February, 2021 ***
+ * @author Danish Galiyara 24th February, 2021
+ * *** Last-Updated :- Danish Galiyara 24th February, 2021 ***
  */
 
-const getAgreementInfoById = (req, res) => {
-  __logger.info('api to get agreement info called', req.params)
+const getAgreementByUserId = (req, res) => {
+  const userId = req.body && req.body.userId ? req.body.userId : 0
+  __logger.info('Inside getAgreement', userId)
   const userService = new UserService()
-  const validate = new ValidatonService()
-  const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  validate.checkAgreementId(req.params)
-    .then(data => userService.getAgreementInfoById(req.params.agreementId, userId))
-    .then(dbData => {
-      __logger.info('Agreement Data', dbData)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+  userService.getAgreementInfoByUserId(userId)
+    .then(data => {
+      if (!data) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+      if (data && (data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForDownload.statusCode || data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForUpload.statusCode)) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_FILE_CANNOT_BE_VIEWED, err: {}, data: {} })
+      } else {
+        const baseFileName = path.basename(data.filePath)
+        const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
+        __logger.info('fileeeeeeeeeeeeeeeeeeee', data.filePath)
+        __logger.info('File Path Exist', fs.existsSync(finalPath))
+        if (fs.existsSync(finalPath)) {
+          res.download(data.filePath)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        }
+      }
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
 
@@ -345,4 +358,4 @@ const getAgreementList = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement, getAgreementList }
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementByUserId, evaluateAgreement, getAgreementList }

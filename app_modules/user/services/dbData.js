@@ -403,12 +403,12 @@ class UserData {
     return userAgreement.promise
   }
 
-  getAgreementInfoById (agreementId, userId) {
-    __logger.info('getAgreementInfoById>>>')
+  getAgreementInfoById (agreementId) {
+    __logger.info('getAgreementInfoById>>>', agreementId)
     const userAgreement = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId])
       .then(result => {
-        __logger.info('Query Result')
+        __logger.info('getAgreementInfoById Query Result', result)
         if (result && result.length === 0) {
           userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {

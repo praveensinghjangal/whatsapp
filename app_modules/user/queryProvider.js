@@ -301,7 +301,7 @@ const getAgreementInfoById = () => {
   from user_agreement_files uaf
   left join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id 
   and ags.is_active=true and uaf.is_active=true
-  where user_agreement_files_id=? and user_id=? and uaf.is_active=true`
+  where user_agreement_files_id=? and uaf.is_active=true`
 }
 
 const getAgreementInfoByUserId = () => {
