@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
+const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
@@ -16,72 +17,35 @@ const templateStatusController = require('./controllers/templateStatus')
 
 // Routes
 // Template Type
-router.get('/types', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateTypes)
+router.get('/types', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateTypes)
 
 // Template Category
-router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesCategoryController.getTemplateCategories)
+router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesCategoryController.getTemplateCategories)
 
 // Template Language
-router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLanguageController.getTemplateLanguages)
+router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesLanguageController.getTemplateLanguages)
 
 // Template Count
-router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesCountController.getTemplateCount)
+router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesCountController.getTemplateCount)
 
 // Template Library
-router.get('/sample/:id', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLibraryController.getSampleTemplateInfo)
-router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templatesLibraryController.getSampleTemplateList)
-
-// Fetch Templates
-// router.get('/inttest', (req, res) => {
-//   const integrationService = require('../../app_modules/integration')
-//   const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-//   // templateService.getTemplateList(req.headers.wabanumber)
-//   templateService.getTemplateInfo(req.headers.wabanumber, req.body.templateId)
-//   // const integrationService = require('../../app_modules/integration')
-//   // const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-//   // templateService.getTemplateInfo(req.headers.wabanumber, req.body.templateId)
-//   // const RuleEngine = require('./services/ruleEngine')
-//   // const ruleEngine = new RuleEngine()
-//   // ruleEngine.addTemplate(req.body)
-//   // const DataMapper = require('../integration/tyntec/dataMapper')
-//   // const dataMapper = new DataMapper()
-//   // dataMapper.addTemplate(req.body)
-//   // const getStatusMapping = require('../integration/service/getStatusMapping')
-//   // getStatusMapping(req.body.arr, req.body.sid)
-//   // const StatusService = require('./services/status')
-//   // const statusService = new StatusService()
-//   // statusService.compareAndUpdateStatus(req.body.arr, req.body.sid, req.body.wabaNumber, req.body.userId)
-//   // const fetchAndUpdateTemplateStatus = require('../integration/schedulers/fetchAndUpdateTemplateStatus')
-//   // fetchAndUpdateTemplateStatus()
-//     .then(data => res.send(data))
-//     .catch(err => res.send(err))
-// })
+router.get('/sample/:id', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesLibraryController.getSampleTemplateInfo)
+router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesLibraryController.getSampleTemplateList)
 
 // Template list by statusId & status list
-router.get('/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateStatusController.getTemplateStatusList)
-router.get('/list/:templateStatusId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateStatusController.getTemplateListByStatusId)
+router.get('/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateStatusController.getTemplateStatusList)
+router.get('/list/:templateStatusId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateStatusController.getTemplateListByStatusId)
 
-router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateTemplateController.addUpdateTemplates)
-router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateHeaderTypes)
-router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateButtonTypes)
-router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfo)
-router.get('/:userId/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateInfoByUserIdAndTemplateId)
-router.get('/:templateId/validate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/checkTemplateRulesByTemplateId'))
-router.post('/:templateId/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateApprovalController.sendTemplateForApproval)
-router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), templateApprovalController.sendTemplateForEvaluaion)
-router.patch('/:templateId/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/status').updateTemplateStatus)
-router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), deleteTemplateController.deleteTemplate)
-router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchTemplatesController.getTemplateList)
-
-// router.delete('/:templateId', (req, res) => {
-//   __logger.info('Delete Template Called', req.headers)
-//   __logger.info('Delete Template Called', req.headers.wabaphonenumber)
-//   __logger.info('Delete Template Called', req.headers.templateid)
-//   const integrationService = require('../../app_modules/integration')
-//   const templateService = new integrationService.Template('f1d44200-4b9d-4901-ae49-5035e0b14a5d')
-//   templateService.deleteTemplate(req.headers.wabaphonenumber, req.headers.templateid)
-//     .then(data => res.send(data))
-//     .catch(err => res.send(err))
-// })
+router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateTemplateController.addUpdateTemplates)
+router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateHeaderTypes)
+router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateButtonTypes)
+router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateInfo)
+router.get('/:userId/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateInfoByUserIdAndTemplateId)
+router.get('/:templateId/validate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/checkTemplateRulesByTemplateId'))
+router.post('/:templateId/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateApprovalController.sendTemplateForApproval)
+router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateApprovalController.sendTemplateForEvaluaion)
+router.patch('/:templateId/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/status').updateTemplateStatus)
+router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, deleteTemplateController.deleteTemplate)
+router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateList)
 
 module.exports = router
