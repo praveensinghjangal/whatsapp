@@ -3,6 +3,7 @@ const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
+const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 
 // Controller require section
 
@@ -28,23 +29,23 @@ const addUpdateWabaNoMapping = require('./controllers/addUpdateWabaNoMapping')
 // Routes
 
 // Audience
-router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateAudienceController.addUpdateAudienceData)
-router.post('/optin', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateAudienceController.markOptinByPhoneNumberAndAddOptinSource)
-router.patch('/optout', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateAudienceController.markOptOutByPhoneNumber)
+router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateAudienceController.addUpdateAudienceData)
+router.post('/optin', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateAudienceController.markOptinByPhoneNumberAndAddOptinSource)
+router.patch('/optout', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateAudienceController.markOptOutByPhoneNumber)
 
 // Fetch Audience Data
-router.get('/:audienceId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchAudienceDataController.getAudienceRecordById)
-router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchAudienceDataController.getAudienceRecordList)
+router.get('/:audienceId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchAudienceDataController.getAudienceRecordById)
+router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchAudienceDataController.getAudienceRecordList)
 
 // Segment
-router.post('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateSegmentController.addUpdateSegmentData)
-router.get('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchSegmentController.getSegmentData)
+router.post('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateSegmentController.addUpdateSegmentData)
+router.get('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchSegmentController.getSegmentData)
 
 // Optin
-router.post('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), addUpdateOptinController.addUpdateOptinSourceData)
-router.get('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchOptinController.getOptinSourceData)
-router.patch('/optin/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), bulkAudienceDataUploadController.uploadAudienceData)
-router.get('/optin/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), fetchOptinUrlController.getOptinUrl)
+router.post('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateOptinController.addUpdateOptinSourceData)
+router.get('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchOptinController.getOptinSourceData)
+router.patch('/optin/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, bulkAudienceDataUploadController.uploadAudienceData)
+router.get('/optin/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchOptinUrlController.getOptinUrl)
 router.get('/optin/url/redirect/:wabaNumber', redirectToOptinUrlController.redirectToOptinUrl)
 
 // Waba
