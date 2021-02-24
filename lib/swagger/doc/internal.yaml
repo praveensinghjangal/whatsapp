@@ -2282,14 +2282,14 @@ paths:
               data: {}
               error: {}
       security: []
-  '/users/agreement/{agreementId}':
+  '/users/agreement/{userId}':
     get:
       x-module: platform
       summary: get agreement info
-      description: Fetch the agreement info by agreementId provided
+      description: Fetch the agreement info by userId provided
       tags:
         - agreement
-      operationId: getAgreementInfoById
+      operationId: getAgreementByUserId
       deprecated: false
       produces:
         - application/json
@@ -2299,36 +2299,17 @@ paths:
           required: true
           type: string
           description: user can obtain auth token by using login API
-        - name: agreementId
+        - name: userId
           in: path
           required: true
           type: string
-          description: Agreement Id
+          description: User Id
       responses:
         '200':
-          description: Returns agreement info
-          headers: {}
+          description: A pdf file will be downloaded as per userId
           schema:
-            properties:
-              code:
-                type: number
-              msg:
-                type: string
-              data:
-                type: object
-            example:
-              - code: 2000
-                msg: Success
-                data:
-                  agreementStatus: Pending For Approval
-                  userId: a33ac2ab-eac0-4649-a843-8e5b65c3d46a
-                  uploadedOn: '2021-02-14T18:32:25.000Z'
-                  updatedOn: null
-                error: null
-              - code: 3000
-                msg: No record found.
-                data: null
-                error: {}
+            type: file
+            format: pdf
         '401':
           description: Invalid token in header
           headers: {}

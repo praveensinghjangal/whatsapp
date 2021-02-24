@@ -88,5 +88,5 @@ router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, auth
 router.patch('/agreement/evaluate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.evaluateAgreement)
 router.patch('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/agreementStatus').updateAgreementStatus)
 router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementList)
-router.get('/agreement/:agreementId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementInfoById)
+router.get('/agreement/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementByUserId)
 module.exports = router
