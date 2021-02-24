@@ -6,9 +6,9 @@ const userConfgiMiddleware = require('./setUserConfig')
 const __logger = require('../lib/logger')
 
 const rateLimit = (req, res, next) => {
-  __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig.tps)
-  __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', redisConnectionObject)
-  if (req.userConfig && req.userConfig.tps) {
+  __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig)
+  if (!req.userConfig) return next()
+  if (req.userConfig.tps) {
     this.noOfHitsAllowedConfig = new RateLimiterRedis({
       storeClient: redisConnectionObject,
       keyPrefix: 'TPS',
