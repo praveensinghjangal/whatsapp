@@ -232,7 +232,7 @@ const getAgreementListByStatusId = (req, res) => {
  */
 
 const getAgreementByUserId = (req, res) => {
-  const userId = req.body && req.body.userId ? req.body.userId : 0
+  const userId = req.params && req.params.userId ? req.params.userId : 0
   __logger.info('Inside getAgreement', userId)
   const userService = new UserService()
   userService.getAgreementInfoByUserId(userId)
