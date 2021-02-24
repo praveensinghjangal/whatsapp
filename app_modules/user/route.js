@@ -81,12 +81,12 @@ router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrat
 router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountTypeController.getAcountType)
 
 // Agreement Routes
-router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.generateAgreement)
-router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.uploadAgreement)
-router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), userConfiMiddleware, agreementController.getAgreement)
-router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementListByStatusId)
+router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.generateAgreement)
+router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.uploadAgreement)
+router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreement)
+router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreementListByStatusId)
 router.patch('/agreement/evaluate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.evaluateAgreement)
 router.patch('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/agreementStatus').updateAgreementStatus)
+router.get('/agreement/listAll', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAllAgreement)
 router.get('/agreement/:agreementId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementInfoById)
-
 module.exports = router

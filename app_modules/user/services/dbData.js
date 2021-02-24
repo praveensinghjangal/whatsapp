@@ -515,6 +515,23 @@ class UserData {
 
     return dataUpdated.promise
   }
+
+  getAllAgreement (columnArray, offset, ItemsPerPage, startDate, endDate, valArray) {
+    __logger.info('Inside getAllAgreement')
+    const fetchAgreement = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementList(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
+      .then(result => {
+        if (result && result[0].length > 0) {
+          fetchAgreement.resolve(result)
+        } else {
+          fetchAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        fetchAgreement.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return fetchAgreement.promise
+  }
 }
 
 module.exports = UserData

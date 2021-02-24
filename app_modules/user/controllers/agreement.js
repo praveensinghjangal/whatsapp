@@ -10,6 +10,7 @@ const ValidatonService = require('../services/validation')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const HttpService = require('../../../lib/http_service')
 const __config = require('../../../config')
+const _ = require('lodash')
 
 /**
  * @namespace -Agreement-Controller-
@@ -286,4 +287,43 @@ const evaluateAgreement = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement }
+
+const getAllAgreement = (req, res) => {
+  __logger.info('Get Agreement Record List API Called', req.query)
+  const userService = new UserService()
+  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  const agreementStatusId = req.query ? req.query.agreementStatusId : null
+  const startDate = req.query ? req.query.startDate : null
+  const endDate = req.query ? req.query.endDate : null
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const ItemsPerPage = req.query ? +req.query.ItemsPerPage : 5
+  const offset = ItemsPerPage * (requiredPage - 1)
+  const inputArray = []
+  if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
+
+  const columnArray = []
+  const valArray = []
+  _.each(inputArray, function (input) {
+    if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
+      columnArray.push(input.colName)
+      valArray.push(input.value)
+    }
+  })
+
+  userService.getAllAgreement(columnArray, offset, ItemsPerPage, startDate, endDate, valArray)
+    .then(result => {
+      __logger.info(' then 3')
+      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / ItemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
+      _.each(result[0], singleObj => {
+        delete singleObj.totalFilteredRecord
+      })
+      __logger.info('pagination       ----->', pagination)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement, getAllAgreement }
