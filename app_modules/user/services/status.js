@@ -5,8 +5,7 @@ const __logger = require('../../../lib/logger')
 class AgreementStatusService {
   canUpdateAgreementStatus (newStatusId, oldStatusId) {
     __logger.info('canUpdateAgreementStatus::', oldStatusId, { TEMPLATE_STATUS_MAPPING: __constants.AGREEMENT_STATUS_MAPPING[oldStatusId], newStatusId })
-    if (__constants.AGREEMENT_STATUS_MAPPING[oldStatusId] && __constants.AGREEMENT_STATUS_MAPPING[oldStatusId].includes(newStatusId)) return true
-    return false
+    return __constants.AGREEMENT_STATUS_MAPPING[oldStatusId] && __constants.AGREEMENT_STATUS_MAPPING[oldStatusId].includes(newStatusId)
   }
 
   getAgreementStatusName (agreementCode) {

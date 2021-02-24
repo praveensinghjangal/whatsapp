@@ -498,7 +498,7 @@ class UserData {
     if (agreementStatusEngine.canUpdateAgreementStatus(newData.agreementStatusId, oldData.agreementStatusId)) {
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAgreement(), queryParam)
         .then(result => {
-          __logger.info('result', { result })
+          __logger.info('updateAgreement result', { result })
           if (result && result.affectedRows && result.affectedRows > 0) {
             dataUpdated.resolve(agreementData)
           } else {
@@ -510,9 +510,8 @@ class UserData {
           dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
         })
     } else {
-      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, data: {} })
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, err: {} })
     }
-
     return dataUpdated.promise
   }
 
