@@ -54,8 +54,7 @@ const getRedisDataStatus = userId => {
     .catch(err => dataExists.reject(err))
   return dataExists.promise
 }
-
-module.exports = (req, res, next) => {
+const setUserConfig = (req, res, next) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : null
   if (!userId) return next()
   getRedisDataStatus(userId)
@@ -75,3 +74,25 @@ module.exports = (req, res, next) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
 }
+
+const setEndUserConfig = (req, res, next) => {
+  const userId = req.body && req.body.userId ? req.body.userId : null
+  if (!userId) return next()
+  getRedisDataStatus(userId)
+    .then(redisData => {
+      if (redisData.exists) {
+        return redisData.data
+      } else {
+        return setDataInRedis(userId)
+      }
+    })
+    .then(userConfig => {
+      req.endUserConfig = userConfig
+      return next()
+    })
+    .catch(err => {
+      __logger.info('err', err)
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+}
+module.exports = { setUserConfig, setEndUserConfig }

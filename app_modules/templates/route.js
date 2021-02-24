@@ -3,6 +3,7 @@ const router = express.Router()
 const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
+const endUserConfigMiddleware = require('../../middlewares/setUserConfig').setEndUserConfig
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
@@ -43,7 +44,7 @@ router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, au
 router.get('/:userId/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateInfoByUserIdAndTemplateId)
 router.get('/:templateId/validate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/checkTemplateRulesByTemplateId'))
 router.post('/:templateId/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateApprovalController.sendTemplateForApproval)
-router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateApprovalController.sendTemplateForEvaluaion)
+router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, endUserConfigMiddleware, templateApprovalController.sendTemplateForEvaluaion)
 router.patch('/:templateId/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/status').updateTemplateStatus)
 router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, deleteTemplateController.deleteTemplate)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateList)

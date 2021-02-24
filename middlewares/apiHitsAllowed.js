@@ -2,7 +2,7 @@ const { RateLimiterRedis } = require('rate-limiter-flexible')
 const __util = require('../lib/util')
 const redisConnectionObject = require('../lib/db/redis_local').connection
 const __constants = require('../config/constants')
-const userConfgiMiddleware = require('./setUserConfig')
+const userConfgiMiddleware = require('./setUserConfig').setUserConfig
 const __logger = require('../lib/logger')
 
 const rateLimit = (req, res, next) => {

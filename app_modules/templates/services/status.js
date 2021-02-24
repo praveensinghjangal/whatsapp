@@ -21,7 +21,7 @@ class StatusService {
     return false
   }
 
-  validateAndUpdateStatus (templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason, userId) {
+  validateAndUpdateStatus (templateId, firstLocalizationNewStatusId, firstLocalizationOldStatusId, firstLocalizationRejectionReason, secondLocalizationNewStatusId, secondLocalizationOldStatusId, secondLocalizationRejectionReason, userId, callerUserId) {
     __logger.info('validateAndUpdateStatus::argumenst', { templateId, newStatusId: firstLocalizationNewStatusId, oldStatusId: firstLocalizationOldStatusId, firstLocalizationRejectionReason })
     const statusChanged = q.defer()
     const validate = new ValidatonService()
@@ -55,7 +55,7 @@ class StatusService {
             firstLocalizationRejectionReason: flrr || null,
             secondLocalizationStatus: secondLocalizationNewStatusId || templateData.secondLocalizationStatus,
             secondLocalizationRejectionReason: slrr || null,
-            updatedBy: userId,
+            updatedBy: callerUserId || userId,
             messageTemplateId: templateId,
             wabaInformationId: templateData.wabaInformationId
           }
@@ -189,7 +189,7 @@ class StatusService {
     return comparedAndUpdated.promise
   }
 
-  rollBackStatusService (userId, templateId, rejectionReason) {
+  rollBackStatusService (userId, templateId, rejectionReason, callerUserId) {
     const statusChanged = q.defer()
     const validate = new ValidatonService()
     const templateService = new TemplateService()
@@ -223,7 +223,7 @@ class StatusService {
             firstLocalizationRejectionReason: validateBody.firstLocalizationRejectionReason ? validateBody.firstLocalizationRejectionReason : null,
             secondLocalizationStatus: validateBody.secondLocalizationNewStatusId || templateData.secondLocalizationStatus,
             secondLocalizationRejectionReason: validateBody.secondLocalizationRejectionReason ? validateBody.secondLocalizationRejectionReason : null,
-            updatedBy: userId,
+            updatedBy: callerUserId,
             messageTemplateId: templateId,
             wabaInformationId: templateData.wabaInformationId
           }
