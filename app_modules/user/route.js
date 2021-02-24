@@ -7,6 +7,7 @@ const userConfiMiddleware = require('../../middlewares/setUserConfig').setUserCo
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
 const bearerTokenAuth = require('../../middlewares/auth/bearerTokenAuth')
 const __logger = require('../../lib/logger')
+const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
@@ -25,7 +26,7 @@ router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name,
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
 router.post('/authorize', bearerTokenAuth, require('./controllers/authorize').authorize)
 router.post('/internal/authorize', tokenBasedAuth, require('./controllers/authorize').authorize)
-router.patch('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/passwordManagement').resetPasssword)
+router.patch('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/passwordManagement').resetPasssword)
 
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {
@@ -52,37 +53,38 @@ router.get('/facebookRedirect', authMiddleware.authenticate(authstrategy.faceboo
 })
 
 // Account Profile routes
-router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAcountProfile)
-router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAcountProfile)
-router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
-router.put('/account/tokenKey', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.generateAndUpdateTokenKey)
-router.get('/account/info', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAccountProfileByUserId)
-router.get('/account/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.getAccountProfileList)
-router.patch('/account/accountManager', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountProfileController.updateAccountManagerName)
+router.get('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.getAcountProfile)
+router.put('/account', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.updateAcountProfile)
+router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountTypeController.getAcountType)
+router.put('/account/tokenKey', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.generateAndUpdateTokenKey)
+router.get('/account/info', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.getAccountProfileByUserId)
+router.get('/account/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.getAccountProfileList)
+router.patch('/account/accountManager', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.updateAccountManagerName)
 
 // Billing Profile routes
-router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.getBusinessBilllingProfile)
-router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), billingProfileController.addBusinessBilllingProfile)
+router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingProfileController.getBusinessBilllingProfile)
+router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingProfileController.addBusinessBilllingProfile)
 
 // Verification routes
-router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateEmailVerificationCode)
-router.patch('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateEmailVerificationCode)
-router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.generateSmsVerificationCode)
-router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateSmsVerificationCode)
+router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.generateEmailVerificationCode)
+router.patch('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.validateEmailVerificationCode)
+router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.generateSmsVerificationCode)
+router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.validateSmsVerificationCode)
 router.post('/otp/email', tokenBasedAuth, verificationController.generateEmailOtpCode)
 router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCode)
-router.post('/otp', internalSessionOrTokenAuth, verificationController.sendOtpCode)
-router.patch('/otp', internalSessionOrTokenAuth, verificationController.validateTFa)
-router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.validateTempTFa)
-router.patch('/otp/backup', internalSessionOrTokenAuth, verificationController.validateBackupCodeAndResetTfa)
-router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), verificationController.addTempTfaData)
+router.post('/otp', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, verificationController.sendOtpCode)
+router.patch('/otp', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, verificationController.validateTFa)
+router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.validateTempTFa)
+router.patch('/otp/backup', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, verificationController.validateBackupCodeAndResetTfa)
+router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.addTempTfaData)
 
 // Account Type
-router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), accountTypeController.getAcountType)
+router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountTypeController.getAcountType)
+
 // Agreement Routes
-router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.generateAgreement)
-router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.uploadAgreement)
-router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), userConfiMiddleware, agreementController.getAgreement)
-router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementListByStatusId)
+router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.generateAgreement)
+router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.uploadAgreement)
+router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, userConfiMiddleware, agreementController.getAgreement)
+router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreementListByStatusId)
 
 module.exports = router
