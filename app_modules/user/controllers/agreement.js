@@ -288,7 +288,26 @@ const evaluateAgreement = (req, res) => {
     })
 }
 
-const getAllAgreement = (req, res) => {
+/**
+ * @memberof -Agreement-Controller-
+ * @name getAgreementList
+ * @path {GET} /users/agreement/list
+ * @description Bussiness Logic :- This API returns list of agreement.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementList|GetAgreementList}
+ * @param {string}  agreementStatus - Enter agreement status Id here
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @param {string}  startDate - Enter start date
+ * @param {string}  endDate - Enter end date
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of user userAgreementFileId, statusName,reviewerFirstName and reviewerLastName
+  * @code {200} if the msg is success than returns list of agreement details.
+ * @author Arjun Bhole 23rd February, 2021
+ * *** Last-Updated :- Arjun Bhole 23rd February, 2021 ***
+ */
+const getAgreementList = (req, res) => {
   __logger.info('Get Agreement Record List API Called', req.query)
   const userService = new UserService()
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
@@ -326,4 +345,4 @@ const getAllAgreement = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement, getAllAgreement }
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement, getAgreementList }
