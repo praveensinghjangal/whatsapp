@@ -2,14 +2,15 @@ const q = require('q')
 const multer = require('multer')
 const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
-const UniqueId = require('../../../lib/util/uniqueIdGenerator')
-const __db = require('../../../lib/db')
-const queryProvider = require('../queryProvider')
 const __logger = require('../../../lib/logger')
 const fs = require('fs')
 const path = require('path')
 const UserService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
+const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const HttpService = require('../../../lib/http_service')
+const __config = require('../../../config')
+const _ = require('lodash')
 
 /**
  * @namespace -Agreement-Controller-
@@ -48,22 +49,37 @@ const upload = multer({
   storage: Storage
 }).array('agreement', 1)
 
-const savFileDataInDataBase = (userId, fileName, filePath, agreementStatus) => {
+const updateAgreementStatus = (reqBody, authToken) => {
+  __logger.info('calling updateAgreementStatus api ::>>>>>>>>>>>>>>>>>.')
+  const http = new HttpService(60000)
+  const url = __config.base_url + __constants.INTERNAL_END_POINTS.updateAgreementStatus
+  __logger.info('reqBody updateAgreementStatus :: >>>>>>>>>>>>>>>>>>>>>>>>', reqBody)
+  const options = {
+    url,
+    body: reqBody,
+    headers: { Authorization: authToken },
+    json: true
+  }
+  return http.Patch(options.body, options.url, options.headers)
+}
+
+const savFileDataInDataBase = (userId, fileName, filePath, agreementStatusId, autToken) => {
   const fileSaved = q.defer()
-  const uniqueId = new UniqueId()
-  __logger.info('Save file data function ', userId, fileName, filePath, agreementStatus)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), [uniqueId.uuid(), userId, fileName, filePath, agreementStatus, userId])
+  __logger.info('Save file data function ', userId, fileName, filePath, agreementStatusId)
+  const reqBody = {
+    agreementStatusId: agreementStatusId,
+    userId: userId,
+    fileName,
+    filePath
+  }
+  updateAgreementStatus(reqBody, autToken)
     .then(result => {
-      __logger.info('Save file data function db result ', { result })
-      if (result && result.affectedRows && result.affectedRows > 0) {
-        fileSaved.resolve(true)
-      } else {
-        fileSaved.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
-      }
+      __logger.info('update Agreement Status result ', { result })
+      fileSaved.resolve(true)
     })
     .catch(err => {
-      __logger.error('save file data function error -->', err)
-      fileSaved.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      __logger.error('update Agreement data function error -->', err)
+      fileSaved.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
     })
   return fileSaved.promise
 }
@@ -90,11 +106,11 @@ const uploadAgreement = (req, res) => {
       return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
     } else {
       __logger.info('file uploaded', req.files, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode)
-      savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode)
-        .then(data => res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { } })))
+      savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, req.headers.authorization)
+        .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, statusName: __constants.AGREEMENT_STATUS.pendingForApproval.displayName } }))
         .catch(err => {
           __logger.error('file upload API error', err)
-          res.send(__util.send(res, { type: err.type, err: err.err }))
+          return __util.send(res, { type: err.type, err: err.err })
         })
     }
   })
@@ -115,21 +131,24 @@ const uploadAgreement = (req, res) => {
 const getAgreement = (req, res) => {
   __logger.info('Inside getAgreement', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getLatestAgreementByUserId(), [userId])
-    .then(results => {
-      __logger.info('Got result from db 1', { results })
-      const baseFileName = path.basename(results[0].file_path)
-      const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
-      if (results && results.length > 0) {
-        __logger.info('fileeeeeeeeeeeeeeeeeeee', results[0].file_path)
+  const userService = new UserService()
+  userService.getAgreementInfoByUserId(userId)
+    .then(data => {
+      if (!data) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+      if (data && (data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForDownload.statusCode || data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForUpload.statusCode)) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_FILE_CANNOT_BE_VIEWED, err: {}, data: {} })
+      } else {
+        const baseFileName = path.basename(data.filePath)
+        const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
+        __logger.info('fileeeeeeeeeeeeeeeeeeee', data.filePath)
         __logger.info('File Path Exist', fs.existsSync(finalPath))
         if (fs.existsSync(finalPath)) {
-          res.download(results[0].file_path)
+          res.download(data.filePath)
         } else {
-          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         }
-      } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       }
     })
     .catch(err => {
@@ -196,4 +215,134 @@ const getAgreementListByStatusId = (req, res) => {
     })
 }
 
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId }
+/**
+ * @memberof -Agreement-Controller-
+ * @name GetAgreementById
+ * @path {GET} /users/agreement/:agreementId
+ * @description Bussiness Logic :- This API returns agreement info based on the agreement id.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementInfoById|getAgreementInfoById}
+ * @param {string} agreementId  b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid agreementId here.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get object as json data consist of agreementStatus, userId, uploadedOn, updatedOn.
+ * @code {200} if the msg is success than Returns agreementStatus, userId, uploadedOn, updatedOn.
+ * @author Arjun Bhole 16th February, 2021
+ * *** Last-Updated :- Arjun Bhole 16th February, 2021 ***
+ */
+
+const getAgreementInfoById = (req, res) => {
+  __logger.info('api to get agreement info called', req.params)
+  const userService = new UserService()
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  validate.checkAgreementId(req.params)
+    .then(data => userService.getAgreementInfoById(req.params.agreementId, userId))
+    .then(dbData => {
+      __logger.info('Agreement Data', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Agreement-Controller-
+ * @name EvaluateAgreement
+ * @path {GET} /users/agreement/evaluate
+ * @description Bussiness Logic :- This API updates the agreement status.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ * <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/evaluateAgreement|evaluateAgreement}
+ * @param {string} agreementStatus  b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid agreement status Id here.
+ * @body {string}  userId - Provide the correct userId for whom the agreement status has to be changed.
+ * @body {string}  rejectionReason - Provide the rejection reason when the agreement is rejected.
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get object as json data consist of agreementStatusId.
+ * @code {200} if the msg is success than Returns agreementStatusId.
+ * @author Arjun Bhole 17th February, 2021
+ * *** Last-Updated :- Arjun Bhole 16th February, 2021 ***
+ */
+
+const evaluateAgreement = (req, res) => {
+  const inputData = {
+    agreementStatusId: (req.query.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[0]) ? __constants.AGREEMENT_STATUS.approved.statusCode : __constants.AGREEMENT_STATUS.rejected.statusCode,
+    userId: req.body.userId,
+    rejectionReason: (req.body && req.body.rejectionReason) ? req.body.rejectionReason : ''
+  }
+  if (req.query && req.query.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[0]) {
+    inputData.rejectionReason = null
+  }
+  updateAgreementStatus(inputData, req.headers.authorization)
+    .then((data) => {
+      __logger.info('Query Data', data)
+      if (data && data.code === 2000) {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: inputData.agreementStatusId } })
+      } else {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: data.data || null, err: data.error || null })
+      }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+/**
+ * @memberof -Agreement-Controller-
+ * @name getAgreementList
+ * @path {GET} /users/agreement/list
+ * @description Bussiness Logic :- This API returns list of agreement.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementList|GetAgreementList}
+ * @param {string}  agreementStatus - Enter agreement status Id here
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @param {string}  startDate - Enter start date
+ * @param {string}  endDate - Enter end date
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of user userAgreementFileId, statusName,reviewerFirstName and reviewerLastName
+  * @code {200} if the msg is success than returns list of agreement details.
+ * @author Arjun Bhole 23rd February, 2021
+ * *** Last-Updated :- Arjun Bhole 23rd February, 2021 ***
+ */
+const getAgreementList = (req, res) => {
+  __logger.info('Get Agreement Record List API Called', req.query)
+  const userService = new UserService()
+  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  const agreementStatusId = req.query ? req.query.agreementStatusId : null
+  const startDate = req.query ? req.query.startDate : null
+  const endDate = req.query ? req.query.endDate : null
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const ItemsPerPage = req.query ? +req.query.ItemsPerPage : 5
+  const offset = ItemsPerPage * (requiredPage - 1)
+  const inputArray = []
+  if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
+
+  const columnArray = []
+  const valArray = []
+  _.each(inputArray, function (input) {
+    if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
+      columnArray.push(input.colName)
+      valArray.push(input.value)
+    }
+  })
+
+  userService.getAllAgreement(columnArray, offset, ItemsPerPage, startDate, endDate, valArray)
+    .then(result => {
+      __logger.info(' then 3')
+      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / ItemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
+      _.each(result[0], singleObj => {
+        delete singleObj.totalFilteredRecord
+      })
+      __logger.info('pagination       ----->', pagination)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement, getAgreementList }

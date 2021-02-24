@@ -584,6 +584,117 @@ class validate {
     }
     return isvalid.promise
   }
+
+  checkAgreementId (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getAgreementInfoById',
+      type: 'object',
+      required: true,
+      properties: {
+        agreementId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getAgreementInfoById')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  checkAgreementInput (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkAgreementStatus',
+      type: 'object',
+      required: true,
+      properties: {
+        agreementStatus: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: __constants.AGREEMENT_EVALUATION_RESPONSE
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        rejectionReason: {
+          type: [null, 'string'],
+          required: request.agreementStatus === __constants.AGREEMENT_EVALUATION_RESPONSE[1],
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkAgreementStatus')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  validateAgreementStatus (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkAgreementStatus',
+      type: 'object',
+      required: true,
+      properties: {
+        agreementStatusId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        rejectionReason: {
+          type: [null, 'string'],
+          required: request.agreementStatusId === __constants.AGREEMENT_STATUS.rejected.statusCode,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkAgreementStatus')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

@@ -182,6 +182,7 @@ const INTERNAL_END_POINTS = {
   businessProfileLogoByUrl: '/helowhatsapp/api/business/profile/logo/url',
   addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba',
   getServiceProviderDetailsByUserId: '/helowhatsapp/api/business/internal/getServiceProviderDetailsByUserId',
+  updateAgreementStatus: '/helowhatsapp/api/users/agreement/status',
   getMessageHistory: '/helowhatsapp/api/chat/v1/messages/tracking/:messageId'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
@@ -358,10 +359,20 @@ const HELO_OSS_ENDPOINTS = {
 }
 const MESSAGE_TYPE = ['session', 'template']
 const AGREEMENT_STATUS = {
+  pendingForDownload: { statusCode: 'd6f211ed-c58c-41bb-951c-ef1dcb94887c', displayName: 'Pending For Download' },
+  pendingForUpload: { statusCode: 'fca20279-15e3-42fe-bc14-0e854ecdfa36', displayName: 'Pending For Upload' },
   pendingForApproval: { statusCode: '53bbbfb9-4559-4956-928c-35fb0e34c00b', displayName: 'Pending For Approval' },
   approved: { statusCode: 'f7252fa6-409b-4525-9f91-191839883bac', displayName: 'Approved' },
   rejected: { statusCode: '85e72f46-1b86-41d6-99be-28e762f16f98', displayName: 'Rejected' }
 }
+const AGREEMENT_STATUS_MAPPING = {
+  [AGREEMENT_STATUS.pendingForDownload.statusCode]: [AGREEMENT_STATUS.pendingForUpload.statusCode],
+  [AGREEMENT_STATUS.pendingForUpload.statusCode]: [AGREEMENT_STATUS.pendingForApproval.statusCode, AGREEMENT_STATUS.pendingForUpload.statusCode],
+  [AGREEMENT_STATUS.pendingForApproval.statusCode]: [AGREEMENT_STATUS.approved.statusCode, AGREEMENT_STATUS.rejected.statusCode],
+  [AGREEMENT_STATUS.rejected.statusCode]: [AGREEMENT_STATUS.pendingForUpload.statusCode, AGREEMENT_STATUS.pendingForApproval.statusCode],
+  [AGREEMENT_STATUS.approved.statusCode]: []
+}
+const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
@@ -424,4 +435,6 @@ module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
 module.exports.MESSAGE_STATUS_FOR_DISPLAY = MESSAGE_STATUS_FOR_DISPLAY
 module.exports.MESSAGE_TYPE = MESSAGE_TYPE
 module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
+module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
+module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
 module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS

@@ -7,6 +7,8 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const passMgmt = require('../../../lib/util/password_mgmt')
 const __logger = require('../../../lib/logger')
+const _ = require('lodash')
+const AgreementStatusEngine = require('../services/status')
 
 class UserData {
   constructor () {
@@ -399,6 +401,136 @@ class UserData {
         userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return userAgreement.promise
+  }
+
+  getAgreementInfoById (agreementId, userId) {
+    __logger.info('getAgreementInfoById>>>')
+    const userAgreement = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId, userId])
+      .then(result => {
+        __logger.info('Query Result')
+        if (result && result.length === 0) {
+          userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userAgreement.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getAgreementInfoById function: ', err)
+        userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
+      })
+    return userAgreement.promise
+  }
+
+  getAgreementInfoByUserId (userId) {
+    __logger.info('getAgreementInfoByUserId>>>')
+    const userAgreement = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoByUserId(), [userId])
+      .then(result => {
+        __logger.info('Query Result')
+        if (result && result.length === 0) {
+          userAgreement.resolve()
+        } else {
+          userAgreement.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getAgreementInfoByUserId function: ', err)
+        userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
+      })
+    return userAgreement.promise
+  }
+
+  insertAgreement (newData, userId, callerUserId) {
+    __logger.info('Inserting agreement')
+    const dataInserted = q.defer()
+    const uniqueId = new UniqueId()
+    const agreementStatusEngine = new AgreementStatusEngine()
+    const agreementData = {
+      user_agreement_files_id: uniqueId.uuid(),
+      userId: userId,
+      fileName: (newData && newData.fileName) ? newData.fileName : null,
+      filePath: (newData && newData.filePath) ? newData.filePath : null,
+      agreementStatusId: (newData && newData.agreementStatusId) ? newData.agreementStatusId : null,
+      createdBy: callerUserId
+    }
+    const queryParam = []
+    _.each(agreementData, (val) => queryParam.push(val))
+    __logger.info('inserttttttttttttttttttttt->', agreementData, queryParam)
+    if (agreementStatusEngine.canUpdateAgreementStatus(agreementData.agreementStatusId, __constants.AGREEMENT_STATUS.pendingForDownload.statusCode)) {
+      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), queryParam)
+        .then(result => {
+          __logger.info('result', { result })
+          if (result && result.affectedRows && result.affectedRows > 0) {
+            dataInserted.resolve(agreementData)
+          } else {
+            dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          }
+        })
+        .catch(err => {
+          __logger.error('error: ', err)
+          dataInserted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
+        })
+    } else {
+      dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, data: {} })
+    }
+    return dataInserted.promise
+  }
+
+  updateAgreement (newData, oldData, userId, callerUserId) {
+    __logger.info('Updating agreement')
+    const dataUpdated = q.defer()
+    const agreementStatusEngine = new AgreementStatusEngine()
+    const agreementData = {
+      fileName: newData.fileName ? newData.fileName : oldData.fileName,
+      filePath: newData.filePath ? newData.filePath : oldData.filePath,
+      agreementStatusId: newData.agreementStatusId ? newData.agreementStatusId : oldData.agreementStatusId,
+      updatedBy: callerUserId,
+      rejectionReason: newData.rejectionReason ? newData.rejectionReason : oldData.rejectionReason,
+      userId: userId
+    }
+    if (agreementData.agreementStatusId && agreementData.agreementStatusId !== __constants.AGREEMENT_STATUS.rejected.statusCode) {
+      agreementData.rejectionReason = null
+    }
+    const queryParam = []
+    _.each(agreementData, (val) => queryParam.push(val))
+    __logger.info('update->', agreementData, queryParam)
+    if (agreementStatusEngine.canUpdateAgreementStatus(newData.agreementStatusId, oldData.agreementStatusId)) {
+      __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAgreement(), queryParam)
+        .then(result => {
+          __logger.info('result', { result })
+          if (result && result.affectedRows && result.affectedRows > 0) {
+            dataUpdated.resolve(agreementData)
+          } else {
+            dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+          }
+        })
+        .catch(err => {
+          __logger.error('error: ', err)
+          dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
+        })
+    } else {
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, data: {} })
+    }
+
+    return dataUpdated.promise
+  }
+
+  getAllAgreement (columnArray, offset, ItemsPerPage, startDate, endDate, valArray) {
+    __logger.info('Inside getAllAgreement')
+    const fetchAgreement = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementList(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
+      .then(result => {
+        if (result && result[0].length > 0) {
+          fetchAgreement.resolve(result)
+        } else {
+          fetchAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        fetchAgreement.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return fetchAgreement.promise
   }
 }
 
