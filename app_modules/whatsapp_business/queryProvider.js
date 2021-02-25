@@ -179,7 +179,7 @@ const getBusinessProfileListByStatusId = (columnArray, startDate, endDate) => {
     query += ` AND ${element} = ?`
   })
   if (startDate && endDate) {
-    query += ` AND created_on between ${startDate} and ${endDate} `
+    query += ` AND created_on between '${startDate}' and '${endDate}' `
   }
   query += ` order by created_on asc limit ? offset ?;
   select count(1) as "totalRecord" from waba_information wi

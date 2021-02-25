@@ -293,7 +293,7 @@ const getTemplateByStatusId = (columnArray, startDate, endDate) => {
   })
 
   if (startDate && endDate) {
-    query += ` AND mt.created_on between ${startDate} and ${endDate} `
+    query += ` AND mt.created_on between '${startDate}' and '${endDate}' `
   }
 
   query += ` order by mt.created_on asc limit ? offset ?;
