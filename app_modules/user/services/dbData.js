@@ -403,12 +403,12 @@ class UserData {
     return userAgreement.promise
   }
 
-  getAgreementInfoById (agreementId, userId) {
-    __logger.info('getAgreementInfoById>>>')
+  getAgreementInfoById (agreementId) {
+    __logger.info('getAgreementInfoById>>>', agreementId)
     const userAgreement = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId, userId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId])
       .then(result => {
-        __logger.info('Query Result')
+        __logger.info('getAgreementInfoById Query Result', result)
         if (result && result.length === 0) {
           userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -498,7 +498,7 @@ class UserData {
     if (agreementStatusEngine.canUpdateAgreementStatus(newData.agreementStatusId, oldData.agreementStatusId)) {
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAgreement(), queryParam)
         .then(result => {
-          __logger.info('result', { result })
+          __logger.info('updateAgreement result', { result })
           if (result && result.affectedRows && result.affectedRows > 0) {
             dataUpdated.resolve(agreementData)
           } else {
@@ -510,9 +510,8 @@ class UserData {
           dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
         })
     } else {
-      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, data: {} })
+      dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, err: {} })
     }
-
     return dataUpdated.promise
   }
 
@@ -558,6 +557,25 @@ class UserData {
         dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
       })
     return dataUpdated.promise
+  }
+
+  getAgreementStatusList () {
+    __logger.info('inside getAgreementStatusList function')
+    const agreementData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementStatusList(), [])
+      .then(result => {
+        __logger.info('getAgreementStatusList Qquery Result', { result })
+        if (result && result.length > 0) {
+          agreementData.resolve(result)
+        } else {
+          agreementData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template status list function: ', err)
+        agreementData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return agreementData.promise
   }
 }
 

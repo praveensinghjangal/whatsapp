@@ -301,7 +301,7 @@ const getAgreementInfoById = () => {
   from user_agreement_files uaf
   left join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id 
   and ags.is_active=true and uaf.is_active=true
-  where user_agreement_files_id=? and user_id=? and uaf.is_active=true`
+  where user_agreement_files_id=? and uaf.is_active=true`
 }
 
 const getAgreementInfoByUserId = () => {
@@ -332,20 +332,20 @@ const getAgreementList = (columnArray, startDate, endDate) => {
   let query = `  
   SELECT count(1) over() as "totalFilteredRecord", 
   uaf.user_agreement_files_id as "userAgreementFileId",
-  ags.status_name as "statusName", u.first_name as "reviewerFirstName",u.last_name as "reviewerLastName"
+  ags.status_name as "statusName", uaf.created_by as "reviewer",
+  u.user_id as "userId", u.first_name as "firstName", uaf.agreement_status_id as "agreementStatusId",
+  uaf.rejection_reason as "rejectionReason"
   from user_agreement_files uaf 
-  join agreement_status ags ON 
-  uaf.agreement_status_id = ags.agreement_status_id and ags.is_active =true
-  join users u ON 
-  uaf.user_id = u.user_id and u.is_active =true
-  where uaf.is_active=true `
+  join agreement_status ags ON uaf.agreement_status_id = ags.agreement_status_id and ags.is_active =true
+  join users u ON uaf.user_id = u.user_id and u.is_active =true
+  where uaf.is_active=true`
 
   columnArray.forEach((element) => {
     query += ` AND ${element} = ?`
   })
 
   if (startDate && endDate) {
-    query += `AND uaf.created_on between ${startDate} and ${endDate} `
+    query += ` AND uaf.created_on between '${startDate}' and '${endDate}'`
   }
   query += ` order by uaf.created_on asc limit ? offset ?;
     select count(1) as "totalRecord" from user_agreement_files uaf2
@@ -357,6 +357,13 @@ const updateAccountConfig = () => {
   return `update users set tps=?,updated_by=?,updated_on=now()
   where user_id=? and is_active=true`
 }
+const getAgreementStatusList = () => {
+  return `select agreement_status_id as "agreementStatusId",
+  status_name as "statusName"
+  from agreement_status
+  where is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -403,5 +410,6 @@ module.exports = {
   updateUserAgreementStatus,
   updateAgreement,
   getAgreementList,
-  updateAccountConfig
+  updateAccountConfig,
+  getAgreementStatusList
 }

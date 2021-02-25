@@ -156,6 +156,7 @@ const getAgreement = (req, res) => {
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
+
 /**
  * @memberof -Agreement-Controller-
  * @name GenerateAgreement
@@ -218,32 +219,44 @@ const getAgreementListByStatusId = (req, res) => {
 /**
  * @memberof -Agreement-Controller-
  * @name GetAgreementById
- * @path {GET} /users/agreement/:agreementId
- * @description Bussiness Logic :- This API returns agreement info based on the agreement id.
+ * @path {GET} /users/agreement/:userId
+ * @description Bussiness Logic :- This API returns agreement file based on the user id.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  * <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementInfoById|getAgreementInfoById}
- * @param {string} agreementId  b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid agreementId here.
+ * @param {string} userId  b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid userId.
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  -  In response we get object as json data consist of agreementStatus, userId, uploadedOn, updatedOn.
  * @code {200} if the msg is success than Returns agreementStatus, userId, uploadedOn, updatedOn.
- * @author Arjun Bhole 16th February, 2021
- * *** Last-Updated :- Arjun Bhole 16th February, 2021 ***
+ * @author Danish Galiyara 24th February, 2021
+ * *** Last-Updated :- Danish Galiyara 24th February, 2021 ***
  */
 
-const getAgreementInfoById = (req, res) => {
-  __logger.info('api to get agreement info called', req.params)
+const getAgreementByUserId = (req, res) => {
+  const userId = req.params && req.params.userId ? req.params.userId : 0
+  __logger.info('Inside getAgreement', userId)
   const userService = new UserService()
-  const validate = new ValidatonService()
-  const userId = req.user && req.user.user_id ? req.user.user_id : 0
-  validate.checkAgreementId(req.params)
-    .then(data => userService.getAgreementInfoById(req.params.agreementId, userId))
-    .then(dbData => {
-      __logger.info('Agreement Data', dbData)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+  userService.getAgreementInfoByUserId(userId)
+    .then(data => {
+      if (!data) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+      if (data && (data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForDownload.statusCode || data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForUpload.statusCode)) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_FILE_CANNOT_BE_VIEWED, err: {}, data: {} })
+      } else {
+        const baseFileName = path.basename(data.filePath)
+        const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
+        __logger.info('fileeeeeeeeeeeeeeeeeeee', data.filePath)
+        __logger.info('File Path Exist', fs.existsSync(finalPath))
+        if (fs.existsSync(finalPath)) {
+          res.download(data.filePath)
+        } else {
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        }
+      }
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
     })
 }
 
@@ -276,11 +289,7 @@ const evaluateAgreement = (req, res) => {
   updateAgreementStatus(inputData, req.headers.authorization)
     .then((data) => {
       __logger.info('Query Data', data)
-      if (data && data.code === 2000) {
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: inputData.agreementStatusId } })
-      } else {
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: data.data || null, err: data.error || null })
-      }
+      res.send(data)
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -288,34 +297,59 @@ const evaluateAgreement = (req, res) => {
     })
 }
 
-const getAllAgreement = (req, res) => {
+/**
+ * @memberof -Agreement-Controller-
+ * @name getAgreementList
+ * @path {GET} /users/agreement/list
+ * @description Bussiness Logic :- This API returns list of agreement.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementList|GetAgreementList}
+ * @param {string}  agreementStatus - Enter agreement status Id here
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @param {string}  startDate - Enter start date
+ * @param {string}  endDate - Enter end date
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of user userAgreementFileId,statusName,reviewer,userId,firstName,agreementStatusId,rejectionReason
+  * @code {200} if the msg is success than returns list of agreement details.
+ * @author Arjun Bhole 23rd February, 2021
+ * *** Last-Updated :- Danish Galiyara 25th February, 2021 ***
+ */
+const getAgreementList = (req, res) => {
   __logger.info('Get Agreement Record List API Called', req.query)
-  const userService = new UserService()
-  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
-  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+  const errArr = []
+  if (isNaN(req.query.page)) errArr.push('please provide page in query param of type integer')
+  if (isNaN(req.query.itemsPerPage)) errArr.push('please provide itemsPerPage in query param of type integer')
+  if (errArr.length > 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errArr })
+
   const agreementStatusId = req.query ? req.query.agreementStatusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1
-  const ItemsPerPage = req.query ? +req.query.ItemsPerPage : 5
-  const offset = ItemsPerPage * (requiredPage - 1)
-  const inputArray = []
-  if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
-
-  const columnArray = []
-  const valArray = []
-  _.each(inputArray, function (input) {
-    if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
-      columnArray.push(input.colName)
-      valArray.push(input.value)
-    }
-  })
-
-  userService.getAllAgreement(columnArray, offset, ItemsPerPage, startDate, endDate, valArray)
+  const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
+  const offset = itemsPerPage * (requiredPage - 1)
+  const validate = new ValidatonService()
+  validate.getAgreementListValidator(req.query)
+    .then(valRes => {
+      const userService = new UserService()
+      const inputArray = []
+      const columnArray = []
+      const valArray = []
+      if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
+      _.each(inputArray, function (input) {
+        if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
+          columnArray.push(input.colName)
+          valArray.push(input.value)
+        }
+      })
+      return userService.getAllAgreement(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+    })
     .then(result => {
       __logger.info(' then 3')
-      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / ItemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
+      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
       _.each(result[0], singleObj => {
+        singleObj.reviewer = singleObj.agreementStatusId === __constants.AGREEMENT_STATUS.approved.statusCode || singleObj.agreementStatusId === __constants.AGREEMENT_STATUS.rejected.statusCode ? singleObj.agreementStatusId : null
         delete singleObj.totalFilteredRecord
       })
       __logger.info('pagination       ----->', pagination)
@@ -326,4 +360,33 @@ const getAllAgreement = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementInfoById, evaluateAgreement, getAllAgreement }
+
+/**
+ * @memberof -Agreement-Controller-
+ * @name getAgreementList
+ * @path {GET} /users/agreement/status
+ * @description Bussiness Logic :- This API returns list of agreement status.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementList|GetAgreementStatusList}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of agreementStatusId, statusName
+  * @code {200} if the msg is success than returns list of agreement status.
+ * @author Danish Galiyara 25tyh February, 2021
+ * *** Last-Updated :- Danish Galiyara 25th February, 2021 ***
+ */
+const getAgreementStatusList = (req, res) => {
+  __logger.info('inside function to get template status list')
+  const userService = new UserService()
+  userService.getAgreementStatusList()
+    .then(dbData => {
+      __logger.info('db result', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementByUserId, evaluateAgreement, getAgreementList, getAgreementStatusList }

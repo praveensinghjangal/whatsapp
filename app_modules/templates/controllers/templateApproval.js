@@ -7,6 +7,7 @@ const RuleEngine = require('../services/ruleEngine')
 const integrationService = require('../../integration/')
 const TemplateService = require('../services/dbData')
 const StatusService = require('../../templates/services/status')
+const ValidatonService = require('../services/validation')
 const request = require('request')
 const q = require('q')
 
@@ -107,8 +108,10 @@ const sendTemplateForApproval = (req, res) => {
 
 const sendTemplateForEvaluaion = (req, res) => {
   __logger.info('sendTemplateForEvaluaion API called', req.user)
-  const userId = req.user ? req.user.user_id : ''
+  const callerUserId = req.user && req.user.user_id ? req.user.user_id : null
+  const userId = (req.endUserConfig && req.endUserConfig.accountId) ? req.endUserConfig.accountId : null
   const templateId = req.params ? req.params.templateId : null
+  let templateService
   const ruleEngine = new RuleEngine()
   const templateDbService = new TemplateService()
   let oldTemplateData
@@ -119,101 +122,105 @@ const sendTemplateForEvaluaion = (req, res) => {
     secondLocalizationNewStatusId: null,
     secondLocalizationOldStatusId: null,
     secondLocalizationRejectionReason: null,
-    userId: req.user.user_id,
-    messageTemplateId: req.params ? req.params.templateId : null
+    userId: userId,
+    messageTemplateId: req.params ? req.params.templateId : null,
+    callerUserId: callerUserId
   }
+  const evaluationResponse = req.params ? req.params.evaluationResponse.toLowerCase() : ''
+  const validate = new ValidatonService()
+  validate.templateApproval(req.body)
+    .then(result => {
+      if (!__constants.TEMPLATE_EVALUATION_RESPONSE.includes(evaluationResponse)) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+      } else {
+        templateService = new integrationService.Template(req.endUserConfig.serviceProviderId, req.endUserConfig.maxTpsToProvider, userId)
+        if (req.endUserConfig && req.endUserConfig.serviceProviderId) {
+          return templateDbService.getTemplateInfo(userId, templateId)
+        } else {
+          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVICE_PROVIDER_NOT_PRESENT, data: {} })
+        }
+      }
+    })
+    .then(result => {
+      oldTemplateData = result
+      if (oldTemplateData) {
+        // Approved
+        if (__constants.TEMPLATE_EVALUATION_RESPONSE[0] === evaluationResponse.toLowerCase()) {
+          reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
+          reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
+        }
+        // Second Translation Required and template is approved
+        if (__constants.TEMPLATE_EVALUATION_RESPONSE[0] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
+          reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
+          reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
+        }
+        // Rejected
+        if (__constants.TEMPLATE_EVALUATION_RESPONSE[1] === evaluationResponse.toLowerCase()) {
+          reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
+          reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
+          reqBody.firstLocalizationRejectionReason = req.body ? req.body.firstLocalizationRejectionReason : null
+        }
+        // Second Translation Required and template is rejected
+        if (__constants.TEMPLATE_EVALUATION_RESPONSE[1] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
+          reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
+          reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
+          reqBody.secondLocalizationRejectionReason = req.body ? req.body.secondLocalizationRejectionReason : null
+        }
+        Object.keys(reqBody).forEach((key) => (reqBody[key] == null) && delete reqBody[key])
+        return updateTemplateStatus(reqBody, req.endUserConfig.authToken)
+      }
+    })
+    .then(updateStatusRes => {
+      __logger.info('updateStatusRes', updateStatusRes)
+      if (updateStatusRes.code !== 2000) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: updateStatusRes.error, data: {} })
+      }
+      if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
+        return ruleEngine.addTemplate(oldTemplateData)
+      }
+      return true
+    })
+    .then(ruleEngineRes => {
+      __logger.info('ruleEngineRes', ruleEngineRes)
+      if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
+        return templateService.addTemplate(oldTemplateData, req.endUserConfig.wabaPhoneNumber)
+      }
+      return true
+    })
+    .then(data => {
+      __logger.info('oldTemplateData>>>>>>>>>', oldTemplateData)
 
-  if (req.user && req.user.providerId) {
-    const templateService = new integrationService.Template(req.user.providerId, req.user.maxTpsToProvider, req.user.user_id)
-    const evaluationResponse = req.params ? req.params.evaluationResponse.toLowerCase() : ''
-    if (!__constants.TEMPLATE_EVALUATION_RESPONSE.includes(evaluationResponse)) {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
-    } else {
-      templateDbService.getTemplateInfo(userId, templateId)
-        .then(result => {
-          oldTemplateData = result
-          if (oldTemplateData) {
-            // Approved
-            if (__constants.TEMPLATE_EVALUATION_RESPONSE[0] === evaluationResponse.toLowerCase()) {
-              reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
-              reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
-            }
-            // Second Translation Required and template is approved
-            if (__constants.TEMPLATE_EVALUATION_RESPONSE[0] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
-              reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.submitted.statusCode
-              reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
-            }
-            // Rejected
-            if (__constants.TEMPLATE_EVALUATION_RESPONSE[1] === evaluationResponse.toLowerCase()) {
-              reqBody.firstLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
-              reqBody.firstLocalizationOldStatusId = oldTemplateData.firstLocalizationStatusId ? oldTemplateData.firstLocalizationStatusId : null
-              reqBody.firstLocalizationRejectionReason = req.body ? req.body.firstLocalizationRejectionReason : null
-            }
-            // Second Translation Required and template is rejected
-            if (__constants.TEMPLATE_EVALUATION_RESPONSE[1] === evaluationResponse.toLowerCase() && oldTemplateData.secondLanguageRequired) {
-              reqBody.secondLocalizationNewStatusId = __constants.TEMPLATE_STATUS.rejected.statusCode
-              reqBody.secondLocalizationOldStatusId = oldTemplateData.secondLocalizationStatusId ? oldTemplateData.secondLocalizationStatusId : null
-              reqBody.secondLocalizationRejectionReason = req.body ? req.body.secondLocalizationRejectionReason : null
-            }
-            Object.keys(reqBody).forEach((key) => (reqBody[key] == null) && delete reqBody[key])
-            return updateTemplateStatus(reqBody, req.headers.authorization)
-          }
-        })
-        .then(updateStatusRes => {
-          __logger.info('updateStatusRes', updateStatusRes)
-          if (updateStatusRes.code !== 2000) {
-            return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: updateStatusRes.error, data: {} })
-          }
-          if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
-            return ruleEngine.addTemplate(oldTemplateData)
-          }
-          return true
-        })
-        .then(ruleEngineRes => {
-          __logger.info('ruleEngineRes', ruleEngineRes)
-          if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
-            return templateService.addTemplate(oldTemplateData, req.user.wabaPhoneNumber)
-          }
-          return true
-        })
-        .then(data => {
-          __logger.info('oldTemplateData>>>>>>>>>', oldTemplateData)
+      const statusService = new StatusService()
+      if (oldTemplateData && oldTemplateData.templateName) {
+        const notifyStatusData = {
+          secondLanguageRequired: oldTemplateData.secondLanguageRequired ? oldTemplateData.secondLanguageRequired : null,
+          firstLocalizationStatus: reqBody.firstLocalizationNewStatusId ? statusService.getTemplateStatusName(reqBody.firstLocalizationNewStatusId) : null,
+          secondLocalizationStatus: reqBody.secondLocalizationNewStatusId ? statusService.getTemplateStatusName(reqBody.secondLocalizationNewStatusId) : null,
+          firstLocalizationRejectionReason: reqBody.firstLocalizationRejectionReason ? reqBody.firstLocalizationRejectionReason : null,
+          secondLocalizationRejectionReason: reqBody.secondLocalizationRejectionReason ? reqBody.secondLocalizationRejectionReason : null
+        }
 
-          const statusService = new StatusService()
-          if (oldTemplateData && oldTemplateData.templateName) {
-            const notifyStatusData = {
-              secondLanguageRequired: oldTemplateData.secondLanguageRequired ? oldTemplateData.secondLanguageRequired : null,
-              firstLocalizationStatus: reqBody.firstLocalizationNewStatusId ? statusService.getTemplateStatusName(reqBody.firstLocalizationNewStatusId) : null,
-              secondLocalizationStatus: reqBody.secondLocalizationNewStatusId ? statusService.getTemplateStatusName(reqBody.secondLocalizationNewStatusId) : null,
-              firstLocalizationRejectionReason: reqBody.firstLocalizationRejectionReason ? reqBody.firstLocalizationRejectionReason : null,
-              secondLocalizationRejectionReason: reqBody.secondLocalizationRejectionReason ? reqBody.secondLocalizationRejectionReason : null
-            }
-
-            __logger.info('notifyStatusData>>>>>>>>>>>>>.', notifyStatusData)
-            statusService.notify(userId, notifyStatusData, oldTemplateData.templateName)
-          }
-          __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
-        })
-        .catch(err => {
-          __logger.error('error sendTemplateForEvaluaion: ', err)
-          // if tyntec call is failed roll back status to requested
-          if (err && err.type && err.type.code && err.type.code === 5005) {
-            const statusService = new StatusService()
-            statusService.rollBackStatusService(userId, templateId, '')
-              .then(isRollBacked => {
-                return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-              })
-              .catch(err => {
-                return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-              })
-          } else {
-            return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR || err.type, err: err.err || err })
-          }
-        })
-    }
-  } else {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVICE_PROVIDER_NOT_PRESENT, data: {} })
-  }
+        __logger.info('notifyStatusData>>>>>>>>>>>>>.', notifyStatusData)
+        statusService.notify(userId, notifyStatusData, oldTemplateData.templateName)
+      }
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+    })
+    .catch(err => {
+      __logger.error('error sendTemplateForEvaluaion: ', err)
+      // if tyntec call is failed roll back status to requested
+      if (err && err.type && err.type.code && err.type.code === 5005) {
+        const statusService = new StatusService()
+        statusService.rollBackStatusService(userId, templateId, '', callerUserId)
+          .then(isRollBacked => {
+            return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+          })
+          .catch(err => {
+            return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+          })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR || err.type, err: err.err || err })
+      }
+    })
 }
 
 module.exports = { sendTemplateForApproval, sendTemplateForEvaluaion }
