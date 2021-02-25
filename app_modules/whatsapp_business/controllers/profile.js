@@ -708,7 +708,7 @@ const addUpdateWabaConfiguration = (req, res) => {
     .then(data => businessAccountService.checkUserIdExist(req.body.userId))
     .then(data => {
       __logger.info('exists -----------------> then 2', data)
-      if (data && data.exists && data.record && data.record && data.record.wabaProfileSetupStatusIddata.record.wabaProfileSetupStatusId && data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+      if (data && data.exists && data.record && data.record.wabaProfileSetupStatusId && data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_ERROR, err: {}, data: {} })
       }
       if (data && !data.exists) {
