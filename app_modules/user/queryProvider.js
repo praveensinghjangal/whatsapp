@@ -353,6 +353,10 @@ const getAgreementList = (columnArray, startDate, endDate) => {
   return query
 }
 
+const updateAccountConfig = () => {
+  return `update users set tps=?,updated_by=?,updated_on=now()
+  where user_id=? and is_active=true`
+}
 const getAgreementStatusList = () => {
   return `select agreement_status_id as "agreementStatusId",
   status_name as "statusName"
@@ -406,5 +410,6 @@ module.exports = {
   updateUserAgreementStatus,
   updateAgreement,
   getAgreementList,
+  updateAccountConfig,
   getAgreementStatusList
 }

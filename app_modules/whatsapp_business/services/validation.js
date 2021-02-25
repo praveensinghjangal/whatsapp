@@ -592,10 +592,10 @@ class validate {
     return isvalid.promise
   }
 
-  allocateTemplatesToWaba (request) {
+  checkWabaConfigurationInput (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/allocateTemplatesToWaba',
+      id: '/checkWabaConfigurationInput',
       type: 'object',
       required: true,
       additionalProperties: false,
@@ -610,11 +610,41 @@ class validate {
           required: true,
           minLength: 1,
           maxLength: 50
+        },
+        serviceProviderId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        apiKey: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 500
+        },
+        serviceProviderUserAccountId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 500
+        },
+        maxTpsToProvider: {
+          type: 'number',
+          required: true,
+          minLength: 1,
+          pattern: __constants.VALIDATOR.number
+        },
+        tps: {
+          type: 'number',
+          required: true,
+          minLength: 1,
+          pattern: __constants.VALIDATOR.number
         }
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/allocateTemplatesToWaba')
+    v.addSchema(schema, '/checkWabaConfigurationInput')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')

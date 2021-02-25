@@ -8,14 +8,14 @@ const HttpService = require('../../../lib/http_service')
 class InternalFunctions {
   setWebhookOfProvider (wabaNumber, providerId, maxTpsToProvider, userId) {
     const webHookApplied = q.defer()
-    __logger.info('setWebhookOfProvider --> function called', wabaNumber, providerId)
+    __logger.info('set Webhook Of Provider --> function called', wabaNumber, providerId)
     const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
     const incomingMessage = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.incomingMessage
-    const nessageStatus = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.messageStatus
-    __logger.info('setWebhookOfProvider --> fURL formed', incomingMessage, nessageStatus)
-    wabaAccountService.setWebhook(wabaNumber, incomingMessage, nessageStatus)
+    const messageStatus = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.messageStatus
+    __logger.info('set Webhook Of Provider --> fURL formed', incomingMessage, messageStatus)
+    wabaAccountService.setWebhook(wabaNumber, incomingMessage, messageStatus)
       .then(data => {
-        __logger.info('setWebhookOfProvider --> After setting hook', data)
+        __logger.info('set Webhook Of Provider --> After setting hook', data)
         webHookApplied.resolve(data)
       })
       .catch(err => {
