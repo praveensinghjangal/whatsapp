@@ -269,7 +269,7 @@ const getTemplateTableDataByTemplateId = () => {
     where wi.is_active = true and wi.user_id = ?;`
 }
 
-const getTemplateByStatusId = (columnArray, startDate, endDate) => {
+const getAllTemplateWithStatus = (columnArray, startDate, endDate) => {
   let query =
   `SELECT count(1) over() as "totalFilteredRecord", mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
    mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
@@ -331,6 +331,6 @@ module.exports = {
   deleteTemplate,
   getTemplateTableDataByTemplateName,
   getTemplateTableDataByTemplateId,
-  getTemplateByStatusId,
+  getAllTemplateWithStatus,
   getTemplateStatusList
 }

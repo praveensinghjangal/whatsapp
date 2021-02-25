@@ -35,7 +35,7 @@ router.get('/sample', authMiddleware.authenticate(authstrategy.jwt.name, authstr
 
 // Template list by statusId & status list
 router.get('/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateStatusController.getTemplateStatusList)
-router.get('/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateStatusController.getTemplateListByStatusId)
+router.get('/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateStatusController.getAllTemplateWithStatus)
 
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateTemplateController.addUpdateTemplates)
 router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateHeaderTypes)

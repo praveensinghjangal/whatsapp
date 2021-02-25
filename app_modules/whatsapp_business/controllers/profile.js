@@ -684,9 +684,9 @@ const allocateTemplatesToWaba = (req, res) => {
 
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
- * @name GetProfileListByStatusId
- * @path {get} /business/profile/:statusId
- * @description Bussiness Logic :- This API returns waba profile details based on waba status id.
+ * @name GetProfileList
+ * @path {get} /business/profile/list
+ * @description Bussiness Logic :- This API returns waba profile details with Status.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getProfileListByStatusId|getProfileListByStatusId}
  * @param {string}  statusId=b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid wabaProfile statusId here.
@@ -704,28 +704,41 @@ const allocateTemplatesToWaba = (req, res) => {
 const getProfileListByStatusId = (req, res) => {
   __logger.info('called api to get wabaProfile list', req.params)
   const businessAccountService = new BusinessAccountService()
-  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page field is required with value as number' })
-  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field is required with value as number' })
-  if (+req.query.ItemsPerPage <= 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field value should be greater than zero' })
-  const requiredPage = req.query.page ? +req.query.page : 1
-  const ItemsPerPage = +req.query.ItemsPerPage
-  const offset = ItemsPerPage * (requiredPage - 1)
+  const validate = new ValidatonService()
+  const errArr = []
+  if (isNaN(req.query.page)) errArr.push('please provide page in query param of type integer')
+  if (isNaN(req.query.itemsPerPage)) errArr.push('please provide itemsPerPage in query param of type integer')
+  if (errArr.length > 0) {
+    return __util.send(res, {
+      type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST,
+      err: errArr
+    })
+  }
+
   const statusId = req.query ? req.query.statusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
-  const inputArray = []
-  if (statusId) inputArray.push({ colName: 'waba_profile_setup_status_id', value: statusId })
-  const columnArray = []
-  const valArray = []
-  _.each(inputArray, function (input) {
-    if (input.value !== undefined && input.value !== null) {
-      columnArray.push(input.colName)
-      valArray.push(input.value)
-    }
-  })
-  businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, ItemsPerPage, startDate, endDate, valArray)
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
+  const offset = itemsPerPage * (requiredPage - 1)
+
+  validate.getProfileListByStatusId(req.query)
+    .then(valRes => {
+      const inputArray = []
+      const valArray = []
+      const columnArray = []
+      if (statusId) inputArray.push({ colName: 'waba_profile_setup_status_id', value: statusId })
+      _.each(inputArray, function (input) {
+        if (input.value !== undefined && input.value !== null) {
+          columnArray.push(input.colName)
+          valArray.push(input.value)
+        }
+      })
+
+      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+    })
     .then(result => {
-      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / ItemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
+      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
       _.each(result[0], singleObj => {
         delete singleObj.totalFilteredRecord
       })
