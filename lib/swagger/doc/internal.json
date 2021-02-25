@@ -3844,7 +3844,7 @@
                {
                   "name": "agreementStatus",
                   "in": "query",
-                  "required": true,
+                  "required": false,
                   "type": "string",
                   "description": "agreement status id needs to be entered here"
                },
@@ -3852,14 +3852,14 @@
                   "name": "startDate",
                   "in": "query",
                   "required": true,
-                  "type": "date",
+                  "type": "string",
                   "description": "enter start date of record"
                },
                {
                   "name": "endDate",
                   "in": "query",
                   "required": true,
-                  "type": "date",
+                  "type": "string",
                   "description": "enter end date of record"
                }
             ],
