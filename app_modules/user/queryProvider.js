@@ -333,7 +333,8 @@ const getAgreementList = (columnArray, startDate, endDate) => {
   SELECT count(1) over() as "totalFilteredRecord", 
   uaf.user_agreement_files_id as "userAgreementFileId",
   ags.status_name as "statusName", uaf.created_by as "reviewer",
-  u.user_id as "userId", u.first_name as "firstName", uaf.agreement_status_id as "agreementStatusId"
+  u.user_id as "userId", u.first_name as "firstName", uaf.agreement_status_id as "agreementStatusId",
+  uaf.rejection_reason as "rejectionReason"
   from user_agreement_files uaf 
   join agreement_status ags ON uaf.agreement_status_id = ags.agreement_status_id and ags.is_active =true
   join users u ON uaf.user_id = u.user_id and u.is_active =true
@@ -344,13 +345,21 @@ const getAgreementList = (columnArray, startDate, endDate) => {
   })
 
   if (startDate && endDate) {
-    query += `AND uaf.created_on between ${startDate} and ${endDate} `
+    query += ` AND uaf.created_on between '${startDate}' and '${endDate}'`
   }
   query += ` order by uaf.created_on asc limit ? offset ?;
     select count(1) as "totalRecord" from user_agreement_files uaf2
     where uaf2.is_active = true`
   return query
 }
+
+const getAgreementStatusList = () => {
+  return `select agreement_status_id as "agreementStatusId",
+  status_name as "statusName"
+  from agreement_status
+  where is_active = true`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -396,5 +405,6 @@ module.exports = {
   getAgreementInfoByUserId,
   updateUserAgreementStatus,
   updateAgreement,
-  getAgreementList
+  getAgreementList,
+  getAgreementStatusList
 }

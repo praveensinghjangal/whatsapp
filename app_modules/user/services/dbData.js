@@ -531,6 +531,25 @@ class UserData {
       })
     return fetchAgreement.promise
   }
+
+  getAgreementStatusList () {
+    __logger.info('inside getAgreementStatusList function')
+    const agreementData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementStatusList(), [])
+      .then(result => {
+        __logger.info('getAgreementStatusList Qquery Result', { result })
+        if (result && result.length > 0) {
+          agreementData.resolve(result)
+        } else {
+          agreementData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template status list function: ', err)
+        agreementData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return agreementData.promise
+  }
 }
 
 module.exports = UserData

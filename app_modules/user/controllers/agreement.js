@@ -311,14 +311,13 @@ const evaluateAgreement = (req, res) => {
  * @param {string}  endDate - Enter end date
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  - Response got successfully.
- * @response {object} metadata.data - In response we get array of json data consisting of user userAgreementFileId, statusName,reviewerFirstName and reviewerLastName
+ * @response {object} metadata.data - In response we get array of json data consisting of user userAgreementFileId,statusName,reviewer,userId,firstName,agreementStatusId,rejectionReason
   * @code {200} if the msg is success than returns list of agreement details.
  * @author Arjun Bhole 23rd February, 2021
- * *** Last-Updated :- Arjun Bhole 23rd February, 2021 ***
+ * *** Last-Updated :- Danish Galiyara 25th February, 2021 ***
  */
 const getAgreementList = (req, res) => {
   __logger.info('Get Agreement Record List API Called', req.query)
-  const userService = new UserService()
   const errArr = []
   if (isNaN(req.query.page)) errArr.push('please provide page in query param of type integer')
   if (isNaN(req.query.itemsPerPage)) errArr.push('please provide itemsPerPage in query param of type integer')
@@ -330,19 +329,22 @@ const getAgreementList = (req, res) => {
   const requiredPage = req.query.page ? +req.query.page : 1
   const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
   const offset = itemsPerPage * (requiredPage - 1)
-  const inputArray = []
-  const columnArray = []
-  const valArray = []
-
-  if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
-  _.each(inputArray, function (input) {
-    if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
-      columnArray.push(input.colName)
-      valArray.push(input.value)
-    }
-  })
-
-  userService.getAllAgreement(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+  const validate = new ValidatonService()
+  validate.getAgreementListValidator(req.query)
+    .then(valRes => {
+      const userService = new UserService()
+      const inputArray = []
+      const columnArray = []
+      const valArray = []
+      if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
+      _.each(inputArray, function (input) {
+        if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
+          columnArray.push(input.colName)
+          valArray.push(input.value)
+        }
+      })
+      return userService.getAllAgreement(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+    })
     .then(result => {
       __logger.info(' then 3')
       const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
@@ -358,4 +360,33 @@ const getAgreementList = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementByUserId, evaluateAgreement, getAgreementList }
+
+/**
+ * @memberof -Agreement-Controller-
+ * @name getAgreementList
+ * @path {GET} /users/agreement/status
+ * @description Bussiness Logic :- This API returns list of agreement status.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/agreement/getAgreementList|GetAgreementStatusList}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {object} metadata.data - In response we get array of json data consisting of agreementStatusId, statusName
+  * @code {200} if the msg is success than returns list of agreement status.
+ * @author Danish Galiyara 25tyh February, 2021
+ * *** Last-Updated :- Danish Galiyara 25th February, 2021 ***
+ */
+const getAgreementStatusList = (req, res) => {
+  __logger.info('inside function to get template status list')
+  const userService = new UserService()
+  userService.getAgreementStatusList()
+    .then(dbData => {
+      __logger.info('db result', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+module.exports = { uploadAgreement, getAgreement, generateAgreement, getAgreementListByStatusId, getAgreementByUserId, evaluateAgreement, getAgreementList, getAgreementStatusList }
