@@ -80,7 +80,7 @@ const updateWabaTableData = () => {
   updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?, 
   service_provider_id=?,api_key=?,webhook_post_url=?,optin_text=?,chatbot_activated=?,
   user_account_id_by_provider=? ,websites=?,img_data=?, access_info_rejection_reason =?,
-  templates_allowed = ?
+  templates_allowed=?,max_tps_to_provider=?
   where waba_information_id=? and user_id=?`
 }
 
@@ -190,7 +190,7 @@ const getProfileByWabaId = () => {
   service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
   webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
-  wabainfo.user_id as "userId",wabainfo.max_tps_to_provider as "maxTpsToProvider"
+  wabainfo.user_id as "userId",wabainfo.max_tps_to_provider as "maxTpsToProvider",wabainfo.templates_allowed as "templateAllowed"
   FROM waba_information wabainfo
   LEFT JOIN business_category bcat on wabainfo.business_category_id = bcat.business_category_id and bcat.is_active = true
   LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true

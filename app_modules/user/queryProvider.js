@@ -352,6 +352,11 @@ const getAgreementList = (columnArray, startDate, endDate) => {
     where uaf2.is_active = true`
   return query
 }
+
+const updateAccountConfig = () => {
+  return `update users set tps=?,updated_by=?,updated_on=now()
+  where user_id=? and is_active=true`
+}
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -397,5 +402,6 @@ module.exports = {
   getAgreementInfoByUserId,
   updateUserAgreementStatus,
   updateAgreement,
-  getAgreementList
+  getAgreementList,
+  updateAccountConfig
 }

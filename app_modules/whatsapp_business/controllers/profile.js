@@ -18,11 +18,42 @@ const _ = require('lodash')
 const WabaStatusService = require('../services/wabaStatusEngine')
 const otherModuleCallService = require('../services/otherModuleCalls')
 const Hooks = require('../services/hooks')
+const __config = require('../../../config')
+
 /**
  * @namespace -Whatsapp-Business-Account-(WABA)-Controller-
  * @description This Controller consist of API's related to whatsapp business account (WABA) information of registered user
  *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
  */
+
+const callApiToGetTps = (userId, authToken) => {
+  this.http = new HttpService(60000)
+  const headers = {
+    Authorization: authToken
+  }
+  let url = __config.base_url + __constants.INTERNAL_END_POINTS.getTps
+  url = url.split(':userId').join(userId || '')
+  __logger.info('Calling Api To Get Tps', url)
+  return this.http.Get(url, headers)
+}
+
+const callUpdateServiceProviderDetails = (reqBody, authToken) => {
+  this.http = new HttpService(60000)
+  const headers = {
+    Authorization: authToken
+  }
+  __logger.info('Calling Update Service Provider Details API')
+  return this.http.Patch(reqBody, __config.base_url + __constants.INTERNAL_END_POINTS.updateServiceProvider, headers)
+}
+
+const callUpdateAccountConfigApi = (reqBody, authToken) => {
+  this.http = new HttpService(60000)
+  const headers = {
+    Authorization: authToken
+  }
+  __logger.info('Calling Update Account Config  API')
+  return this.http.Patch(reqBody, __config.base_url + __constants.INTERNAL_END_POINTS.updateAccountConfig, headers)
+}
 
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
@@ -639,42 +670,85 @@ const updateProfilePicByUrl = (req, res) => {
   })
 }
 
+function responseHandler (code) {
+  switch (code) {
+    case 3000:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+    case 4000:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, data: {} })
+    case 4004:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NOT_FOUND, err: {}, data: {} })
+    default:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {}, data: {} })
+  }
+}
+
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
- * @name allocateTemplatesToWaba
- * @path {patch} /business/profile/template/allocate
- * @description Bussiness Logic :- This API allocates the number of template user is allowed to create per WABA.
+ * @name addUpdateWabaConfiguration
+ * @path {patch} /business/profile/configure
+ * @description Bussiness Logic :- This API adds the configurations of the waba account.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
- <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/allocateTemplatesToWaba|allocateTemplatesToWaba}
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/addUpdateWabaConfiguration|addUpdateWabaConfiguration}
  * @body {!number} templatesAllowed=0
  * @response {string} ContentType=application/json - Response content type.
- * @response {string} metadata.msg=Success  -  Returns businessVerificationCompletionStatus as true.
- * @code {200} if the msg is success than Returns Status of business verification completion.
- * @author Danish Galiyara 30th November, 2020
- * *** Last-Updated :- Danish Galiyara 30th November, 2020 ***
+ * @response {string} metadata.msg=Success  -  Returns success when transaction completed.
+ * @code {200} if the msg is success than Returns success after completion.
+ * @author Arjun Bhole 24th February, 2021
+ * *** Last-Updated :- Arjun Bhole 24th February, 2021 ***
  */
 
-const allocateTemplatesToWaba = (req, res) => {
-  __logger.info('API TO MARK BUSINESS MANAGER VERIFIED', req.user.user_id, req.body)
+const addUpdateWabaConfiguration = (req, res) => {
+  __logger.info('API To Add Update Waba Configuration', req.user.user_id, req.body)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
-  const recordUpdatingUserId = req.user && req.user.user_id ? req.user.user_id : 0
-  validate.allocateTemplatesToWaba(req.body)
+  const callerUserId = req.user && req.user.user_id ? req.user.user_id : 0
+  let oldData
+  validate.checkWabaConfigurationInput(req.body)
     .then(data => businessAccountService.checkUserIdExist(req.body.userId))
     .then(data => {
       __logger.info('exists -----------------> then 2', data)
-      if (!data.exists) {
+      if (data && data.exists && data.record && data.record && data.record.wabaProfileSetupStatusIddata.record.wabaProfileSetupStatusId && data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_ERROR, err: {}, data: {} })
+      }
+      if (data && !data.exists) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
-      } else if (data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
       } else {
-        __logger.info('time to checl if profile approved')
-        return businessAccountService.updateBusinessData(req.body, data.record || {}, recordUpdatingUserId)
+        oldData = data.record
+        const reqBody = {
+          userId: req.body.userId,
+          serviceProviderId: req.body.serviceProviderId,
+          apiKey: req.body.apiKey,
+          serviceProviderUserAccountId: req.body.serviceProviderUserAccountId
+        }
+        return callUpdateServiceProviderDetails(reqBody, req.headers.authorization)
       }
     })
     .then(data => {
-      __logger.info('After Allocating templates', data)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+      if (data && data.code === 2000) {
+        const rebBody = {
+          templatesAllowed: req.body.templatesAllowed,
+          maxTpsToProvider: req.body.maxTpsToProvider
+        }
+        return businessAccountService.updateBusinessData(rebBody, oldData || {}, callerUserId)
+      } else {
+        return responseHandler(data.code)
+      }
+    })
+    .then((data) => {
+      const rebBody = {
+        tps: req.body.tps,
+        userId: req.body.userId
+      }
+      return callUpdateAccountConfigApi(rebBody, req.headers.authorization)
+    })
+    .then(data => {
+      __logger.info('call Update Account Config Api response', data)
+      if (data && data.code === 2000) {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+      } else {
+        return responseHandler(data.code)
+      }
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -727,25 +801,40 @@ const getProfileListByStatusId = (req, res) => {
  * @response {string} metadata.msg=Success  -  In response we get array of json data in each object.
  * @code {200} if the msg is success than Returns array of object.
  * @author Javed Khan 22nd January, 2021
- * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ * *** Last-Updated :- Arjun Bhole 25th February, 2021 ***
  */
 
 const getProfileByWabaId = (req, res) => {
   __logger.info('called api to get wabaProfileData by wabaId------', req.params)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
+  let dbResult
   validate.getProfileDataByWabaId(req.params)
     .then(data => businessAccountService.getProfileDataByWabaId(req.params.wabaId))
     .then(dbData => {
-      __logger.info('data from db', dbData)
-      dbData[0].canReceiveSms = dbData[0].canReceiveSms === 1
-      dbData[0].canReceiveVoiceCall = dbData[0].canReceiveVoiceCall === 1
-      dbData[0].associatedWithIvr = dbData[0].associatedWithIvr === 1
-      dbData[0].businessManagerVerified = dbData[0].businessManagerVerified === 1
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData[0] })
+      __logger.info('get Profile Data By WabaId result', dbData)
+      if (dbData && dbData.length > 0) {
+        dbData[0].canReceiveSms = dbData[0].canReceiveSms === 1
+        dbData[0].canReceiveVoiceCall = dbData[0].canReceiveVoiceCall === 1
+        dbData[0].associatedWithIvr = dbData[0].associatedWithIvr === 1
+        dbData[0].businessManagerVerified = dbData[0].businessManagerVerified === 1
+        dbResult = dbData[0]
+        return dbData[0]
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
+    .then((data) => callApiToGetTps(data.userId, req.headers.authorization))
+    .then((result) => {
+      if (result && result.code === 2000) {
+        dbResult.tps = result && result.data && result.data.tps ? result.data.tps : 0
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbResult })
+      } else {
+        return responseHandler(result.code)
+      }
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('Get Profile By Waba Id Error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
@@ -849,7 +938,7 @@ module.exports = {
   addUpdateOptinMessage,
   updateProfilePic,
   updateProfilePicByUrl,
-  allocateTemplatesToWaba,
+  addUpdateWabaConfiguration,
   getProfileListByStatusId,
   getProfileByWabaId,
   getWabaProfileStatus,

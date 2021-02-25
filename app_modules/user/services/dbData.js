@@ -80,7 +80,7 @@ class UserData {
   }
 
   checkUserIdExistsForAccountProfile (userId) {
-    __logger.info('checkUserIdExistsForAccountProfile>>>')
+    __logger.info('Check UserId Exists For Account Profile>>>')
     // declare a prmoise
     const doesUserIdExist = q.defer()
     // checking using service whether the userId is  provided or not
@@ -101,7 +101,7 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in checkUserExistByUserId function: ', err)
+        __logger.error('error in check User Exist By UserId: ', err)
         doesUserIdExist.reject(false)
       })
     return doesUserIdExist.promise
@@ -531,6 +531,33 @@ class UserData {
         fetchAgreement.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return fetchAgreement.promise
+  }
+
+  updateAccountConfig (newData, oldData, userId, callerUserId) {
+    __logger.info('Updating account config')
+    const dataUpdated = q.defer()
+    const accountConfigData = {
+      tps: newData.tps ? newData.tps : oldData.tps,
+      updatedBy: callerUserId,
+      userId: userId
+    }
+    const queryParam = []
+    _.each(accountConfigData, (val) => queryParam.push(val))
+    __logger.info('account config data to be updated->', accountConfigData, queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAccountConfig(), queryParam)
+      .then(result => {
+        __logger.info('result', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          dataUpdated.resolve(accountConfigData)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
+      })
+    return dataUpdated.promise
   }
 }
 
