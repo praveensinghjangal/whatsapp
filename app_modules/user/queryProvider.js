@@ -332,13 +332,12 @@ const getAgreementList = (columnArray, startDate, endDate) => {
   let query = `  
   SELECT count(1) over() as "totalFilteredRecord", 
   uaf.user_agreement_files_id as "userAgreementFileId",
-  ags.status_name as "statusName", u.first_name as "reviewerFirstName",u.last_name as "reviewerLastName"
+  ags.status_name as "statusName", uaf.created_by as "reviewer",
+  u.user_id as "userId", u.first_name as "firstName", uaf.agreement_status_id as "agreementStatusId"
   from user_agreement_files uaf 
-  join agreement_status ags ON 
-  uaf.agreement_status_id = ags.agreement_status_id and ags.is_active =true
-  join users u ON 
-  uaf.user_id = u.user_id and u.is_active =true
-  where uaf.is_active=true `
+  join agreement_status ags ON uaf.agreement_status_id = ags.agreement_status_id and ags.is_active =true
+  join users u ON uaf.user_id = u.user_id and u.is_active =true
+  where uaf.is_active=true`
 
   columnArray.forEach((element) => {
     query += ` AND ${element} = ?`
