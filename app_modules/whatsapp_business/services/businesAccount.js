@@ -496,16 +496,15 @@ class businesAccountService {
     return serviceProviderData.promise
   }
 
-  getBusinessProfileListByStatusId (statusId) {
-    __logger.info('getBusinessProfileListByStatusId::>>>>>>>>>>>>>.')
+  getBusinessProfileListByStatusId (columnArray, offset, ItemsPerPage, startDate, endDate, valArray) {
+    __logger.info('getBusinessProfileListByStatusId::>>>>>>>>>>>>>.', valArray)
     const status = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(), [statusId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
       .then(result => {
-        if (result && result.length === 0) {
-          status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
-        } else {
-          __logger.info('db result', result)
+        if (result && result[0].length > 0) {
           status.resolve(result)
+        } else {
+          status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         }
       }).catch(err => {
         __logger.error('error::getWabaProfileByStatusId : ', err)

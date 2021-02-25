@@ -384,13 +384,13 @@ class TemplateService {
     return templateData.promise
   }
 
-  getTemplateListByStatusId (statusId) {
-    __logger.info('inside get template list by statusId', statusId)
+  getTemplateListByStatusId (columnArray, offset, ItemsPerPage, startDate, endDate, valArray) {
+    __logger.info('inside get template list by statusId', columnArray)
     const templateData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateByStatusId(), [statusId])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateByStatusId(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
       .then(result => {
         __logger.info('Qquery Result', { result })
-        if (result && result.length > 0) {
+        if (result && result[0].length > 0) {
           templateData.resolve(result)
         } else {
           templateData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })

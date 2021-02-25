@@ -269,23 +269,37 @@ const getTemplateTableDataByTemplateId = () => {
     where wi.is_active = true and wi.user_id = ?;`
 }
 
-const getTemplateByStatusId = () => {
-  return `SELECT DISTINCT mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
-  mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
-  mts.message_template_status_id as "messageTemplateStatusId",mt.media_type as "mediaType",
-  CONCAT_WS(', ', mtl.language_name,mtl2.language_name) as "languageName",wi.user_id as "userId"
-  FROM message_template mt
-    JOIN waba_information wi
-      ON wi.is_active = true AND wi.waba_information_id = mt.waba_information_id
-    left JOIN message_template_category mtc
-      ON mtc.is_active = true and mtc.message_template_category_id = mt.message_template_category_id
-    left JOIN message_template_status mts
-      ON mts.is_active = true and mts.message_template_status_id = mt.message_template_status_id
-    left JOIN message_template_language mtl
-      ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
-    left JOIN message_template_language mtl2
-      ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-  WHERE mt.is_active = true  and mt.message_template_status_id = ?`
+const getTemplateByStatusId = (columnArray, startDate, endDate) => {
+  let query =
+  `SELECT count(1) over() as "totalFilteredRecord", mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
+   mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
+   mts.message_template_status_id as "messageTemplateStatusId",mt.media_type as "mediaType",
+   CONCAT_WS(', ', mtl.language_name,mtl2.language_name) as "languageName",wi.user_id as "userId", mt.created_on
+   FROM message_template mt
+     JOIN waba_information wi
+       ON wi.is_active = true AND wi.waba_information_id = mt.waba_information_id
+     left JOIN message_template_category mtc
+       ON mtc.is_active = true and mtc.message_template_category_id = mt.message_template_category_id
+     left JOIN message_template_status mts
+       ON mts.is_active = true and mts.message_template_status_id = mt.message_template_status_id
+     left JOIN message_template_language mtl
+       ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
+     left JOIN message_template_language mtl2
+       ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
+   WHERE mt.is_active = true  `
+
+  columnArray.forEach((element) => {
+    query += ` AND ${element} = ?`
+  })
+
+  if (startDate && endDate) {
+    query += ` AND mt.created_on between ${startDate} and ${endDate} `
+  }
+
+  query += ` order by mt.created_on asc limit ? offset ?;
+   select count(1) as "totalRecord" from message_template mt2
+   where mt2.is_active = true`
+  return query
 }
 
 const getTemplateStatusList = () => {

@@ -690,28 +690,49 @@ const allocateTemplatesToWaba = (req, res) => {
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getProfileListByStatusId|getProfileListByStatusId}
  * @param {string}  statusId=b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid wabaProfile statusId here.
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @param {string}  startDate - Enter start date
+ * @param {string}  endDate - Enter end date
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  -  In response we get array of json data consist of wabaInformationId, phoneNumber, phoneCode, facebookManagerId, userId and businessName in each object.
  * @code {200} if the msg is success than Returns wabaInformationId, phoneNumber, phoneCode, facebookManagerId, userId and businessName.
  * @author Javed Khan 22nd January, 2021
- * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ * *** Last-Updated :- Vasim Gujrati 24nd FEB, 2021 ***
  */
 
 const getProfileListByStatusId = (req, res) => {
   __logger.info('called api to get wabaProfile list', req.params)
   const businessAccountService = new BusinessAccountService()
-  const validate = new ValidatonService()
-  // console.log('status', __constants.WABA_PROFILE_STATUS)
-  // if (!req.params) return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'statusId is required' })
-  validate.getWabaProfileListByStatusId(req.params)
-    .then(data => businessAccountService.getBusinessProfileListByStatusId(req.params.statusId))
-    .then(dbData => {
-      __logger.info('wabaProfile list', dbData)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+  if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page field is required with value as number' })
+  if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field is required with value as number' })
+  if (+req.query.ItemsPerPage <= 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field value should be greater than zero' })
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const ItemsPerPage = +req.query.ItemsPerPage
+  const offset = ItemsPerPage * (requiredPage - 1)
+  const statusId = req.query ? req.query.statusId : null
+  const startDate = req.query ? req.query.startDate : null
+  const endDate = req.query ? req.query.endDate : null
+  const inputArray = []
+  if (statusId) inputArray.push({ colName: 'waba_profile_setup_status_id', value: statusId })
+  const columnArray = []
+  const valArray = []
+  _.each(inputArray, function (input) {
+    if (input.value !== undefined && input.value !== null) {
+      columnArray.push(input.colName)
+      valArray.push(input.value)
+    }
+  })
+  businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, ItemsPerPage, startDate, endDate, valArray)
+    .then(result => {
+      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / ItemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
+      _.each(result[0], singleObj => {
+        delete singleObj.totalFilteredRecord
+      })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
     })
     .catch(err => {
-      __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }
 
