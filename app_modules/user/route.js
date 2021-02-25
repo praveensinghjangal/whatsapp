@@ -14,6 +14,7 @@ const accountTypeController = require('./controllers/accountType')
 const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
 const agreementController = require('./controllers/agreement')
+const accountConfigController = require('./controllers/config')
 
 // Routes
 // User routes
@@ -90,4 +91,7 @@ router.get('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.nam
 router.patch('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/agreementStatus').updateAgreementStatus)
 router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementList)
 router.get('/agreement/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementByUserId)
+// Account Config
+router.get('/account/config/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.getAccountConfig)
+router.patch('/account/config', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.updateAccountConfig)
 module.exports = router

@@ -33,7 +33,7 @@ router.put('/profile/submit', authMiddleware.authenticate(authstrategy.jwt.name,
 router.put('/profile/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessStatusUpdateController.updateWabaAccessInfoStatus)
 router.get('/profile/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getWabaProfileStatus)
 router.get('/profile/template/allocate/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getCountTemplateAllocated)
-router.patch('/profile/template/allocate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.allocateTemplatesToWaba)
+router.patch('/profile/configure', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.addUpdateWabaConfiguration)
 router.get('/profile/info/:wabaId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getProfileByWabaId)
 router.get('/profile/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getProfileListByStatusId)
 router.post('/verification/phoneNumber', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessVerificationController.generateBusinessNumberVerificationCode)

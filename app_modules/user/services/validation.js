@@ -696,6 +696,37 @@ class validate {
     return isvalid.promise
   }
 
+  checkAccountConfigService (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/checkAccountConfigService',
+      type: 'object',
+      required: true,
+      properties: {
+        tps: {
+          type: 'number',
+          required: true,
+          minLength: 1,
+          pattern: __constants.VALIDATOR.number
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/checkAccountConfigService')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
   getAgreementListValidator (request) {
     const isvalid = q.defer()
     const schema = {
@@ -732,6 +763,8 @@ class validate {
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
       if (request.startDate === request.endDate) {
         formatedError.push('startDate cannot be equal to endDate!')
       }

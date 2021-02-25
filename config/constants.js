@@ -183,7 +183,10 @@ const INTERNAL_END_POINTS = {
   addUpdateWabNoMapping: '/helowhatsapp/api/audience/internal/waba',
   getServiceProviderDetailsByUserId: '/helowhatsapp/api/business/internal/getServiceProviderDetailsByUserId',
   updateAgreementStatus: '/helowhatsapp/api/users/agreement/status',
-  getMessageHistory: '/helowhatsapp/api/chat/v1/messages/tracking/:messageId'
+  getMessageHistory: '/helowhatsapp/api/chat/v1/messages/tracking/:messageId',
+  updateServiceProvider: '/helowhatsapp/api/business/profile/serviceProvider',
+  updateAccountConfig: '/helowhatsapp/api/users/account/config',
+  getTps: '/helowhatsapp/api/users/account/config/:userId'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
