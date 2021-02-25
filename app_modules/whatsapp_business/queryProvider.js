@@ -170,11 +170,21 @@ const getServiceProviderDetailsByUserId = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
-const getBusinessProfileListByStatusId = () => {
-  return `select waba_information_id as 'wabaInformationId',phone_number as 'phoneNumber',
+const getBusinessProfileListByStatusId = (columnArray, startDate, endDate) => {
+  let query = `select count(1) over() as "totalFilteredRecord", waba_information_id as 'wabaInformationId',phone_number as 'phoneNumber',
   phone_code as 'phoneCode',facebook_manager_id as 'facebookManagerId', user_id as "userId",
   business_name as 'businessName' from waba_information
-  where waba_profile_setup_status_id = ? and is_active = true`
+  where is_active = true`
+  columnArray.forEach((element) => {
+    query += ` AND ${element} = ?`
+  })
+  if (startDate && endDate) {
+    query += ` AND created_on between '${startDate}' and '${endDate}' `
+  }
+  query += ` order by created_on asc limit ? offset ?;
+  select count(1) as "totalRecord" from waba_information wi
+  where wi.is_active = true`
+  return query
 }
 
 const getProfileByWabaId = () => {

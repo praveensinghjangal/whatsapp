@@ -758,34 +758,68 @@ const addUpdateWabaConfiguration = (req, res) => {
 
 /**
  * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
- * @name GetProfileListByStatusId
- * @path {get} /business/profile/:statusId
- * @description Bussiness Logic :- This API returns waba profile details based on waba status id.
+ * @name GetProfileList
+ * @path {get} /business/profile/list
+ * @description Bussiness Logic :- This API returns waba profile details with Status.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getProfileListByStatusId|getProfileListByStatusId}
  * @param {string}  statusId=b2aacfbc-12da-4748-bae9-b4ec26e37840 - Please provide valid wabaProfile statusId here.
+ * @param {number}  page - Enter page number here
+ * @param {number}  ItemsPerPage - Enter records per page
+ * @param {string}  startDate - Enter start date
+ * @param {string}  endDate - Enter end date
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  -  In response we get array of json data consist of wabaInformationId, phoneNumber, phoneCode, facebookManagerId, userId and businessName in each object.
  * @code {200} if the msg is success than Returns wabaInformationId, phoneNumber, phoneCode, facebookManagerId, userId and businessName.
  * @author Javed Khan 22nd January, 2021
- * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ * *** Last-Updated :- Vasim Gujrati 24nd FEB, 2021 ***
  */
 
 const getProfileListByStatusId = (req, res) => {
   __logger.info('called api to get wabaProfile list', req.params)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
-  // console.log('status', __constants.WABA_PROFILE_STATUS)
-  // if (!req.params) return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'statusId is required' })
-  validate.getWabaProfileListByStatusId(req.params)
-    .then(data => businessAccountService.getBusinessProfileListByStatusId(req.params.statusId))
-    .then(dbData => {
-      __logger.info('wabaProfile list', dbData)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+  const errArr = []
+  if (isNaN(req.query.page)) errArr.push('please provide page in query param of type integer')
+  if (isNaN(req.query.itemsPerPage)) errArr.push('please provide itemsPerPage in query param of type integer')
+  if (errArr.length > 0) {
+    return __util.send(res, {
+      type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST,
+      err: errArr
+    })
+  }
+
+  const statusId = req.query ? req.query.statusId : null
+  const startDate = req.query ? req.query.startDate : null
+  const endDate = req.query ? req.query.endDate : null
+  const requiredPage = req.query.page ? +req.query.page : 1
+  const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
+  const offset = itemsPerPage * (requiredPage - 1)
+
+  validate.getProfileListByStatusId(req.query)
+    .then(valRes => {
+      const inputArray = []
+      const valArray = []
+      const columnArray = []
+      if (statusId) inputArray.push({ colName: 'waba_profile_setup_status_id', value: statusId })
+      _.each(inputArray, function (input) {
+        if (input.value !== undefined && input.value !== null) {
+          columnArray.push(input.colName)
+          valArray.push(input.value)
+        }
+      })
+
+      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+    })
+    .then(result => {
+      const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
+      _.each(result[0], singleObj => {
+        delete singleObj.totalFilteredRecord
+      })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
     })
     .catch(err => {
-      __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }
 
