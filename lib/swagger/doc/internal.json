@@ -1971,6 +1971,237 @@
             "security": []
          }
       },
+      "/users/account/config/{userId}": {
+         "get": {
+            "x-module": "platform",
+            "description": "API which returns tps with respect to the userId",
+            "summary": "Returns tps for entered user id",
+            "tags": [
+               "accountProfile"
+            ],
+            "operationId": "getAccountConfig",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "userId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "User Id"
+               }               
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns tps for entered user id",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                       {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": 
+                           {
+                              "tps":10
+                           },
+                          "error": null
+                          },
+                          {
+                             "code": 3000,
+                             "msg": "No record found.",
+                             "data": {}
+                          }                     
+                     
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/users/account/config": {
+         "patch": {
+            "x-module": "platform",
+            "description": "API is used for updating waba account config",
+            "summary": "update user account config",
+            "tags": [
+               "accountProfile"
+            ],
+            "operationId": "updateAccountConfig",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": false,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/addUpdateAccountConfigRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns token key generated",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                       {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+
+                        }
+                     },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        }                       
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
       "/users/billing": {
          "post": {
             "x-module": "platform",
@@ -3844,7 +4075,7 @@
                {
                   "name": "agreementStatus",
                   "in": "query",
-                  "required": false,
+                  "required": true,
                   "type": "string",
                   "description": "agreement status id needs to be entered here"
                },
@@ -6024,15 +6255,15 @@
             "security": []
          }
       },
-      "/business/profile/template/allocate": {
-         "post": {
+      "/business/profile/configure": {
+         "patch": {
             "x-module": "platform",
-            "summary": "Allocate Template",
-            "description": "This API allocates the number of template user is allowed to create per WABA",
+            "summary": "This API add updates the account configuration",
+            "description": "This API add updates the account configuration",
             "tags": [
                "WABA"
             ],
-            "operationId": "allocateTemplatesToWaba",
+            "operationId": "addUpdateWabaConfiguration",
             "deprecated": false,
             "produces": [
                "application/json"
@@ -6051,7 +6282,7 @@
                   "required": true,
                   "description": "",
                   "schema": {
-                     "$ref": "#/definitions/allocateTemplatesToWabarequest"
+                     "$ref": "#/definitions/addUpdateWabaConfigurationInputRequest"
                   }
                }
             ],
@@ -6077,11 +6308,12 @@
                            "data": {}
                         },
                         {
-                           "code": 3058,
-                           "msg": "Cannot process data in this current profile status.",
+                           "code": 3000,
+                           "msg": "No record found.",
                            "data": {},
-                           "err": {}
+                           "err": {}                           
                         }
+                        
                      ]
                   }
                },
@@ -6135,6 +6367,33 @@
                      }
                   }
                },
+               "404": {
+                  "description": "Returns resource not found error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4004,
+                        "msg": "requested resource not found.",
+                        "data": {},
+                        "error": {
+                        }
+                     }
+                  }
+               },               
                "500": {
                   "description": "in case of some exceptional error",
                   "headers": {},
@@ -6219,7 +6478,9 @@
                            "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
                            "apiKey": "asachdkuhsnjndfjdajncs",
                            "serviceProviderUserAccountId": "cdhdabhdkdk-acb3-4dfa-fsfddd-ddfdaaeeds",
-                           "userId": "sdcfd-fsssddsds-sdssada-hgjuujjg"
+                           "userId": "sdcfd-fsssddsds-sdssada-hgjuujjg",
+                            "maxTpsToProvider": 20
+                           
                         }
                      }
                   }
@@ -7379,7 +7640,7 @@
             "tags": [
                "WABA"
             ],
-            "operationId": "getProfileDataByWabaId",
+            "operationId": "getProfileByWabaId",
             "deprecated": false,
             "produces": [
                "application/json"
@@ -7461,7 +7722,9 @@
                               "accessInfoRejectionReason": null,
                               "wabaProfileSetupStatusId": "b2aacfbc-12da-4748-bae9-b4ec26e37840",
                               "userId": "158988680814912",
-                              "maxTpsToProvider": 15
+                              "maxTpsToProvider": 15,
+                              "templatesAllowed":10,
+                              "tps":10
                            },
                            "error": null
                         },
@@ -14711,24 +14974,45 @@
             "businessManagerVerified"
          ]
       },
-      "allocateTemplatesToWabarequest": {
-         "title": "allocateTemplatesToWabarequest",
+      "addUpdateWabaConfigurationInputRequest": {
+         "title": "addUpdateWabaConfigurationInputRequest",
          "example": {
             "templatesAllowed": 5,
-            "userId": "sdffs34424234323"
+            "tps": 10,
+            "userId": "sfswefwfwf",
+            "serviceProviderId": "sdffs34424234323",
+            "apiKey": "sdffs34424234323",
+            "serviceProviderUserAccountId": "sdffs34424234323",
+            "maxTpsToProvider": 20
          },
          "type": "object",
          "properties": {
             "templatesAllowed": {
                "type": "number"
             },
-            "userId": {
+            "tps": {
+               "type": "number"
+            },
+            "serviceProviderId": {
                "type": "string"
+            },
+            "apiKey": {
+               "type": "string"
+            },
+            "serviceProviderUserAccountId": {
+               "type": "string"
+            },
+            "maxTpsToProvider": {
+               "type": "number"
             }
          },
          "required": [
             "templatesAllowed",
-            "userId"
+            "userId",
+            "serviceProviderId",
+            "apiKey",
+            "serviceProviderUserAccountId",
+            "maxTpsToProvider"
          ]
       },
       "addUpdateFlow": {
@@ -14801,7 +15085,8 @@
             "serviceProviderId": "e76a602e-37e3-4c5d-898f-56bf0c880f93",
             "userId": "sjldfhkhsdf669699877",
             "apiKey": "asachdkuhsnjndfjdajncs",
-            "serviceProviderUserAccountId": "bhsgsytwdu8oi-acb3-hbh-8b52-hgtgvgjuhw8uoee"
+            "serviceProviderUserAccountId": "bhsgsytwdu8oi-acb3-hbh-8b52-hgtgvgjuhw8uoee",
+            "maxTpsToProvider": 20
          },
          "type": "object",
          "properties": {
@@ -14816,12 +15101,17 @@
             },
             "serviceProviderUserAccountId": {
                "type": "string"
-            }
+            },
+            "maxTpsToProvider": {
+               "type": "number"
+            }            
          },
          "required": [
             "serviceProviderId",
             "userId",
-            "apiKey"
+            "apiKey",
+            "serviceProviderUserAccountId",
+            "maxTpsToProvider"
          ]
       },
       "verifiycodeforbusinessnumberrequest": {
@@ -15790,6 +16080,26 @@
          "required": [
             "userId"
          ]
-      }
+      },
+      "addUpdateAccountConfigRequest": {
+         "title": "addUpdateAccountConfigRequest",
+         "example": {
+            "tps": 20,
+            "userId": "5d376e1d-435c-4b55-a45d-7f482003dad5"
+        },
+         "type": "object",
+         "properties": {
+            "tps": {
+               "type": "number"
+            },
+            "userId": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "tps",
+            "userId"
+         ]
+      },      
    }
 }
