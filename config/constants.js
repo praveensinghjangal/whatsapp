@@ -241,7 +241,8 @@ const CHAT_APP_ENDPOINTS = {
   activeTemplate: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/active/:active',
   evaluationResult: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/evaluate/:evaluationResponse',
   flowList: '/helowhatsappchat/api/flowmessage/flow/list',
-  flowInfo: '/helowhatsappchat/api/flowmessage/flow/info'
+  flowInfo: '/helowhatsappchat/api/flowmessage/flow/info',
+  templateFlowStatus: '/helowhatsappchat/api/flowmessage/flow/status'
 }
 const TAG = {
   insert: 'insert',
