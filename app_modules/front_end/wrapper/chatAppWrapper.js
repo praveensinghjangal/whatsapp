@@ -243,7 +243,6 @@ const templateFlowInfo = (req, res) => {
           err: 'If type is static then provide a valid userId'
         })
       }
-      console.log('000000000000000')
       let url
       const http = new HttpService(60000)
       switch (req.query.type) {
@@ -274,6 +273,23 @@ const templateFlowInfo = (req, res) => {
     })
 }
 
+const templateFlowStatus = (req, res) => {
+  const http = new HttpService(60000)
+  const headers = {
+    Authorization: req.headers.authorization
+  }
+  __logger.info('calling get getFlow of chat api', headers)
+  const url = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.templateFlowStatus
+  http.Get(url, headers)
+    .then(data => res.send(data))
+    .catch(err => {
+      return __util.send(res, {
+        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+        err: err.err || err
+      })
+    })
+}
+
 module.exports = {
   getCategory,
   getFlow,
@@ -286,5 +302,6 @@ module.exports = {
   activeTemplate,
   templateFlowApproval,
   templateFlowlist,
-  templateFlowInfo
+  templateFlowInfo,
+  templateFlowStatus
 }
