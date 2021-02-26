@@ -719,7 +719,8 @@ const addUpdateWabaConfiguration = (req, res) => {
           userId: req.body.userId,
           serviceProviderId: req.body.serviceProviderId,
           apiKey: req.body.apiKey,
-          serviceProviderUserAccountId: req.body.serviceProviderUserAccountId
+          serviceProviderUserAccountId: req.body.serviceProviderUserAccountId,
+          maxTpsToProvider: req.body.maxTpsToProvider
         }
         return callUpdateServiceProviderDetails(reqBody, req.headers.authorization)
       }
@@ -727,15 +728,14 @@ const addUpdateWabaConfiguration = (req, res) => {
     .then(data => {
       if (data && data.code === 2000) {
         const rebBody = {
-          templatesAllowed: req.body.templatesAllowed,
-          maxTpsToProvider: req.body.maxTpsToProvider
+          templatesAllowed: req.body.templatesAllowed
         }
         return businessAccountService.updateBusinessData(rebBody, oldData || {}, callerUserId)
       } else {
         return responseHandler(data.code)
       }
     })
-    .then((data) => {
+    .then(data => {
       const rebBody = {
         tps: req.body.tps,
         userId: req.body.userId
@@ -745,11 +745,12 @@ const addUpdateWabaConfiguration = (req, res) => {
     .then(data => {
       __logger.info('call Update Account Config Api response', data)
       if (data && data.code === 2000) {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
+        return true
       } else {
         return responseHandler(data.code)
       }
     })
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })

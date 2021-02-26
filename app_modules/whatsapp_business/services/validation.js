@@ -68,6 +68,11 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 500
+        },
+        maxTpsToProvider: {
+          type: 'number',
+          required: true,
+          minLength: 1
         }
       }
     }
@@ -632,14 +637,12 @@ class validate {
         maxTpsToProvider: {
           type: 'number',
           required: true,
-          minLength: 1,
-          pattern: __constants.VALIDATOR.number
+          minLength: 1
         },
         tps: {
           type: 'number',
           required: true,
-          minLength: 1,
-          pattern: __constants.VALIDATOR.number
+          minLength: 1
         }
       }
     }

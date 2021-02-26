@@ -52,6 +52,7 @@ const updateServiceProviderDetails = () => {
   return `update waba_information
   set service_provider_id = ?,api_key = ?,
   user_account_id_by_provider = ?,
+  max_tps_to_provider = ?,
   updated_on=now(),updated_by=? 
   WHERE user_id=? and is_active = true`
 }

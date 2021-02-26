@@ -262,6 +262,7 @@ class businesAccountService {
       serviceProviderId: serviceProviderNewData.serviceProviderId ? serviceProviderNewData.serviceProviderId : serviceProviderOldData.serviceProviderId,
       apiKey: serviceProviderNewData.apiKey ? serviceProviderNewData.apiKey : serviceProviderOldData.apiKey,
       serviceProviderUserAccountId: serviceProviderNewData.serviceProviderUserAccountId ? serviceProviderNewData.serviceProviderUserAccountId : serviceProviderOldData.serviceProviderUserAccountId,
+      maxTpsToProvider: serviceProviderNewData.maxTpsToProvider,
       updatedBy: callerUserId,
       userId: userId
     }
