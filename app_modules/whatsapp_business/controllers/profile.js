@@ -802,7 +802,7 @@ const getProfileListByStatusId = (req, res) => {
       const inputArray = []
       const valArray = []
       const columnArray = []
-      if (statusId) inputArray.push({ colName: 'waba_profile_setup_status_id', value: statusId })
+      if (statusId) inputArray.push({ colName: 'wa.waba_profile_setup_status_id', value: statusId })
       _.each(inputArray, function (input) {
         if (input.value !== undefined && input.value !== null) {
           columnArray.push(input.colName)
