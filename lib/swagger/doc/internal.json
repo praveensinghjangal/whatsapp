@@ -7235,7 +7235,7 @@
             "security": []
          }
       },
-      "/business/profile/:statusId": {
+      "/business/profile/{statusId}": {
          "get": {
             "x-module": "platform",
             "summary": "Get details of waba profile",
@@ -7258,7 +7258,7 @@
                },
                {
                   "name": "statusId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "waba profile set-up status id"
@@ -7371,7 +7371,7 @@
             "security": []
          }
       },
-      "/business/profile/info/:wabaId": {
+      "/business/profile/info/{wabaId}": {
          "get": {
             "x-module": "platform",
             "summary": "Get business profile data",
@@ -7394,7 +7394,7 @@
                },
                {
                   "name": "wabaId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "waba information id"
@@ -7525,7 +7525,7 @@
             "security": []
          }
       },
-      "/business/profile/template/allocate/:userId": {
+      "/business/profile/template/allocate/{userId}": {
          "get": {
             "x-module": "platform",
             "summary": "Get count of template allocated to user",
@@ -7548,7 +7548,7 @@
                },
                {
                   "name": "userId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "user_id"
@@ -9751,7 +9751,7 @@
             "security": []
          }
       },
-      "/templates/list/:templateStatusId": {
+      "/templates/list/{templateStatusId}": {
          "get": {
             "x-module": "platform",
             "summary": "Get template list",
@@ -9774,7 +9774,7 @@
                },
                {
                   "name": "templateStatusId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "message template status id"
@@ -13195,7 +13195,7 @@
             "security": []
          }
       },
-      "/flowmessage/flow/:flowTopicId": {
+      "/flowmessage/flow/{flowTopicId}": {
          "get": {
             "x-module": "chatApp",
             "summary": "Get entire flow",
@@ -13218,7 +13218,7 @@
                },
                {
                   "name": "flowTopicId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "flow topic Id"
@@ -13326,7 +13326,7 @@
                },
                {
                   "name": "flowTopicId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "flow topic Id"
@@ -13414,7 +13414,7 @@
             "security": []
          }
       },
-      "/flowmessage/flow/:flowTopicId/:identifierText": {
+      "/flowmessage/flow/{flowTopicId}/{identifierText}": {
          "get": {
             "x-module": "chatApp",
             "summary": "Get identifier of the flow",
@@ -13437,14 +13437,14 @@
                },
                {
                   "name": "flowTopicId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "flow topic Id"
                },
                {
                   "name": "identifierText",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "flow Identifier Id"
@@ -13552,14 +13552,14 @@
                },
                {
                   "name": "flowTopicId",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "flow topic Id"
                },
                {
                   "name": "identifierText",
-                  "in": "query",
+                  "in": "path",
                   "required": true,
                   "type": "string",
                   "description": "flow Identifier Id"

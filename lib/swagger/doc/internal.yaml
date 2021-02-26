@@ -2725,18 +2725,18 @@
           description: enter records per page
         - name: agreementStatus
           in: query
-          required: true
+          required: false
           type: string
           description: agreement status id needs to be entered here
         - name: startDate
           in: query
           required: true
-          type: date
+          type: string
           description: enter start date of record
         - name: endDate
           in: query
           required: true
-          type: date
+          type: string
           description: enter end date of record
         responses:
           '200':
@@ -5054,7 +5054,7 @@
                 data: {}
                 error: {}
         security: []
-    "/business/profile/:statusId":
+    "/business/profile/{statusId}":
       get:
         x-module: platform
         summary: Get details of waba profile
@@ -5073,7 +5073,7 @@
           type: string
           description: user can obtain auth token by using login API
         - name: statusId
-          in: query
+          in: path
           required: true
           type: string
           description: waba profile set-up status id
@@ -5149,7 +5149,7 @@
                 data: {}
                 error: {}
         security: []
-    "/business/profile/info/:wabaId":
+    "/business/profile/info/{wabaId}":
       get:
         x-module: platform
         summary: Get business profile data
@@ -5168,7 +5168,7 @@
           type: string
           description: user can obtain auth token by using login API
         - name: wabaId
-          in: query
+          in: path
           required: true
           type: string
           description: waba information id
@@ -5266,7 +5266,7 @@
                 data: {}
                 error: {}
         security: []
-    "/business/profile/template/allocate/:userId":
+    "/business/profile/template/allocate/{userId}":
       get:
         x-module: platform
         summary: Get count of template allocated to user
@@ -5284,7 +5284,7 @@
           type: string
           description: user can obtain auth token by using login API
         - name: userId
-          in: query
+          in: path
           required: true
           type: string
           description: user_id
@@ -6791,7 +6791,7 @@
                 data: {}
                 error: {}
         security: []
-    "/templates/list/:templateStatusId":
+    "/templates/list/{templateStatusId}":
       get:
         x-module: platform
         summary: Get template list
@@ -6809,7 +6809,7 @@
           type: string
           description: user can obtain auth token by using login API
         - name: templateStatusId
-          in: query
+          in: path
           required: true
           type: string
           description: message template status id
@@ -9157,7 +9157,7 @@
                 data: {}
                 error: {}
         security: []
-    "/flowmessage/flow/:flowTopicId":
+    "/flowmessage/flow/{flowTopicId}":
       get:
         x-module: chatApp
         summary: Get entire flow
@@ -9175,7 +9175,7 @@
           type: string
           description: user can obtain auth token by using login API
         - name: flowTopicId
-          in: query
+          in: path
           required: true
           type: string
           description: flow topic Id
@@ -9248,7 +9248,7 @@
           type: string
           description: user can obtain auth token by using login API
         - name: flowTopicId
-          in: query
+          in: path
           required: true
           type: string
           description: flow topic Id
@@ -9305,7 +9305,7 @@
                 data: {}
                 error: {}
         security: []
-    "/flowmessage/flow/:flowTopicId/:identifierText":
+    "/flowmessage/flow/{flowTopicId}/{identifierText}":
       get:
         x-module: chatApp
         summary: Get identifier of the flow
@@ -9323,12 +9323,12 @@
           type: string
           description: user can obtain auth token by using login API
         - name: flowTopicId
-          in: query
+          in: path
           required: true
           type: string
           description: flow topic Id
         - name: identifierText
-          in: query
+          in: path
           required: true
           type: string
           description: flow Identifier Id
@@ -9401,12 +9401,12 @@
           type: string
           description: user can obtain auth token by using login API
         - name: flowTopicId
-          in: query
+          in: path
           required: true
           type: string
           description: flow topic Id
         - name: identifierText
-          in: query
+          in: path
           required: true
           type: string
           description: flow Identifier Id
