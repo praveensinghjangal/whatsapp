@@ -243,7 +243,6 @@ const templateFlowInfo = (req, res) => {
           err: 'If type is static then provide a valid userId'
         })
       }
-      console.log('000000000000000')
       let url
       const http = new HttpService(60000)
       switch (req.query.type) {
