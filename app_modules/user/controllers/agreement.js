@@ -11,11 +11,39 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const HttpService = require('../../../lib/http_service')
 const __config = require('../../../config')
 const _ = require('lodash')
-
+const { FileStream } = require('../../../lib/util/fileStream')
+const http = new HttpService(60000)
 /**
  * @namespace -Agreement-Controller-
  * @description In this Conroller, API’s related to agreement for using vivaconnect helo-whatsapp platform
  */
+
+const uploadFileFtp = (filePath, token) => {
+  __logger.info('Calling Upload File Ftp Api ----')
+  const fileUpload = q.defer()
+  const url = __config.heloOssWrapperUrl + __constants.INTERNAL_END_POINTS.heloOssUpload
+  const headers = {
+    Authorization: token,
+    'Content-Type': 'multipart/form-data'
+  }
+  __logger.info('oss req obj', { url, headers })
+  http.Post({ object: fs.createReadStream(filePath) }, 'formData', url, headers)
+    .then(apiResponse => {
+      __logger.info('helo-oss api response---', apiResponse.body)
+      if (apiResponse.body.code === __constants.RESPONSE_MESSAGES.SUCCESS.code) {
+        __logger.info('success', apiResponse.body)
+        fileUpload.resolve(apiResponse.body)
+      } else {
+        __logger.info('fail', apiResponse.body)
+        fileUpload.reject({ type: __constants.RESPONSE_MESSAGES.UPLOAD_FAILED, data: {} })
+      }
+    })
+    .catch(err => {
+      __logger.error('error in uploading file to ftp -->', err)
+      fileUpload.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return fileUpload.promise
+}
 
 const Storage = multer.diskStorage({
   destination: function (req, file, callback) {
@@ -51,7 +79,6 @@ const upload = multer({
 
 const updateAgreementStatus = (reqBody, authToken) => {
   __logger.info('calling updateAgreementStatus api ::>>>>>>>>>>>>>>>>>.')
-  const http = new HttpService(60000)
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.updateAgreementStatus
   __logger.info('reqBody updateAgreementStatus :: >>>>>>>>>>>>>>>>>>>>>>>>', reqBody)
   const options = {
@@ -63,6 +90,20 @@ const updateAgreementStatus = (reqBody, authToken) => {
   return http.Patch(options.body, options.url, options.headers)
 }
 
+function responseHandler (code) {
+  switch (code) {
+    case 3000:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+    case 3064:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_STATUS_CANNOT_BE_UPDATED, err: {}, data: {} })
+    case 4000:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, data: {} })
+    case 4004:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NOT_FOUND, err: {}, data: {} })
+    default:
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {}, data: {} })
+  }
+}
 const savFileDataInDataBase = (userId, fileName, filePath, agreementStatusId, autToken) => {
   const fileSaved = q.defer()
   __logger.info('Save file data function ', userId, fileName, filePath, agreementStatusId)
@@ -75,7 +116,11 @@ const savFileDataInDataBase = (userId, fileName, filePath, agreementStatusId, au
   updateAgreementStatus(reqBody, autToken)
     .then(result => {
       __logger.info('update Agreement Status result ', { result })
-      fileSaved.resolve(true)
+      if (result && result.code === 2000) {
+        fileSaved.resolve(true)
+      } else {
+        return responseHandler((result && result.code) ? result.code : 0)
+      }
     })
     .catch(err => {
       __logger.error('update Agreement data function error -->', err)
@@ -105,12 +150,22 @@ const uploadAgreement = (req, res) => {
     if (!req.files || (req.files && !req.files[0])) {
       return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
     } else {
-      __logger.info('file uploaded', req.files, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode)
-      savFileDataInDataBase(req.user.user_id, req.files[0].filename, req.files[0].path, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, req.headers.authorization)
-        .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, statusName: __constants.AGREEMENT_STATUS.pendingForApproval.displayName } }))
+      __logger.info('file uploaded', req.files)
+      const fileStream = new FileStream()
+      uploadFileFtp(req.files[0].path, req.headers.authorization)
+        .then(response => {
+          __logger.info('response from upload function', response)
+          const ftpUploadUrl = response && response.data && response.data.url ? response.data.url.split(':action').join('view') : ''
+          return savFileDataInDataBase(req.user.user_id, req.files[0].filename, ftpUploadUrl, __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, req.headers.authorization)
+        })
+        .then(data => {
+          __logger.info('file to be deleted =====================================', __constants.PUBLIC_FOLDER_PATH + '/agreements/' + req.files[0].filename)
+          fileStream.deleteFile(__constants.PUBLIC_FOLDER_PATH + '/agreements/' + req.files[0].filename, req.files[0].filename)
+          return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { agreementStatusId: __constants.AGREEMENT_STATUS.pendingForApproval.statusCode, statusName: __constants.AGREEMENT_STATUS.pendingForApproval.displayName } }))
+        })
         .catch(err => {
           __logger.error('file upload API error', err)
-          return __util.send(res, { type: err.type, err: err.err })
+          return res.send(__util.send(res, { type: err.type, err: err.err }))
         })
     }
   })
@@ -140,15 +195,7 @@ const getAgreement = (req, res) => {
       if (data && (data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForDownload.statusCode || data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForUpload.statusCode)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_FILE_CANNOT_BE_VIEWED, err: {}, data: {} })
       } else {
-        const baseFileName = path.basename(data.filePath)
-        const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
-        __logger.info('fileeeeeeeeeeeeeeeeeeee', data.filePath)
-        __logger.info('File Path Exist', fs.existsSync(finalPath))
-        if (fs.existsSync(finalPath)) {
-          res.download(data.filePath)
-        } else {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
-        }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { fileUrl: data.filePath } })
       }
     })
     .catch(err => {
@@ -170,8 +217,8 @@ const getAgreement = (req, res) => {
  */
 
 const generateAgreement = (req, res) => {
-  __logger.info('Inside generateAgreement', req.user.user_id)
-  res.download(__constants.PUBLIC_FOLDER_PATH + '/agreements/agreement.pdf')
+  __logger.info('Inside Generate Agreement', req.user.user_id)
+  return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { fileUrl: __constants.SAMPLE_AGREEMENT_URL }, err: {} })
 }
 
 /**

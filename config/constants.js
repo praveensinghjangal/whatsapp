@@ -186,7 +186,9 @@ const INTERNAL_END_POINTS = {
   getMessageHistory: '/helowhatsapp/api/chat/v1/messages/tracking/:messageId',
   updateServiceProvider: '/helowhatsapp/api/business/profile/serviceProvider',
   updateAccountConfig: '/helowhatsapp/api/users/account/config',
-  getTps: '/helowhatsapp/api/users/account/config/:userId'
+  getTps: '/helowhatsapp/api/users/account/config/:userId',
+  heloOssUpload: '/helowhatsapp/api/frontEnd/helo-oss/upload',
+  heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -358,7 +360,8 @@ const MENU_BASED_TEMPLATE_STATUS = {
   rejected: { statusCode: 'a64ab539-eebd-4a04-81b0-76348e7eaf7c', displayName: 'Rejected' }
 }
 const HELO_OSS_ENDPOINTS = {
-  download: '/helo-oss/api/object/:action/:fileName'
+  download: '/helo-oss/api/object/:action/:fileName',
+  upload: '/helo-oss/api/object/upload'
 }
 const MESSAGE_TYPE = ['session', 'template']
 const AGREEMENT_STATUS = {
@@ -377,6 +380,7 @@ const AGREEMENT_STATUS_MAPPING = {
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
+const SAMPLE_AGREEMENT_URL = 'http://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -441,3 +445,4 @@ module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
 module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
 module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
 module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS
+module.exports.SAMPLE_AGREEMENT_URL = SAMPLE_AGREEMENT_URL

@@ -18,7 +18,7 @@ router.get('/flow/:flowTopicId/:identifierText', authMiddleware.authenticate(aut
 router.patch('/flow/:flowTopicId/active/:active', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/chatAppWrapper').activeTemplate)
 router.patch('/flow/:flowTopicId/evaluate/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/chatAppWrapper').evaluationResult)
 router.delete('/flow/:flowTopicId/:identifierText', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/chatAppWrapper').deleteIdentifier)
-// router.post('/helo-oss/upload', authToken, require('./wrapper/heloOssWrapper').uploadFile)
+router.post('/helo-oss/upload', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./wrapper/heloOssWrapper').uploadFile)
 router.get('/helo-oss/:action/:fileName', require('./wrapper/heloOssWrapper').downloadFile)
 
 module.exports = router
