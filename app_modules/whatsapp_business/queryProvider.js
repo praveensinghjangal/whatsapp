@@ -172,17 +172,20 @@ const getServiceProviderDetailsByUserId = () => {
 }
 
 const getBusinessProfileListByStatusId = (columnArray, startDate, endDate) => {
-  let query = `select count(1) over() as "totalFilteredRecord", waba_information_id as 'wabaInformationId',phone_number as 'phoneNumber',
-  phone_code as 'phoneCode',facebook_manager_id as 'facebookManagerId', user_id as "userId",
-  business_name as 'businessName' from waba_information
-  where is_active = true`
+  let query = `select count(1) over() as "totalFilteredRecord", wa.waba_information_id as 'wabaInformationId',
+  wa.phone_number as 'phoneNumber',wa.phone_code as 'phoneCode',wa.facebook_manager_id as 'facebookManagerId',
+  wa.user_id as "userId",wa.business_name as 'businessName',wa.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
+  ws.status_name as "wabaProfileSetupStatus",wa.access_info_rejection_reason as "accessInfoRejectionReason" 
+  from waba_information wa
+  JOIN waba_profile_setup_status ws on wa.waba_profile_setup_status_id = ws.waba_profile_setup_status_id and ws.is_active = true
+  where wa.is_active = true`
   columnArray.forEach((element) => {
     query += ` AND ${element} = ?`
   })
   if (startDate && endDate) {
-    query += ` AND created_on between '${startDate}' and '${endDate}' `
+    query += ` AND wa.created_on between '${startDate}' and '${endDate}' `
   }
-  query += ` order by created_on asc limit ? offset ?;
+  query += ` order by wa.created_on asc limit ? offset ?;
   select count(1) as "totalRecord" from waba_information wi
   where wi.is_active = true`
   return query

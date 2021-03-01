@@ -188,7 +188,10 @@ const INTERNAL_END_POINTS = {
   updateAccountConfig: '/helowhatsapp/api/users/account/config',
   getTps: '/helowhatsapp/api/users/account/config/:userId',
   heloOssUpload: '/helowhatsapp/api/frontEnd/helo-oss/upload',
-  heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss'
+  heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss',
+  templateApproval: '/helowhatsapp/api/templates/:templateId/submit/:evaluationResult',
+  templateList: '/helowhatsapp/api/templates/list',
+  templateInfo: '/helowhatsapp/api/templates/:userId/:templateId'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {
@@ -238,7 +241,10 @@ const CHAT_APP_ENDPOINTS = {
   flow: '/helowhatsappchat/api/flowmessage/flow',
   menuBasedTemplates: '/helowhatsappchat/api/flowmessage/flow',
   activeTemplate: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/active/:active',
-  evaluationResult: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/evaluate/:evaluationResponse'
+  evaluationResult: '/helowhatsappchat/api/flowmessage/flow/:flowTopicId/evaluate/:evaluationResponse',
+  flowList: '/helowhatsappchat/api/flowmessage/flow/list',
+  flowInfo: '/helowhatsappchat/api/flowmessage/flow/info',
+  templateFlowStatus: '/helowhatsappchat/api/flowmessage/flow/status'
 }
 const TAG = {
   insert: 'insert',
@@ -381,6 +387,9 @@ const AGREEMENT_STATUS_MAPPING = {
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
 const SAMPLE_AGREEMENT_URL = 'http://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
+const STATIC = 'static'
+const INTERACTIVE = 'interactive'
+const TEMPLATE_FLOW_APPROVAL = [STATIC, INTERACTIVE]
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -446,3 +455,6 @@ module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
 module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
 module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS
 module.exports.SAMPLE_AGREEMENT_URL = SAMPLE_AGREEMENT_URL
+module.exports.TEMPLATE_FLOW_APPROVAL = TEMPLATE_FLOW_APPROVAL
+module.exports.STATIC = STATIC
+module.exports.INTERACTIVE = INTERACTIVE

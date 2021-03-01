@@ -38,7 +38,7 @@ const getAllTemplateWithStatus = (req, res) => {
     })
   }
 
-  const templateStatusId = req.query ? req.query.templateStatusId : null
+  const templateStatusId = (req.query && req.query.statusId) ? req.query.statusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1

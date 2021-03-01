@@ -667,7 +667,7 @@ class validate {
           pattern: __constants.VALIDATOR.timeStamp,
           minLength: 1
         },
-        templateStatusId: {
+        statusId: {
           type: 'string',
           required: false
         }
