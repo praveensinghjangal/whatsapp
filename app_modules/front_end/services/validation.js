@@ -51,7 +51,7 @@ class validate {
       properties: {
         userId: {
           type: 'string',
-          required: true,
+          required: !!(request && request.type && request.type === __constants.STATIC),
           minLength: 1
         },
         type: {
