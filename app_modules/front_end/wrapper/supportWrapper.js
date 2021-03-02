@@ -109,12 +109,12 @@ const templateFlowInfo = (req, res) => {
 }
 
 const dltListOfUsers = (req, res) => {
-  __logger.info('dltListOfUsers wrapper API')
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfUsers
   const headers = {
     Authorization: __config.dltSupportToken
   }
+  __logger.info('dltListOfUsers wrapper API', url)
   http.Get(url, headers)
     .then(data => res.send(data))
     .catch(err => res.send(err))
@@ -146,9 +146,9 @@ const dltUpdatePeids = (req, res) => {
 }
 
 const dltCreateTemplate = (req, res) => {
-  __logger.info('create_template wrapper API')
+  __logger.info('createTemplate wrapper API')
   const http = new HttpService(60000)
-  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.create_template
+  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.createTemplate
   const headers = {
     Authorization: __config.dltSupportToken
   }
@@ -198,7 +198,7 @@ const dltChangePeidStatus = (req, res) => {
 const dltVerifyMessage = (req, res) => {
   __logger.info('dltUpdatePeids wrapper API')
   const http = new HttpService(60000)
-  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.verify_message
+  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.verifyMessage
   const headers = {
     Authorization: __config.dltSupportToken
   }

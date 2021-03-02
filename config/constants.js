@@ -247,17 +247,6 @@ const CHAT_APP_ENDPOINTS = {
   templateFlowStatus: '/helowhatsappchat/api/flowmessage/flow/status'
 }
 
-const DLT_PANEL_ENDPOINTS = {
-  listOfUsers: '/panel/support/list_of_users',
-  listOfPeids: '/panel/support/list_of_peids',
-  updatePeid: '/panel/support/add_peid',
-  create_template: '/panel/add_template',
-  listOfTemplates: '/panel/list',
-  convertMessage: '/panel/convert_msg',
-  changePeidStatus: '/panel/support/changePeidStatus',
-  verify_message: '/panel/verify_message_no_cache'
-}
-
 const TAG = {
   insert: 'insert',
   update: 'update'
@@ -402,6 +391,16 @@ const SAMPLE_AGREEMENT_URL = 'http://stage-whatsapp.helo.ai/helowhatsapp/api/fro
 const STATIC = 'static'
 const INTERACTIVE = 'interactive'
 const TEMPLATE_FLOW_APPROVAL = [STATIC, INTERACTIVE]
+const DLT_PANEL_ENDPOINTS = {
+  listOfUsers: '/api/panel/support/list_of_users',
+  listOfPeids: '/api/panel/support/list_of_peids',
+  updatePeid: '/api/panel/support/add_peid',
+  createTemplate: '/api/panel/add_template',
+  listOfTemplates: '/api/panel/list',
+  convertMessage: '/api/panel/convert_msg',
+  changePeidStatus: '/api/panel/support/changePeidStatus',
+  verifyMessage: '/api/panel/verify_message_no_cache'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
