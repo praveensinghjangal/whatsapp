@@ -283,5 +283,7 @@ module.exports = {
   clusterNumber: process.env.CLUSTER_NUMBER,
   mqObjectKey: process.env.MQ_OBJECT_KEY,
   heloOssToken: process.env.HELO_OSS_TOKEN,
-  heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL
+  heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL,
+  dltUrl: process.env.DLT_URL,
+  dltSupportToken: process.env.DLT_SUPPORT_TOKEN
 }

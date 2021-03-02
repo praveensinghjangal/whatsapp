@@ -246,6 +246,18 @@ const CHAT_APP_ENDPOINTS = {
   flowInfo: '/helowhatsappchat/api/flowmessage/flow/info',
   templateFlowStatus: '/helowhatsappchat/api/flowmessage/flow/status'
 }
+
+const DLT_PANEL_ENDPOINTS = {
+  listOfUsers: '/panel/support/list_of_users',
+  listOfPeids: '/panel/support/list_of_peids',
+  updatePeid: '/panel/support/add_peid',
+  create_template: '/panel/add_template',
+  listOfTemplates: '/panel/list',
+  convertMessage: '/panel/convert_msg',
+  changePeidStatus: '/panel/support/changePeidStatus',
+  verify_message: '/panel/verify_message_no_cache'
+}
+
 const TAG = {
   insert: 'insert',
   update: 'update'
@@ -458,3 +470,4 @@ module.exports.SAMPLE_AGREEMENT_URL = SAMPLE_AGREEMENT_URL
 module.exports.TEMPLATE_FLOW_APPROVAL = TEMPLATE_FLOW_APPROVAL
 module.exports.STATIC = STATIC
 module.exports.INTERACTIVE = INTERACTIVE
+module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS

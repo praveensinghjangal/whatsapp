@@ -25,4 +25,15 @@ router.get('/templateflow/list', authMiddleware.authenticate(authstrategy.jwt.na
 router.get('/templateflow/info', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').templateFlowInfo)
 router.get('/flows/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/chatAppWrapper').templateFlowStatus)
 
+// dlt wrappers
+router.get('/dlt/panel/support/users', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltListOfUsers)
+router.get('/dlt/panel/support/users/peids', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltListOfPeids)
+router.post('/dlt/panel/support/users/peids', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltUpdatePeids)
+router.post('/dlt/panel/template/create', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltCreateTemplate)
+router.get('/dlt/panel/template', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltListOfTemplates)
+
+router.get('/dlt/panel/template/convert_message', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltConvertMessage)
+router.post('/dlt/panel/template/change_peid_status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltChangePeidStatus)
+router.post('/dlt/panel/template/verify_message', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltVerifyMessage)
+
 module.exports = router
