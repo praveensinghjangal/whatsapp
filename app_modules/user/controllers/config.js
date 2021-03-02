@@ -29,12 +29,12 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 
 // Get Account Config
 const getAccountConfig = (req, res) => {
-  __logger.info('Inside get Account Config', req.params.userId)
+  __logger.info('Inside Get Account Config', req.params.userId)
   const userService = new UserService()
   const userId = req.params && req.params.userId ? req.params.userId : 0
   userService.checkUserIdExistsForAccountProfile(userId)
     .then(result => {
-      console.log('get Account Config Result', result)
+      __logger.info('Get Account Config Result', result)
       if (result && result.exists) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { tps: result && result.rows && result.rows[0] && result.rows[0].tps ? result.rows[0].tps : 0 } })
       } else {
