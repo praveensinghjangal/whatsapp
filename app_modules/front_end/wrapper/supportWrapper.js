@@ -122,18 +122,11 @@ const dltListOfUsers = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfUsers
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltListOfPeids = (req, res) => {
@@ -142,18 +135,11 @@ const dltListOfPeids = (req, res) => {
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfPeids
   url += '?' + req.originalUrl.split('?')[1]
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltUpdatePeids = (req, res) => {
@@ -161,19 +147,11 @@ const dltUpdatePeids = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.updatePeid
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 const dltCreateTemplate = (req, res) => {
@@ -181,19 +159,11 @@ const dltCreateTemplate = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.create_template
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 const dltListOfTemplates = (req, res) => {
@@ -202,18 +172,11 @@ const dltListOfTemplates = (req, res) => {
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfTemplates
   url += '?' + req.originalUrl.split('?')[1]
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltConvertMessage = (req, res) => {
@@ -222,18 +185,11 @@ const dltConvertMessage = (req, res) => {
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.convertMessage
   url += '?' + req.originalUrl.split('?')[1]
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltChangePeidStatus = (req, res) => {
@@ -241,19 +197,11 @@ const dltChangePeidStatus = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.changePeidStatus
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 const dltVerifyMessage = (req, res) => {
@@ -261,19 +209,11 @@ const dltVerifyMessage = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.verify_message
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 module.exports = {
