@@ -4,7 +4,6 @@ const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
 const fs = require('fs')
-const path = require('path')
 const UserService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
@@ -290,15 +289,7 @@ const getAgreementByUserId = (req, res) => {
       if (data && (data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForDownload.statusCode || data.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForUpload.statusCode)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AGREEMENT_FILE_CANNOT_BE_VIEWED, err: {}, data: {} })
       } else {
-        const baseFileName = path.basename(data.filePath)
-        const finalPath = __constants.PUBLIC_FOLDER_PATH + '/agreements/' + baseFileName
-        __logger.info('fileeeeeeeeeeeeeeeeeeee', data.filePath)
-        __logger.info('File Path Exist', fs.existsSync(finalPath))
-        if (fs.existsSync(finalPath)) {
-          res.download(data.filePath)
-        } else {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
-        }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { fileUrl: data.filePath } })
       }
     })
     .catch(err => {

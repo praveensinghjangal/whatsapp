@@ -35,10 +35,7 @@ const templateFlowApproval = (req, res) => {
       res.send(data)
     })
     .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
+      res.send(err)
     })
 }
 
@@ -69,10 +66,7 @@ const templateFlowlist = (req, res) => {
       res.send(data)
     })
     .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
+      res.send(err)
     })
 }
 
@@ -110,10 +104,7 @@ const templateFlowInfo = (req, res) => {
       res.send(data)
     })
     .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
+      res.send(err)
     })
 }
 
