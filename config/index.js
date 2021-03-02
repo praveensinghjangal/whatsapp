@@ -266,6 +266,7 @@ module.exports = {
   },
   authTokens: process.env.AUTH_TOKENS.split(',') || [],
   chatAppUrl: process.env.CHAT_APP_URL,
+  dltUrl: process.env.DLT_URL,
   chatAppToken: process.env.CHAT_APP_TOKEN,
   adminPannelBaseUrl: process.env.ADMIN_PANNEL_BASE_URL,
   schedulers: {
