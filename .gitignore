@@ -13,3 +13,4 @@ public/agreements
 config/.env
 config/.env-stage
 public/js-docs
+public/ossWrapper
