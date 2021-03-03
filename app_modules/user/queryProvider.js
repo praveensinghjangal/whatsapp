@@ -1,3 +1,5 @@
+const __constants = require('../../config/constants')
+
 // todo : remove waba dependency
 const getUserDetailsByEmail = () => {
   return `select u.user_id, hash_password,salt_key, email_verified, u.phone_verified, tnc_accepted,role_name,
@@ -361,7 +363,7 @@ const getAgreementStatusList = () => {
   return `select agreement_status_id as "agreementStatusId",
   status_name as "statusName"
   from agreement_status
-  where is_active = true`
+  where is_active = true and agreement_status_id != '${__constants.AGREEMENT_STATUS.pendingForDownload.statusCode}'`
 }
 
 module.exports = {

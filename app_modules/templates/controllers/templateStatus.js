@@ -102,7 +102,7 @@ const getAllTemplateWithStatus = (req, res) => {
  * @response {array} metadata.data - Array of all the message_template_status with its message_template_status_id and status_name.
  * @code {200} if the msg is success than Returns messageTemplateStatusId and statusName.
  * @author Javed Khan 22nd January, 2021
- * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ * *** Last-Updated :- Danish Galiyara 3rd March, 2021 ***
  */
 // GET Template Status List
 const getTemplateStatusList = (req, res) => {

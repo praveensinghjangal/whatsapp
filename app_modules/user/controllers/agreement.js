@@ -411,7 +411,7 @@ const getAgreementList = (req, res) => {
  * @response {object} metadata.data - In response we get array of json data consisting of agreementStatusId, statusName
   * @code {200} if the msg is success than returns list of agreement status.
  * @author Danish Galiyara 25tyh February, 2021
- * *** Last-Updated :- Danish Galiyara 25th February, 2021 ***
+ * *** Last-Updated :- Danish Galiyara 3rd March, 2021 ***
  */
 const getAgreementStatusList = (req, res) => {
   __logger.info('inside function to get template status list')
