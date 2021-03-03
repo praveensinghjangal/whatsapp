@@ -213,7 +213,8 @@ const getProfileByWabaId = () => {
 }
 
 const getWabaStatus = () => {
-  return `select waba_profile_setup_status_id as "wabaProfileStatusId", status_name as "statusName" from waba_profile_setup_status
+  return `select waba_profile_setup_status_id as "wabaProfileStatusId", status_name as "statusName"
+  from waba_profile_setup_status
   where is_active = true`
 }
 

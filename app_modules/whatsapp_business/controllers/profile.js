@@ -886,16 +886,23 @@ const getProfileByWabaId = (req, res) => {
  * @response {array} metadata.data - Array of all the waba_profile_status with its waba_profile_setup_status_id and status_name.
  * @code {200} if the msg is success than Returns wabaProfileStatusId and statusName.
  * @author Javed Khan 22nd January, 2021
- * *** Last-Updated :- Javed Khan 22nd January, 2021 ***
+ * *** Last-Updated :- Danish Galiyara 3rd March, 2021 ***
  */
 
 const getWabaProfileStatus = (req, res) => {
-  __logger.info('called funcion to get all wabaProfile status')
+  __logger.info('called funcion to get all wabaProfile status', req.query)
   const businessAccountService = new BusinessAccountService()
   businessAccountService.getWabaStatus()
     .then(dbData => {
-      __logger.info('db Data', dbData)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+      __logger.info('getWabaProfileStatus db Data', dbData)
+      if (!req.query || !req.query.wabaProfileStatusId) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+      const mappedStatus = __constants.WABA_STATUS_MAPPING[req.query.wabaProfileStatusId]
+      const mappedStatusDataFromDBList = []
+      _.each(mappedStatus, status => {
+        const statusObj = _.find(dbData, { wabaProfileStatusId: status })
+        if (statusObj) mappedStatusDataFromDBList.push(statusObj)
+      })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: mappedStatusDataFromDBList })
     })
     .catch(err => {
       __logger.error('error: ', err)
