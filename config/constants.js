@@ -399,7 +399,9 @@ const DLT_PANEL_ENDPOINTS = {
   listOfTemplates: '/api/panel/list',
   convertMessage: '/api/panel/convert_msg',
   changePeidStatus: '/api/panel/support/changePeidStatus',
-  verifyMessage: '/api/panel/verify_message_no_cache'
+  verifyMessage: '/api/panel/verify_message_no_cache',
+  downloadTemplates: '/api/panel/download_templates',
+  bulkUpload: '/api/panel/upload_csv'
 }
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')

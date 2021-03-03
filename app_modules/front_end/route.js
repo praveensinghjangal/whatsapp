@@ -34,5 +34,7 @@ router.get('/dlt/panel/template', authMiddleware.authenticate(authstrategy.jwt.n
 router.get('/dlt/panel/template/convertMessage', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltConvertMessage)
 router.post('/dlt/panel/template/changePeidStatus', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltChangePeidStatus)
 router.post('/dlt/panel/template/verifyMessage', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').dltVerifyMessage)
+router.get('/dlt/panel/template/download', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').downloadDltTemplate)
+router.post('/dlt/panel/template/upload', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./wrapper/supportWrapper').bulkUploadTemplates)
 
 module.exports = router

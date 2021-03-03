@@ -4,6 +4,9 @@ const __logger = require('../../../lib/logger')
 const HttpService = require('../../../lib/http_service')
 const __config = require('../../../config')
 const ValidatonService = require('../services/validation')
+const request = require('request')
+const multer = require('multer')
+const fs = require('fs')
 
 const templateFlowApproval = (req, res) => {
   __logger.info('templateFlowApproval mechnism wrapper API')
@@ -207,7 +210,71 @@ const dltVerifyMessage = (req, res) => {
     .catch(err => res.send(err))
 }
 
+const downloadDltTemplate = (req, res) => {
+  __logger.info('downloadDltTemplate api called')
+  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.downloadTemplates
+  const options = {
+    method: 'GET',
+    url: url,
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: __config.dltSupportToken
+    }
+  }
+  res.setHeader('content-disposition', 'filename=templates.xlsx')
+  request(options)
+    .pipe(res)
+}
 
+const Storage = multer.diskStorage({
+  destination: function (req, file, callback) {
+    callback(null, __constants.PUBLIC_FOLDER_PATH + '/ossWrapper')
+  },
+  filename: function (req, file, callback) {
+    callback(null, file.originalname)
+  }
+})
+
+const upload = multer({
+  storage: Storage
+}).array('File', 1)
+
+const bulkUploadTemplates = (req, res) => {
+  __logger.info('In Upload File Function')
+  upload(req, res, function (err, data) {
+    if (err) {
+      __logger.error('File Upload API Error', err)
+      return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
+    }
+    if (!req.files || (req.files && !req.files[0])) {
+      return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
+    } else {
+      __logger.info('File Uploaded', req.files)
+      const http = new HttpService(60000)
+      const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.uploadPeids
+      const headers = {
+        Authorization: __config.dltSupportToken,
+        'Content-Type': 'multipart/form-data'
+      }
+      __logger.info('oss req obj', { url, headers })
+      http.Post({ File: fs.createReadStream(req.files[0].path) }, 'formData', url, headers)
+        .then(response => {
+          fs.unlink(req.files[0].path, err => {
+            if (err) console.log(err)
+            else {
+              console.log('\nDeleted file:', req.files[0].path)
+            }
+          })
+          console.log(response.body)
+          res.send(response.body)
+        })
+        .catch(err => {
+          console.log('errrrrrrrrrrrrrr', err)
+          res.send(err)
+        })
+    }
+  })
+}
 
 module.exports = {
   templateFlowApproval,
@@ -220,5 +287,7 @@ module.exports = {
   dltListOfTemplates,
   dltConvertMessage,
   dltChangePeidStatus,
-  dltVerifyMessage
+  dltVerifyMessage,
+  downloadDltTemplate,
+  bulkUploadTemplates
 }
