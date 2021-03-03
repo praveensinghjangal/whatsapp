@@ -266,7 +266,6 @@ module.exports = {
   },
   authTokens: process.env.AUTH_TOKENS.split(',') || [],
   chatAppUrl: process.env.CHAT_APP_URL,
-  dltUrl: process.env.DLT_URL,
   chatAppToken: process.env.CHAT_APP_TOKEN,
   adminPannelBaseUrl: process.env.ADMIN_PANNEL_BASE_URL,
   schedulers: {
@@ -282,5 +281,9 @@ module.exports = {
   webHookUrl: process.env.WEB_HOOK_URL,
   heloOssUrl: process.env.HELO_OSS_URL,
   clusterNumber: process.env.CLUSTER_NUMBER,
-  mqObjectKey: process.env.MQ_OBJECT_KEY
+  mqObjectKey: process.env.MQ_OBJECT_KEY,
+  heloOssToken: process.env.HELO_OSS_TOKEN,
+  heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL,
+  dltUrl: process.env.DLT_URL,
+  dltSupportToken: process.env.DLT_SUPPORT_TOKEN
 }

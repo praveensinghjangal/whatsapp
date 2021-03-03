@@ -35,10 +35,7 @@ const templateFlowApproval = (req, res) => {
       res.send(data)
     })
     .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
+      res.send(err)
     })
 }
 
@@ -69,10 +66,7 @@ const templateFlowlist = (req, res) => {
       res.send(data)
     })
     .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
+      res.send(err)
     })
 }
 
@@ -110,30 +104,20 @@ const templateFlowInfo = (req, res) => {
       res.send(data)
     })
     .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
+      res.send(err)
     })
 }
 
 const dltListOfUsers = (req, res) => {
-  __logger.info('dltListOfUsers wrapper API')
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfUsers
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
+  __logger.info('dltListOfUsers wrapper API', url)
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltListOfPeids = (req, res) => {
@@ -142,18 +126,11 @@ const dltListOfPeids = (req, res) => {
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfPeids
   url += '?' + req.originalUrl.split('?')[1]
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltUpdatePeids = (req, res) => {
@@ -161,39 +138,23 @@ const dltUpdatePeids = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.updatePeid
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 const dltCreateTemplate = (req, res) => {
-  __logger.info('create_template wrapper API')
+  __logger.info('createTemplate wrapper API')
   const http = new HttpService(60000)
-  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.create_template
+  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.createTemplate
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 const dltListOfTemplates = (req, res) => {
@@ -202,18 +163,11 @@ const dltListOfTemplates = (req, res) => {
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfTemplates
   url += '?' + req.originalUrl.split('?')[1]
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltConvertMessage = (req, res) => {
@@ -222,18 +176,11 @@ const dltConvertMessage = (req, res) => {
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.convertMessage
   url += '?' + req.originalUrl.split('?')[1]
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Get(url, headers)
-    .then(data => {
-      res.send(data)
-    })
-    .catch(err => {
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
 }
 
 const dltChangePeidStatus = (req, res) => {
@@ -241,39 +188,23 @@ const dltChangePeidStatus = (req, res) => {
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.changePeidStatus
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 const dltVerifyMessage = (req, res) => {
   __logger.info('dltUpdatePeids wrapper API')
   const http = new HttpService(60000)
-  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.verify_message
+  const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.verifyMessage
   const headers = {
-    Authorization: process.env.DLT_SUPPORT_TOKEN
+    Authorization: __config.dltSupportToken
   }
   http.Post(req.body, 'body', url, headers)
-    .then(data => {
-      res.send(data.body)
-    })
-    .catch(err => {
-      console.log(err)
-      return __util.send(res, {
-        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-        err: err.err || err
-      })
-    })
+    .then(data => res.send(data.body))
+    .catch(err => res.send(err))
 }
 
 

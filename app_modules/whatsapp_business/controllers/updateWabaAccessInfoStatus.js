@@ -44,6 +44,7 @@ const updateWabaAccessInfoStatus = (req, res) => {
         phoneNumber: queryResult.phoneNumber,
         accessInfoRejectionReason: req.body && req.body.accessInfoRejectionReason ? req.body.accessInfoRejectionReason : null
       }
+      if (result && result.complete === false) return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_INFO_NOT_COMPLETE, data: {}, err: {} })
       if (result && result.complete && reqBody.wabaProfileSetupStatusId !== queryResult.wabaProfileSetupStatusId && wabaStatusService.canUpdateWabaStatus(reqBody.wabaProfileSetupStatusId, queryResult.wabaProfileSetupStatusId)) {
         return businessAccountService.updateBusinessData(reqBody, queryResult, recordUpdatingUserId)
       } else {

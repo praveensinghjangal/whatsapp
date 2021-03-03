@@ -1,3 +1,5 @@
+const __constants = require('../../config/constants')
+
 // Template
 const getTemplateList = (messageTemplateStatusId) => {
   let query = `
@@ -306,7 +308,7 @@ const getTemplateStatusList = () => {
   return `select message_template_status_id as "messageTemplateStatusId",
   status_name as "statusName"
   from message_template_status
-  where is_active = true`
+  where is_active = true and message_template_status_id != '${__constants.TEMPLATE_STATUS.deleted.statusCode}'`
 }
 
 module.exports = {
