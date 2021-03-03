@@ -240,7 +240,7 @@ const upload = multer({
 }).array('File', 1)
 
 const bulkUploadTemplates = (req, res) => {
-  __logger.info('In Upload File Function')
+  __logger.info('bulkUploadTemplates api called')
   upload(req, res, function (err, data) {
     if (err) {
       __logger.error('File Upload API Error', err)
@@ -251,7 +251,7 @@ const bulkUploadTemplates = (req, res) => {
     } else {
       __logger.info('File Uploaded', req.files)
       const http = new HttpService(60000)
-      const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.uploadPeids
+      const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.bulkUpload
       const headers = {
         Authorization: __config.dltSupportToken,
         'Content-Type': 'multipart/form-data'
