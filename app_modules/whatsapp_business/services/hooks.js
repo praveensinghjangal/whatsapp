@@ -29,16 +29,15 @@ class InternalFunctions {
     const chatBotActivated = q.defer()
     const http = new HttpService(60000)
     const inputRequest = {
-      businessName: wabaData.businessName,
+      userId: wabaData.userId,
       chatBotActivated: true
     }
-    __logger.info('calling update waba profile data api', inputRequest, headers, __config.base_url + __constants.INTERNAL_END_POINTS.businessProfile)
+    __logger.info('calling chatbot toggle api', inputRequest, headers, __config.base_url + __constants.INTERNAL_END_POINTS.toggleChatbot)
     const reqHeaders = { authorization: headers.authorization }
-    http.Post(inputRequest, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.businessProfile, reqHeaders)
+    http.Patch(inputRequest, __config.base_url + __constants.INTERNAL_END_POINTS.toggleChatbot, reqHeaders, 'body')
       .then(data => {
-        __logger.info('post update waba profile data api response', data, data.body)
-        const statusCode = data.statusCode || 500
-        data = data.body || data
+        __logger.info('post chatbot toggle apiresponse', data)
+        const statusCode = data.code || 500
         if (data && data.code && data.code === 2000) {
           chatBotActivated.resolve(data)
         } else {

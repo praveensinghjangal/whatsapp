@@ -231,6 +231,13 @@ const getServiceProviderData = () => {
   where is_active = true`
 }
 
+const toggleChatbot = () => {
+  return `update waba_information
+  set chatbot_activated = ?,
+  updated_on=now(),updated_by=? 
+  WHERE user_id=? and is_active = true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -254,5 +261,6 @@ module.exports = {
   getProfileByWabaId,
   getWabaStatus,
   getTemplateAllocatedCount,
-  getServiceProviderData
+  getServiceProviderData,
+  toggleChatbot
 }

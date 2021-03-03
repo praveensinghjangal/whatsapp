@@ -191,7 +191,8 @@ const INTERNAL_END_POINTS = {
   heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss',
   templateApproval: '/helowhatsapp/api/templates/:templateId/submit/:evaluationResult',
   templateList: '/helowhatsapp/api/templates/list',
-  templateInfo: '/helowhatsapp/api/templates/:userId/:templateId'
+  templateInfo: '/helowhatsapp/api/templates/:userId/:templateId',
+  toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const MESSAGE_STATUS = {

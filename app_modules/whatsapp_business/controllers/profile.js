@@ -703,44 +703,40 @@ const addUpdateWabaConfiguration = (req, res) => {
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
   const callerUserId = req.user && req.user.user_id ? req.user.user_id : 0
-  let oldData
   validate.checkWabaConfigurationInput(req.body)
     .then(data => businessAccountService.checkUserIdExist(req.body.userId))
     .then(data => {
-      __logger.info('exists -----------------> then 2', data)
+      // __logger.info('exists -----------------> then 2', data)
       if (data && data.exists && data.record && data.record.wabaProfileSetupStatusId && data.record.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_ERROR, err: {}, data: {} })
       }
       if (data && !data.exists) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       } else {
-        oldData = data.record
-        const reqBody = {
-          userId: req.body.userId,
-          serviceProviderId: req.body.serviceProviderId,
-          apiKey: req.body.apiKey,
-          serviceProviderUserAccountId: req.body.serviceProviderUserAccountId,
-          maxTpsToProvider: req.body.maxTpsToProvider
-        }
-        return callUpdateServiceProviderDetails(reqBody, req.headers.authorization)
+        return businessAccountService.updateBusinessData({ templatesAllowed: req.body.templatesAllowed }, data.record || {}, callerUserId)
       }
+    })
+    .then(data => {
+      console.log('template allocated', data)
+      const reqBody = {
+        userId: req.body.userId,
+        serviceProviderId: req.body.serviceProviderId,
+        apiKey: req.body.apiKey,
+        serviceProviderUserAccountId: req.body.serviceProviderUserAccountId,
+        maxTpsToProvider: req.body.maxTpsToProvider
+      }
+      return callUpdateServiceProviderDetails(reqBody, req.headers.authorization)
     })
     .then(data => {
       if (data && data.code === 2000) {
         const rebBody = {
-          templatesAllowed: req.body.templatesAllowed
+          tps: req.body.tps,
+          userId: req.body.userId
         }
-        return businessAccountService.updateBusinessData(rebBody, oldData || {}, callerUserId)
+        return callUpdateAccountConfigApi(rebBody, req.headers.authorization)
       } else {
         return responseHandler(data.code)
       }
-    })
-    .then(data => {
-      const rebBody = {
-        tps: req.body.tps,
-        userId: req.body.userId
-      }
-      return callUpdateAccountConfigApi(rebBody, req.headers.authorization)
     })
     .then(data => {
       __logger.info('call Update Account Config Api response', data)
@@ -970,6 +966,46 @@ const getServiceProviderDetails = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name toggleChatbot
+ * @path {PUT} /business/profile/chatbot
+ * @description Bussiness Logic :- This API is used for toggling chatbot on and off.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/updateServiceProviderDetails|UpdateServiceProviderDetails}
+ * @body {string} chatBotActivated
+ * @body {string} userId
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Returns Service Provider Id in response according to user Id.
+ * @code {200} if the msg is success than Returns Service Provider Id.
+ * @author Dansish Galiyara 3rd March, 2021
+ * *** Last-Updated :- Dansish Galiyara 3rd March, 2021 ***
+ */
+const toggleChatbot = (req, res) => {
+  __logger.info('toggleChatbot Inside toggleChatbot', req.body)
+  const callerUserId = req.user && req.user.user_id ? req.user.user_id : 0
+  const businessAccountService = new BusinessAccountService()
+  const validationService = new ValidatonService()
+  validationService.toggleChatbot(req.body)
+    .then(data => businessAccountService.getBusinessProfileInfo(req.body.userId))
+    .then(results => {
+      __logger.info('toggleChatbot Then 2 waba data', results)
+      if (results && results.length > 0) {
+        return businessAccountService.toggleChatbot(req.body.userId, callerUserId, results[0], req.body)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
+    .then(result => {
+      __logger.info('toggleChatbot Then 3', result)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -985,5 +1021,6 @@ module.exports = {
   getProfileByWabaId,
   getWabaProfileStatus,
   getCountTemplateAllocated,
-  getServiceProviderDetails
+  getServiceProviderDetails,
+  toggleChatbot
 }

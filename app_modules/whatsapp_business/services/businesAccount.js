@@ -584,6 +584,33 @@ class businesAccountService {
       })
     return providerDetails.promise
   }
+
+  toggleChatbot (userId, callerUserId, wabaOldData, chatBotData) {
+    __logger.info('toggleChatbot service ->', userId, callerUserId, wabaOldData, chatBotData)
+    const dataUpdated = q.defer()
+    const serviceProviderData = {
+      chatbotActivated: chatBotData.chatBotActivated ? chatBotData.chatBotActivated : wabaOldData.chatBotActivated,
+      updatedBy: callerUserId,
+      userId: userId
+    }
+    const queryParam = []
+    _.each(serviceProviderData, (val) => queryParam.push(val))
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.toggleChatbot(), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          saveHistoryData(wabaOldData, __constants.ENTITY_NAME.WABA_INFORMATION, wabaOldData.wabaInformationId, callerUserId)
+          delete serviceProviderData.updatedBy
+          dataUpdated.resolve(serviceProviderData)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('toggleChatbot error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
+  }
 }
 
 module.exports = businesAccountService
