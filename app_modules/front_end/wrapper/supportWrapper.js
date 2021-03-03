@@ -256,7 +256,7 @@ const bulkUploadTemplates = (req, res) => {
         Authorization: __config.dltSupportToken,
         'Content-Type': 'multipart/form-data'
       }
-      __logger.info('oss req obj', { url, headers })
+      __logger.info('dlt upload req obj', { url, headers })
       http.Post({ File: fs.createReadStream(req.files[0].path) }, 'formData', url, headers)
         .then(response => {
           fs.unlink(req.files[0].path, err => {
@@ -265,7 +265,6 @@ const bulkUploadTemplates = (req, res) => {
               console.log('\nDeleted file:', req.files[0].path)
             }
           })
-          console.log(response.body)
           res.send(response.body)
         })
         .catch(err => {
