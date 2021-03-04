@@ -388,7 +388,7 @@ const AGREEMENT_STATUS_MAPPING = {
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
-const SAMPLE_AGREEMENT_URL = 'http://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
+const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
 const INTERACTIVE = 'interactive'
 const TEMPLATE_FLOW_APPROVAL = [STATIC, INTERACTIVE]
