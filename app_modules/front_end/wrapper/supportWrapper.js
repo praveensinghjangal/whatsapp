@@ -219,7 +219,8 @@ const downloadDltTemplate = (req, res) => {
     headers: {
       'Content-Type': 'application/json',
       Authorization: __config.dltSupportToken
-    }
+    },
+    qs: req.query
   }
   res.setHeader('content-disposition', 'filename=templates.xlsx')
   request(options)
@@ -275,6 +276,19 @@ const bulkUploadTemplates = (req, res) => {
   })
 }
 
+const dltListOfPeidsOtherThanUser = (req, res) => {
+  __logger.info('dltListOfPeids wrapper API')
+  const http = new HttpService(60000)
+  let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfPeidsOtherThanUser
+  url += '?' + req.originalUrl.split('?')[1]
+  const headers = {
+    Authorization: __config.dltSupportToken
+  }
+  http.Get(url, headers)
+    .then(data => res.send(data))
+    .catch(err => res.send(err))
+}
+
 module.exports = {
   templateFlowApproval,
   templateFlowlist,
@@ -288,5 +302,6 @@ module.exports = {
   dltChangePeidStatus,
   dltVerifyMessage,
   downloadDltTemplate,
-  bulkUploadTemplates
+  bulkUploadTemplates,
+  dltListOfPeidsOtherThanUser
 }
