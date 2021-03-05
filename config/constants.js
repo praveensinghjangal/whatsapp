@@ -62,7 +62,7 @@ const CUSTOM_CONSTANT = {
 }
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
-  sms: { name: 'sms', expiresIn: 600, codeLength: 4 },
+  sms: { name: 'sms', expiresIn: 600, codeLength: 6 },
   businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 },
   emailTfa: { name: 'email2fa', expiresIn: 300, codeLength: 6 },
   smsTfa: { name: 'sms2fa', expiresIn: 300, codeLength: 6 }
@@ -403,7 +403,7 @@ const DLT_PANEL_ENDPOINTS = {
   verifyMessage: '/api/panel/verify_message_no_cache',
   downloadTemplates: '/api/panel/download_templates',
   bulkUpload: '/api/panel/upload_csv',
-  listOfPeidsOtherThanUser: '/api/panel/support/listpeidOfOtherUsers',
+  listOfPeidsOtherThanUser: '/api/panel/support/listpeidOfOtherUsers'
 
 }
 
