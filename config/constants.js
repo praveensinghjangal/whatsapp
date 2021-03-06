@@ -403,7 +403,7 @@ const DLT_PANEL_ENDPOINTS = {
   verifyMessage: '/api/panel/verify_message_no_cache',
   downloadTemplates: '/api/panel/download_templates',
   bulkUpload: '/api/panel/upload_csv',
-  listOfPeidsOtherThanUser: '/api/panel/support/listpeidOfOtherUsers',
+  listOfPeidsOtherThanUser: '/api/panel/support/listpeidOfOtherUsers'
 
 }
 
