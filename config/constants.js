@@ -62,7 +62,7 @@ const CUSTOM_CONSTANT = {
 }
 const VERIFICATION_CHANNEL = {
   email: { name: 'email', expiresIn: 3600, codeLength: 4 },
-  sms: { name: 'sms', expiresIn: 600, codeLength: 4 },
+  sms: { name: 'sms', expiresIn: 600, codeLength: 6 },
   businessNumber: { name: 'business-number', expiresIn: 3600, codeLength: 4 },
   emailTfa: { name: 'email2fa', expiresIn: 300, codeLength: 6 },
   smsTfa: { name: 'sms2fa', expiresIn: 300, codeLength: 6 }
