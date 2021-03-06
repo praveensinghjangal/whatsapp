@@ -245,10 +245,10 @@ const bulkUploadTemplates = (req, res) => {
   upload(req, res, function (err, data) {
     if (err) {
       __logger.error('File Upload API Error', err)
-      return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: {} })
     }
     if (!req.files || (req.files && !req.files[0])) {
-      return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
       __logger.info('File Uploaded', req.files)
       const http = new HttpService(60000)
