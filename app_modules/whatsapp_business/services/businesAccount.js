@@ -611,6 +611,25 @@ class businesAccountService {
       })
     return dataUpdated.promise
   }
+
+  getWabaAccountActiveInactiveCount () {
+    __logger.info('Inside Get Waba Account Active Inactive Count :: ')
+    const dbData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaAccountActiveInactiveCount(), [])
+      .then(result => {
+        __logger.info('resulttttttttttttttttttttttttttt', { result })
+        if (result && result.length === 0) {
+          dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        } else {
+          dbData.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in Get Waba Account Active Inactive Count: ', err)
+        dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dbData.promise
+  }
 }
 
 module.exports = businesAccountService

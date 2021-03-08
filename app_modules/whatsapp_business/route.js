@@ -43,5 +43,6 @@ router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require
 router.get('/internal/getServiceProviderDetailsByUserId', tokenBasedAuth, require('./controllers/internalAPI').getServiceProviderDetailsByUserId)
 router.patch('/profile/chatbot', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.toggleChatbot)
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
+router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/count').getWabaAccountActiveInactiveCount)
 
 module.exports = router

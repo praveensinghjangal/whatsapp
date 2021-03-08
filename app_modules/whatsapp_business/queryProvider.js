@@ -238,6 +238,15 @@ const toggleChatbot = () => {
   WHERE user_id=? and is_active = true`
 }
 
+const getWabaAccountActiveInactiveCount = () => {
+  return `select count(1) as "totalRecords"
+  from message_history mh 
+  union
+  select count(1) as "totalActiveRecords"
+  from message_history mh 
+  where is_active =true and created_on  BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -262,5 +271,6 @@ module.exports = {
   getWabaStatus,
   getTemplateAllocatedCount,
   getServiceProviderData,
-  toggleChatbot
+  toggleChatbot,
+  getWabaAccountActiveInactiveCount
 }
