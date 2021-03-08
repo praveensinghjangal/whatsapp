@@ -26,11 +26,11 @@ const getAgreementStatusCount = (req, res) => {
   __logger.info('Get Agreement Status Count Called')
   const userService = new UserService()
   userService.getAgreementStatusCount()
-    .then(data => {
-      __logger.info('then 1 get Agreement Status Count data', data)
+    .then(result => {
+      __logger.info('then 1 get Agreement Status Count data', result)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: data
+        data: { statusCount: result && result[0] ? result[0] : 0, totalRecords: result && result[1] && result[1][0] && result[1][0].totalAgreements ? result[1][0].totalAgreements : 0 }
       })
     })
     .catch(err => {
