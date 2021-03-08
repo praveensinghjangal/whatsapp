@@ -33,7 +33,7 @@ const getWabaStatusCount = (req, res) => {
       __logger.info('then 1 Waba Status Count data', result)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result[0], totalAccount: result[1][0].totalWabaAccount }
+        data: { statusCount: result[0], totalRecords: result[1][0].totalWabaAccount }
       })
     })
     .catch(err => {
