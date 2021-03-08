@@ -13,8 +13,8 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: {
-          activeRecords: (result[1] && result[1].totalRecords) ? result[1].totalRecords : 0,
-          inActiveRecords: (result[0] && result[0].totalRecords && result[1].totalRecords) ? result[0].totalRecords - result[1].totalRecords : 0
+          activeRecords: (result[0] && result[0][0] && result[0][0].totalActiveRecords) ? result[0][0].totalActiveRecords : 0,
+          inActiveRecords: (result[1] && result[1][0] && result[1][0].totalRecords) ? result[1][0].totalRecords - result[0][0].totalActiveRecords : 0
         }
       })
     })
@@ -24,6 +24,25 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
     })
 }
 
+// Get Waba Status Count
+const getWabaStatusCount = (req, res) => {
+  __logger.info('Get Waba Status Count Called')
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getWabaStatusCount()
+    .then(result => {
+      __logger.info('then 1 Waba Status Count data', result)
+      return __util.send(res, {
+        type: __constants.RESPONSE_MESSAGES.SUCCESS,
+        data: { statusCount: result[0], totalAccount: result[1][0].totalWabaAccount }
+      })
+    })
+    .catch(err => {
+      __logger.error('Get Waba Status error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
 module.exports = {
-  getWabaAccountActiveInactiveCount
+  getWabaAccountActiveInactiveCount,
+  getWabaStatusCount
 }

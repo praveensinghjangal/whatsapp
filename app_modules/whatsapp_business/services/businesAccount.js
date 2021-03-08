@@ -630,6 +630,25 @@ class businesAccountService {
       })
     return dbData.promise
   }
+
+  getWabaStatusCount () {
+    __logger.info('Inside Get Waba Status Count :: ')
+    const dbData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaStatusCount(), [])
+      .then(result => {
+        __logger.info('get Waba Status Count resulttttttttttttttttttttttttttt', { result })
+        if (result && result.length === 0) {
+          dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        } else {
+          dbData.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in Waba Status Count: ', err)
+        dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dbData.promise
+  }
 }
 
 module.exports = businesAccountService
