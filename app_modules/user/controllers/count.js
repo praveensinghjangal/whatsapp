@@ -28,9 +28,15 @@ const getAgreementStatusCount = (req, res) => {
   userService.getAgreementStatusCount()
     .then(result => {
       __logger.info('then 1 get Agreement Status Count data', result)
+      let totalRecords = 0
+      if (result && result.length > 0) {
+        result.forEach(record => {
+          totalRecords += record.statusCount
+        })
+      }
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result && result[0] ? result[0] : 0, totalRecords: result && result[1] && result[1][0] && result[1][0].totalAgreements ? result[1][0].totalAgreements : 0 }
+        data: { statusCount: result, totalRecords: totalRecords }
       })
     })
     .catch(err => {

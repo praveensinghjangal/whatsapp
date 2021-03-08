@@ -43,7 +43,7 @@ router.get('/internal/getUserIdAndApiKeyFromWabaNumber', tokenBasedAuth, require
 router.get('/internal/getServiceProviderDetailsByUserId', tokenBasedAuth, require('./controllers/internalAPI').getServiceProviderDetailsByUserId)
 router.patch('/profile/chatbot', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.toggleChatbot)
 // router.get('/internal/wabaDataByPhoneNumber', tokenBasedAuth, require('./controllers/internalAPI').getWabaDataFromDb)
-router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/count').getWabaAccountActiveInactiveCount)
-router.get('/statusCount', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/count').getWabaStatusCount)
+router.get('/activity/status/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/count').getWabaAccountActiveInactiveCount)
+router.get('/status/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/count').getWabaStatusCount)
 
 module.exports = router

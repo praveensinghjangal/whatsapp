@@ -373,14 +373,11 @@ const getAccountCreatedTodayCount = () => {
 }
 
 const getAgreementStatusCount = () => {
-  return ` select ags.status_name as "statusName" ,count(1) as "statusCount"
+  return `select ags.status_name as "statusName",count(1) as "statusCount"
   from user_agreement_files uaf 
-  join agreement_status ags
-  on uaf.agreement_status_id = ags.agreement_status_id and ags.is_active=true and uaf.is_active =true
-  GROUP by status_name;
-  select count(1) as "totalAgreements" 
-  from user_agreement_files uaf
-  where uaf.is_active=true`
+  join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id and ags.is_active=true
+  where uaf.is_active =true
+  GROUP by ags.status_name;`
 }
 
 module.exports = {

@@ -13,8 +13,8 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: {
-          activeRecords: (result[0] && result[0][0] && result[0][0].totalActiveRecords) ? result[0][0].totalActiveRecords : 0,
-          inActiveRecords: (result[1] && result[1][0] && result[1][0].totalRecords) ? result[1][0].totalRecords - result[0][0].totalActiveRecords : 0
+          activeRecords: result && result[0] && result[0].totalActiveUsers ? result[0].totalActiveUsers : 0,
+          inActiveRecords: result && result[0] && result[0] && result[0].totalUsers && result[0].totalActiveUsers ? result[0].totalUsers - result[0].totalActiveUsers : 0
         }
       })
     })
@@ -31,9 +31,15 @@ const getWabaStatusCount = (req, res) => {
   businessAccountService.getWabaStatusCount()
     .then(result => {
       __logger.info('then 1 Waba Status Count data', result)
+      let totalUsers = 0
+      if (result && result.length > 0) {
+        result.forEach(record => {
+          totalUsers += record.statusCount
+        })
+      }
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result[0], totalRecords: result[1][0].totalWabaAccount }
+        data: { statusCount: result, totalRecords: totalUsers }
       })
     })
     .catch(err => {
