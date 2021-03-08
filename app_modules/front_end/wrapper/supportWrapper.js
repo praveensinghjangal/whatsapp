@@ -112,6 +112,7 @@ const templateFlowInfo = (req, res) => {
 }
 
 const dltListOfUsers = (req, res) => {
+  __logger.info('dltListOfUsers ------>', req.user)
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfUsers
   const headers = {
@@ -124,7 +125,7 @@ const dltListOfUsers = (req, res) => {
 }
 
 const dltListOfPeids = (req, res) => {
-  __logger.info('dltListOfPeids wrapper API')
+  __logger.info('dltListOfPeids wrapper API', req.user)
   const http = new HttpService(60000)
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfPeids
   url += '?' + req.originalUrl.split('?')[1]
@@ -137,7 +138,7 @@ const dltListOfPeids = (req, res) => {
 }
 
 const dltUpdatePeids = (req, res) => {
-  __logger.info('dltUpdatePeids wrapper API')
+  __logger.info('dltUpdatePeids wrapper API', req.user)
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.updatePeid
   const headers = {
@@ -149,7 +150,7 @@ const dltUpdatePeids = (req, res) => {
 }
 
 const dltCreateTemplate = (req, res) => {
-  __logger.info('createTemplate wrapper API')
+  __logger.info('createTemplate wrapper API', req.user)
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.createTemplate
   const headers = {
@@ -161,7 +162,7 @@ const dltCreateTemplate = (req, res) => {
 }
 
 const dltListOfTemplates = (req, res) => {
-  __logger.info('dltListOfTemplates wrapper API')
+  __logger.info('dltListOfTemplates wrapper API', req.user)
   const http = new HttpService(60000)
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfTemplates
   url += '?' + req.originalUrl.split('?')[1]
@@ -174,7 +175,7 @@ const dltListOfTemplates = (req, res) => {
 }
 
 const dltConvertMessage = (req, res) => {
-  __logger.info('dltConvertMessage wrapper API')
+  __logger.info('dltConvertMessage wrapper API', req.user)
   const http = new HttpService(60000)
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.convertMessage
   url += '?' + req.originalUrl.split('?')[1]
@@ -187,7 +188,7 @@ const dltConvertMessage = (req, res) => {
 }
 
 const dltChangePeidStatus = (req, res) => {
-  __logger.info('dltUpdatePeids wrapper API')
+  __logger.info('dltUpdatePeids wrapper API', req.user)
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.changePeidStatus
   const headers = {
@@ -199,7 +200,7 @@ const dltChangePeidStatus = (req, res) => {
 }
 
 const dltVerifyMessage = (req, res) => {
-  __logger.info('dltUpdatePeids wrapper API')
+  __logger.info('dltUpdatePeids wrapper API', req.user)
   const http = new HttpService(60000)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.verifyMessage
   const headers = {
@@ -211,7 +212,7 @@ const dltVerifyMessage = (req, res) => {
 }
 
 const downloadDltTemplate = (req, res) => {
-  __logger.info('downloadDltTemplate api called')
+  __logger.info('downloadDltTemplate api called', req.user)
   const url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.downloadTemplates
   const options = {
     method: 'GET',
@@ -241,14 +242,14 @@ const upload = multer({
 }).array('File', 1)
 
 const bulkUploadTemplates = (req, res) => {
-  __logger.info('bulkUploadTemplates api called')
+  __logger.info('bulkUploadTemplates api called', req.user)
   upload(req, res, function (err, data) {
     if (err) {
       __logger.error('File Upload API Error', err)
-      return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: {} })
     }
     if (!req.files || (req.files && !req.files[0])) {
-      return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
       __logger.info('File Uploaded', req.files)
       const http = new HttpService(60000)
@@ -277,7 +278,7 @@ const bulkUploadTemplates = (req, res) => {
 }
 
 const dltListOfPeidsOtherThanUser = (req, res) => {
-  __logger.info('dltListOfPeids wrapper API')
+  __logger.info('dltListOfPeids wrapper API', req.user)
   const http = new HttpService(60000)
   let url = __config.dltUrl + __constants.DLT_PANEL_ENDPOINTS.listOfPeidsOtherThanUser
   url += '?' + req.originalUrl.split('?')[1]
