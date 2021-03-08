@@ -617,7 +617,7 @@ class businesAccountService {
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaAccountActiveInactiveCount(), [])
       .then(result => {
-        __logger.info('resulttttttttttttttttttttttttttt', { result })
+        __logger.info(' Get Waba Account Active Inactive resulttttttttttttttttttttttttttt', { result })
         if (result && result.length === 0) {
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
