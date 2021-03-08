@@ -577,6 +577,25 @@ class UserData {
       })
     return agreementData.promise
   }
+
+  getAccountCreatedTodayCount () {
+    __logger.info('get Account Created Today Count Service>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAccountCreatedTodayCount(), [])
+      .then(result => {
+        __logger.info('get Account Created Today Count Service Result>>>>>>>>>>>>>', { result })
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userDetails.resolve(result[0])
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get Account Created Today Count function: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData

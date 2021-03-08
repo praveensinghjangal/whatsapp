@@ -15,6 +15,7 @@ const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
 const agreementController = require('./controllers/agreement')
 const accountConfigController = require('./controllers/config')
+const countController = require('./controllers/count')
 
 // Routes
 // User routes
@@ -94,4 +95,6 @@ router.get('/agreement/:userId', authMiddleware.authenticate(authstrategy.jwt.na
 // Account Config
 router.get('/account/config/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.getAccountConfig)
 router.patch('/account/config', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.updateAccountConfig)
+// Count
+router.get('/account/createdToday', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, countController.getAccountCreatedTodayCount)
 module.exports = router
