@@ -135,10 +135,16 @@ class UserData {
     return doesUserIdExist.promise
   }
 
-  checkIfApiKeyExists (apiKey) {
+  checkIfApiKeyExists (apiKey, supportUser) {
     __logger.info('checkIfApiKeyExists>>>>>>>>>>>>>')
     const userDetails = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromKey(), [apiKey])
+    let queries
+    if (supportUser) {
+      queries = queryProvider.getSupportUserId()
+    } else {
+      queries = queryProvider.getUserIdFromKey()
+    }
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queries, [apiKey])
       .then(result => {
         __logger.info('result>>>>>>>>>>>>>', { result })
         if (result && result.length === 0) {
