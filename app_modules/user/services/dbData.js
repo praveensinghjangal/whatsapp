@@ -596,6 +596,25 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getAgreementStatusCount () {
+    __logger.info('get Agreement Status Count Service>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementStatusCount(), [])
+      .then(result => {
+        __logger.info('get Agreement Count Status Service Result>>>>>>>>>>>>>', { result })
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          userDetails.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get Agreement Status Count function: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData

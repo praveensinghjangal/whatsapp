@@ -372,6 +372,14 @@ const getAccountCreatedTodayCount = () => {
   where is_active =true and date(created_on) = CURRENT_DATE()`
 }
 
+const getAgreementStatusCount = () => {
+  return ` select ags.status_name as "statusName" ,count(1) as "statusCount"
+  from user_agreement_files uaf 
+  join agreement_status ags
+  on uaf.agreement_status_id = ags.agreement_status_id and ags.is_active=true and uaf.is_active =true
+  GROUP by status_name`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -420,5 +428,6 @@ module.exports = {
   getAgreementList,
   updateAccountConfig,
   getAgreementStatusList,
-  getAccountCreatedTodayCount
+  getAccountCreatedTodayCount,
+  getAgreementStatusCount
 }
