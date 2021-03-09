@@ -2,6 +2,7 @@ const BusinessAccountService = require('../services/businesAccount')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
+const _ = require('lodash')
 
 // Get Waba Account Active Inactive Count
 const getWabaAccountActiveInactiveCount = (req, res) => {
@@ -29,17 +30,23 @@ const getWabaStatusCount = (req, res) => {
   __logger.info('Get Waba Status Count Called')
   const businessAccountService = new BusinessAccountService()
   businessAccountService.getWabaStatusCount()
-    .then(result => {
-      __logger.info('then 1 Waba Status Count data', result)
-      let totalUsers = 0
-      if (result && result.length > 0) {
-        result.forEach(record => {
-          totalUsers += record.statusCount
-        })
-      }
+    .then(data => {
+      __logger.info('then 1 Waba Status Count data', data)
+      const result = {}
+      let totalRecords = 0
+      result.statusCount = []
+      _.each(__constants.WABA_PROFILE_STATUS, singleStatus => {
+        const recordData = _.find(data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
+        if (!recordData) {
+          result.statusCount.push({ templateCount: 0, statusName: singleStatus.displayName })
+        } else {
+          result.statusCount.push({ templateCount: recordData.statusCount, statusName: singleStatus.displayName })
+        }
+        totalRecords += (recordData && recordData.statusCount) ? recordData.statusCount : 0
+      })
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result, totalRecords: totalUsers }
+        data: { statusCount: result, totalRecords: totalRecords }
       })
     })
     .catch(err => {

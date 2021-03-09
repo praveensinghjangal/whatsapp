@@ -72,12 +72,12 @@ const getTemplateCount = (req, res) => {
     })
 }
 
-const getTemplateCountForSupport = (req, res) => {
+const getTemplateCountForAll = (req, res) => {
   __logger.info('Get Templates Count For Support  API Called')
   const http = new HttpService(60000)
   const templateDbService = new TemplateDbService()
   const result = {}
-  templateDbService.getTemplateCountForSupport()
+  templateDbService.getTemplateCountForAll()
     .then(data => {
       __logger.info('format And Return Template Count For Support', { data })
       result.statusCount = []
@@ -128,4 +128,4 @@ const getTemplateCountForSupport = (req, res) => {
     })
 }
 
-module.exports = { getTemplateCount, getTemplateCountForSupport }
+module.exports = { getTemplateCount, getTemplateCountForAll }
