@@ -28,6 +28,7 @@ router.get('/languages', authMiddleware.authenticate(authstrategy.jwt.name, auth
 
 // Template Count
 router.get('/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesCountController.getTemplateCount)
+router.get('/support/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesCountController.getTemplateCountForSupport)
 
 // Template Library
 router.get('/sample/:id', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templatesLibraryController.getSampleTemplateInfo)
