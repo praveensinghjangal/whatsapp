@@ -81,45 +81,35 @@ const getTemplateCountForAll = (req, res) => {
     .then(data => {
       __logger.info('format And Return Template Count For Support', { data })
       result.statusCount = []
-      _.each(__constants.TEMPLATE_STATUS, singleStatus => {
+      let totalStaticTemplate = 0
+      _.each(__constants.TEMPLATE_STATUS, (singleStatus, index) => {
         const recordData = _.find(data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
         if (!recordData) {
           result.statusCount.push({ templateCount: 0, statusName: singleStatus.displayName })
         } else {
           result.statusCount.push({ templateCount: recordData.statusCount, statusName: singleStatus.displayName })
         }
+        totalStaticTemplate += recordData && recordData.statusCount ? recordData.statusCount : 0
       })
-      let totalStaticTemplate = 0
-      if (data && data.length) {
-        data.forEach(record => {
-          totalStaticTemplate += record.statusCount
-        })
-      }
       result.totalStaticTemplate = totalStaticTemplate
       __logger.info('Result ', { result })
       return http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.menuBasedTemplatesCount, { authorization: req.headers.authorization })
     })
     .then(apiRes => {
       __logger.info('menu based template count for support api response ---->', apiRes)
+      let totalInteractiveTemplate = 0
       if (apiRes && apiRes.code === __constants.RESPONSE_MESSAGES.SUCCESS.code && apiRes.data && apiRes.data.length > 0) {
-        _.each(__constants.MENU_BASED_TEMPLATE_STATUS, singleStatus => {
-          const recordDataIndex = _.findIndex(apiRes.data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
-          const recordData = _.find(apiRes.data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
-          const existsInDbTemplateIndex = _.findIndex(result.statusCount, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
-          if (result.statusCount[existsInDbTemplateIndex]) {
-            result.statusCount[existsInDbTemplateIndex].templateCount += apiRes.data[recordDataIndex].templateCount
-          } else {
-            result.statusCount.push({ templateCount: recordData.templateCount, statusName: singleStatus.displayName })
+        _.each(result.statusCount, (item, index) => {
+          const recordData = _.find(apiRes.data, obj => obj.statusName ? obj.statusName.toLowerCase() === item.statusName.toLowerCase() : false)
+          if (recordData) {
+            console.log('if Condition ', (result.statusCount[index].statusName && result.statusCount[index].statusName === recordData.statusName))
+            result.statusCount[index].templateCount = result.statusCount[index].templateCount + ((result.statusCount[index].statusName && result.statusCount[index].statusName === recordData.statusName) ? 0 + recordData.templateCount : 0)
+            totalInteractiveTemplate += recordData.templateCount
           }
         })
       }
-      let totalInteractiveTemplate = 0
-      if (apiRes && apiRes.data && apiRes.data.length) {
-        apiRes.data.forEach(record => {
-          totalInteractiveTemplate += record.templateCount
-        })
-      }
       result.totalInteractiveTemplate = totalInteractiveTemplate
+      result.totalTemplates = result.totalInteractiveTemplate + result.totalStaticTemplate
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
