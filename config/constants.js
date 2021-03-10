@@ -406,7 +406,7 @@ const DLT_PANEL_ENDPOINTS = {
   listOfPeidsOtherThanUser: '/api/panel/support/listpeidOfOtherUsers'
 
 }
-const SUPPORT_ROLE_ID = 'jkaebee4-22w3-34e5-246u-23f30ce74ww4'
+const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
