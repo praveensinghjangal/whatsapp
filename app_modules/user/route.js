@@ -25,6 +25,7 @@ router.post('/auth/changepassword', require('./controllers/passwordManagement').
 router.get('/auth/google', authMiddleware.authenticate(authstrategy.google.name, authstrategy.google.options))
 router.get('/auth/facebook', authMiddleware.authenticate(authstrategy.facebook.name, authstrategy.google.options))
 router.post('/authorize', bearerTokenAuth, require('./controllers/authorize').authorize)
+router.post('/authorize/support', require('./controllers/authorize').authorizeSupportUser)
 router.post('/internal/authorize', tokenBasedAuth, require('./controllers/authorize').authorize)
 router.patch('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/passwordManagement').resetPasssword)
 
