@@ -421,10 +421,10 @@ class TemplateService {
     return templateData.promise
   }
 
-  getTemplateCountForAll () {
+  getAllTemplateCount () {
     __logger.info('inside get template count by status service for support')
     const templateData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCountForAll(), [])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAllTemplateCount(), [])
       .then(result => {
         __logger.info('get support template count query result', { result })
         if (result && result.length > 0) {

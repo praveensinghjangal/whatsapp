@@ -90,7 +90,7 @@ const getAllTemplateCount = (req, res) => {
   const http = new HttpService(60000)
   const templateDbService = new TemplateDbService()
   const result = {}
-  templateDbService.getTemplateCountForAll()
+  templateDbService.getAllTemplateCount()
     .then(data => {
       __logger.info('format And Return Template Count For Support', { data })
       result.statusCount = []
