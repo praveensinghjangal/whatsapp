@@ -371,6 +371,20 @@ const getAgreementStatusList = () => {
   where is_active = true and agreement_status_id != '${__constants.AGREEMENT_STATUS.pendingForDownload.statusCode}'`
 }
 
+const getAccountCreatedTodayCount = () => {
+  return `select count(1) as "accountCreatedToday"
+  from users u 
+  where is_active =true and date(created_on) = CURRENT_DATE()`
+}
+
+const getAgreementStatusCount = () => {
+  return `select ags.status_name as "statusName",count(1) as "statusCount"
+  from user_agreement_files uaf 
+  join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id and ags.is_active=true
+  where uaf.is_active =true
+  GROUP by ags.status_name;`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -419,5 +433,7 @@ module.exports = {
   updateAgreement,
   getAgreementList,
   updateAccountConfig,
-  getAgreementStatusList
+  getAgreementStatusList,
+  getAccountCreatedTodayCount,
+  getAgreementStatusCount
 }

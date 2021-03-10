@@ -311,6 +311,16 @@ const getTemplateStatusList = () => {
   where is_active = true and message_template_status_id != '${__constants.TEMPLATE_STATUS.deleted.statusCode}'`
 }
 
+// Support Template Count
+const getAllTemplateCount = () => {
+  return ` select mts.status_name as "statusName", count(1) as "statusCount" 
+  from message_template mt 
+  left join message_template_status mts on mt.message_template_status_id = mts.message_template_status_id 
+  and mts.is_active = true
+  where mt.is_active = true
+  group by mts.status_name`
+}
+
 module.exports = {
   getTemplateList,
   getTemplateInfo,
@@ -334,5 +344,6 @@ module.exports = {
   getTemplateTableDataByTemplateName,
   getTemplateTableDataByTemplateId,
   getAllTemplateWithStatus,
-  getTemplateStatusList
+  getTemplateStatusList,
+  getAllTemplateCount
 }

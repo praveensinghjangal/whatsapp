@@ -238,6 +238,22 @@ const toggleChatbot = () => {
   WHERE user_id=? and is_active = true`
 }
 
+const getWabaAccountActiveInactiveCount = () => {
+  return `select (select count(DISTINCT(business_number)) 
+  from message_history mh 
+  where is_active =true and created_on  BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()) as "totalActiveUsers",
+  (select count(1) from users u 
+ where is_active = true) as "totalUsers"`
+}
+
+const getWabaStatusCount = () => {
+  return ` select wpss.status_name as "statusName",count(1) as "statusCount" 
+  from waba_information wi 
+  join waba_profile_setup_status wpss on wi.waba_profile_setup_status_id = wpss.waba_profile_setup_status_id  and wpss.is_active =true 
+  where wi.is_active =true 
+  group by status_name`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -262,5 +278,7 @@ module.exports = {
   getWabaStatus,
   getTemplateAllocatedCount,
   getServiceProviderData,
-  toggleChatbot
+  toggleChatbot,
+  getWabaAccountActiveInactiveCount,
+  getWabaStatusCount
 }

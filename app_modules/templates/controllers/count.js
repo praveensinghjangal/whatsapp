@@ -6,6 +6,7 @@ const __util = require('../../../lib/util')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const HttpService = require('../../../lib/http_service')
+const TemplateDbService = require('../services/dbData')
 
 /**
  * @memberof -Template-Controller-
@@ -71,4 +72,50 @@ const getTemplateCount = (req, res) => {
     })
 }
 
-module.exports = { getTemplateCount }
+const getAllTemplateCount = (req, res) => {
+  __logger.info('Get Templates Count For Support  API Called')
+  const http = new HttpService(60000)
+  const templateDbService = new TemplateDbService()
+  const result = {}
+  templateDbService.getAllTemplateCount()
+    .then(data => {
+      __logger.info('format And Return Template Count For Support', { data })
+      result.statusCount = []
+      let totalStaticTemplate = 0
+      _.each(__constants.TEMPLATE_STATUS, (singleStatus, index) => {
+        const recordData = _.find(data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
+        if (!recordData) {
+          result.statusCount.push({ templateCount: 0, statusName: singleStatus.displayName })
+        } else {
+          result.statusCount.push({ templateCount: recordData.statusCount, statusName: singleStatus.displayName })
+        }
+        totalStaticTemplate += recordData && recordData.statusCount ? recordData.statusCount : 0
+      })
+      result.totalStaticTemplate = totalStaticTemplate
+      __logger.info('Result ', { result })
+      return http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.menuBasedTemplatesCount, { authorization: req.headers.authorization })
+    })
+    .then(apiRes => {
+      __logger.info('menu based template count for support api response ---->', apiRes)
+      let totalInteractiveTemplate = 0
+      if (apiRes && apiRes.code === __constants.RESPONSE_MESSAGES.SUCCESS.code && apiRes.data && apiRes.data.length > 0) {
+        _.each(result.statusCount, (item, index) => {
+          const recordData = _.find(apiRes.data, obj => obj.statusName ? obj.statusName.toLowerCase() === item.statusName.toLowerCase() : false)
+          if (recordData) {
+            console.log('if Condition ', (result.statusCount[index].statusName && result.statusCount[index].statusName === recordData.statusName))
+            result.statusCount[index].templateCount = result.statusCount[index].templateCount + ((result.statusCount[index].statusName && result.statusCount[index].statusName === recordData.statusName) ? 0 + recordData.templateCount : 0)
+            totalInteractiveTemplate += recordData.templateCount
+          }
+        })
+      }
+      result.totalInteractiveTemplate = totalInteractiveTemplate
+      result.totalTemplates = result.totalInteractiveTemplate + result.totalStaticTemplate
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+    })
+    .catch(err => {
+      __logger.error('Get Templates Count For Support error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+module.exports = { getTemplateCount, getAllTemplateCount }

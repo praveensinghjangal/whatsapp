@@ -420,6 +420,25 @@ class TemplateService {
       })
     return templateData.promise
   }
+
+  getAllTemplateCount () {
+    __logger.info('inside get template count by status service for support')
+    const templateData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAllTemplateCount(), [])
+      .then(result => {
+        __logger.info('get support template count query result', { result })
+        if (result && result.length > 0) {
+          templateData.resolve(result)
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template count service for support: ', err)
+        templateData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateData.promise
+  }
 }
 
 module.exports = TemplateService
