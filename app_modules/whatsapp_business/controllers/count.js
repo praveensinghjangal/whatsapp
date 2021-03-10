@@ -38,9 +38,9 @@ const getWabaStatusCount = (req, res) => {
       _.each(__constants.WABA_PROFILE_STATUS, singleStatus => {
         const recordData = _.find(data, obj => obj.statusName ? obj.statusName.toLowerCase() === singleStatus.displayName.toLowerCase() : false)
         if (!recordData) {
-          result.statusCount.push({ templateCount: 0, statusName: singleStatus.displayName })
+          result.statusCount.push({ statusCount: 0, statusName: singleStatus.displayName })
         } else {
-          result.statusCount.push({ templateCount: recordData.statusCount, statusName: singleStatus.displayName })
+          result.statusCount.push({ statusCount: recordData.statusCount, statusName: singleStatus.displayName })
         }
         totalRecords += (recordData && recordData.statusCount) ? recordData.statusCount : 0
       })
