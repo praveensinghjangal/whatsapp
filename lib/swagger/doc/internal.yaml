@@ -2759,6 +2759,88 @@ paths:
               data: {}
               error: {}
       security: []
+  /users/agreement/status/count:
+    get:
+      x-module: platform
+      summary: Get all agreement status count
+      description: Use to get agreement status count
+      tags:
+        - agreement
+      operationId: getAgreementStatusCount
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: 'Return list of all agreement status '
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  statusCount:
+                    - statusCount: 0
+                      statusName: Pending For Download
+                    - statusCount: 2
+                      statusName: Pending For Upload
+                    - statusCount: 1
+                      statusName: Pending For Approval
+                    - statusCount: 104
+                      statusName: Approved
+                    - statusCount: 4
+                      statusName: Rejected
+                  totalRecords: 111
+                error: null
+              - code: 3000
+                msg: No record found.
+                data: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
   /users/agreement/list:
     get:
       x-module: platform
@@ -2788,7 +2870,7 @@ paths:
           description: enter records per page
         - name: agreementStatus
           in: query
-          required: false
+          required: true
           type: string
           description: agreement status id needs to be entered here
         - name: startDate
@@ -3322,6 +3404,75 @@ paths:
                 pagination:
                   totalPage: 4
                   currentPage: 1
+              error: null
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /users/account/created/today:
+    get:
+      x-module: platform
+      summary: gets account created today count
+      description: gets account created today count
+      tags:
+        - accountProfile
+      operationId: getAccountCreatedTodayCount
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: Returns count of account created today
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 2000
+              msg: Success
+              data:
+                accountCreatedToday: 0
               error: null
         '401':
           description: Invalid token in header
@@ -5107,38 +5258,37 @@ paths:
                   statusName: Pending For Approval
                 - wabaProfileStatusId: fdfcce74-81a3-4d41-b526-212d256f9a20
                   statusName: Pending For Submission
-          '401':
-            description: Invalid token in header
-            headers: {}
-            schema:
-              type: string
-              example: Unauthorized
-          '500':
-            description: in case of some exceptional error
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-                error:
-                  type: object
-              example:
-                code: 5000
-                msg: Something went wrong. Please try again later.
-                data: {}
-                error: {}
-        security: []
-    "/business/profile/{statusId}":
-      get:
-        x-module: platform
-        summary: Get details of waba profile
-        description: Use to get waba profile data according to waba profile set-up status
-          id
-        tags:
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  '/business/profile/{statusId}':
+    get:
+      x-module: platform
+      summary: Get details of waba profile
+      description: Use to get waba profile data according to waba profile set-up status id
+      tags:
         - WABA
       operationId: getProfileListByStatusId
       deprecated: false
@@ -5192,47 +5342,46 @@ paths:
               - code: 3000
                 msg: No record found.
                 data: {}
-          '401':
-            description: Invalid token in header
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-              example:
-                code: 4001
-                msg: Unauthorized access.
-                data:
-          '500':
-            description: in case of some exceptional error
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-                error:
-                  type: object
-              example:
-                code: 5000
-                msg: Something went wrong. Please try again later.
-                data: {}
-                error: {}
-        security: []
-    "/business/profile/info/{wabaId}":
-      get:
-        x-module: platform
-        summary: Get business profile data
-        description: Use to get business profile data according to waba information
-          id
-        tags:
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  '/business/profile/info/{wabaId}':
+    get:
+      x-module: platform
+      summary: Get business profile data
+      description: Use to get business profile data according to waba information id
+      tags:
         - WABA
       operationId: getProfileByWabaId
       deprecated: false
@@ -5310,46 +5459,46 @@ paths:
               - code: 3000
                 msg: No record found.
                 data: {}
-          '401':
-            description: Invalid token in header
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-              example:
-                code: 4001
-                msg: Unauthorized access.
-                data:
-          '500':
-            description: in case of some exceptional error
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-                error:
-                  type: object
-              example:
-                code: 5000
-                msg: Something went wrong. Please try again later.
-                data: {}
-                error: {}
-        security: []
-    "/business/profile/template/allocate/{userId}":
-      get:
-        x-module: platform
-        summary: Get count of template allocated to user
-        description: Use to get count of template allocated to user according to userId
-        tags:
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  '/business/profile/template/allocate/{userId}':
+    get:
+      x-module: platform
+      summary: Get count of template allocated to user
+      description: Use to get count of template allocated to user according to userId
+      tags:
         - WABA
       operationId: getCountTemplateAllocated
       deprecated: false
@@ -5475,6 +5624,305 @@ paths:
               code: 4001
               msg: Unauthorized access.
               data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /business/status/count:
+    get:
+      x-module: platform
+      summary: Get Waba Status Count
+      description: Use To Get Waba Status Count
+      tags:
+        - WABA
+      operationId: getWabaStatusCount
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: Returns waba status count
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  statusCount:
+                    - statusCount: 99
+                      statusName: Profile Incomplete
+                    - statusCount: 13
+                      statusName: Pending For Submission
+                    - statusCount: 8
+                      statusName: Submitted
+                    - statusCount: 0
+                      statusName: Pending For Approval
+                    - statusCount: 2
+                      statusName: Rejected
+                    - statusCount: 32
+                      statusName: Accepted
+                  totalRecords: 154
+                error: null
+              - code: 3000
+                msg: No record found.
+                data: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /business/activity/status/count:
+    get:
+      x-module: platform
+      summary: Get Account Active InActive Count
+      description: Use to get account active inactive count
+      tags:
+        - WABA
+      operationId: getWabaAccountActiveInactiveCount
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: Returns account active inactive count
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  activeRecords: 2
+                  inActiveRecords: 368
+                error: null
+              - code: 3000
+                msg: No record found.
+                data: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /business/profile/list:
+    get:
+      x-isPublic: true
+      x-module: platform
+      description: |-
+        This api returns list of waba based on filters
+        following
+        are
+        the list of filters: 
+        statusId
+      summary: Get waba account list
+      tags:
+        - WABA
+      operationId: getProfileListByStatusId
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+        - name: itemsPerPage
+          in: query
+          required: true
+          type: number
+          description: No of records per page
+        - name: page
+          in: query
+          required: true
+          type: number
+          description: Enter page number
+        - name: statusId
+          in: query
+          required: true
+          type: string
+          description: Enter status id
+        - name: startDate
+          in: query
+          required: true
+          type: string
+          description: Enter start date
+        - name: endDate
+          in: query
+          required: true
+          type: string
+          description: Enter end date
+      responses:
+        '200':
+          description: List of all Waba
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  rows:
+                    - wabaInformationId: adb4ab2a-7baf-433d-808a-3fb9e80d8cbc
+                      phoneNumber: '7888888888'
+                      phoneCode: '91'
+                      facebookManagerId: rfrdfrg
+                      userId: 1de033de-caff-4eb3-a919-a752cd4b16a2
+                      businessName: null
+                      wabaProfileSetupStatusId: fdfcce74-81a3-4d41-b526-212d256f9a20
+                      wabaProfileSetupStatus: Pending For Submission
+                      accessInfoRejectionReason: null
+                    - wabaInformationId: aade6b4a-fc7b-42be-9701-6faa53e37c39
+                      phoneNumber: '2233221144'
+                      phoneCode: '91'
+                      facebookManagerId: qwerty
+                      userId: 90fa0254-512f-40bc-a48d-f691adaea3a9
+                      businessName: qqqqqqq
+                      wabaProfileSetupStatusId: b2aacfbc-12da-4748-bae9-b4ec26e37840
+                      wabaProfileSetupStatus: Accepted
+                      accessInfoRejectionReason: null
+                    - wabaInformationId: dbe84030-0696-451c-be8a-c4fe58a00d6c
+                      phoneNumber: '3244444444'
+                      phoneCode: '91'
+                      facebookManagerId: fdd
+                      userId: b7f0e298-0ff9-459f-8b4e-8e02aae39b18
+                      businessName: null
+                      wabaProfileSetupStatusId: fdfcce74-81a3-4d41-b526-212d256f9a20
+                      wabaProfileSetupStatus: Pending For Submission
+                      accessInfoRejectionReason: null
+                    - wabaInformationId: 906e5a8a-0a1f-4e6c-b118-56ea2ff99fc9
+                      phoneNumber: '3441341434'
+                      phoneCode: '91'
+                      facebookManagerId: g
+                      userId: cdc83332-9f70-4071-8212-06e148f51bde
+                      businessName: null
+                      wabaProfileSetupStatusId: fdfcce74-81a3-4d41-b526-212d256f9a20
+                      wabaProfileSetupStatus: Pending For Submission
+                      accessInfoRejectionReason: null
+                    - wabaInformationId: d495c5b8-56f9-4b47-b8c6-b3931d57dc8d
+                      phoneNumber: '5733333333'
+                      phoneCode: '91'
+                      facebookManagerId: hfgh
+                      userId: 6f578455-f4ca-4440-a318-a8cf0a0562c3
+                      businessName: null
+                      wabaProfileSetupStatusId: fdfcce74-81a3-4d41-b526-212d256f9a20
+                      wabaProfileSetupStatus: Pending For Submission
+                      accessInfoRejectionReason: null
+                  pagination:
+                    totalPage: 13
+                    currentPage: 1
+                    totalFilteredRecord: 61
+                    totalRecord: 154
+              - code: 3000
+                msg: No record found.
+                data: null
+                error: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -6827,46 +7275,46 @@ paths:
               data: null
               error:
                 - invalid body error here
-          '401':
-            description: Invalid token in header
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-              example:
-                code: 4001
-                msg: Unauthorized access.
-                data:
-          '500':
-            description: in case of some exceptional error
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-                error:
-                  type: object
-              example:
-                code: 5000
-                msg: Something went wrong. Please try again later.
-                data: {}
-                error: {}
-        security: []
-    "/templates/list/{templateStatusId}":
-      get:
-        x-module: platform
-        summary: Get template list
-        description: Use to get template list according to message template status id
-        tags:
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  '/templates/list/{templateStatusId}':
+    get:
+      x-module: platform
+      summary: Get template list
+      description: Use to get template list according to message template status id
+      tags:
         - templates
       operationId: getTemplateListByStatusId
       deprecated: false
@@ -7021,6 +7469,120 @@ paths:
               code: 4001
               msg: Unauthorized access.
               data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /templates/status/count:
+    get:
+      x-module: platform
+      summary: Get all template status count
+      description: Use to get template status count
+      tags:
+        - templates
+      operationId: getAllTemplateCount
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: 'Return list of all template status '
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  statusCount:
+                    - templateCount: 12
+                      statusName: Rejected
+                    - templateCount: 23
+                      statusName: Approved
+                    - templateCount: 2
+                      statusName: Requested
+                    - templateCount: 0
+                      statusName: Submit-Failed
+                    - templateCount: 1
+                      statusName: Partially Approved
+                    - templateCount: 2
+                      statusName: Denied
+                    - templateCount: 0
+                      statusName: Deleted
+                    - templateCount: 0
+                      statusName: Pending
+                    - templateCount: 8
+                      statusName: Submitted
+                    - templateCount: 2
+                      statusName: Complete
+                    - templateCount: 0
+                      statusName: Incomplete
+                  totalStaticTemplate: 31
+                  totalInteractiveTemplate: 19
+                  totalTemplates: 50
+                error: null
+              - code: 3000
+                msg: No record found.
+                data: {}
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '404':
+          description: Returns resource not found error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 4004
+              msg: Requested Resource Not Found.
+              data: {}
+              error: {}
         '500':
           description: in case of some exceptional error
           headers: {}
@@ -9202,46 +9764,46 @@ paths:
               - code: 3000
                 msg: No record found.
                 data: []
-          '401':
-            description: Invalid token in header
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-              example:
-                code: 4001
-                msg: Unauthorized access.
-                data:
-          '500':
-            description: in case of some exceptional error
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-                error:
-                  type: object
-              example:
-                code: 5000
-                msg: Something went wrong. Please try again later.
-                data: {}
-                error: {}
-        security: []
-    "/flowmessage/flow/{flowTopicId}":
-      get:
-        x-module: chatApp
-        summary: Get entire flow
-        description: Use to get the flow according to user id
-        tags:
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  '/flowmessage/flow/{flowTopicId}':
+    get:
+      x-module: chatApp
+      summary: Get entire flow
+      description: Use to get the flow according to user id
+      tags:
         - chat-app
       operationId: getFlowTopic
       deprecated: false
@@ -9350,46 +9912,46 @@ paths:
                 msg: No record found.
                 data: null
                 error: {}
-          '401':
-            description: Invalid token in header
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-              example:
-                code: 4001
-                msg: Unauthorized access.
-                data:
-          '500':
-            description: in case of some exceptional error
-            headers: {}
-            schema:
-              properties:
-                code:
-                  type: number
-                msg:
-                  type: string
-                data:
-                  type: object
-                error:
-                  type: object
-              example:
-                code: 5000
-                msg: Something went wrong. Please try again later.
-                data: {}
-                error: {}
-        security: []
-    "/flowmessage/flow/{flowTopicId}/{identifierText}":
-      get:
-        x-module: chatApp
-        summary: Get identifier of the flow
-        description: This API is used to get the identifier of the flow
-        tags:
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  '/flowmessage/flow/{flowTopicId}/{identifierText}':
+    get:
+      x-module: chatApp
+      summary: Get identifier of the flow
+      description: This API is used to get the identifier of the flow
+      tags:
         - chat-app
       operationId: getFlowIdentifier
       deprecated: false
@@ -9672,6 +10234,86 @@ paths:
                   - flowTopic: ytfytdugvuy
                     flowTopicId: 1de3edda-9838-45f3-8d3b-a16c75d0a3da
                     flowDescription: 'Please select the options for channel registeration:'
+              - code: 3000
+                msg: No record found.
+                data: []
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              code: 4001
+              msg: Unauthorized access.
+              data: null
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /flowmessage/flow/status/count:
+    get:
+      x-module: chatApp
+      summary: Get Menu Based Template Count
+      description: Use this API to get menu based template count
+      tags:
+        - chat-app
+      operationId: getMenuBasedTemplatesCount
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: user can obtain auth token by using login API
+      responses:
+        '200':
+          description: Returns various flow types
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+            example:
+              - code: 2000
+                msg: Success
+                data:
+                  - templateCount: 2
+                    statusName: Requested
+                  - templateCount: 12
+                    statusName: Approved
+                  - templateCount: 0
+                    statusName: Inactive
+                  - templateCount: 0
+                    statusName: Deleted
+                  - templateCount: 5
+                    statusName: Rejected
+                error: null
               - code: 3000
                 msg: No record found.
                 data: []

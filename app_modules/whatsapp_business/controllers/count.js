@@ -4,6 +4,20 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const _ = require('lodash')
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name getWabaAccountActiveInactiveCount
+ * @path {get} /activity/status/count
+ * @description Bussiness Logic :- This API returns waba business account which are active or inactive based on last 30 days transaction.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getWabaAccountActiveInactiveCount|getWabaAccountActiveInactiveCount}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get object containing the active and inActive waba count.
+ * @code {200} if the msg is success than Returns object.
+ * @author Arjun Bhole 9th March, 2021
+ * *** Last-Updated :- Arjun Bhole 9th March, 2021 ***
+ */
+
 // Get Waba Account Active Inactive Count
 const getWabaAccountActiveInactiveCount = (req, res) => {
   __logger.info('Get Waba Account Active Inactive Count Called')
@@ -24,6 +38,20 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name getWabaStatusCount
+ * @path {get} /status/count
+ * @description Bussiness Logic :- This API returns waba business account count.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getWabaStatusCount|getWabaStatusCount}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get array of object containing the waba status count.
+ * @code {200} if the msg is success than Returns array of object containing the status name and status count in each object.
+ * @author Arjun Bhole 9th March, 2021
+ * *** Last-Updated :- Arjun Bhole 9th March, 2021 ***
+ */
 
 // Get Waba Status Count
 const getWabaStatusCount = (req, res) => {
