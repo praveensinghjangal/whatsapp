@@ -77,4 +77,47 @@ const authorize = (req, res) => {
     })
 }
 
-module.exports = { authorize, createAuthTokenByUserId }
+/**
+ * @memberof -Authorize-Controller-
+ * @name AuthorizeSupportUser
+ * @path {POST} /users/authorize
+ * @description Bussiness Logic :- In Authorize API, use API key and generate auth token to be used in support API.
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/users/authorize|Authorize}
+ * @body {string}  apiKey=hsdbhsvbsvbs-cbdahcbvdavcd-pojcbnjbc-cshcdvyaya -  Provide the valid API key for authorization purpose
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  - Response got successfully.
+ * @response {string} metadata.data.apiToken - It will return the token that will be used in other supported API for Helo whatsapp.
+ * @code {200} if the msg is success Returns auth token if API key provided is correctly.
+ * @author Vasim Gujrai 03 March, 2021
+ * *** Last-Updated :- Vasim Gujrai 03 March, 2021 ***
+ */
+
+const authorizeSupportUser = (req, res) => {
+  __logger.info('authorizeSupportUser::')
+  const validate = new ValidatonService()
+  const userService = new UserService()
+  validate.authorize(req.body)
+    .then(data => userService.checkIfApiKeyExists(req.body.apiKey, true))
+    .then(userData => {
+      const payload = {
+        user_id: userData.userId,
+        signature: new UniqueId().uuid()
+      }
+      const token = authMiddleware.setToken(payload, __constants.CUSTOM_CONSTANT.AUTH_TOKEN_30_MINS)
+      __util.send(res, {
+        type: __constants.RESPONSE_MESSAGES.SUCCESS,
+        data: {
+          apiToken: token
+        }
+      })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, {
+        type: err.type,
+        err: err.err
+      })
+    })
+}
+
+module.exports = { authorize, createAuthTokenByUserId, authorizeSupportUser }

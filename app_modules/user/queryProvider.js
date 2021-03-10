@@ -182,6 +182,11 @@ const getUserIdFromKey = () => {
   where is_active  = 1 and token_key = ?`
 }
 
+const getSupportUserId = () => {
+  return `select user_id as "userId" from users u inner join user_role ur on u.user_role_id  = ur.user_role_id
+  where u.is_active  = 1 and ur.is_active  = 1 and ur.user_role_id = '${__constants.SUPPORT_ROLE_ID}' and token_key = ?`
+}
+
 const getPasswordTokenByEmail = () => {
   return `select rpt.reset_password_token_id , u.user_id, u.first_name
   from users u 
@@ -406,6 +411,7 @@ module.exports = {
   markbusinessNumberVerified,
   updateTokenInAccountProfile,
   getUserIdFromKey,
+  getSupportUserId,
   getPasswordTokenByEmail,
   updateExistingPasswordTokens,
   addPasswordToken,
