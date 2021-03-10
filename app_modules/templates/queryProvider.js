@@ -312,7 +312,7 @@ const getTemplateStatusList = () => {
 }
 
 // Support Template Count
-const getTemplateCountForAll = () => {
+const getAllTemplateCount = () => {
   return ` select mts.status_name as "statusName", count(1) as "statusCount" 
   from message_template mt 
   left join message_template_status mts on mt.message_template_status_id = mts.message_template_status_id 
@@ -345,5 +345,5 @@ module.exports = {
   getTemplateTableDataByTemplateId,
   getAllTemplateWithStatus,
   getTemplateStatusList,
-  getTemplateCountForAll
+  getAllTemplateCount
 }
