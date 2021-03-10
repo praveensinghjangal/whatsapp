@@ -184,7 +184,7 @@ const getUserIdFromKey = () => {
 
 const getSupportUserId = () => {
   return `select user_id as "userId" from users u inner join user_role ur on u.user_role_id  = ur.user_role_id
-  where u.is_active  = 1 and ur.is_active  = 1 and ur.role_name ='support' and token_key = ?`
+  where u.is_active  = 1 and ur.is_active  = 1 and ur.user_role_id = '${__constants.SUPPORT_ROLE_ID}' and token_key = ?`
 }
 
 const getPasswordTokenByEmail = () => {
