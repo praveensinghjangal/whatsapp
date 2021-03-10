@@ -17,7 +17,7 @@ const TemplateDbService = require('../services/dbData')
   <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/templates/getTemplateCount|GetTemplateCount}
  * @response {string} ContentType=application/json - Response content type.
  * @response {array} metadata.data.statusCount - In response we get array of json data consist of statusName and templateCount in each object.
- * @code {200} if the msg is success than it return the different templates count with statusName.
+ * @code {200} if the msg is success then it return the different templates count with statusName.
  * @author Arjun Bhole 5th June, 2020
  * *** Last-Updated :- Danish Galiyara 30th December, 2020 ***
  */
@@ -72,7 +72,20 @@ const getTemplateCount = (req, res) => {
     })
 }
 
-const getTemplateCountForAll = (req, res) => {
+/**
+ * @memberof -Template-Controller-
+ * @name GetAllTemplateCount
+ * @path {GET} /templates/status/count
+ * @description Bussiness Logic :- This api returns all templates count
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/templates/getAllTemplateCount|GetAllTemplateCount}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {array} metadata.data.statusCount - In response we get array of json data consist of statusName and templateCount in each object.
+ * @code {200} if the msg is success then it return the different templates count with statusName.
+ * @author Arjun Bhole 9th March, 2021
+ * *** Last-Updated :- Arjun Bhole 10th March, 2021 ***
+ */
+const getAllTemplateCount = (req, res) => {
   __logger.info('Get Templates Count For Support  API Called')
   const http = new HttpService(60000)
   const templateDbService = new TemplateDbService()
@@ -118,4 +131,4 @@ const getTemplateCountForAll = (req, res) => {
     })
 }
 
-module.exports = { getTemplateCount, getTemplateCountForAll }
+module.exports = { getTemplateCount, getAllTemplateCount }
