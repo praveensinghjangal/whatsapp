@@ -520,7 +520,7 @@ class UserData {
     const fetchAgreement = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementList(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
       .then(result => {
-        if (result && result[0].length > 0) {
+        if (result && result[0] && result[0].length && result[0].length > 0) {
           fetchAgreement.resolve(result)
         } else {
           fetchAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })

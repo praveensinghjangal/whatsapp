@@ -499,17 +499,17 @@ class businesAccountService {
   }
 
   getBusinessProfileListByStatusId (columnArray, offset, ItemsPerPage, startDate, endDate, valArray) {
-    __logger.info('getBusinessProfileListByStatusId::>>>>>>>>>>>>>.', valArray)
+    __logger.info('get Business Profile List By Status Id::>>>>>>>>>>>>>.', valArray)
     const status = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
       .then(result => {
-        if (result && result[0].length > 0) {
+        if (result && result[0] && result[0].length && result[0].length > 0) {
           status.resolve(result)
         } else {
           status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         }
       }).catch(err => {
-        __logger.error('error::getWabaProfileByStatusId : ', err)
+        __logger.error('error::get Waba Profile By Status Id : ', err)
         status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return status.promise

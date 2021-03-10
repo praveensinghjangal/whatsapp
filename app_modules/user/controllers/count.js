@@ -43,7 +43,7 @@ const getAgreementStatusCount = (req, res) => {
       })
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result, totalRecords: totalRecords }
+        data: { statusCount: result.statusCount, totalRecords: totalRecords }
       })
     })
     .catch(err => {
