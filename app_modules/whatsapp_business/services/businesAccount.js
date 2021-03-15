@@ -649,6 +649,76 @@ class businesAccountService {
       })
     return dbData.promise
   }
+
+  getServiceProvider (serviceProviderId, serviceProviderName) {
+    __logger.info('getServiceProvider>>>>>>>>>>>>>')
+    const providerDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProvider(), [serviceProviderId, serviceProviderName])
+      .then(result => {
+        if (result && result.length === 0) {
+          providerDetails.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+        } else {
+          __logger.info('getServiceProvider>>>>>>>>>>>>> after db response resolved', result)
+          providerDetails.resolve(result)
+        }
+      }).catch(err => {
+        __logger.error('error::getServiceProvider : ', err)
+        providerDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return providerDetails.promise
+  }
+
+  addServiceProvider (requestBody) {
+    __logger.info('addServiceProvider>>>>>>>>>>>>>')
+    const serviceProviderAdded = q.defer()
+    const serviceProviderId = this.uniqueId.uuid()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.insertServiceProviderData(), [serviceProviderId, requestBody.serviceProviderName, requestBody.maxWebsiteAllowed])
+      .then(result => {
+        __logger.info('addServiceProvider, result then 1', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          serviceProviderAdded.resolve({ serviceProvider: 'added', serviceProviderId })
+        } else {
+          serviceProviderAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => serviceProviderAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
+    return serviceProviderAdded.promise
+  }
+
+  updateServiceProvider (serviceProviderId, checkForDeactivation, remainingValue) {
+    __logger.info('updateServiceProvider')
+    const columnArray = []
+    const queryParam = []
+    const dataUpdated = q.defer()
+
+    if (checkForDeactivation) {
+      columnArray.push('is_active')
+      queryParam.push(0)
+    } else {
+      if (remainingValue.serviceProviderName) {
+        columnArray.push('service_provider_name')
+        queryParam.push(remainingValue.serviceProviderName)
+      }
+      if (remainingValue.maxWebsiteAllowed) {
+        columnArray.push('max_website_allowed')
+        queryParam.push(remainingValue.maxWebsiteAllowed)
+      }
+    }
+    queryParam.push(serviceProviderId)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateServiceProviderData(checkForDeactivation, columnArray), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          dataUpdated.resolve({ serviceProvider: 'updated', serviceProviderId })
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
+  }
 }
 
 module.exports = businesAccountService

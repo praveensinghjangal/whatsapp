@@ -887,6 +887,117 @@ class validate {
     }
     return isvalid.promise
   }
+
+  serviceProviderValidation (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/serviceProviderValidation',
+      type: 'object',
+      required: true,
+      properties: {
+        serviceProviderId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/serviceProviderValidation')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
+
+  updateServiceProvider (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/updateServiceProviders',
+      type: 'object',
+      required: true,
+      properties: {
+        serviceProviderId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        serviceProviderName: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 29
+        },
+        maxWebsiteAllowed: {
+          type: 'number',
+          required: false,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/updateServiceProvider')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (request && request.serviceProviderId && (!request.serviceProviderName && !request.maxWebsiteAllowed )) {
+      formatedError.push('Please add the parameter in request body to update the service provider details eg :- serviceProviderName,maxWebsiteAllowed')
+    }
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve({ update: true })
+    }
+    return isvalid.promise
+  }
+
+  addServiceProvider (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addServiceProvider',
+      type: 'object',
+      required: true,
+      properties: {
+        serviceProviderName: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 29
+        },
+        maxWebsiteAllowed: {
+          type: 'number',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/addServiceProvider')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (request && request.serviceProviderId) {
+      formatedError.push('Please remove serviceProviderId from request body to insert service provider details')
+    }
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      isvalid.resolve({ add: true })
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
