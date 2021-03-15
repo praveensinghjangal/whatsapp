@@ -1072,9 +1072,9 @@ const addUpdateServiceProvider = (req, res) => {
   businessAccountService.getServiceProvider(serviceProviderId, req.body.serviceProviderName || null)
     .then(getQueryResponse => {
       __logger.info('add/update getServiceProvider Details response', getQueryResponse)
-      if(req && req.body && req.body.serviceProviderName && getQueryResponse && getQueryResponse[0] && getQueryResponse[0].serviceProviderName && getQueryResponse[0].serviceProviderName === req.body.serviceProviderName) {
+      if (req && req.body && req.body.serviceProviderName && getQueryResponse && getQueryResponse[0] && getQueryResponse[0].serviceProviderName && getQueryResponse[0].serviceProviderName === req.body.serviceProviderName) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Service provider name already exists' })
-    }   else if (getQueryResponse && getQueryResponse.type && getQueryResponse.type) {
+      } else if (getQueryResponse && getQueryResponse.type && getQueryResponse.type) {
         return validationService.addServiceProvider(req.body, getQueryResponse)
       } else if (getQueryResponse && getQueryResponse[0] && getQueryResponse[0].serviceProviderId) {
         return validationService.updateServiceProvider(req.body)

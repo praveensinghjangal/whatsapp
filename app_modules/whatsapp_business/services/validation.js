@@ -950,7 +950,7 @@ class validate {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
-    if (request && request.serviceProviderId && (!request.serviceProviderName && !request.maxWebsiteAllowed )) {
+    if (request && request.serviceProviderId && (!request.serviceProviderName && !request.maxWebsiteAllowed)) {
       formatedError.push('Please add the parameter in request body to update the service provider details eg :- serviceProviderName,maxWebsiteAllowed')
     }
     if (formatedError.length > 0) {
