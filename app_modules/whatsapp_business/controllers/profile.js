@@ -1021,7 +1021,7 @@ const toggleChatbot = (req, res) => {
  */
 
 const deleteServiceProvider = (req, res) => {
-  __logger.info('called api to deactivate the Service Provider >>>>> ,req.query', req.params)
+  __logger.info('called api to deactivate the Service Provider >>>>> ,req.params', req.params)
   const businessAccountService = new BusinessAccountService()
   const validationService = new ValidatonService()
   validationService.serviceProviderValidation(req.params)
