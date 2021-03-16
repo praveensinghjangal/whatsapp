@@ -226,7 +226,7 @@ const getTemplateAllocatedCount = () => {
 }
 
 const getServiceProviderData = () => {
-  return `select service_provider_id as "serviceProviderId", service_provider_name as "serviceProviderName", max_website_allowed as maxWebsiteAllowed  
+  return `select service_provider_id as "serviceProviderId", service_provider_name as "serviceProviderName", max_website_allowed as maxWebsiteAllowed, updated_by as updatedBy 
   from service_provider
   where is_active = true`
 }
