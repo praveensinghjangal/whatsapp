@@ -226,7 +226,7 @@ const getTemplateAllocatedCount = () => {
 }
 
 const getServiceProviderData = () => {
-  return `select service_provider_id as "serviceProviderId", service_provider_name as "serviceProviderName"
+  return `select service_provider_id as "serviceProviderId", service_provider_name as "serviceProviderName", max_website_allowed as maxWebsiteAllowed  
   from service_provider
   where is_active = true`
 }
@@ -252,6 +252,25 @@ const getWabaStatusCount = () => {
   join waba_profile_setup_status wpss on wi.waba_profile_setup_status_id = wpss.waba_profile_setup_status_id  and wpss.is_active =true 
   where wi.is_active =true 
   group by status_name`
+}
+
+const getServiceProvider = () => {
+  return 'select service_provider_id as serviceProviderId, service_provider_name as serviceProviderName, max_website_allowed as maxWebsiteAllowed from service_provider where (service_provider_id = ? or service_provider_name = ? ) and is_active = true;'
+}
+
+const insertServiceProviderData = () => {
+  return `insert into service_provider (service_provider_id,service_provider_name,created_on,created_by,is_active, max_website_allowed) 
+  values(?,?,CURRENT_TIMESTAMP, 'admin',  1, ?)`
+}
+
+const updateServiceProviderData = (deactive, columnArray) => {
+  let query = 'update service_provider set'
+
+  columnArray.forEach((element, index) => {
+    query += (index === (columnArray.length - 1)) ? ` ${element} = ? ` : ` ${element} = ? , `
+  })
+  query += (deactive) ? ' WHERE service_provider_id = ?' : ' WHERE service_provider_id = ? and is_active = true'
+  return query
 }
 
 module.exports = {
@@ -280,5 +299,8 @@ module.exports = {
   getServiceProviderData,
   toggleChatbot,
   getWabaAccountActiveInactiveCount,
-  getWabaStatusCount
+  getWabaStatusCount,
+  getServiceProvider,
+  insertServiceProviderData,
+  updateServiceProviderData
 }

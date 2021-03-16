@@ -962,7 +962,7 @@ const getServiceProviderDetails = (req, res) => {
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }
 
@@ -1006,6 +1006,102 @@ const toggleChatbot = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name DeleteServiceProvider
+ * @path {DELETE} /serviceprovider
+ * @description Bussiness Logic :- This API is used to deactive the service provider.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getServiceProviderDetails|getServiceProviderDetails}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success -  Then the service provider is deleted (deactivated).
+ * @code {200} if the msg is success than Returns the message as Successfully Deleted.
+ * @author Vasim Gujrati, 12 March, 2021
+ * *** Last-Updated :- Vasim Gujrati, 12 March, 2021 ***
+ */
+
+const deleteServiceProvider = (req, res) => {
+  __logger.info('called api to deactivate the Service Provider >>>>> ,req.query', req.query)
+  const businessAccountService = new BusinessAccountService()
+  const validationService = new ValidatonService()
+  validationService.serviceProviderValidation(req.query)
+    .then(validateData => {
+      return businessAccountService.getServiceProvider(req.query.serviceProviderId)
+    })
+    .then(getData => {
+      __logger.info('deleteServiceProvider >>>>>>>>>>>> db response getData', getData)
+      if (getData && getData[0] && getData[0].serviceProviderId) {
+        return businessAccountService.updateServiceProvider(req.query.serviceProviderId, true)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      }
+    })
+    .then(dbData => {
+      __logger.info('delete service provider final response', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('deleteServiceProvider >>>>>>>>> error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name AddUpdateServiceProvider
+ * @path {PATCH} /serviceprovider
+ * @description Bussiness Logic :- This API is used to add or update the details of service providers.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getServiceProviderDetails|getServiceProviderDetails}
+ * @body {string} serviceProviderId
+ * @body {string} serviceProviderName
+ * @body {number} maxWebsiteAllowed
+ <br/><b>Note</b> = At the time of update no need of service Provider id but it is required for update the service provider
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success - Data is added or updated Successfully.
+ * @code {200} if the msg is success than Returns serviceProviderId and updation/deletion.
+ * @author Vasim Gujrati, 12 March, 2021
+ * *** Last-Updated :- Vasim Gujrati, 12 March, 2021 ***
+ */
+
+const addUpdateServiceProvider = (req, res) => {
+  __logger.info('Api to add/update the Service Provider')
+  const businessAccountService = new BusinessAccountService()
+  const validationService = new ValidatonService()
+  const serviceProviderId = req && req.body && req.body.serviceProviderId ? req.body.serviceProviderId : '0'
+  businessAccountService.getServiceProvider(serviceProviderId, req.body.serviceProviderName || null)
+    .then(getQueryResponse => {
+      __logger.info('add/update getServiceProvider Details response', getQueryResponse)
+      if (req && req.body && req.body.serviceProviderName && getQueryResponse && getQueryResponse[0] && getQueryResponse[0].serviceProviderName && getQueryResponse[0].serviceProviderName === req.body.serviceProviderName) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Service provider name already exists' })
+      } else if (getQueryResponse && getQueryResponse.type && getQueryResponse.type) {
+        return validationService.addServiceProvider(req.body, getQueryResponse)
+      } else if (getQueryResponse && getQueryResponse[0] && getQueryResponse[0].serviceProviderId) {
+        return validationService.updateServiceProvider(req.body)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {} })
+      }
+    })
+    .then(validateData => {
+      __logger.info('add/update validateData response', validateData)
+      if (validateData && validateData.add) {
+        return businessAccountService.addServiceProvider(req.body)
+      } else if (validateData && validateData.update) {
+        return businessAccountService.updateServiceProvider(serviceProviderId, false, req.body)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {} })
+      }
+    })
+    .then(dbData => {
+      __logger.info('add/update final response', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('add/update func goes into catch: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -1022,5 +1118,7 @@ module.exports = {
   getWabaProfileStatus,
   getCountTemplateAllocated,
   getServiceProviderDetails,
-  toggleChatbot
+  toggleChatbot,
+  deleteServiceProvider,
+  addUpdateServiceProvider
 }
