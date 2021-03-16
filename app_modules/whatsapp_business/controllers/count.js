@@ -50,14 +50,19 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
  * @response {string} metadata.msg=Success  -  In response we get array of object containing the waba status count.
  * @code {200} if the msg is success than Returns array of object containing the status name and status count in each object.
  * @author Arjun Bhole 9th March, 2021
- * *** Last-Updated :- Arjun Bhole 9th March, 2021 ***
+ * *** Last-Updated :- Arjun Bhole 16th March, 2021 ***
  */
 
 // Get Waba Status Count
 const getWabaStatusCount = (req, res) => {
   __logger.info('Get Waba Status Count Called')
   const businessAccountService = new BusinessAccountService()
-  businessAccountService.getWabaStatusCount()
+  let totalServiceProvider = 0
+  businessAccountService.getServiceProviderCount()
+    .then(data => {
+      totalServiceProvider = data && data[0] && data[0].totalServiceProvider ? data[0].totalServiceProvider : 0
+      return businessAccountService.getWabaStatusCount()
+    })
     .then(data => {
       __logger.info('then 1 Waba Status Count data', data)
       const result = {}
@@ -74,7 +79,7 @@ const getWabaStatusCount = (req, res) => {
       })
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result.statusCount, totalRecords: totalRecords }
+        data: { statusCount: result.statusCount, totalRecords: totalRecords, totalServiceProvider: totalServiceProvider }
       })
     })
     .catch(err => {

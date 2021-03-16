@@ -719,6 +719,25 @@ class businesAccountService {
       })
     return dataUpdated.promise
   }
+
+  getServiceProviderCount () {
+    __logger.info('Inside Get Service Provider Count :: ')
+    const dbData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProviderCount(), [])
+      .then(result => {
+        __logger.info('get Service Provider Count resulttttttttttttttttttttttttttt', { result })
+        if (result && result.length && result.length === 0) {
+          dbData.resolve(true)
+        } else {
+          dbData.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in Service Provider Count: ', err)
+        dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dbData.promise
+  }
 }
 
 module.exports = businesAccountService
