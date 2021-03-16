@@ -58,7 +58,7 @@ const getWabaStatusCount = (req, res) => {
   __logger.info('Get Waba Status Count Called')
   const businessAccountService = new BusinessAccountService()
   let totalServiceProvider = 0
-  businessAccountService.getServiceProviderCount()
+  businessAccountService.getServiceTotalProviderCount()
     .then(data => {
       totalServiceProvider = data && data[0] && data[0].totalServiceProvider ? data[0].totalServiceProvider : 0
       return businessAccountService.getWabaStatusCount()

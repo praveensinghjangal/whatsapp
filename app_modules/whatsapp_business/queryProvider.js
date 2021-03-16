@@ -273,7 +273,7 @@ const updateServiceProviderData = (deactive, columnArray) => {
   return query
 }
 
-const getServiceProviderCount = () => {
+const getServiceTotalProviderCount = () => {
   return `select count(1) as "totalServiceProvider"
   from service_provider sp 
   where sp.is_active =true`
@@ -309,5 +309,5 @@ module.exports = {
   getServiceProvider,
   insertServiceProviderData,
   updateServiceProviderData,
-  getServiceProviderCount
+  getServiceTotalProviderCount
 }

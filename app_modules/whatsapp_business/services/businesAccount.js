@@ -720,12 +720,12 @@ class businesAccountService {
     return dataUpdated.promise
   }
 
-  getServiceProviderCount () {
-    __logger.info('Inside Get Service Provider Count :: ')
+  getServiceTotalProviderCount () {
+    __logger.info('Inside Get Total Service Provider Count :: ')
     const dbData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProviderCount(), [])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceTotalProviderCount(), [])
       .then(result => {
-        __logger.info('get Service Provider Count resulttttttttttttttttttttttttttt', { result })
+        __logger.info('get Total Service Provider Count resulttttttttttttttttttttttttttt', { result })
         if (result && result.length && result.length === 0) {
           dbData.resolve(true)
         } else {
@@ -733,7 +733,7 @@ class businesAccountService {
         }
       })
       .catch(err => {
-        __logger.error('error in Service Provider Count: ', err)
+        __logger.error('error in Total Service Provider Count: ', err)
         dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
