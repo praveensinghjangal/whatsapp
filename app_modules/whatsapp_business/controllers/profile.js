@@ -1021,17 +1021,17 @@ const toggleChatbot = (req, res) => {
  */
 
 const deleteServiceProvider = (req, res) => {
-  __logger.info('called api to deactivate the Service Provider >>>>> ,req.query', req.query)
+  __logger.info('called api to deactivate the Service Provider >>>>> ,req.params', req.params)
   const businessAccountService = new BusinessAccountService()
   const validationService = new ValidatonService()
-  validationService.serviceProviderValidation(req.query)
+  validationService.serviceProviderValidation(req.params)
     .then(validateData => {
-      return businessAccountService.getServiceProvider(req.query.serviceProviderId)
+      return businessAccountService.getServiceProvider(req.params.serviceProviderId)
     })
     .then(getData => {
       __logger.info('deleteServiceProvider >>>>>>>>>>>> db response getData', getData)
       if (getData && getData[0] && getData[0].serviceProviderId) {
-        return businessAccountService.updateServiceProvider(req.query.serviceProviderId, true)
+        return businessAccountService.updateServiceProvider(req.params.serviceProviderId, true)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
