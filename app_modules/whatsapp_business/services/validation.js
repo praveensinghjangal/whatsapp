@@ -820,9 +820,25 @@ class validate {
         statusId: {
           type: 'string',
           required: false
+        },
+        searchBy: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          enum: __constants.SEARCH_FIELDS_ENUM
+        },
+        searchText: {
+          type: 'string',
+          required: false,
+          minLength: 1
         }
-
       }
+    }
+    if (request && request.searchBy) {
+      schema.properties.searchText.required = true
+    }
+    if (request && request.searchText) {
+      schema.properties.searchBy.required = true
     }
     const formatedError = []
     v.addSchema(schema, '/getProfileListByStatusId')

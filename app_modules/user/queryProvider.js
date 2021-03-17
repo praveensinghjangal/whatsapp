@@ -335,7 +335,7 @@ const updateAgreement = () => {
   where user_id=? and is_active=true`
 }
 
-const getAgreementList = (columnArray, startDate, endDate) => {
+const getAgreementList = (columnArray, startDate, endDate, searchBy, searchText) => {
   let query = `  
   SELECT count(1) over() as "totalFilteredRecord", 
   uaf.user_agreement_files_id as "userAgreementFileId",
@@ -353,6 +353,9 @@ const getAgreementList = (columnArray, startDate, endDate) => {
 
   if (startDate && endDate) {
     query += ` AND uaf.created_on between '${startDate}' and '${endDate}'`
+  }
+  if (searchBy && searchBy === __constants.SEARCH_FIELDS.userName && searchText) {
+    query += ` AND CONCAT(u.first_name,u.last_name) like lower('%${searchText}%')`
   }
   query += ` order by uaf.created_on asc limit ? offset ?;
     select count(1) as "totalRecord" from user_agreement_files uaf2

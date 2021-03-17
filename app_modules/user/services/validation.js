@@ -747,9 +747,25 @@ class validate {
         agreementStatusId: {
           type: 'string',
           required: false
+        },
+        searchBy: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          enum: ['userName']
+        },
+        searchText: {
+          type: 'string',
+          required: false,
+          minLength: 1
         }
-
       }
+    }
+    if (request && request.searchBy) {
+      schema.properties.searchText.required = true
+    }
+    if (request && request.searchText) {
+      schema.properties.searchBy.required = true
     }
     const formatedError = []
     v.addSchema(schema, '/getAgreementListValidator')

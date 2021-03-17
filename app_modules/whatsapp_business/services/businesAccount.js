@@ -498,10 +498,10 @@ class businesAccountService {
     return serviceProviderData.promise
   }
 
-  getBusinessProfileListByStatusId (columnArray, offset, ItemsPerPage, startDate, endDate, valArray) {
+  getBusinessProfileListByStatusId (columnArray, offset, ItemsPerPage, startDate, endDate, searchBy, searchText, valArray) {
     __logger.info('get Business Profile List By Status Id::>>>>>>>>>>>>>.', valArray)
     const status = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(columnArray, startDate, endDate), [...valArray, ItemsPerPage, offset])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(columnArray, startDate, endDate, searchBy, searchText), [...valArray, ItemsPerPage, offset])
       .then(result => {
         if (result && result[0] && result[0].length && result[0].length > 0) {
           status.resolve(result)

@@ -786,6 +786,8 @@ const getProfileListByStatusId = (req, res) => {
     })
   }
 
+  const searchBy = req.query ? req.query.searchBy : null
+  const searchText = req.query ? req.query.searchText : null
   const statusId = req.query ? req.query.statusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
@@ -805,8 +807,7 @@ const getProfileListByStatusId = (req, res) => {
           valArray.push(input.value)
         }
       })
-
-      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, searchBy, searchText, valArray)
     })
     .then(result => {
       const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
