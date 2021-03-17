@@ -273,6 +273,12 @@ const updateServiceProviderData = (deactive, columnArray) => {
   return query
 }
 
+const getServiceTotalProviderCount = () => {
+  return `select count(1) as "totalServiceProvider"
+  from service_provider sp 
+  where sp.is_active =true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -302,5 +308,6 @@ module.exports = {
   getWabaStatusCount,
   getServiceProvider,
   insertServiceProviderData,
-  updateServiceProviderData
+  updateServiceProviderData,
+  getServiceTotalProviderCount
 }
