@@ -118,6 +118,7 @@ const getOptinAndTemplate = (req, res) => {
   const resData = {}
   getTemplateIdData(req.headers.authorization)
     .then(metaData => {
+      resData.chatDefaultMessage = metaData.data.chatDefaultMessage
       resData.templateId = metaData.data.optinTemplateId
       resData.serviceFulfillmentMessage = metaData.data.serviceFulfillmentMessage || null
       resData.continuationTransactionMessage = metaData.data.continuationTransactionMessage || null
