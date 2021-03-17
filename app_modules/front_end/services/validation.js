@@ -23,6 +23,24 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        chatDefaultMessage: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 499
+        },
+        serviceFulfillmentMessage: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 499
+        },
+        continuationTransactionMessage: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 499
         }
       }
     }

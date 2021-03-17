@@ -118,8 +118,9 @@ const getOptinAndTemplate = (req, res) => {
   const resData = {}
   getTemplateIdData(req.headers.authorization)
     .then(metaData => {
-      __logger.info('metaData then 1', { metaData })
       resData.templateId = metaData.data.optinTemplateId
+      resData.serviceFulfillmentMessage = metaData.data.serviceFulfillmentMessage || null
+      resData.continuationTransactionMessage = metaData.data.continuationTransactionMessage || null
       return getOptinText(req.headers.authorization)
     })
     .then(optinText => {
@@ -153,8 +154,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinTextApi(req.body.optinText, req.headers.authorization))
-    .then(data => getTemplateIdData(req.headers.authorization))
-    .then(data => callSetTemplateId(req.body.templateId, data.data.chatDefaultMessage, data.data.serviceFulfillmentMessage, data.data.continuationTransactionMessage, req.headers.authorization))
+    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {
       __logger.error('error: ', err)
