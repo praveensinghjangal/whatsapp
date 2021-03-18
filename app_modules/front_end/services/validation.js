@@ -17,12 +17,14 @@ class validate {
         optinText: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength: 20
         },
         templateId: {
           type: 'string',
           required: true,
-          minLength: 1
+          minLength: 1,
+          maxLength: 50
         },
         chatDefaultMessage: {
           type: 'string',

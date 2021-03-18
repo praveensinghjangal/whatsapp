@@ -618,7 +618,7 @@ class validate {
   checkAgreementInput (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/checkAgreementStatus',
+      id: '/checkAgreementInput',
       type: 'object',
       required: true,
       properties: {
@@ -641,7 +641,7 @@ class validate {
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/checkAgreementStatus')
+    v.addSchema(schema, '/checkAgreementInput')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
@@ -659,7 +659,7 @@ class validate {
   validateAgreementStatus (request) {
     const isvalid = q.defer()
     const schema = {
-      id: '/checkAgreementStatus',
+      id: '/validateAgreementStatus',
       type: 'object',
       required: true,
       properties: {
@@ -681,7 +681,7 @@ class validate {
       }
     }
     const formatedError = []
-    v.addSchema(schema, '/checkAgreementStatus')
+    v.addSchema(schema, '/validateAgreementStatus')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
