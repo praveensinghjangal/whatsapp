@@ -378,11 +378,12 @@ const getAccountCreatedTodayCount = () => {
 }
 
 const getAgreementStatusCount = () => {
-  return `select ags.status_name as "statusName",count(1) as "statusCount"
-  from user_agreement_files uaf 
-  join agreement_status ags on uaf.agreement_status_id = ags.agreement_status_id and ags.is_active=true
-  where uaf.is_active =true
-  GROUP by ags.status_name;`
+  return `select IFNULL(as1.status_name , '${__constants.AGREEMENT_STATUS.pendingForDownload.displayName}') as "statusName",COUNT(u.user_id) as "statusCount"
+  from users u 
+  left join user_agreement_files uaf on u.user_id = uaf.user_id and uaf.is_active = 1
+  left join agreement_status as1 on uaf.agreement_status_id = as1.agreement_status_id and as1.is_active = 1
+  where u.is_active = 1 and u.user_role_id != '${__constants.SUPPORT_ROLE_ID}'
+  group by uaf.agreement_status_id`
 }
 
 module.exports = {
