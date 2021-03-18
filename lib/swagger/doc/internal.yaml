@@ -2844,7 +2844,7 @@ paths:
   /users/agreement/list:
     get:
       x-module: platform
-      summary: gets list of agreement
+      summary: Get's List Of Agreement
       description: returns list of user agreements using agreement status id
       tags:
         - agreement
@@ -2868,9 +2868,9 @@ paths:
           required: true
           type: number
           description: enter records per page
-        - name: agreementStatus
+        - name: agreementStatusId
           in: query
-          required: true
+          required: false
           type: string
           description: agreement status id needs to be entered here
         - name: startDate
@@ -2883,6 +2883,18 @@ paths:
           required: true
           type: string
           description: enter end date of record
+        - name: searchBy
+          in: query
+          required: false
+          type: string
+          description: Enter search by field whose value can be  'userName'
+          enum:
+            - userName
+        - name: searchText
+          in: query
+          required: false
+          type: string
+          description: Enter search text
       responses:
         '200':
           description: Returns array of users agreement list
@@ -5768,12 +5780,7 @@ paths:
     get:
       x-isPublic: true
       x-module: platform
-      description: |-
-        This api returns list of waba based on filters
-        following
-        are
-        the list of filters: 
-        statusId
+      description: 'This api returns list of waba based on following filters:'
       summary: Get waba account list
       tags:
         - WABA
@@ -5799,7 +5806,7 @@ paths:
           description: Enter page number
         - name: statusId
           in: query
-          required: true
+          required: false
           type: string
           description: Enter status id
         - name: startDate
@@ -5812,6 +5819,19 @@ paths:
           required: true
           type: string
           description: Enter end date
+        - name: searchBy
+          in: query
+          required: false
+          type: string
+          description: Enter search by field whose value can be one of the following
+          enum:
+            - wabaNumber
+            - userName
+        - name: searchText
+          in: query
+          required: false
+          type: string
+          description: Enter search text
       responses:
         '200':
           description: List of all Waba
@@ -7274,14 +7294,14 @@ paths:
               data: {}
               error: {}
       security: []
-  '/templates/list/{templateStatusId}':
+  /templates/list:
     get:
       x-module: platform
-      summary: Get template list
-      description: Use to get template list according to message template status id
+      summary: Get's template list
+      description: Use to get template list
       tags:
         - templates
-      operationId: getTemplateListByStatusId
+      operationId: getAllTemplateWithStatus
       deprecated: false
       produces:
         - application/json
@@ -7291,11 +7311,45 @@ paths:
           required: true
           type: string
           description: user can obtain auth token by using login API
-        - name: templateStatusId
-          in: path
-          required: true
+        - name: statusId
+          in: query
+          required: false
           type: string
           description: message template status id
+        - name: page
+          in: query
+          required: true
+          type: number
+          description: enter page number here
+        - name: itemsPerPage
+          in: query
+          required: true
+          type: number
+          description: enter records per page
+        - name: startDate
+          in: query
+          required: true
+          type: string
+          description: enter start date of record
+        - name: endDate
+          in: query
+          required: true
+          type: string
+          description: enter end date of record
+        - name: searchBy
+          in: query
+          required: false
+          type: string
+          description: 'Enter search by field whose value can be one of the following:'
+          enum:
+            - userName
+            - templateName
+            - wabaNumber
+        - name: searchText
+          in: query
+          required: false
+          type: string
+          description: Enter search text
       responses:
         '200':
           description: Return list of template based on the message template status id
