@@ -673,12 +673,6 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
-        searchBy: {
-          type: 'string',
-          required: false,
-          minLength: 1,
-          enum: __constants.TEMPLATE_SEARCH_FIELDS_ENUM
-        },
         searchText: {
           type: 'string',
           required: false,
@@ -687,27 +681,19 @@ class validate {
         }
       }
     }
-    if (request && request.searchBy) {
+    if (request && request.searchText) {
       schema.properties.searchText.required = true
     }
-    if (request && request.searchText) {
-      schema.properties.searchBy.required = true
-    }
-    if (request && request.searchBy && request.searchBy === __constants.SEARCH_FIELDS.wabaNumber) {
-      schema.properties.searchText.pattern = __constants.VALIDATOR.number
-      schema.properties.searchText.minLength = 10
-      schema.properties.searchText.maxLength = 15
-    }
+
     const formatedError = []
     v.addSchema(schema, '/getAllTemplateWithStatusValidator')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      if (formatedErr && formatedErr[1] && formatedErr[1].includes('searchText') && request.searchBy === __constants.SEARCH_FIELDS.wabaNumber) {
-        formatedErr[1] = '- invalid searchText format please enter valid phone number'
-      }
-      if (formatedErr && formatedErr[1] && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
-        formatedErr[1] = 'does not match pattern- invalid date format- use yyyy-mm-dd hh:MM:ss'
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
       }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })

@@ -2883,13 +2883,6 @@ paths:
           required: true
           type: string
           description: enter end date of record
-        - name: searchBy
-          in: query
-          required: false
-          type: string
-          description: Enter search by field whose value can be  'userName'
-          enum:
-            - userName
         - name: searchText
           in: query
           required: false
@@ -5819,14 +5812,6 @@ paths:
           required: true
           type: string
           description: Enter end date
-        - name: searchBy
-          in: query
-          required: false
-          type: string
-          description: Enter search by field whose value can be one of the following
-          enum:
-            - wabaNumber
-            - userName
         - name: searchText
           in: query
           required: false
@@ -7336,15 +7321,6 @@ paths:
           required: true
           type: string
           description: enter end date of record
-        - name: searchBy
-          in: query
-          required: false
-          type: string
-          description: 'Enter search by field whose value can be one of the following:'
-          enum:
-            - userName
-            - templateName
-            - wabaNumber
         - name: searchText
           in: query
           required: false
