@@ -17,12 +17,12 @@ const http = new HttpService(60000)
  * @description In this Conroller, API’s related to agreement for using vivaconnect helo-whatsapp platform
  */
 
-const uploadFileFtp = (filePath, token) => {
+const uploadFileFtp = (filePath) => {
   __logger.info('Calling Upload File Ftp Api ----')
   const fileUpload = q.defer()
   const url = __config.heloOssWrapperUrl + __constants.INTERNAL_END_POINTS.heloOssUpload
   const headers = {
-    Authorization: token,
+    Authorization: __config.heloOssWrapperToken,
     'Content-Type': 'multipart/form-data'
   }
   __logger.info('oss req obj', { url, headers })
@@ -151,7 +151,7 @@ const uploadAgreement = (req, res) => {
     } else {
       __logger.info('file uploaded', req.files)
       const fileStream = new FileStream()
-      uploadFileFtp(req.files[0].path, req.headers.authorization)
+      uploadFileFtp(req.files[0].path)
         .then(response => {
           __logger.info('response from upload function', response)
           const ftpUploadUrl = response && response.data && response.data.url ? response.data.url.split(':action').join('view') : ''
