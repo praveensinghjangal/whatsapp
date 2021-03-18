@@ -746,7 +746,9 @@ class validate {
         },
         agreementStatusId: {
           type: 'string',
-          required: false
+          required: false,
+          minLength: 1,
+          maxLength: 50
         },
         searchBy: {
           type: 'string',
@@ -757,7 +759,8 @@ class validate {
         searchText: {
           type: 'string',
           required: false,
-          minLength: 1
+          minLength: 1,
+          maxLength: 50
         }
       }
     }
@@ -772,8 +775,10 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
-      formatedError.push(regexPatternPreetyMessage)
+      if (formatedErr && formatedErr[1] && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = 'does not match pattern - invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })

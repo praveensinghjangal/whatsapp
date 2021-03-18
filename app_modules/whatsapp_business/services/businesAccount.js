@@ -729,12 +729,12 @@ class businesAccountService {
         if (result && result.length && result.length === 0) {
           dbData.resolve(true)
         } else {
-          dbData.resolve(result)
+          dbData.resolve(result[0])
         }
       })
       .catch(err => {
         __logger.error('error in Total Service Provider Count: ', err)
-        dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        dbData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
   }

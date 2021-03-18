@@ -57,12 +57,7 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
 const getWabaStatusCount = (req, res) => {
   __logger.info('Get Waba Status Count Called')
   const businessAccountService = new BusinessAccountService()
-  let totalServiceProvider = 0
-  businessAccountService.getServiceTotalProviderCount()
-    .then(data => {
-      totalServiceProvider = data && data[0] && data[0].totalServiceProvider ? data[0].totalServiceProvider : 0
-      return businessAccountService.getWabaStatusCount()
-    })
+  businessAccountService.getWabaStatusCount()
     .then(data => {
       __logger.info('then 1 Waba Status Count data', data)
       const result = {}
@@ -79,7 +74,7 @@ const getWabaStatusCount = (req, res) => {
       })
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
-        data: { statusCount: result.statusCount, totalRecords: totalRecords, totalServiceProvider: totalServiceProvider }
+        data: { statusCount: result.statusCount, totalRecords: totalRecords }
       })
     })
     .catch(err => {

@@ -1103,6 +1103,34 @@ const addUpdateServiceProvider = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetServiceProviderCount
+ * @path {get} /business/serviceprovider/count
+ * @description Bussiness Logic :- This API returns total service provider count.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getServiceProviderCount|getServiceProviderCount}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get object containing the total service provider count .
+ * @code {200} If the msg is success than returns totalServiceProvider.
+ * @author Arjun Bhole 17th March, 2021
+ * *** Last-Updated :- Arjun Bhole 17th March, 2021 ***
+ */
+
+const getServiceTotalProviderCount = (req, res) => {
+  __logger.info('called api to get total service provider count')
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getServiceTotalProviderCount()
+    .then(dbData => {
+      __logger.info('db result', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -1121,5 +1149,6 @@ module.exports = {
   getServiceProviderDetails,
   toggleChatbot,
   deleteServiceProvider,
-  addUpdateServiceProvider
+  addUpdateServiceProvider,
+  getServiceTotalProviderCount
 }
