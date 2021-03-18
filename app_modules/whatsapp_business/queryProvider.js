@@ -1,3 +1,5 @@
+const __constants = require('../../config/constants')
+
 // Business Category
 const getBusinessCategory = () => {
   return `select business_category_id, category_name
@@ -243,7 +245,7 @@ const getWabaAccountActiveInactiveCount = () => {
   from message_history mh 
   where is_active =true and created_on  BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()) as "totalActiveUsers",
   (select count(1) from users u 
- where is_active = true) as "totalUsers"`
+  where is_active = true and user_role_id != '${__constants.SUPPORT_ROLE_ID}') as "totalUsers"`
 }
 
 const getWabaStatusCount = () => {
