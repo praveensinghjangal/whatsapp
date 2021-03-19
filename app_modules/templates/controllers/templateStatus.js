@@ -37,11 +37,7 @@ const getAllTemplateWithStatus = (req, res) => {
       err: errArr
     })
   }
-  const templateName = req.query ? req.query.templateName : null
-  const templateStatusId = (req.query && req.query.statusId) ? req.query.statusId : null
-  const startDate = req.query ? req.query.startDate : null
-  const endDate = req.query ? req.query.endDate : null
-  const requiredPage = req.query.page ? +req.query.page : 1
+  const requiredPage = req.query && req.query.page ? +req.query.page : 1
   const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
   const offset = itemsPerPage * (requiredPage - 1)
 
@@ -50,10 +46,10 @@ const getAllTemplateWithStatus = (req, res) => {
       const inputArray = []
       const columnArray = []
       const valArray = []
-      if (templateStatusId) {
+      if (req.query && req.query.templateStatusId) {
         inputArray.push({
           colName: 'mt.message_template_status_id',
-          value: templateStatusId
+          value: req.query.templateStatusId
         })
       }
       _.each(inputArray, function (input) {
@@ -62,7 +58,7 @@ const getAllTemplateWithStatus = (req, res) => {
           valArray.push(input.value)
         }
       })
-      return templateService.getAllTemplateWithStatus(columnArray, offset, itemsPerPage, startDate, endDate, templateName, valArray)
+      return templateService.getAllTemplateWithStatus(columnArray, offset, itemsPerPage, req.query.startDate, req.query.endDate, req.query.templateName, valArray)
     })
     .then(result => {
       const pagination = {

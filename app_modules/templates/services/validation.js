@@ -673,7 +673,7 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
-        searchText: {
+        templateName: {
           type: 'string',
           required: false,
           minLength: 1,
@@ -681,10 +681,6 @@ class validate {
         }
       }
     }
-    if (request && request.searchText) {
-      schema.properties.searchText.required = true
-    }
-
     const formatedError = []
     v.addSchema(schema, '/getAllTemplateWithStatusValidator')
     const error = _.map(v.validate(request, schema).errors, 'stack')

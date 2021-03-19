@@ -355,7 +355,7 @@ const getAgreementList = (columnArray, startDate, endDate, fullName) => {
     query += ` AND uaf.created_on between '${startDate}' and '${endDate}'`
   }
   if (fullName) {
-    fullName = fullName.replace(/ +/g, '')
+    fullName = fullName.replace(/ /g, '')
     query += ` AND CONCAT(u.first_name,u.last_name) like lower('%${fullName}%')`
   }
   query += ` order by uaf.created_on asc limit ? offset ?;

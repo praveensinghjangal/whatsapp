@@ -361,10 +361,6 @@ const getAgreementList = (req, res) => {
   if (isNaN(req.query.itemsPerPage)) errArr.push('please provide itemsPerPage in query param of type integer')
   if (errArr.length > 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errArr })
 
-  const fullName = req.query ? req.query.fullName : null
-  const agreementStatusId = req.query ? req.query.agreementStatusId : null
-  const startDate = req.query ? req.query.startDate : null
-  const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1
   const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
   const offset = itemsPerPage * (requiredPage - 1)
@@ -375,14 +371,14 @@ const getAgreementList = (req, res) => {
       const inputArray = []
       const columnArray = []
       const valArray = []
-      if (agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: agreementStatusId })
+      if (req.query && req.query.agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: req.query.agreementStatusId })
       _.each(inputArray, function (input) {
         if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
           columnArray.push(input.colName)
           valArray.push(input.value)
         }
       })
-      return userService.getAllAgreement(columnArray, offset, itemsPerPage, startDate, endDate, fullName, valArray)
+      return userService.getAllAgreement(columnArray, offset, itemsPerPage, req.query.startDate, req.query.endDate, req.query.fullName, valArray)
     })
     .then(result => {
       __logger.info(' then 3')

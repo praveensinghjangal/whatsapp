@@ -823,7 +823,7 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
-        searchText: {
+        phoneNumber: {
           type: 'string',
           required: false,
           minLength: 1,
@@ -831,9 +831,6 @@ class validate {
           pattern: __constants.VALIDATOR.number
         }
       }
-    }
-    if (request && request.searchText) {
-      schema.properties.searchText.required = true
     }
 
     const formatedError = []
@@ -847,8 +844,8 @@ class validate {
       if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
         formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
       }
-      if (patternError && formatedErr[1].includes('searchText')) {
-        formatedErr[1] = 'searchText does not match pattern - please enter valid phone number'
+      if (patternError && formatedErr[1].includes('phoneNumber')) {
+        formatedErr[1] = 'phoneNumber does not match pattern - please enter valid phone number'
       }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
