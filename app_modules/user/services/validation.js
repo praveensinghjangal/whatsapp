@@ -750,16 +750,14 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
-        searchText: {
+        fullName: {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 50
+          maxLength: 50,
+          pattern: __constants.VALIDATOR.textWithSpace
         }
       }
-    }
-    if (request && request.searchText) {
-      schema.properties.searchText.required = true
     }
 
     const formatedError = []
@@ -774,8 +772,8 @@ class validate {
         formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
       }
 
-      if (patternError && formatedErr[1].includes('searchText')) {
-        formatedErr[1] = 'searchText -invalid format- please enter valid user name'
+      if (patternError && formatedErr[1].includes('fullName')) {
+        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
       }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })

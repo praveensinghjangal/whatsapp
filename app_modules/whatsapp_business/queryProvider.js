@@ -186,7 +186,7 @@ const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, phone
     query += ` AND ${element} = ?`
   })
   if (phoneNumber) {
-    phoneNumber = phoneNumber.replace(/ +/g, '')
+    phoneNumber = phoneNumber.replace(/ /g, '')
     query += ` AND wa.phone_number like lower('%${phoneNumber}%')`
   }
 

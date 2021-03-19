@@ -786,10 +786,6 @@ const getProfileListByStatusId = (req, res) => {
     })
   }
 
-  const phoneNumber = req.query ? req.query.phoneNumber : null
-  const statusId = req.query ? req.query.statusId : null
-  const startDate = req.query ? req.query.startDate : null
-  const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1
   const itemsPerPage = req.query ? +req.query.itemsPerPage : 5
   const offset = itemsPerPage * (requiredPage - 1)
@@ -799,14 +795,14 @@ const getProfileListByStatusId = (req, res) => {
       const inputArray = []
       const valArray = []
       const columnArray = []
-      if (statusId) inputArray.push({ colName: 'wa.waba_profile_setup_status_id', value: statusId })
+      if (req.query && req.query.statusId) inputArray.push({ colName: 'wa.waba_profile_setup_status_id', value: req.query.statusId })
       _.each(inputArray, function (input) {
         if (input.value !== undefined && input.value !== null) {
           columnArray.push(input.colName)
           valArray.push(input.value)
         }
       })
-      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, phoneNumber, valArray)
+      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, req.query.startDate, req.query.endDate, req.query.phoneNumber, valArray)
     })
     .then(result => {
       const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
