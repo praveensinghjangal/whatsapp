@@ -46,10 +46,10 @@ const getAllTemplateWithStatus = (req, res) => {
       const inputArray = []
       const columnArray = []
       const valArray = []
-      if (req.query && req.query.templateStatusId) {
+      if (req.query && req.query.statusId) {
         inputArray.push({
           colName: 'mt.message_template_status_id',
-          value: req.query.templateStatusId
+          value: req.query.statusId
         })
       }
       _.each(inputArray, function (input) {
