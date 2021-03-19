@@ -410,10 +410,6 @@ const DLT_PANEL_ENDPOINTS = {
 }
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
 
-const SEARCH_FIELDS = { wabaNumber: 'wabaNumber', userName: 'userName', templateName: 'templateName' }
-const SEARCH_FIELDS_ENUM = ['wabaNumber', 'userName']
-const TEMPLATE_SEARCH_FIELDS_ENUM = ['wabaNumber', 'userName', 'templateName']
-
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
@@ -483,6 +479,3 @@ module.exports.STATIC = STATIC
 module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
-module.exports.SEARCH_FIELDS = SEARCH_FIELDS
-module.exports.SEARCH_FIELDS_ENUM = SEARCH_FIELDS_ENUM
-module.exports.TEMPLATE_SEARCH_FIELDS_ENUM = TEMPLATE_SEARCH_FIELDS_ENUM
