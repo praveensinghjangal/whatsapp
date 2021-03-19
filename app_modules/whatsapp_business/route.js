@@ -20,6 +20,7 @@ router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, aut
 router.get('/serviceprovider', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getServiceProviderDetails)
 router.delete('/serviceprovider/:serviceProviderId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.deleteServiceProvider)
 router.post('/serviceprovider', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.addUpdateServiceProvider)
+router.get('/serviceprovider/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getServiceTotalProviderCount)
 
 // Business Profile
 router.get('/profile', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getBusinessProfile)

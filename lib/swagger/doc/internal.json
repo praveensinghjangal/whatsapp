@@ -4220,21 +4220,13 @@
                   "required": true,
                   "type": "string",
                   "description": "enter end date of record"
-               },
+               },               
                {
-                  "name": "searchBy",
+                  "name": "fullName",
                   "in": "query",
                   "required": false,
                   "type": "string",
-                  "description": "Enter search by field whose value can be  'userName'",
-                  "enum": ['userName']                  
-               },                
-               {
-                  "name": "searchText",
-                  "in": "query",
-                  "required": false,
-                  "type": "string",
-                  "description": "Enter search text"
+                  "description": "Enter full name here"
                }
                
             ],
@@ -6795,6 +6787,90 @@
             "security": []
          }
       },
+      "/business/serviceprovider/count": {
+         "get": {
+            "x-module": "platform",
+            "description": "Get's total service provider count",
+            "summary": "Get service provider count",
+            "tags": [
+               "WABA"
+            ],
+            "operationId": "getServiceTotalProviderCount",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "Token for internal api calling is required here"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Total count of service provider",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 2000,
+                        "msg": "Success",
+                        "data": {
+                           "totalServiceProvider": 0
+                        }
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "type": "string",
+                     "example": "Unauthorized"
+                  }
+               },
+               "500": {
+                  "description": "In case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
       "/business/verification/phoneNumber": {
          "post": {
             "x-module": "platform",
@@ -7740,142 +7816,6 @@
             "security": []
          }
       },
-      "/business/profile/{statusId}": {
-         "get": {
-            "x-module": "platform",
-            "summary": "Get details of waba profile",
-            "description": "Use to get waba profile data according to waba profile set-up status id",
-            "tags": [
-               "WABA"
-            ],
-            "operationId": "getProfileListByStatusId",
-            "deprecated": false,
-            "produces": [
-               "application/json"
-            ],
-            "parameters": [
-               {
-                  "name": "Authorization",
-                  "in": "header",
-                  "required": true,
-                  "type": "string",
-                  "description": "user can obtain auth token by using login API"
-               },
-               {
-                  "name": "statusId",
-                  "in": "path",
-                  "required": true,
-                  "type": "string",
-                  "description": "waba profile set-up status id"
-               }
-            ],
-            "responses": {
-               "200": {
-                  "description": "Return list of waba profile based on the waba profile set-up status id",
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": [
-                        {
-                           "code": 2000,
-                           "msg": "Success",
-                           "data": [
-                              {
-                                 "wabaInformationId": "46ba9a21-bf54-4eed-af87-83eded954289",
-                                 "phoneNumber": "3211111112",
-                                 "phoneCode": "91",
-                                 "facebookManagerId": "test-fb-id",
-                                 "userId": "902eff7e-cb1c-4c03-aebf-fb4801fc6fa8",
-                                 "businessName": null
-                              },
-                              {
-                                 "wabaInformationId": "4c02e538-4f04-47f1-a8e7-95b338e17a2a",
-                                 "phoneNumber": "5353535353",
-                                 "phoneCode": "91",
-                                 "facebookManagerId": "metalurgy-fb-id",
-                                 "userId": "935043c4-5bbc-4b54-8d2a-a8188a69ef0d",
-                                 "businessName": "Metallurgy"
-                              },
-                              {
-                                 "wabaInformationId": "554bc0a7-7356-4ab8-9111-9706ff70a9d7",
-                                 "phoneNumber": "2568945541",
-                                 "phoneCode": "91",
-                                 "facebookManagerId": "test business",
-                                 "userId": "ea271ccf-abec-40f2-82ad-9e453d1efed1",
-                                 "businessName": "test business"
-                              }
-                           ],
-                           "error": null
-                        },
-                        {
-                           "code": 3000,
-                           "msg": "No record found.",
-                           "data": {}
-                        }
-                     ]
-                  }
-               },
-               "401": {
-                  "description": "Invalid token in header",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 4001,
-                        "msg": "Unauthorized access.",
-                        "data": null
-                     }
-                  }
-               },
-               "500": {
-                  "description": "in case of some exceptional error",
-                  "headers": {},
-                  "schema": {
-                     "properties": {
-                        "code": {
-                           "type": "number"
-                        },
-                        "msg": {
-                           "type": "string"
-                        },
-                        "data": {
-                           "type": "object"
-                        },
-                        "error": {
-                           "type": "object"
-                        }
-                     },
-                     "example": {
-                        "code": 5000,
-                        "msg": "Something went wrong. Please try again later.",
-                        "data": {},
-                        "error": {}
-                     }
-                  }
-               }
-            },
-            "security": []
-         }
-      },
       "/business/profile/info/{wabaId}": {
          "get": {
             "x-module": "platform",
@@ -8555,19 +8495,11 @@
                   "description": "Enter end date"
                },
                {
-                  "name": "searchBy",
+                  "name": "phoneNumber",
                   "in": "query",
                   "required": false,
                   "type": "string",
-                  "description": "Enter search by field whose value can be one of the following",
-                  "enum": ['wabaNumber', 'userName']
-               },
-               {
-                  "name": "searchText",
-                  "in": "query",
-                  "required": false,
-                  "type": "string",
-                  "description": "Enter search text"
+                  "description": "Enter phone number here"
                },               
             ],
             "responses": {
@@ -10759,19 +10691,11 @@
                   "description": "enter end date of record"
                },
                {
-                  "name": "searchBy",
+                  "name": "templateName",
                   "in": "query",
                   "required": false,
                   "type": "string",
-                  "description": "Enter search by field whose value can be one of the following:",
-                  "enum": ['userName','templateName','wabaNumber']                  
-               },
-               {
-                  "name": "searchText",
-                  "in": "query",
-                  "required": false,
-                  "type": "string",
-                  "description": "Enter search text"
+                  "description": "Enter template name here"
                },               
             ],
             "responses": {

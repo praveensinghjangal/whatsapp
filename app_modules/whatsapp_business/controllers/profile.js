@@ -786,6 +786,7 @@ const getProfileListByStatusId = (req, res) => {
     })
   }
 
+  const phoneNumber = req.query ? req.query.phoneNumber : null
   const statusId = req.query ? req.query.statusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
@@ -805,8 +806,7 @@ const getProfileListByStatusId = (req, res) => {
           valArray.push(input.value)
         }
       })
-
-      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, valArray)
+      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, startDate, endDate, phoneNumber, valArray)
     })
     .then(result => {
       const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }
@@ -1102,6 +1102,34 @@ const addUpdateServiceProvider = (req, res) => {
     })
 }
 
+/**
+ * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @name GetServiceProviderCount
+ * @path {get} /business/serviceprovider/count
+ * @description Bussiness Logic :- This API returns total service provider count.
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/WABA/getServiceProviderCount|getServiceProviderCount}
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {string} metadata.msg=Success  -  In response we get object containing the total service provider count .
+ * @code {200} If the msg is success than returns totalServiceProvider.
+ * @author Arjun Bhole 17th March, 2021
+ * *** Last-Updated :- Arjun Bhole 17th March, 2021 ***
+ */
+
+const getServiceTotalProviderCount = (req, res) => {
+  __logger.info('called api to get total service provider count')
+  const businessAccountService = new BusinessAccountService()
+  businessAccountService.getServiceTotalProviderCount()
+    .then(dbData => {
+      __logger.info('db result', dbData)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: dbData })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
 module.exports = {
   getBusinessProfile,
   addUpdateBusinessProfile,
@@ -1120,5 +1148,6 @@ module.exports = {
   getServiceProviderDetails,
   toggleChatbot,
   deleteServiceProvider,
-  addUpdateServiceProvider
+  addUpdateServiceProvider,
+  getServiceTotalProviderCount
 }

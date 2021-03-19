@@ -271,7 +271,7 @@ const getTemplateTableDataByTemplateId = () => {
     where wi.is_active = true and wi.user_id = ?;`
 }
 
-const getAllTemplateWithStatus = (columnArray, startDate, endDate) => {
+const getAllTemplateWithStatus = (columnArray, startDate, endDate, templateName) => {
   let query =
   `SELECT count(1) over() as "totalFilteredRecord", mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
    mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
@@ -288,7 +288,7 @@ const getAllTemplateWithStatus = (columnArray, startDate, endDate) => {
        ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
      left JOIN message_template_language mtl2
        ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-   WHERE mt.is_active = true  `
+       where mt.is_active = true`
 
   columnArray.forEach((element) => {
     query += ` AND ${element} = ?`
@@ -297,7 +297,9 @@ const getAllTemplateWithStatus = (columnArray, startDate, endDate) => {
   if (startDate && endDate) {
     query += ` AND mt.created_on between '${startDate}' and '${endDate}' `
   }
-
+  if (templateName) {
+    query += ` AND mt.template_name like lower('%${templateName}%')`
+  }
   query += ` order by mt.created_on asc limit ? offset ?;
    select count(1) as "totalRecord" from message_template mt2
    where mt2.is_active = true`

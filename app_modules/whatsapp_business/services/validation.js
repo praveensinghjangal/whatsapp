@@ -819,18 +819,38 @@ class validate {
         },
         statusId: {
           type: 'string',
-          required: false
+          required: false,
+          minLength: 1,
+          maxLength: 50
+        },
+        searchText: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 15,
+          pattern: __constants.VALIDATOR.number
         }
-
       }
     }
+    if (request && request.searchText) {
+      schema.properties.searchText.required = true
+    }
+
     const formatedError = []
     v.addSchema(schema, '/getProfileListByStatusId')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
-      formatedError.push(regexPatternPreetyMessage)
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+      if (patternError && formatedErr[1].includes('searchText')) {
+        formatedErr[1] = 'searchText does not match pattern - please enter valid phone number'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
