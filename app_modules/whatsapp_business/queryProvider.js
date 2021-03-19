@@ -173,7 +173,7 @@ const getServiceProviderDetailsByUserId = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
-const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, searchText) => {
+const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, phoneNumber) => {
   let query = `select count(1) over() as "totalFilteredRecord", wa.waba_information_id as 'wabaInformationId',
   wa.phone_number as 'phoneNumber',wa.phone_code as 'phoneCode',wa.facebook_manager_id as 'facebookManagerId',
   wa.user_id as "userId",wa.business_name as 'businessName',wa.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
@@ -185,12 +185,12 @@ const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, searc
   columnArray.forEach((element) => {
     query += ` AND ${element} = ?`
   })
-  if (searchText) {
-    query += ` AND wa.phone_number like lower('%${searchText}%')`
+  if (phoneNumber) {
+    phoneNumber = phoneNumber.replace(/ +/g, '')
+    query += ` AND wa.phone_number like lower('%${phoneNumber}%')`
   }
 
   if (startDate && endDate) {
-    searchText = searchText.replace(/ +/g, '')
     query += ` AND wa.created_on between '${startDate}' and '${endDate}' `
   }
   query += ` order by wa.created_on asc limit ? offset ?;

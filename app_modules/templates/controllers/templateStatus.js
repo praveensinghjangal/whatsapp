@@ -37,7 +37,7 @@ const getAllTemplateWithStatus = (req, res) => {
       err: errArr
     })
   }
-  const searchText = req.query ? req.query.searchText : null
+  const templateName = req.query ? req.query.templateName : null
   const templateStatusId = (req.query && req.query.statusId) ? req.query.statusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
@@ -62,7 +62,7 @@ const getAllTemplateWithStatus = (req, res) => {
           valArray.push(input.value)
         }
       })
-      return templateService.getAllTemplateWithStatus(columnArray, offset, itemsPerPage, startDate, endDate, searchText, valArray)
+      return templateService.getAllTemplateWithStatus(columnArray, offset, itemsPerPage, startDate, endDate, templateName, valArray)
     })
     .then(result => {
       const pagination = {

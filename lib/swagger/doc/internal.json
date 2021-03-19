@@ -4222,11 +4222,11 @@
                   "description": "enter end date of record"
                },               
                {
-                  "name": "searchText",
+                  "name": "fullName",
                   "in": "query",
                   "required": false,
                   "type": "string",
-                  "description": "Enter search text"
+                  "description": "Enter full name here"
                }
                
             ],
@@ -8495,11 +8495,11 @@
                   "description": "Enter end date"
                },
                {
-                  "name": "searchText",
+                  "name": "phoneNumber",
                   "in": "query",
                   "required": false,
                   "type": "string",
-                  "description": "Enter search text"
+                  "description": "Enter phone number here"
                },               
             ],
             "responses": {
@@ -10691,11 +10691,11 @@
                   "description": "enter end date of record"
                },
                {
-                  "name": "searchText",
+                  "name": "templateName",
                   "in": "query",
                   "required": false,
                   "type": "string",
-                  "description": "Enter search text"
+                  "description": "Enter template name here"
                },               
             ],
             "responses": {

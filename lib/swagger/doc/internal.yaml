@@ -2883,11 +2883,11 @@ paths:
           required: true
           type: string
           description: enter end date of record
-        - name: searchText
+        - name: fullName
           in: query
           required: false
           type: string
-          description: Enter search text
+          description: Enter full name here
       responses:
         '200':
           description: Returns array of users agreement list
@@ -5812,11 +5812,11 @@ paths:
           required: true
           type: string
           description: Enter end date
-        - name: searchText
+        - name: phoneNumber
           in: query
           required: false
           type: string
-          description: Enter search text
+          description: Enter phone number here
       responses:
         '200':
           description: List of all Waba
@@ -7321,11 +7321,11 @@ paths:
           required: true
           type: string
           description: enter end date of record
-        - name: searchText
+        - name: templateName
           in: query
           required: false
           type: string
-          description: Enter search text
+          description: Enter template name here
       responses:
         '200':
           description: Return list of template based on the message template status id

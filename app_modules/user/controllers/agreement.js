@@ -361,7 +361,7 @@ const getAgreementList = (req, res) => {
   if (isNaN(req.query.itemsPerPage)) errArr.push('please provide itemsPerPage in query param of type integer')
   if (errArr.length > 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errArr })
 
-  const searchText = req.query ? req.query.searchText : null
+  const fullName = req.query ? req.query.fullName : null
   const agreementStatusId = req.query ? req.query.agreementStatusId : null
   const startDate = req.query ? req.query.startDate : null
   const endDate = req.query ? req.query.endDate : null
@@ -382,7 +382,7 @@ const getAgreementList = (req, res) => {
           valArray.push(input.value)
         }
       })
-      return userService.getAllAgreement(columnArray, offset, itemsPerPage, startDate, endDate, searchText, valArray)
+      return userService.getAllAgreement(columnArray, offset, itemsPerPage, startDate, endDate, fullName, valArray)
     })
     .then(result => {
       __logger.info(' then 3')
