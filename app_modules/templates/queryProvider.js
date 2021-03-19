@@ -298,7 +298,7 @@ const getAllTemplateWithStatus = (columnArray, startDate, endDate, templateName)
     query += ` AND mt.created_on between '${startDate}' and '${endDate}' `
   }
   if (templateName) {
-    templateName = templateName.replace(/ +/g, '')
+    templateName = templateName
     query += ` AND mt.template_name like lower('%${templateName}%')`
   }
   query += ` order by mt.created_on asc limit ? offset ?;
