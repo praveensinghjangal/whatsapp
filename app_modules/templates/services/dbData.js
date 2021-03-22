@@ -111,7 +111,8 @@ class TemplateService {
       buttonType: newData.buttonType ? newData.buttonType : null,
       buttonData: newData.buttonData ? newData.buttonData : null,
       createdBy: userId,
-      firstLocalizationStatus: ''
+      firstLocalizationStatus: '',
+      updatedBy: userId
     }
     templateData.firstLocalizationStatus = templateData.messageTemplateStatusId
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)

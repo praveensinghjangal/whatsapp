@@ -158,8 +158,8 @@ const markUserSmsVerified = () => {
 }
 
 const saveUserAgreement = () => {
-  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path ,agreement_status_id ,created_by)
-  values (?,?,?,?,?,?)`
+  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path ,agreement_status_id ,created_by,updated_by,updated_on)
+  values (?,?,?,?,?,?,?,now())`
 }
 
 const getLatestAgreementByUserId = () => {
@@ -353,13 +353,13 @@ const getAgreementList = (columnArray, startDate, endDate, fullName) => {
   })
 
   if (startDate && endDate) {
-    query += ` AND uaf.created_on between '${startDate}' and '${endDate}'`
+    query += ` AND uaf.updated_on between '${startDate}' and '${endDate}'`
   }
   if (fullName) {
     fullName = fullName.replace(/ /g, '')
     query += ` AND CONCAT(u.first_name,u.last_name) like lower('%${fullName}%')`
   }
-  query += ` order by uaf.created_on asc limit ? offset ?;
+  query += ` order by uaf.updated_on desc limit ? offset ?;
     select count(1) as "totalRecord" from user_agreement_files uaf2
     where uaf2.is_active = true`
   return query
