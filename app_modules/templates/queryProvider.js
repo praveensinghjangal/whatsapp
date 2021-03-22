@@ -3,7 +3,7 @@ const __constants = require('../../config/constants')
 // Template
 const getTemplateList = (messageTemplateStatusId) => {
   let query = `
-  SELECT mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
+  SELECT DISTINCT mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
   mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
   mts.message_template_status_id as "messageTemplateStatusId",mt.media_type as "mediaType",
   CONCAT_WS(', ', mtl.language_name,mtl2.language_name) as "languageName"
