@@ -191,9 +191,9 @@ const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, phone
   }
 
   if (startDate && endDate) {
-    query += ` AND wa.created_on between '${startDate}' and '${endDate}' `
+    query += ` AND wa.updated_on between '${startDate}' and '${endDate}' `
   }
-  query += ` order by wa.created_on asc limit ? offset ?;
+  query += ` order by wa.updated_on desc limit ? offset ?;
   select count(1) as "totalRecord" from waba_information wi
   where wi.is_active = true`
   return query
@@ -235,8 +235,9 @@ const getTemplateAllocatedCount = () => {
 
 const getServiceProviderData = () => {
   return `select service_provider_id as "serviceProviderId", service_provider_name as "serviceProviderName", max_website_allowed as maxWebsiteAllowed, updated_by as updatedBy 
-  from service_provider
-  where is_active = true`
+  from service_provider sp
+  where is_active = true
+  order by sp.updated_on desc`
 }
 
 const toggleChatbot = () => {
@@ -267,8 +268,8 @@ const getServiceProvider = () => {
 }
 
 const insertServiceProviderData = () => {
-  return `insert into service_provider (service_provider_id,service_provider_name,created_on,created_by,is_active, max_website_allowed) 
-  values(?,?,CURRENT_TIMESTAMP, 'admin',  1, ?)`
+  return `insert into service_provider (service_provider_id,service_provider_name,created_on,created_by,is_active, max_website_allowed,updated_by,updated_on) 
+  values(?,?,CURRENT_TIMESTAMP, ?,  1, ?,?,now())`
 }
 
 const updateServiceProviderData = (deactive, columnArray) => {

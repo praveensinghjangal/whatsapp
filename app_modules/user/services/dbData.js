@@ -458,7 +458,8 @@ class UserData {
       fileName: (newData && newData.fileName) ? newData.fileName : null,
       filePath: (newData && newData.filePath) ? newData.filePath : null,
       agreementStatusId: (newData && newData.agreementStatusId) ? newData.agreementStatusId : null,
-      createdBy: callerUserId
+      createdBy: callerUserId,
+      updatedBy: callerUserId
     }
     const queryParam = []
     _.each(agreementData, (val) => queryParam.push(val))
