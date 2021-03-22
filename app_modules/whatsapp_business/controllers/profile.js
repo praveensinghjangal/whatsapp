@@ -1064,6 +1064,7 @@ const addUpdateServiceProvider = (req, res) => {
   __logger.info('Api to add/update the Service Provider')
   const businessAccountService = new BusinessAccountService()
   const validationService = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : 0
   const serviceProviderId = req && req.body && req.body.serviceProviderId ? req.body.serviceProviderId : '0'
   businessAccountService.getServiceProvider(serviceProviderId, req.body.serviceProviderName || null)
     .then(getQueryResponse => {
@@ -1081,7 +1082,7 @@ const addUpdateServiceProvider = (req, res) => {
     .then(validateData => {
       __logger.info('add/update validateData response', validateData)
       if (validateData && validateData.add) {
-        return businessAccountService.addServiceProvider(req.body)
+        return businessAccountService.addServiceProvider(req.body, userId)
       } else if (validateData && validateData.update) {
         return businessAccountService.updateServiceProvider(serviceProviderId, false, req.body)
       } else {

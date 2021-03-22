@@ -24,6 +24,8 @@ const getTemplateList = (messageTemplateStatusId) => {
     query += ' AND mt.message_template_status_id = ?'
   }
 
+  query += ' order by mt.updated_on desc '
+
   return query
 }
 
@@ -60,8 +62,8 @@ const addTemplate = () => {
   message_template_category_id, message_template_status_id, message_template_language_id, body_text ,
   header_text, footer_text, media_type, second_language_required, second_message_template_language_id,second_language_header_text,
   second_language_body_text ,second_language_footer_text,
-  header_type, button_type,button_data, created_by,first_localization_status,second_localization_status)
-  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  header_type, button_type,button_data, created_by,first_localization_status,updated_by,second_localization_status,updated_on)
+  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now())`
 }
 
 const updateTemplate = () => {
@@ -295,13 +297,13 @@ const getAllTemplateWithStatus = (columnArray, startDate, endDate, templateName)
   })
 
   if (startDate && endDate) {
-    query += ` AND mt.created_on between '${startDate}' and '${endDate}' `
+    query += ` AND mt.updated_on between '${startDate}' and '${endDate}' `
   }
   if (templateName) {
     templateName = templateName.replace(/ /g, '')
     query += ` AND mt.template_name like lower('%${templateName}%')`
   }
-  query += ` order by mt.created_on asc limit ? offset ?;
+  query += ` order by mt.updated_on desc limit ? offset ?;
    select count(1) as "totalRecord" from message_template mt2
    where mt2.is_active = true`
   return query

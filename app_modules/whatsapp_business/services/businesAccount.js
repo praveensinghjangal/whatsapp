@@ -120,7 +120,7 @@ class businesAccountService {
       .then((data) => {
         __logger.info('checkWabaNumberAlreadyExist Result', { data })
         saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
-        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webhookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId, JSON.stringify(businessAccountObj.websites), businessAccountObj.accessInfoRejectionReason])
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webhookPostUrl, businessAccountObj.optinText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId, JSON.stringify(businessAccountObj.websites), businessAccountObj.accessInfoRejectionReason, userId])
       })
       .then(result => {
         __logger.info('Insert Result', { result })
@@ -668,11 +668,11 @@ class businesAccountService {
     return providerDetails.promise
   }
 
-  addServiceProvider (requestBody) {
-    __logger.info('addServiceProvider>>>>>>>>>>>>>')
+  addServiceProvider (requestBody, userId) {
+    __logger.info('addServiceProvider>>>>>>>>>>>>>', userId)
     const serviceProviderAdded = q.defer()
     const serviceProviderId = this.uniqueId.uuid()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.insertServiceProviderData(), [serviceProviderId, requestBody.serviceProviderName, requestBody.maxWebsiteAllowed])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.insertServiceProviderData(), [serviceProviderId, requestBody.serviceProviderName, userId, requestBody.maxWebsiteAllowed, userId])
       .then(result => {
         __logger.info('addServiceProvider, result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
