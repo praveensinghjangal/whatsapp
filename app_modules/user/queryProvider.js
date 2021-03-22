@@ -341,7 +341,8 @@ const getAgreementList = (columnArray, startDate, endDate, fullName) => {
   uaf.user_agreement_files_id as "userAgreementFileId",
   ags.status_name as "statusName", uaf.created_by as "reviewer",
   u.user_id as "userId", u.first_name as "firstName", uaf.agreement_status_id as "agreementStatusId",
-  uaf.rejection_reason as "rejectionReason", file_name as "fileName",file_path as "filePath"
+  uaf.rejection_reason as "rejectionReason", file_name as "fileName",file_path as "filePath",
+  CONCAT(u.first_name,' ',u.last_name) as "fullName"
   from user_agreement_files uaf 
   join agreement_status ags ON uaf.agreement_status_id = ags.agreement_status_id and ags.is_active =true
   join users u ON uaf.user_id = u.user_id and u.is_active =true
