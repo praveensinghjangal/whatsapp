@@ -523,6 +523,77 @@ class validate {
     }
     return isvalid.promise
   }
+
+  audienceFilterParamCheck (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/audienceFilterParamCheck',
+      type: 'object',
+      required: true,
+      properties: {
+        channel: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 50
+        },
+        optinSourceId: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 50
+        },
+        segmentId: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 50
+        }
+        // phoneNumber: {
+        //   type: 'string',
+        //   required: false,
+        //   minLength: 1,
+        //   maxLength: 15,
+        //   pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
+        // }
+
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/audienceFilterParamCheck')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+      if (patternError && (formatedErr[1].includes('phoneNumber'))) {
+        formatedErr[1] = '-invalid phone number format-use +XX XXXXXXXXXX'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate && request.endDate && request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

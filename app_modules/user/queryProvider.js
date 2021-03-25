@@ -1,5 +1,6 @@
 const __constants = require('../../config/constants')
-
+const ColumnMapService = require('../../lib/columnMapService/columnMap')
+const columnMapService = new ColumnMapService()
 // todo : remove waba dependency
 const getUserDetailsByEmail = () => {
   return `select u.user_id, hash_password,salt_key, email_verified, u.phone_verified, tnc_accepted,role_name,
@@ -335,7 +336,7 @@ const updateAgreement = () => {
   where user_id=? and is_active=true`
 }
 
-const getAgreementList = (columnArray, startDate, endDate, fullName) => {
+const getAgreementList = (columnArray) => {
   let query = `  
   SELECT count(1) over() as "totalFilteredRecord", 
   uaf.user_agreement_files_id as "userAgreementFileId",
@@ -349,16 +350,8 @@ const getAgreementList = (columnArray, startDate, endDate, fullName) => {
   where uaf.is_active=true`
 
   columnArray.forEach((element) => {
-    query += ` AND ${element} = ?`
+    query += columnMapService.mapColumn(element.colName, element.type)
   })
-
-  if (startDate && endDate) {
-    query += ` AND uaf.updated_on between '${startDate}' and '${endDate}'`
-  }
-  if (fullName) {
-    fullName = fullName.replace(/ /g, '')
-    query += ` AND CONCAT(u.first_name,u.last_name) like lower('%${fullName}%')`
-  }
   query += ` order by uaf.updated_on desc limit ? offset ?;
     select count(1) as "totalRecord" from user_agreement_files uaf2
     where uaf2.is_active = true`

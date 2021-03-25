@@ -222,6 +222,7 @@ const VALIDATOR = {
   number: '^[0-9]+$',
   aplphaNumeric: '^[a-zA-Z0-9]+$',
   phoneNumber: '^\\d{1,10}$',
+  phoneNumberWithPhoneCode: '^[\\d+]{1,3}\\s?[0-9]{10}$',
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',

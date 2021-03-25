@@ -773,7 +773,7 @@ const addUpdateWabaConfiguration = (req, res) => {
  */
 
 const getProfileListByStatusId = (req, res) => {
-  __logger.info('called api to get wabaProfile list', req.params)
+  __logger.info('called api to get wabaProfile list', req.query)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
   const errArr = []
@@ -795,14 +795,20 @@ const getProfileListByStatusId = (req, res) => {
       const inputArray = []
       const valArray = []
       const columnArray = []
-      if (req.query && req.query.statusId) inputArray.push({ colName: 'wa.waba_profile_setup_status_id', value: req.query.statusId })
+
+      if (req.query && req.query.phoneNumber) {
+        req.query.phoneNumber = req.query.phoneNumber.split('+').join('')
+        inputArray.push({ colName: 'CONCAT(wa.phone_code,wa.phone_number)', value: req.query.phoneNumber.replace(/ /g, ''), type: 'like' })
+      }
+      if (req.query && req.query.startDate && req.query.endDate) inputArray.push({ colName: 'wa.updated_on', value: [req.query.startDate, req.query.endDate], type: 'between' })
+      if (req.query && req.query.statusId) inputArray.push({ colName: 'wa.waba_profile_setup_status_id', value: req.query.statusId, type: 'default' })
       _.each(inputArray, function (input) {
         if (input.value !== undefined && input.value !== null) {
-          columnArray.push(input.colName)
+          columnArray.push({ colName: input.colName, type: input.type })
           valArray.push(input.value)
         }
       })
-      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, req.query.startDate, req.query.endDate, req.query.phoneNumber, valArray)
+      return businessAccountService.getBusinessProfileListByStatusId(columnArray, offset, itemsPerPage, valArray.flat())
     })
     .then(result => {
       const pagination = { totalPage: Math.ceil(result[0][0].totalFilteredRecord / itemsPerPage), currentPage: requiredPage, totalFilteredRecord: result[0][0].totalFilteredRecord, totalRecord: result[1][0].totalRecord }

@@ -1,5 +1,6 @@
 const __constants = require('../../config/constants')
-
+const ColumnMapService = require('../../lib/columnMapService/columnMap')
+const columnMapService = new ColumnMapService()
 // Business Category
 const getBusinessCategory = () => {
   return `select business_category_id, category_name
@@ -173,7 +174,7 @@ const getServiceProviderDetailsByUserId = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
-const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, phoneNumber) => {
+const getBusinessProfileListByStatusId = (columnArray) => {
   let query = `select count(1) over() as "totalFilteredRecord", wa.waba_information_id as 'wabaInformationId',
   wa.phone_number as 'phoneNumber',wa.phone_code as 'phoneCode',wa.facebook_manager_id as 'facebookManagerId',
   wa.user_id as "userId",wa.business_name as 'businessName',wa.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
@@ -183,16 +184,8 @@ const getBusinessProfileListByStatusId = (columnArray, startDate, endDate, phone
   where wa.is_active = true`
 
   columnArray.forEach((element) => {
-    query += ` AND ${element} = ?`
+    query += columnMapService.mapColumn(element.colName, element.type)
   })
-  if (phoneNumber) {
-    phoneNumber = phoneNumber.replace(/ /g, '')
-    query += ` AND wa.phone_number like lower('%${phoneNumber}%')`
-  }
-
-  if (startDate && endDate) {
-    query += ` AND wa.updated_on between '${startDate}' and '${endDate}' `
-  }
   query += ` order by wa.updated_on desc limit ? offset ?;
   select count(1) as "totalRecord" from waba_information wi
   where wi.is_active = true`

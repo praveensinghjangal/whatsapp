@@ -828,7 +828,7 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 15,
-          pattern: __constants.VALIDATOR.number
+          pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
         }
       }
     }
