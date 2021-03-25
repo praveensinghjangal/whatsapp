@@ -1,5 +1,6 @@
 const __constants = require('../../config/constants')
-
+const ColumnMapService = require('../../lib/columnMapService/columnMap')
+const columnMapService = new ColumnMapService()
 // Template
 const getTemplateList = (messageTemplateStatusId) => {
   let query = `
@@ -84,8 +85,8 @@ const deleteTemplate = () => {
 
 // Sample Template
 
-const getSampleTemplateList = (messageTemplateCategoryId, templateName) => {
-  let query = `
+const getSampleTemplateList = () => {
+  const query = `
   SELECT DISTINCT mtlib.message_template_library_id as "messageTemplateLibraryId", mtlib.template_name as "templateName",
   mtlib.type, mtc.category_name as "categoryName", mts.status_name as "statusName", mtl.language_name as "languageName",
   mtlib.media_type as "mediaType"
@@ -96,16 +97,9 @@ const getSampleTemplateList = (messageTemplateCategoryId, templateName) => {
       ON mts.is_active = true and mts.message_template_status_id = mtlib.message_template_status_id
     JOIN message_template_language mtl
       ON mtl.is_active = true and mtl.message_template_language_id = mtlib.message_template_language_id
-  WHERE mtlib.is_active = true`
-
-  if (messageTemplateCategoryId !== undefined) {
-    query += ` AND mtlib.message_template_category_id = '${messageTemplateCategoryId}' AND mtlib.message_template_category_id is not null`
-  }
-
-  if (templateName !== undefined) {
-    query += ` AND mtlib.template_name = '${templateName}' AND mtlib.template_name is not null `
-  }
-
+  WHERE mtlib.is_active = true
+  AND mtlib.message_template_category_id = ? AND mtlib.message_template_category_id is not null
+  AND mtlib.template_name = ? AND mtlib.template_name is not null `
   return query
 }
 
@@ -273,7 +267,7 @@ const getTemplateTableDataByTemplateId = () => {
     where wi.is_active = true and wi.user_id = ?;`
 }
 
-const getAllTemplateWithStatus = (columnArray, startDate, endDate, templateName) => {
+const getAllTemplateWithStatus = (columnArray) => {
   let query =
   `SELECT count(1) over() as "totalFilteredRecord", mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
    mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
@@ -290,19 +284,11 @@ const getAllTemplateWithStatus = (columnArray, startDate, endDate, templateName)
        ON mtl.is_active = true and mtl.message_template_language_id = mt.message_template_language_id
      left JOIN message_template_language mtl2
        ON mtl2.is_active = true and mtl2.message_template_language_id = mt.second_message_template_language_id
-       where mt.is_active = true`
+       where mt.is_active = true `
 
   columnArray.forEach((element) => {
-    query += ` AND ${element} = ?`
+    query += columnMapService.mapColumn(element.colName, element.type)
   })
-
-  if (startDate && endDate) {
-    query += ` AND mt.updated_on between '${startDate}' and '${endDate}' `
-  }
-  if (templateName) {
-    templateName = templateName.replace(/ /g, '')
-    query += ` AND mt.template_name like lower('%${templateName}%')`
-  }
   query += ` order by mt.updated_on desc limit ? offset ?;
    select count(1) as "totalRecord" from message_template mt2
    where mt2.is_active = true`

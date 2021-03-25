@@ -24,9 +24,9 @@ const getSampleTemplateList = (req, res) => {
   __logger.info('Get Sample Templates List API Called', req.query)
 
   const messageTemplateCategoryId = req.query.messageTemplateCategoryId
-  const templateName = req.query.templateName
+  const templateName = req.query && req.query.templateName ? req.query.templateName.toLowerCase().replace(/\t\s /g, '') : null
 
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getSampleTemplateList(messageTemplateCategoryId, templateName), [])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getSampleTemplateList(), [messageTemplateCategoryId, templateName])
     .then(result => {
       __logger.info('Result', result)
       if (result && result.length > 0) {

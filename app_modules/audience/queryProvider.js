@@ -1,3 +1,5 @@
+const ColumnMapService = require('../../lib/columnMapService/columnMap')
+const columnMapService = new ColumnMapService()
 
 const addAudienceData = () => {
   return `INSERT INTO audience 
@@ -14,7 +16,7 @@ const updateAudienceRecord = () => {
   WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
-const getAudienceRecordList = (columnArray, offset, limit, userId, startDate, endDate) => {
+const getAudienceRecordList = (columnArray) => {
   let query = `SELECT count(1) over() as "totalFilteredRecord", audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", optin, (last_message between now()- interval 24 HOUR and now()) as tempOptin,
@@ -30,21 +32,14 @@ const getAudienceRecordList = (columnArray, offset, limit, userId, startDate, en
   join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = awnm.waba_phone_number and wi.is_active = true
   WHERE aud.is_active = true`
 
-  columnArray.forEach((element, index) => {
-    if (element === 'aud.phone_number') {
-      query += ` AND LOCATE (?,${element})`
-    } else {
-      query += ` AND ${element} = ?`
-    }
+  columnArray.forEach((element) => {
+    query += columnMapService.mapColumn(element.colName, element.type)
   })
 
-  if (startDate && endDate) {
-    query += ` AND aud.first_message between '${startDate}' and '${endDate}' `
-  }
-  query += ` order by aud.created_on asc limit ${limit} offset ${offset};
+  query += ` order by aud.created_on asc limit ? offset ?;
   select count(1) as "totalRecord" from audience 
   where is_active = true
-  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = '${userId}' and is_active = 1);`
+  and waba_phone_number = (select CONCAT(phone_code ,phone_number) from waba_information where user_id = ? and is_active = 1);`
   return query
 }
 

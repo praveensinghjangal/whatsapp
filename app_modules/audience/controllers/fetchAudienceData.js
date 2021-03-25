@@ -53,39 +53,39 @@ const getAudienceRecordById = (req, res) => {
 Not much clarity on veiwALl filter
 */
 const getAudienceRecordList = (req, res) => {
-  __logger.info('Get Audience Record List API Called', req.query)
+  __logger.info('Get Audience Record List API Called', req.query, req.user)
+  const validate = new ValidatonService()
+
   // if page then int , ItemsPerPage mandatory with type int
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
   if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const startDate = req.query ? req.query.startDate : null
-  const endDate = req.query ? req.query.endDate : null
   const requiredPage = req.query.page ? +req.query.page : 1
-  const ItemsPerPage = req.query ? req.query.ItemsPerPage : 5
+  const ItemsPerPage = req.query ? +req.query.ItemsPerPage : 5
   const offset = ItemsPerPage * (requiredPage - 1)
   __logger.info('Get Offset value', offset)
-  const {
-    channel, optin, optinSourceId, tempOptin,
-    segmentId, phoneNumber
-  } = req.query
-  const inputArray = [{ colName: 'aud.channel', value: channel },
-    { colName: 'aud.optin_source_id', value: optinSourceId },
-    { colName: 'aud.segment_id', value: segmentId },
-    // { colName: 'aud.first_message', value: firstMessageActivation },
-    { colName: 'aud.phone_number', value: phoneNumber },
-    { colName: 'wi.user_id', value: userId }]
-  if (optin) inputArray.push({ colName: 'aud.optin', value: optin === 'true' ? 1 : 0 })
-  if (tempOptin) inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: tempOptin === 'true' ? 1 : 0 })
-
-  const columnArray = []
-  const valArray = []
-  _.each(inputArray, function (input) {
-    if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
-      columnArray.push(input.colName)
-      valArray.push(input.value)
-    }
-  })
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray, offset, ItemsPerPage, userId, startDate, endDate), valArray)
+  // if (req.query && req.query.startDate && req.query.endDate) inputArray.push({ colName: 'aud.first_message', value: [req.query.startDate, req.query.endDate], type: 'between' })
+  validate.audienceFilterParamCheck(req.query)
+    .then(validRes => {
+      const columnArray = []
+      const valArray = []
+      const inputArray = [{ colName: 'aud.channel', value: req.query.channel, type: 'default' },
+        { colName: 'aud.optin_source_id', value: req.query.optinSourceId, type: 'default' },
+        { colName: 'aud.segment_id', value: req.query.segmentId, type: 'default' },
+        // { colName: 'aud.first_message', value: firstMessageActivation },
+        // { colName: 'aud.phone_number', value: req.query.phoneNumber, type: 'locate' },
+        { colName: 'wi.user_id', value: userId, type: 'default' }]
+      if (req.query && req.query.optin) inputArray.push({ colName: 'aud.optin', value: req.query.optin === 'true' ? 1 : 0, type: 'default' })
+      if (req.query && req.query.tempOptin) inputArray.push({ colName: '(last_message between now()- interval 24 HOUR and now())', value: req.query.tempOptin === 'true' ? 1 : 0, type: 'default' })
+      _.each(inputArray, function (input) {
+        if (input && input.value && input.value !== undefined && input.value !== null) { // done so because false expected in some values
+          columnArray.push({ colName: input.colName, type: input.type })
+          valArray.push(input.value)
+        }
+      })
+      valArray.push(ItemsPerPage, offset, userId)
+      return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray.flat())
+    })
     .then(result => {
       __logger.info('Got audience list from db -->', { result })
       if ((result && result.length === 0) || result[0].length === 0) {
@@ -103,7 +103,7 @@ const getAudienceRecordList = (req, res) => {
     })
     .catch(err => {
       __logger.error('error in create user function: ', err)
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || err })
     })
 }
 

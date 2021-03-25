@@ -522,10 +522,10 @@ class UserData {
     return dataUpdated.promise
   }
 
-  getAllAgreement (columnArray, offset, ItemsPerPage, startDate, endDate, fullName, valArray) {
+  getAllAgreement (columnArray, offset, ItemsPerPage, valArray) {
     __logger.info('Inside getAllAgreement')
     const fetchAgreement = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementList(columnArray, startDate, endDate, fullName), [...valArray, ItemsPerPage, offset])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementList(columnArray), [...valArray, ItemsPerPage, offset])
       .then(result => {
         if (result && result[0] && result[0].length && result[0].length > 0) {
           fetchAgreement.resolve(result)

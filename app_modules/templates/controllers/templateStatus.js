@@ -49,16 +49,31 @@ const getAllTemplateWithStatus = (req, res) => {
       if (req.query && req.query.statusId) {
         inputArray.push({
           colName: 'mt.message_template_status_id',
-          value: req.query.statusId
+          value: req.query.statusId,
+          type: 'default'
+        })
+      }
+      if (req.query && req.query.templateName) {
+        inputArray.push({
+          colName: 'mt.template_name',
+          value: req.query.templateName.toLowerCase().replace(/\t\s/g, ''),
+          type: 'like'
+        })
+      }
+      if (req.query && req.query.startDate && req.query.endDate) {
+        inputArray.push({
+          colName: 'mt.updated_on',
+          value: [req.query.startDate, req.query.endDate],
+          type: 'between'
         })
       }
       _.each(inputArray, function (input) {
         if (input.value !== undefined && input.value !== null) {
-          columnArray.push(input.colName)
+          columnArray.push({ colName: input.colName, type: input.type })
           valArray.push(input.value)
         }
       })
-      return templateService.getAllTemplateWithStatus(columnArray, offset, itemsPerPage, req.query.startDate, req.query.endDate, req.query.templateName, valArray)
+      return templateService.getAllTemplateWithStatus(columnArray, offset, itemsPerPage, valArray.flat())
     })
     .then(result => {
       const pagination = {
