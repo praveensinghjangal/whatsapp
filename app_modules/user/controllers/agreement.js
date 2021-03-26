@@ -373,7 +373,7 @@ const getAgreementList = (req, res) => {
       const valArray = []
       if (req.query && req.query.startDate && req.query.endDate) inputArray.push({ colName: 'uaf.updated_on', value: [req.query.startDate, req.query.endDate], type: 'between' })
       if (req.query && req.query.agreementStatusId) inputArray.push({ colName: 'uaf.agreement_status_id', value: req.query.agreementStatusId, type: 'default' })
-      if (req.query && req.query.fullName) inputArray.push({ colName: 'lower(CONCAT(u.first_name,u.last_name))', value: req.query.fullName.toLowerCase().replace(/\s\t/g, ''), type: 'like' })
+      if (req.query && req.query.fullName) inputArray.push({ colName: 'lower(CONCAT(u.first_name,u.last_name))', value: req.query.fullName.toLowerCase().replace(/\s/g, ''), type: 'like' })
       _.each(inputArray, function (input) {
         if (input.value !== undefined && input.value !== null) { // done so because false expected in some values
           columnArray.push({ colName: input.colName, type: input.type })
