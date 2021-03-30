@@ -203,7 +203,7 @@ class validate {
         addressLine1: {
           type: 'string',
           required: false,
-          minLength: 1,
+          minLength: 10,
           maxLength: 250
         },
         addressLine2: {
@@ -311,7 +311,7 @@ class validate {
         addressLine1: {
           type: 'string',
           required: false,
-          minLength: 1,
+          minLength: 10,
           maxLength: 250
         },
         addressLine2: {
