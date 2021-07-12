@@ -5,7 +5,7 @@
 $ git clone http://git.vivaconnect.co/helo-whatsapp/platform-api.git
 ```
 ```sh 
-$ cd ./helo-whatsapp-api
+$ cd ./platform-api
 ```
 >Create a file named `.env` in app_root/config folder and paste the content at the end of this document in newly created file.
 
