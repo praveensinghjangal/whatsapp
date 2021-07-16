@@ -13812,6 +13812,305 @@
             "security": []
          }
       },
+      "/flowmessage/flow/list": {
+         "get": {
+            "x-module": "chatApp",
+            "summary": "Get Menu Based Templates List",
+            "description": "Use this API to get menu based templates list",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getMenuBasedTemplatesList",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "page",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "Enter page number"
+               },
+               {
+                  "name": "itemsPerPage",
+                  "in": "query",
+                  "required": true,
+                  "type": "number",
+                  "description": "Enter items per page"
+               },
+               {
+                  "name": "statusId",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "Enter status id"
+               },
+               {
+                  "name": "templateName",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "Enter template name here"
+               },
+               {
+                  "name": "startDate",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "Enter start date here"
+               },
+               {
+                  "name": "endDate",
+                  "in": "query",
+                  "required": false,
+                  "type": "string",
+                  "description": "Enter end date here"
+               }                 
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns various flow types",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "rows": [
+                                    {
+                                        "flowTopic": "awesome",
+                                        "flowTopicId": "3a25112c-ec9f-4dd6-9166-68d12ce96453",
+                                        "flowDescription": "werrrrrr",
+                                        "flowCategoryId": "4268f874-eda3-42c3-b972-786a8b5f8716",
+                                        "categoryName": "Ticket Update",
+                                        "statusId": "59903410-b3c5-4312-a444-617f04f6116e",
+                                        "statusName": "Requested",
+                                        "languageName": "English",
+                                        "underReviewObject": null
+                                    },
+                                    {
+                                        "flowTopic": "testee",
+                                        "flowTopicId": "b1dbd756-cfde-45ee-94bc-5716cadf57f8",
+                                        "flowDescription": "er",
+                                        "flowCategoryId": "4268f874-eda3-42c3-b972-786a8b5f8716",
+                                        "categoryName": "Ticket Update",
+                                        "statusId": "5a1ca5cb-0c8c-4919-8941-6c679260d5ff",
+                                        "statusName": "Approved",
+                                        "languageName": "English",
+                                        "underReviewObject": null
+                                    }
+                                ]
+                            }
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },
+      "/flowmessage/flow/info": {
+         "get": {
+            "x-module": "chatApp",
+            "summary": "API to fetch the flow from db without userId",
+            "description": "API to fetch the flow from db without userId",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getFlowInfo",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "templateId",
+                  "in": "query",
+                  "required": true,
+                  "type": "string",
+                  "description": "Enter template id"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns various flow types",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "flowTopicId": "a54e1c99-90ef-4b06-93c8-50005a457aa2",
+                              "flowTopic": "vineet",
+                              "flowDescription": "weswqe",
+                              "flowCategoryId": "494b819e-ea15-4347-805b-d5eee38687e8",
+                              "categoryName": "Reservation Update",
+                              "statusId": "5a1ca5cb-0c8c-4919-8941-6c679260d5ff",
+                              "statusName": "Approved",
+                              "rejectionReason": null,
+                              "userId": "158988680814912",
+                              "flow": [
+                                  {
+                                      "identifierText": "345",
+                                      "event": "end",
+                                      "eventData": {},
+                                      "parentIdentifierText": null,
+                                      "identifierDisplayName": "vineet"
+                                  },
+                                  {
+                                      "identifierText": "1546",
+                                      "event": "predefinedtext",
+                                      "eventData": {
+                                          "text": "56"
+                                      },
+                                      "parentIdentifierText": null,
+                                      "identifierDisplayName": "456"
+                                  }
+                              ]
+                            },
+                           "error":null
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },         
       "/flowmessage/chat": {
          "post": {
             "x-module": "chatApp",
@@ -14996,7 +15295,452 @@
             },
             "security": []
          }
+      },      
+      "/flowmessage/flow/{flowTopicId}/active/{active}": {
+         "patch": {
+            "x-module": "chatApp",
+            "summary": "This API is used to add and update the flow",
+            "description": "Use this api to add/update the flow of chat app as per the userId",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "activeTemplate",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "Please provide the valid input request",
+                  "schema": {
+                     "$ref": "#/definitions/activeTemplateRequest"
+                  }
+               },               
+               {
+                  "name": "flowTopicId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic Id"
+               },               
+               {
+                  "name": "active",
+                  "in": "path",
+                  "required": true,
+                  "type": "boolean",
+                  "description": "flow topic active status"
+               }               
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns added or updated data result",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "updatedBy": "7cafdb03-daf6-458a-91b1-df651edfb9c6",
+                              "status": "5a1ca5cb-0c8c-4919-8941-6c679260d5ff",
+                              "rejectionReason": null,
+                              "statusName": "Approved",
+                              "statusCode": "5a1ca5cb-0c8c-4919-8941-6c679260d5ff",
+                              "flowTopicId": "29efe31c-b798-4c9d-a56c-1e1b2e2d9944"
+                          },
+                          "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        },
+                        {
+                           "code": 3048,
+                           "msg": "Status cannot be changed",
+                           "data": {}
+                        }                        
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
       },
+      "/flowmessage/flow/{flowTopicId}/evaluate/{evaluationResponse}": {
+         "patch": {
+            "x-module": "chatApp",
+            "summary": "This api is used to change the state of the template",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "evaluationResult",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "Please provide the valid input request",
+                  "schema": {
+                     "$ref": "#/definitions/evaluateTemplateRequest"
+                  }
+               },               
+               {
+                  "name": "flowTopicId",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic Id"
+               },               
+               {
+                  "name": "evaluationResponse",
+                  "in": "path",
+                  "required": true,
+                  "type": "string",
+                  "description": "flow topic evaluation response"
+               },               
+
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns added or updated data result",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "updatedBy": "7cafdb03-daf6-458a-91b1-df651edfb9c6",
+                              "status": "a64ab539-eebd-4a04-81b0-76348e7eaf7c",
+                              "rejectionReason": "Promotion is not allowed",
+                              "statusName": "Rejected",
+                              "statusCode": "a64ab539-eebd-4a04-81b0-76348e7eaf7c",
+                              "flowTopicId": "29efe31c-b798-4c9d-a56c-1e1b2e2d9944"
+                          },
+                          "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {}
+                        },
+                        {
+                           "code": 3048,
+                           "msg": "Status cannot be changed",
+                           "data": {}
+                        }                         
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      },      
+      "/flowmessage/flow/status": {
+         "get": {
+            "x-module": "chatApp",
+            "summary": "Get Template Flow Status",
+            "description": "Use this API to get template flow status",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "getFlowStatus",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": "user can obtain auth token by using login API"
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns various flow types",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                          "data": [
+                                {
+                                    "messageTemplateStatusId": "59903410-b3c5-4312-a444-617f04f6116e",
+                                    "statusName": "Requested"
+                                },
+                                {
+                                    "messageTemplateStatusId": "5a1ca5cb-0c8c-4919-8941-6c679260d5ff",
+                                    "statusName": "Approved"
+                                }
+                            ],
+                            "error": null
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": []
+                        }
+                     ]
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in header",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            },
+            "security": []
+         }
+      },      
       "/flowmessage/flow/status/count": {
          "get": {
             "x-module": "chatApp",
@@ -15253,7 +15997,160 @@
                }
             }
          }
-      }
+      },
+      "/acceptFlow": {
+         "post": {
+            "x-module": "chatApp",
+            "summary": "This API is used to add or update the flow of whats app chat. This api is used by support user at the time of evaluation",
+            "tags": [
+               "chat-app"
+            ],
+            "operationId": "addUpdateFlows",
+            "deprecated": false,
+            "produces": [
+               "application/json"
+            ],
+            "parameters": [
+               {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "type": "string"
+               },
+               {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                     "$ref": "#/definitions/acceptFlowRequest"
+                  }
+               }
+            ],
+            "responses": {
+               "200": {
+                  "description": "Returns add update flow response.",
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": [
+                        {
+                           "code": 2000,
+                           "msg": "Success",
+                           "data": {
+                              "flowTopicId": "29efe31c-b798-4c9d-a56c-1e1b2e2d9944"
+                          }                            
+                        },
+                        {
+                           "code": 3000,
+                           "msg": "No record found.",
+                           "data": {},
+                           "err": {}
+                        },
+                        {
+                           "code": 3013,
+                           "msg": "Record Already Exists.",
+                           "data": {},
+                           "err": {}
+                        },                        
+                        {
+                           "code": 3063,
+                           "msg": "No such category found",
+                           "data": {},
+                           "err": {}
+                        },
+                          
+                     ]
+                  }
+               },
+               "400": {
+                  "description": "Returns invalid request error in error array",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "array"
+                        }
+                     },
+                     "example": {
+                        "code": 4000,
+                        "msg": "Invalid request",
+                        "data": null,
+                        "error": [
+                           "invalid body error here"
+                        ]
+                     }
+                  }
+               },
+               "401": {
+                  "description": "Invalid token in request",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 4001,
+                        "msg": "Unauthorized access.",
+                        "data": null
+                     }
+                  }
+               },
+               "500": {
+                  "description": "in case of some exceptional error",
+                  "headers": {},
+                  "schema": {
+                     "properties": {
+                        "code": {
+                           "type": "number"
+                        },
+                        "msg": {
+                           "type": "string"
+                        },
+                        "data": {
+                           "type": "object"
+                        },
+                        "error": {
+                           "type": "object"
+                        }
+                     },
+                     "example": {
+                        "code": 5000,
+                        "msg": "Something went wrong. Please try again later.",
+                        "data": {},
+                        "error": {}
+                     }
+                  }
+               }
+            }
+         }
+      }      
    },
    "definitions": {
       "sendrequest": {
@@ -17061,6 +17958,130 @@
             "tps",
             "userId"
          ]
-      },      
+      },
+      "acceptFlowRequest": {
+         "title": "addUpdateFlowRequest",
+         "example": {
+            "flowTopicId": "a64ab539-eebd-4a04-81b0-76348e7eaf7r",
+            "flowTopic": "test",
+            "flowDescription": "test description",
+            "flowCategoryId": "c44ab539-eebd-4a04-81b0-76348e7eaf7c",
+            "wabaPhoneNumber": "+91XXXXXXXXXX",
+            "flows":[
+              {
+                "identifierText":"",
+                "event":"",
+                "eventData":{
+                  "url":"",
+                  "redirectUrl":"",
+                  "requiredKeys":[],
+                  "identifierDisplayName":""
+                },
+                "parentIdentifierText":"",
+                "identifierDisplayName":""
+              }
+            ]
+         },
+         "type": "object",
+         "properties": {
+            "flowTopicId": {
+               "type": "string"
+            },
+            "flowTopic": {
+               "type": "string"
+            },
+            "flowDescription": {
+               "type": "string"
+            },
+            "flowCategoryId": {
+               "type": "string"
+            },            
+            "wabaPhoneNumber": {
+               "type": "string"
+            },
+            "flows":{
+              "type":"array",
+              "items": {
+                "properties": {
+                   "identifierText": {
+                      "type": "string"
+                   },
+                   "event": {
+                      "type": "string"
+                   },
+                   "eventData": {
+                      "type": "object",
+                      "properties": {
+                        "url": {
+                           "type": "string"
+                        },
+                        "redirectUrl": {
+                           "type": "string"
+                        },
+                        "requiredKeys": {
+                           "type": "array",
+                           "items":{
+                             "type":"string"
+                           }
+                        },
+                        "transActionEndingIdentifier": {
+                           "type": "string"
+                        }                        
+                     }
+                   },
+                   "parentIdentifierText": {
+                      "type": "string"
+                   },
+                   "identifierDisplayName": {
+                      "type": "string"
+                   }
+                },
+                "required": [
+                   "identifierText",
+                   "event",
+                   "eventData",
+                   "parentIdentifierText",
+                   "identifierDisplayName"
+                ]
+               }              
+            }
+         },
+         "required": [
+            "flowDescription",
+            "flowCategoryId",
+            "flows"
+         ]
+      },
+      "activeTemplateRequest": {
+         "title": "activeTemplateRequest",
+         "example": {
+            "userId": "5d376e1d-435c-4b55-a45d-7f482003dad5"
+        },
+         "type": "object",
+         "properties": {
+            "userId": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "userId"
+         ]
+      },
+      "evaluateTemplateRequest": {
+         "title": "evaluateTemplateRequest",
+         "example": {
+            "userId": "5d376e1d-435c-4b55-a45d-7f482003dad5",
+            "rejectionReason":"test"
+        },
+         "type": "object",
+         "properties": {
+            "userId": {
+               "type": "string"
+            }
+         },
+         "required": [
+            "userId"
+         ]
+      }       
    }
 }
