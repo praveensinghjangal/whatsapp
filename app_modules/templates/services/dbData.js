@@ -111,10 +111,15 @@ class TemplateService {
       buttonType: newData.buttonType ? newData.buttonType : null,
       buttonData: newData.buttonData ? newData.buttonData : null,
       createdBy: userId,
-      firstLocalizationStatus: '',
-      updatedBy: userId
+      firstLocalizationStatus: newData.messageTemplateStatusId || __constants.TEMPLATE_DEFAULT_STATUS,
+      updatedBy: userId,
+      secondLocalizationStatus: null,
+      bodyTextVarExample: JSON.stringify(newData.bodyTextVarExample),
+      headerTextVarExample: JSON.stringify(newData.headerTextVarExample),
+      secondLanguageBodyTextVarExample: JSON.stringify(newData.secondLanguageBodyTextVarExample),
+      secondLanguageHeaderTextVarExample: JSON.stringify(newData.secondLanguageHeaderTextVarExample),
+      mediaExampleUrl: newData.mediaExampleUrl
     }
-    templateData.firstLocalizationStatus = templateData.messageTemplateStatusId
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
 
     // Checks
@@ -218,6 +223,11 @@ class TemplateService {
       buttonType: newData.buttonType ? newData.buttonType : (newData.buttonType === null ? null : oldData.buttonType),
       buttonData: newData.buttonType === null ? {} : (newData.buttonData || oldData.buttonData),
       updatedBy: userId,
+      bodyTextVarExample: JSON.stringify(newData.bodyTextVarExample) || JSON.stringify(oldData.bodyTextVarExample),
+      headerTextVarExample: JSON.stringify(newData.headerTextVarExample) || JSON.stringify(oldData.headerTextVarExample),
+      secondLanguageBodyTextVarExample: JSON.stringify(newData.secondLanguageBodyTextVarExample) || JSON.stringify(oldData.secondLanguageBodyTextVarExample),
+      secondLanguageHeaderTextVarExample: JSON.stringify(newData.secondLanguageHeaderTextVarExample) || JSON.stringify(oldData.secondLanguageHeaderTextVarExample),
+      mediaExampleUrl: newData.mediaExampleUrl || oldData.mediaExampleUrl,
       messageTemplateId: newData.messageTemplateId,
       wabaInformationId: oldData.wabaInformationId
     }
@@ -230,6 +240,8 @@ class TemplateService {
       templateData.secondLanguageBodyText = null
       templateData.secondLanguageFooterText = null
       templateData.secondLanguageName = null
+      templateData.secondLanguageBodyTextVarExample = null
+      templateData.secondLanguageHeaderTextVarExample = null
     }
 
     // If template type is standard then deleting the header text footer text and button data
@@ -238,12 +250,25 @@ class TemplateService {
       templateData.headerText = null
       templateData.buttonData = null
       templateData.buttonType = null
+      templateData.secondLanguageHeaderText = null
+      templateData.mediaExampleUrl = null
+      templateData.headerTextVarExample = null
+      templateData.secondLanguageHeaderTextVarExample = null
     }
 
     if (!templateData.secondLanguageRequired && templateData.buttonData) {
       if (templateData.buttonData.secondLanguageQuickReply) delete templateData.buttonData.secondLanguageQuickReply
       if (templateData.buttonData.secondLanguageWebsiteButtontext) delete templateData.buttonData.secondLanguageWebsiteButtontext
       if (templateData.buttonData.secondLanguagePhoneButtonText) delete templateData.buttonData.secondLanguagePhoneButtonText
+    }
+    if (templateData.headerType && templateData.headerType !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase()) {
+      templateData.bodyTextVarExample = null
+      templateData.headerTextVarExample = null
+      templateData.secondLanguageBodyTextVarExample = null
+      templateData.secondLanguageHeaderTextVarExample = null
+    }
+    if (templateData.headerType && templateData.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase()) {
+      templateData.mediaExampleUrl = null
     }
 
     // If template type is media then deleting the header text and footer text

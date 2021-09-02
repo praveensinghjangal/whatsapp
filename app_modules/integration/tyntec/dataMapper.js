@@ -5,6 +5,7 @@ const __config = require('../../../config')
 const getCategoryMapping = require('../service/getCategoryMapping')
 const getWabaCategoryMapping = require('../service/getWabaCategoryMapping')
 const __logger = require('../../../lib/logger')
+const { isArray } = require('../../../lib/util')
 
 class InternalService {
   createInitialBody (td) {
@@ -22,6 +23,7 @@ class InternalService {
         }
       ]
     }
+    if (td.bodyTextVarExample && isArray(td.bodyTextVarExample)) body.localizations[0].components[0].example = { texts: td.bodyTextVarExample }
     if (td.secondLanguageRequired) {
       body.localizations.push({
         language: td.secondLanguageCode,
@@ -32,23 +34,30 @@ class InternalService {
           }
         ]
       })
+      if (td.secondLanguageBodyTextVarExample && isArray(td.secondLanguageBodyTextVarExample)) body.localizations[1].components[0].example = { texts: td.secondLanguageBodyTextVarExample }
     }
     return body
   }
 
   addHeader (body, td) {
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.headerType) {
-      body.localizations[0].components.push({
+      const headerData = {
         type: 'HEADER',
-        format: td.headerType.toUpperCase(),
-        text: td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() ? td.headerText : ''
-      })
+        format: td.headerType.toUpperCase()
+      }
+      if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase()) headerData.text = td.headerText
+      if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.headerTextVarExample && isArray(td.headerTextVarExample)) headerData.example = { text: td.headerTextVarExample[0] }
+      if (td.headerType.toLowerCase() !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.mediaExampleUrl) headerData.example = { url: td.mediaExampleUrl }
+      body.localizations[0].components.push(headerData)
       if (td.secondLanguageRequired) {
-        body.localizations[1].components.push({
+        const headerData = {
           type: 'HEADER',
-          format: td.headerType.toUpperCase(),
-          text: td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() ? td.secondLanguageHeaderText : ''
-        })
+          format: td.headerType.toUpperCase()
+        }
+        if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase()) headerData.text = td.secondLanguageHeaderText
+        if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.secondLanguageHeaderTextVarExample && isArray(td.secondLanguageHeaderTextVarExample)) headerData.example = { text: td.secondLanguageHeaderTextVarExample[0] }
+        if (td.headerType.toLowerCase() !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.mediaExampleUrl) headerData.example = { url: td.mediaExampleUrl }
+        body.localizations[1].components.push(headerData)
       }
     }
     return body

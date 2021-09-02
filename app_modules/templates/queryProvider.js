@@ -43,7 +43,10 @@ const getTemplateInfo = () => {
     mtc.message_template_category_id as "messageTemplateCategoryId",mts.message_template_status_id as "messageTemplateStatusId",
     mtl.message_template_language_id as "messageTemplateLanguageId",mtl2.message_template_language_id as "secondTemplateLanguageId",
     mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
-    mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
+    mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode",
+    mt.body_text_var_example  as "bodyTextVarExample", mt.header_text_var_example as "headerTextVarExample",
+    mt.second_language_body_text_var_example as "secondLanguageBodyTextVarExample", mt.second_language_header_text_var_example as "secondLanguageHeaderTextVarExample",
+    mt.media_example_url as "mediaExampleUrl" 
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
@@ -63,8 +66,9 @@ const addTemplate = () => {
   message_template_category_id, message_template_status_id, message_template_language_id, body_text ,
   header_text, footer_text, media_type, second_language_required, second_message_template_language_id,second_language_header_text,
   second_language_body_text ,second_language_footer_text,
-  header_type, button_type,button_data, created_by,first_localization_status,updated_by,second_localization_status,updated_on)
-  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now())`
+  header_type, button_type,button_data, created_by,first_localization_status,updated_by,second_localization_status, body_text_var_example,
+  header_text_var_example, second_language_body_text_var_example, second_language_header_text_var_example, media_example_url, updated_on)
+  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now())`
 }
 
 const updateTemplate = () => {
@@ -72,9 +76,9 @@ const updateTemplate = () => {
   message_template_status_id =?,message_template_language_id =?, body_text  =?, header_text =?,
   footer_text =?, media_type =?, second_language_required = ?, second_message_template_language_id = ?,
   second_language_header_text = ?,second_language_body_text = ?,second_language_footer_text = ?,
-  header_type = ?, button_type = ?,button_data = ?, updated_by =?,
-  updated_on = now() 
-  where message_template_id =? and  waba_information_id =?`
+  header_type = ?, button_type = ?,button_data = ?, updated_by =?, body_text_var_example = ?, header_text_var_example = ?,
+  second_language_body_text_var_example  = ?, second_language_header_text_var_example  = ?, media_example_url = ?, updated_on = now() 
+  where message_template_id = ? and  waba_information_id = ?`
 }
 
 const deleteTemplate = () => {
@@ -187,7 +191,10 @@ const getTemplateTableDataAndWabaId = () => {
   mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
   mt.first_localization_status as "firstLocalizationStatus",mt.second_localization_status as "secondLocalizationStatus",
   mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
-  mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
+  mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode",
+  mt.body_text_var_example  as "bodyTextVarExample", mt.header_text_var_example as "headerTextVarExample",
+  mt.second_language_body_text_var_example as "secondLanguageBodyTextVarExample", mt.second_language_header_text_var_example as "secondLanguageHeaderTextVarExample",
+  mt.media_example_url as "mediaExampleUrl" 
   from waba_information wi
   left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = ?
   left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true
@@ -237,7 +244,10 @@ const getTemplateTableDataByTemplateName = () => {
         mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
         mt.first_localization_status as "firstLocalizationStatus",mt.second_localization_status as "secondLocalizationStatus",
         mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
-        mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
+        mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode",
+        mt.body_text_var_example  as "bodyTextVarExample", mt.header_text_var_example as "headerTextVarExample",
+        mt.second_language_body_text_var_example as "secondLanguageBodyTextVarExample", mt.second_language_header_text_var_example as "secondLanguageHeaderTextVarExample",
+        mt.media_example_url as "mediaExampleUrl" 
         from waba_information wi
         left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and lower(mt.template_name) = lower(?)
         left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true
@@ -258,7 +268,10 @@ const getTemplateTableDataByTemplateId = () => {
     mt.header_type as "headerType", mt.button_type as "buttonType", mt.button_data as "buttonData",
     mt.first_localization_status as "firstLocalizationStatus",mt.second_localization_status as "secondLocalizationStatus",
     mt.first_localization_rejection_reason as "firstLocalizationRejectionReason",mt.second_localization_rejection_reason as "secondLocalizationRejectionReason",
-    mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode"
+    mts.status_name as "templateStatus",mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode",
+    mt.body_text_var_example  as "bodyTextVarExample", mt.header_text_var_example as "headerTextVarExample",
+    mt.second_language_body_text_var_example as "secondLanguageBodyTextVarExample", mt.second_language_header_text_var_example as "secondLanguageHeaderTextVarExample",
+    mt.media_example_url as "mediaExampleUrl" 
     from waba_information wi
     left join message_template mt on mt.waba_information_id = wi.waba_information_id and mt.is_active = true and mt.message_template_id = ?
     left join message_template_status mts on mts.message_template_status_id = mt.message_template_status_id and mts.is_active = true

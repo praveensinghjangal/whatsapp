@@ -124,11 +124,29 @@ class validate {
           minLength: 1,
           maxLength: 1000
         },
+        bodyTextVarExample: {
+          type: 'array',
+          required: !!(request.bodyText && (request.bodyText.match(/{{\d}}/g) || []).length),
+          minItems: request.bodyText ? (request.bodyText.match(/{{\d}}/g) || []).length : 0,
+          maxItems: request.bodyText ? (request.bodyText.match(/{{\d}}/g) || []).length : 200,
+          items: {
+            type: 'string'
+          }
+        },
         headerText: {
           type: 'string',
-          required: false,
+          required: request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase(),
           minLength: 1,
           maxLength: 500
+        },
+        headerTextVarExample: {
+          type: 'array',
+          required: !!(request.headerText && (request.headerText.match(/{{\d}}/g) || []).length),
+          minItems: 1,
+          maxItems: 1,
+          items: {
+            type: 'string'
+          }
         },
         footerText: {
           type: 'string',
@@ -159,12 +177,41 @@ class validate {
           minLength: 1,
           maxLength: 1024
         },
+        secondLanguageBodyTextVarExample: {
+          type: 'array',
+          required: !!(request.secondLanguageBodyText && (request.secondLanguageBodyText.match(/{{\d}}/g) || []).length),
+          minItems: request.secondLanguageBodyText ? (request.secondLanguageBodyText.match(/{{\d}}/g) || []).length : 0,
+          maxItems: request.secondLanguageBodyText ? (request.secondLanguageBodyText.match(/{{\d}}/g) || []).length : 200,
+          items: {
+            type: 'string'
+          }
+        },
         headerType: {
           type: typeof request.headerType === 'string' ? 'string' : null,
           required: false,
           minLength: 1,
           enum: _.map(__constants.TEMPLATE_HEADER_TYPE, json => json.templateHeaderType ? json.templateHeaderType.toLowerCase() : json.templateHeaderType),
           maxLength: 100
+        },
+        mediaExampleUrl: {
+          type: 'string',
+          required: request.headerType && request.headerType !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase(),
+          pattern: __constants.VALIDATOR.url,
+          maxLength: 2083
+        },
+        secondLanguageHeaderText: {
+          type: 'string',
+          required: request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && request.secondLanguageRequired === true,
+          maxLength: 500
+        },
+        secondLanguageHeaderTextVarExample: {
+          type: 'array',
+          required: !!(request.secondLanguageHeaderText && (request.secondLanguageHeaderText.match(/{{\d}}/g) || []).length),
+          minItems: 1,
+          maxItems: 1,
+          items: {
+            type: 'string'
+          }
         },
         buttonType: {
           type: typeof request.buttonType === 'string' ? 'string' : null,
@@ -237,8 +284,20 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
+      if (formatedErr[formatedErr.length - 1] === '[^\\\\s]{2,})/"') {
+        formatedError.push('please provide valid url for mediaExampleUrl')
+      } else {
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
     })
+    request.headerTextVarExample = request.headerTextVarExample ? request.headerTextVarExample : []
+    request.secondLanguageHeaderTextVarExample = request.secondLanguageHeaderTextVarExample ? request.secondLanguageHeaderTextVarExample : []
+    request.bodyTextVarExample = request.bodyTextVarExample ? request.bodyTextVarExample : []
+    request.secondLanguageBodyTextVarExample = request.secondLanguageBodyTextVarExample ? request.secondLanguageBodyTextVarExample : []
+    if (request.secondLanguageRequired && request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && (schema.properties.headerTextVarExample.required || schema.properties.secondLanguageHeaderTextVarExample.required) && request.headerTextVarExample.length !== request.secondLanguageHeaderTextVarExample.length) formatedError.push('variable count in headerText doesnot match with variable count in secondLanguageHeaderText')
+    if (request.secondLanguageRequired && request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && (schema.properties.bodyTextVarExample.required || schema.properties.secondLanguageBodyTextVarExample.required) && request.bodyTextVarExample.length !== request.secondLanguageBodyTextVarExample.length) formatedError.push('variable count in bodyText doesnot match with variable count in secondLanguageBodyText')
+    if (request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && schema.properties.headerText.required && request.headerText && (request.headerText.match(/{{\d}}/g) || []).length !== 1) formatedError.push('headerText text can contain only one variable')
+    if (request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && schema.properties.secondLanguageHeaderText.required && request.secondLanguageHeaderText && (request.secondLanguageHeaderText.match(/{{\d}}/g) || []).length !== 1) formatedError.push('secondLanguageHeaderText text can contain only one variable')
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
@@ -346,6 +405,11 @@ class validate {
           type: [null, 'string'],
           required: false,
           enum: headereTypeEnum
+        },
+        secondLanguageHeaderText: {
+          type: [null, 'string'],
+          required: false,
+          maxLength: 500
         },
         buttonType: {
           type: [null, 'string'],
