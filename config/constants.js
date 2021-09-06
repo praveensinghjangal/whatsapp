@@ -412,6 +412,7 @@ const DLT_PANEL_ENDPOINTS = {
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
+module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
 module.exports.VERIFICATION_CHANNEL = VERIFICATION_CHANNEL
 module.exports.ACCOUNT_PLAN_TYPE = ACCOUNT_PLAN_TYPE

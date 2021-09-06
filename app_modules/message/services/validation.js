@@ -92,6 +92,11 @@ class validate {
               enum: ['whatsapp']
             }
           },
+          countryCode: {
+            type: 'string',
+            required: true,
+            enum: __constants.COUNTRY_LIST_ALPHA_TWO
+          },
           whatsapp: {
             type: 'object',
             required: true,

@@ -262,9 +262,7 @@ class TemplateService {
       if (templateData.buttonData.secondLanguagePhoneButtonText) delete templateData.buttonData.secondLanguagePhoneButtonText
     }
     if (templateData.headerType && templateData.headerType !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase()) {
-      templateData.bodyTextVarExample = null
       templateData.headerTextVarExample = null
-      templateData.secondLanguageBodyTextVarExample = null
       templateData.secondLanguageHeaderTextVarExample = null
     }
     if (templateData.headerType && templateData.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase()) {
