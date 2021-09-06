@@ -29,7 +29,7 @@ const getWabaAccountActiveInactiveCount = (req, res) => {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: {
           activeRecords: result && result[0] && result[0].totalActiveUsers ? result[0].totalActiveUsers : 0,
-          inActiveRecords: result && result[0] && result[0] && result[0].totalUsers && result[0].totalActiveUsers !== null && result[0].totalActiveUsers !== undefined  ? result[0].totalUsers - result[0].totalActiveUsers : 0 //done seperate check for null n unedfine as active users can be 0 
+          inActiveRecords: result && result[0] && result[0] && result[0].totalUsers && result[0].totalActiveUsers !== null && result[0].totalActiveUsers !== undefined ? result[0].totalUsers - result[0].totalActiveUsers : 0 // done seperate check for null n unedfine as active users can be 0
         }
       })
     })

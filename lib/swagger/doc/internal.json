@@ -110,6 +110,7 @@
                            "channels": [
                               "whatsapp"
                            ],
+                           "countryCode": "IN",
                            "whatsapp": {
                               "from": "9167890",
                               "contentType": "location",
@@ -124,6 +125,7 @@
                            "channels": [
                               "whatsapp"
                            ],
+                          "countryCode": "IN",
                            "whatsapp": {
                               "from": "9167890",
                               "contentType": "template",
@@ -191,6 +193,7 @@
                            "channels": [
                               "whatsapp"
                            ],
+                           "countryCode": "IN",
                            "whatsapp": {
                               "from": "9167890",
                               "contentType": "media",
@@ -206,6 +209,7 @@
                            "channels": [
                               "whatsapp"
                            ],
+                           "countryCode": "IN",
                            "whatsapp": {
                               "from": "9167890",
                               "contentType": "text",
@@ -8500,7 +8504,7 @@
                   "required": false,
                   "type": "string",
                   "description": "Enter phone number here"
-               },               
+               }
             ],
             "responses": {
                "200": {
@@ -10696,7 +10700,7 @@
                   "required": false,
                   "type": "string",
                   "description": "Enter template name here"
-               },               
+               }               
             ],
             "responses": {
                "200": {
@@ -15504,7 +15508,7 @@
                   "required": true,
                   "type": "string",
                   "description": "flow topic evaluation response"
-               },               
+               }    
 
             ],
             "responses": {
@@ -16067,7 +16071,7 @@
                            "msg": "No such category found",
                            "data": {},
                            "err": {}
-                        },
+                        }
                           
                      ]
                   }
@@ -16998,13 +17002,15 @@
             "messageTemplateStatusId": "c71a8387-80e0-468b-9ee3-abb5ec328176",
             "messageTemplateLanguageId": "57aa7635-5717-4397-8eb6-4799ef3bec05",
             "bodyText": "Hi {{1}} welcome to our platform",
+            "bodyTextVarExample": ["example value"],
             "headerText": "",
             "footerText": "vivaconnect",
-            "mediaType": "image",
             "secondLanguageRequired": false,
             "secondMessageTemplateLanguageId": "cde192b7-c60f-4d2d-8573-dd5af7c9379b",
             "secondlanguageBodyText": "Hi {{1}} welcome to our platform",
+            "secondLanguageBodyTextVarExample":["second language example value"],
             "headerType": "image",
+            "mediaExampleUrl": "https://helo.ai/images/logo.png",
             "buttonType": "Quick Reply",
             "buttonData": {
                "quickReply": [
@@ -17045,6 +17051,9 @@
             "bodyText": {
                "type": "string"
             },
+            "bodyTextVarExample":{
+                "type": "array"
+            },
             "headerText": {
                "type": "string"
             },
@@ -17053,6 +17062,9 @@
             },
             "mediaType": {
                "type": "string"
+            },
+            "mediaExampleUrl":{
+              "type":"strin"
             },
             "secondLanguageRequired": {
                "type": "boolean"
@@ -17063,6 +17075,9 @@
             "secondlanguageBodyText": {
                "type": "string"
             },
+            "secondLanguageBodyTextVarExample": {
+               "type": "array"
+            },
             "headerType": {
                "type": "string",
                "enum": [
@@ -17072,6 +17087,15 @@
                   "Text",
                   "image"
                ]
+            },
+            "secondLanguageHeaderText" : {
+               "type": "string"
+            },
+            "headerTextVarExample" : {
+              "type":"array"
+            },
+            "secondLanguageHeaderTextVarExample" : {
+              "type":"array"
             },
             "buttonType": {
                "type": "string",
