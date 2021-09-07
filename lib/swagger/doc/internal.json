@@ -78,7 +78,7 @@
    "paths": {
       "/chat/v1/messages": {
          "post": {
-            "x-isPublic": false,
+            "x-isPublic": true,
             "x-module": "platform",
             "description": "This API is used to send mesages using a channel.\nThis API can send single as well as bulk messsages.",
             "summary": "This API is used to send mesages using a channel",

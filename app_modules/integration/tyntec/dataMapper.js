@@ -23,7 +23,7 @@ class InternalService {
         }
       ]
     }
-    if (td.bodyTextVarExample && isArray(td.bodyTextVarExample)) body.localizations[0].components[0].example = { texts: td.bodyTextVarExample }
+    if (td.bodyTextVarExample && isArray(td.bodyTextVarExample) && td.bodyTextVarExample.length > 0) body.localizations[0].components[0].example = { texts: td.bodyTextVarExample }
     if (td.secondLanguageRequired) {
       body.localizations.push({
         language: td.secondLanguageCode,
@@ -34,7 +34,7 @@ class InternalService {
           }
         ]
       })
-      if (td.secondLanguageBodyTextVarExample && isArray(td.secondLanguageBodyTextVarExample)) body.localizations[1].components[0].example = { texts: td.secondLanguageBodyTextVarExample }
+      if (td.secondLanguageBodyTextVarExample && isArray(td.secondLanguageBodyTextVarExample) && td.secondLanguageBodyTextVarExample.length > 0) body.localizations[1].components[0].example = { texts: td.secondLanguageBodyTextVarExample }
     }
     return body
   }
@@ -46,7 +46,7 @@ class InternalService {
         format: td.headerType.toUpperCase()
       }
       if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase()) headerData.text = td.headerText
-      if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.headerTextVarExample && isArray(td.headerTextVarExample)) headerData.example = { text: td.headerTextVarExample[0] }
+      if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.headerTextVarExample && isArray(td.headerTextVarExample) && td.headerTextVarExample.length > 0) headerData.example = { text: td.headerTextVarExample[0] }
       if (td.headerType.toLowerCase() !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.mediaExampleUrl) headerData.example = { url: td.mediaExampleUrl }
       body.localizations[0].components.push(headerData)
       if (td.secondLanguageRequired) {
@@ -55,7 +55,7 @@ class InternalService {
           format: td.headerType.toUpperCase()
         }
         if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase()) headerData.text = td.secondLanguageHeaderText
-        if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.secondLanguageHeaderTextVarExample && isArray(td.secondLanguageHeaderTextVarExample)) headerData.example = { text: td.secondLanguageHeaderTextVarExample[0] }
+        if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.secondLanguageHeaderTextVarExample && isArray(td.secondLanguageHeaderTextVarExample) && td.secondLanguageHeaderTextVarExample.length > 0) headerData.example = { text: td.secondLanguageHeaderTextVarExample[0] }
         if (td.headerType.toLowerCase() !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.mediaExampleUrl) headerData.example = { url: td.mediaExampleUrl }
         body.localizations[1].components.push(headerData)
       }
