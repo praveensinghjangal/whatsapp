@@ -123,11 +123,17 @@ module.exports = {
       name: 'demo',
       queueName: process.env.SERVICE_PROVIDER_QUEUE_DEMO,
       servicProviderId: process.env.SERVICE_PROVIDER_ID_DEMO
+    },
+    [process.env.SERVICE_PROVIDER_ID_FB]: {
+      name: 'facebook',
+      queueName: process.env.SERVICE_PROVIDER_QUEUE_FB_OUTGOING,
+      servicProviderId: process.env.SERVICE_PROVIDER_ID_FB
     }
   },
   service_provider_id: {
     tyntec: process.env.SERVICE_PROVIDER_ID_TYNTEC,
-    demo: process.env.SERVICE_PROVIDER_ID_DEMO
+    demo: process.env.SERVICE_PROVIDER_ID_DEMO,
+    facebook: process.env.SERVICE_PROVIDER_ID_FB
   },
   helo_whatsapp_mysql: {
     init: process.env.HW_MYSQL_INIT === 'true',
@@ -182,6 +188,11 @@ module.exports = {
     },
     tyntec: {
       baseUrl: process.env.TYNTEC_BASE_URL
+    },
+    facebook: {
+      baseUrl: {
+        [process.env.WABA_ID_HELO_FB]: process.env.BASE_URL_HELO_FB
+      }
     }
   },
   authentication: {
