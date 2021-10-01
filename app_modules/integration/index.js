@@ -1,7 +1,8 @@
 const providerConfig = require('../../config').provider_config
 const providers = { // keep on adding providers here
   demo: require('./demo'),
-  tyntec: require('./tyntec')
+  tyntec: require('./tyntec'),
+  facebook: require('./facebook')
 }
 // functions will be called as per provider
 class Messaage {
