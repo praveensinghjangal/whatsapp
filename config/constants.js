@@ -275,6 +275,9 @@ const TYNTEC_ENDPOINTS = {
   updateDefaultApp: '/chat-api/v2/applications/default',
   getMedia: '/chat-api/v2/media/:mediaId'
 }
+const FACEBOOK_ENDPOINTS = {
+  saveOptin: '/v1/contacts'
+}
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
   adminPannelResetPassword: '/#/new-password'
@@ -416,6 +419,10 @@ const DLT_PANEL_ENDPOINTS = {
 
 }
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
+const FACEBOOK_RESPONSES = {
+  stable: { displayName: 'stable' },
+  valid: { displayName: 'valid' }
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -451,6 +458,7 @@ module.exports.RESET_PASSWORD_TOKEN_EXPIREY_TIME = RESET_PASSWORD_TOKEN_EXPIREY_
 module.exports.TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_DEFAULT_LANGUAGE_STATUS
 module.exports.TEMPLATE_DEFAULT_STATUS = TEMPLATE_DEFAULT_STATUS
 module.exports.TYNTEC_ENDPOINTS = TYNTEC_ENDPOINTS
+module.exports.FACEBOOK_ENDPOINTS = FACEBOOK_ENDPOINTS
 module.exports.MESSAGE_TRANSACTION_TYPE = MESSAGE_TRANSACTION_TYPE
 module.exports.TEMPLATE_APPROVE_STATUS = TEMPLATE_APPROVE_STATUS
 module.exports.TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_PARTIAL_APPROVE_STATUS
@@ -485,3 +493,4 @@ module.exports.STATIC = STATIC
 module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
+module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES

@@ -50,4 +50,14 @@ class WabaAccount {
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
 }
 
-module.exports = { Messaage, Template, WabaAccount }
+class Audience {
+  constructor (providerId, maxConcurrent, userId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    // this.providerName = 'facebook'
+    this.audience = new providers[this.providerName].Audience(maxConcurrent, userId)
+  }
+
+  saveOptin (wabaNumber, payload) { return this.audience.saveOptin(wabaNumber, payload) }
+}
+
+module.exports = { Messaage, Template, WabaAccount, Audience }
