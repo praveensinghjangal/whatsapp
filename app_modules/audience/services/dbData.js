@@ -77,8 +77,8 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
-      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false),
-      createdBy: newData.userId
+      createdBy: newData.userId,
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false)
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
@@ -142,9 +142,9 @@ class AudienceService {
       wabaPhoneNumber: newData.wabaPhoneNumber || oldData.wabaPhoneNumber,
       firstMessageValue: null,
       lastMessageValue: null,
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : oldData.isFacebookVerified,
       audienceId: oldData.audienceId,
-      phoneNumber: oldData.phoneNumber,
-      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : oldData.isFacebookVerified
+      phoneNumber: oldData.phoneNumber
 
     }
 
