@@ -129,6 +129,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   __logger.info('inside markOptinByPhoneNumber', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const input = req.body
+  // TODO: if number is invalid then ? save optin as false and isFacebookVerified as false ? or just return the function from here
   input.optin = true
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
   const validate = new ValidatonService()

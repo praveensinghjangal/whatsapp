@@ -132,6 +132,11 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 60
+        },
+        isFacebookVerified: {
+          type: 'boolean',
+          required: false,
+          default: false
         }
 
       }
@@ -213,6 +218,11 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 60
+        },
+        isFacebookVerified: {
+          type: 'boolean',
+          required: false,
+          default: false
         }
 
       }

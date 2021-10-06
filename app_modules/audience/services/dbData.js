@@ -68,6 +68,7 @@ class AudienceService {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
       phoneNumber: newData.phoneNumber || oldData.phoneNumber,
       channel: newData.channel || oldData.channel,
+      // TODO:
       optin: typeof newData.optin === 'boolean' ? newData.optin : false,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
@@ -76,6 +77,7 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false),
       createdBy: newData.userId
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
@@ -127,6 +129,7 @@ class AudienceService {
     // this.updateAudience(newData, oldData)
     var audienceData = {
       channel: newData.channel || oldData.channel,
+      // TODO:
       optin: typeof newData.optin === 'boolean' ? newData.optin : oldData.optin,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
@@ -140,7 +143,8 @@ class AudienceService {
       firstMessageValue: null,
       lastMessageValue: null,
       audienceId: oldData.audienceId,
-      phoneNumber: oldData.phoneNumber
+      phoneNumber: oldData.phoneNumber,
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : oldData.isFacebookVerified
 
     }
 

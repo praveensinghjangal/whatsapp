@@ -13,7 +13,6 @@ class Audience {
   saveOptin (wabaNumber, listOfPhoneNumbers) {
     __logger.info('Facebook saveOptin ::>>>>>>>>>>>>>>>>>>>>> ', listOfPhoneNumbers)
     const deferred = q.defer()
-    // wabaNumber = '917666118833'
     const url = facebookConfig.baseUrl[wabaNumber] + __constants.FACEBOOK_ENDPOINTS.saveOptin
     const headers = {
       'Content-Type': 'application/json',
