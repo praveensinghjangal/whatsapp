@@ -10,7 +10,7 @@
     "debug": "nodemon --inspect=9231 server.js",
     "v8Profile": "node --prof server.js",
     "standard": "standard --fix"
-  },
+    },
   "nodemonConfig": {
     "env": {
       "NODE_ENV": "development"

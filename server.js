@@ -14,7 +14,8 @@ const SERVER_SCRIPTS = {
   tyntecIncoming: './workers/message_consumers/tyntecIncoming.js',
   tyntecMessageStatus: './workers/message_consumers/tyntecMessageStatus.js',
   retrySendingPayload: './workers/message_consumers/retrySendingPayload.js',
-  fetchAndUpdateTemplateStatus: './workers/schedulers/fetchAndUpdateTemplateStatus.js'
+  fetchAndUpdateTemplateStatus: './workers/schedulers/fetchAndUpdateTemplateStatus.js',
+  redisPubSubMechanism: './workers/redisPubSubMechanism.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

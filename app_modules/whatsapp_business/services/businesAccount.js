@@ -318,7 +318,7 @@ class businesAccountService {
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaData(), [wabaNumber])
       .then(result => {
-        // __logger.info('resulttttttttttttttttttttttttttt', result[0], wabaNumber)
+        // __logger.info('resulttttttttttttttttttttttttttt', result)
         if (result && result.length === 0) {
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
         } else {

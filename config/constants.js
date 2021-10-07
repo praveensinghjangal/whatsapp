@@ -416,6 +416,7 @@ const DLT_PANEL_ENDPOINTS = {
 
 }
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
+const HW_MYSQL = 'helo_whatsapp'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -485,3 +486,4 @@ module.exports.STATIC = STATIC
 module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
+module.exports.HW_MYSQL = HW_MYSQL

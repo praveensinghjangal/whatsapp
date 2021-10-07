@@ -108,7 +108,11 @@ const getWabaData = () => {
   wi.optin_text as "optinText",
   pd.plan_priority as "planPriority",
   wi.chatbot_activated as "chatbotActivated",
-  wi.user_account_id_by_provider as "userAccountIdByProvider"
+  wi.user_account_id_by_provider as "userAccountIdByProvider",
+  wi.username,
+  wi.password,
+  wi.expires_on as "expiresOn",
+  wi.url
   from waba_information wi
   join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
   join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
