@@ -400,6 +400,15 @@ const AGREEMENT_STATUS_MAPPING = {
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
+const CONTINUE_SENDING_MESSAGE_STATUS_FB = ['delivered', 'accepted', 'failed']
+const INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC = {
+  sent: 'accepted',
+  delivered: 'delivered',
+  read: 'seen',
+  failed: 'failed',
+  deleted: 'deleted'
+}
+const TYNTEC_TO_FB_EVENT_KEY = 'MessageStatus::'
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
 const INTERACTIVE = 'interactive'
@@ -487,6 +496,9 @@ module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
 module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
 module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
 module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS
+module.exports.CONTINUE_SENDING_MESSAGE_STATUS_FB = CONTINUE_SENDING_MESSAGE_STATUS_FB
+module.exports.INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC = INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC
+module.exports.TYNTEC_TO_FB_EVENT_KEY = TYNTEC_TO_FB_EVENT_KEY
 module.exports.SAMPLE_AGREEMENT_URL = SAMPLE_AGREEMENT_URL
 module.exports.TEMPLATE_FLOW_APPROVAL = TEMPLATE_FLOW_APPROVAL
 module.exports.STATIC = STATIC
