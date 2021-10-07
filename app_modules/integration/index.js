@@ -50,4 +50,13 @@ class WabaAccount {
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
 }
 
-module.exports = { Messaage, Template, WabaAccount }
+class Authentication {
+  constructor (providerId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.authentication = new providers[this.providerName].Authentication()
+  }
+
+  getFaceBookTokensByWabaNumber (wabaNumber) { return this.authentication.getFaceBookTokensByWabaNumber(wabaNumber) }
+}
+
+module.exports = { Messaage, Template, WabaAccount, Authentication }

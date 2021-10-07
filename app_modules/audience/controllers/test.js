@@ -1,10 +1,10 @@
 // const AuthService = require('../../../lib/auth_service/authService')
-const AuthService = require('../../integration/facebook/auth_service/authService')
+const IntegrationService = require('../../integration')
 
 const testApi = (req, res) => {
   console.log('here', req.body.number)
-  const authService = new AuthService()
-  authService.getWabaTokenByPhoneNumber(req.body.number)
+  const authService = new IntegrationService.Authentication('a4f03720-3a33-4b94-b88a-e10453492183')
+  authService.getFaceBookTokensByWabaNumber(req.body.number)
     .then((data) => {
       console.log('testttttt', data)
     }).catch(err => {

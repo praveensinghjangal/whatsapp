@@ -738,6 +738,37 @@ class businesAccountService {
       })
     return dbData.promise
   }
+
+  updateWabizApiKeyAndExpireyTime (wabaNumber, apiKey, expireyTime) {
+    __logger.info('updateServiceProviderDetails', wabaNumber, expireyTime)
+    const dataUpdated = q.defer()
+    let phoneCode = ''
+    if (wabaNumber.includes('91')) {
+      phoneCode = wabaNumber.substring(0, 2)
+      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
+    }
+    if (wabaNumber.includes('+91')) {
+      phoneCode = wabaNumber.substring(0, 3)
+      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
+    }
+    const wabizData = { apiKey, expireyTime, phoneCode, wabaNumber }
+    const queryParam = []
+    _.each(wabizData, (val) => queryParam.push(val))
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizApiKeyAndExpireyTime(), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          saveHistoryData(wabizData, __constants.ENTITY_NAME.WABA_INFORMATION, phoneCode + wabaNumber, 'system')
+          dataUpdated.resolve(true)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
+  }
 }
 
 module.exports = businesAccountService

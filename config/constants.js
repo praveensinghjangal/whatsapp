@@ -275,6 +275,10 @@ const TYNTEC_ENDPOINTS = {
   updateDefaultApp: '/chat-api/v2/applications/default',
   getMedia: '/chat-api/v2/media/:mediaId'
 }
+const FACEBOOK_ENDPOINTS = {
+  saveOptin: '/v1/contacts',
+  login: '/v1/users/login'
+}
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
   adminPannelResetPassword: '/#/new-password'
@@ -417,6 +421,7 @@ const DLT_PANEL_ENDPOINTS = {
 }
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
 const HW_MYSQL = 'helo_whatsapp'
+const FB_REDIS_KEY_BUFFER_TIME = 1800000 // 30 minutes
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -487,3 +492,5 @@ module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
 module.exports.HW_MYSQL = HW_MYSQL
+module.exports.FB_REDIS_KEY_BUFFER_TIME = FB_REDIS_KEY_BUFFER_TIME
+module.exports.FACEBOOK_ENDPOINTS = FACEBOOK_ENDPOINTS

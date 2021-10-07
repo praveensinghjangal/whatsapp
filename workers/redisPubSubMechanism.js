@@ -8,12 +8,10 @@ class redisPubSubMechanismWorker {
   }
 
   async startServer () {
-    await this.redis.init().then((result) => {
-      __logger.info(result)
-    })
-    // await this.mongo.init().then((result) => {
-    //   __logger.info(result)
-    // })
+    await this.redis.init()
+      .then((result) => {
+        __logger.info(result)
+      })
       .catch((error) => {
         __logger.info(error)
         process.exit(1)
