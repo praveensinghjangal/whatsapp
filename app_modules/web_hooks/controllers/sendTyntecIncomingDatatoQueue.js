@@ -28,7 +28,9 @@ const sendToTyntecQueue = (message) => {
   __logger.info('sendToTyntecQueue', message)
   const messageRouted = q.defer()
   __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.tyntecIncoming, JSON.stringify(message))
-    .then(queueResponse => messageRouted.resolve(true))
+    .then(queueResponse => {
+      messageRouted.resolve(true)
+    })
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise
 }

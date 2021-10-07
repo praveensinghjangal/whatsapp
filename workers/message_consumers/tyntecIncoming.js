@@ -7,6 +7,7 @@ const RedirectService = require('../../app_modules/integration/service/redirectS
 const q = require('q')
 
 const sendToTyntecIncomingQueue = (message, queueObj) => {
+  console.log('2222222222222222222223333333')
   const messageRouted = q.defer()
   queueObj.sendToQueue(__constants.MQ.tyntecIncoming, JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
