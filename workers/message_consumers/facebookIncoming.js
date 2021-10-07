@@ -5,6 +5,7 @@ const UniqueId = require('../../lib/util/uniqueIdGenerator')
 const saveIncomingMessagePayloadService = require('../../app_modules/integration/service/saveIncomingMessagePayload')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const q = require('q')
+const moment = require('moment')
 
 const sendToFacebookIncomingQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -24,8 +25,8 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       senderName: messageDataFromFacebook.contacts[0].profile.name
     },
     messageId: messageDataFromFacebook.messages[0].id,
-    timestamp: new Date(messageDataFromFacebook.messages[0].timestamp).toISOString(),
-    receivedAt: new Date(messageDataFromFacebook.messages[0].timestamp).toISOString()
+    timestamp: moment.utc(+(messageDataFromFacebook.messages[0].timestamp + '000')).format('YYYY-MM-DDTHH:mm:ss'),
+    receivedAt: moment.utc(+(messageDataFromFacebook.messages[0].timestamp + '000')).format('YYYY-MM-DDTHH:mm:ss')
   }
   if (messageDataFromFacebook.messages[0].text) {
     // text & url
@@ -149,7 +150,8 @@ class FacebookConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err)
+            __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
+            console.log('errror-------', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })

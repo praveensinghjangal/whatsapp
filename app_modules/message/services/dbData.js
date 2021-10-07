@@ -79,7 +79,7 @@ class MessgaeHistoryService {
           state: dataObj.state,
           endConsumerNumber: ecNum,
           businessNumber: bnNum,
-          errors: dataObj.errors
+          errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]'
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         return queryParam

@@ -5,7 +5,7 @@ const __constants = require('../../../config/constants')
 const q = require('q')
 
 module.exports = (req, res) => {
-  sendToQueue(req.body, req.params)
+  sendToQueue(req.body, req.params.wabanumber)
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: {} }))
     .catch(err => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err }))
 }
@@ -15,14 +15,14 @@ const sendToQueue = (data, wabaNumber) => {
   const messageRouted = q.defer()
   const statusCheck = Object.keys(data)
   if (statusCheck.indexOf('contacts') !== -1) {
-    data.contacts.push(wabaNumber)
+    data = { ...data, wabaNumber: wabaNumber }
     __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.fbIncoming, JSON.stringify(data))
       .then(queueResponse => {
         messageRouted.resolve(true)
       })
       .catch(err => messageRouted.reject(err))
   } else {
-    data.statuses.push(wabaNumber)
+    data = { ...data, wabaNumber: wabaNumber }
     __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.fbMessageStatus, JSON.stringify(data))
       .then(queueResponse => messageRouted.resolve(true))
       .catch(err => messageRouted.reject(err))

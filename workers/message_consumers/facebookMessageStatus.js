@@ -4,6 +4,7 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
+const moment = require('moment')
 
 const sendToFacebookMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -41,10 +42,10 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     event: `${__constants.TYNTEC_TO_FB_EVENT_KEY}${messageDataFromFacebook.statuses[0].status}`,
     deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
     status: __constants.INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC[messageDataFromFacebook.statuses[0].status] ? __constants.INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC[messageDataFromFacebook.statuses[0].status] : messageDataFromFacebook.statuses[0].status,
-    timestamp: new Date(messageDataFromFacebook.statuses[0].timestamp).toISOString(),
+    timestamp: moment.utc(+(messageDataFromFacebook.statuses[0].timestamp + '000')).format('YYYY-MM-DDTHH:mm:ss'),
     details: { from: messageDataFromFacebook.statuses[0].recipient_id },
     from: messageDataFromFacebook.statuses[0].recipient_id,
-    errors: messageDataFromFacebook.statuses[0].errors ? messageDataFromFacebook.statuses[0].errors : null,
+    errors: messageDataFromFacebook.statuses[0].errors ? messageDataFromFacebook.statuses[0].errors : [],
     businessNumber: messageDataFromFacebook.wabaNumber,
     retryCount: messageDataFromFacebook.retryCount ? messageDataFromFacebook.retryCount : 0
   }
@@ -108,7 +109,8 @@ class FacebookConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            __logger.error('facebook message status QueueConsumer::error while parsing: ', err)
+            __logger.error('facebook message status QueueConsumer::error while parsing: ', err.toString())
+            console.log('---', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
