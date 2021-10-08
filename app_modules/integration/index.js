@@ -51,9 +51,9 @@ class WabaAccount {
 }
 
 class Authentication {
-  constructor (providerId) {
+  constructor (providerId, userId) {
     this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
-    this.authentication = new providers[this.providerName].Authentication()
+    this.authentication = new providers[this.providerName].Authentication(userId)
   }
 
   getFaceBookTokensByWabaNumber (wabaNumber) { return this.authentication.getFaceBookTokensByWabaNumber(wabaNumber) }

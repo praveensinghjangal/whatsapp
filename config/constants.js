@@ -422,6 +422,9 @@ const DLT_PANEL_ENDPOINTS = {
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
 const HW_MYSQL = 'helo_whatsapp'
 const FB_REDIS_KEY_BUFFER_TIME = 1800000 // 30 minutes
+const FB_REDIS_KEY_FOLDER = 'token:'
+const FB_REDIS_TOKEN_EXPIRY_KEY = 'token_expiry_identification_key:'
+const FB_REDIS_TOKEN_EXPIRY = 'token_expiry_identification_key'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -494,3 +497,6 @@ module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
 module.exports.HW_MYSQL = HW_MYSQL
 module.exports.FB_REDIS_KEY_BUFFER_TIME = FB_REDIS_KEY_BUFFER_TIME
 module.exports.FACEBOOK_ENDPOINTS = FACEBOOK_ENDPOINTS
+module.exports.FB_REDIS_KEY_FOLDER = FB_REDIS_KEY_FOLDER
+module.exports.FB_REDIS_TOKEN_EXPIRY_KEY = FB_REDIS_TOKEN_EXPIRY_KEY
+module.exports.FB_REDIS_TOKEN_EXPIRY = FB_REDIS_TOKEN_EXPIRY

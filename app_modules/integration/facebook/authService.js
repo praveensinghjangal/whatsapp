@@ -9,7 +9,7 @@ const WabaService = require('../../whatsapp_business/services/businesAccount')
 const RedisService = require('../../../lib/redis_service/redisService')
 
 class InternalFunctions {
-  WabaLoginApi (username, password, url, graphApiKey, wabaNumber) {
+  WabaLoginApi (username, password, url, graphApiKey, wabaNumber, userId) {
     const apiCalled = q.defer()
     const http = new HttpService(60000)
     const headers = { Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64') || ''}` }
@@ -22,7 +22,7 @@ class InternalFunctions {
           resolveObj.apiKey = data.users[0].token
           resolveObj.timeLeftToExpire = +moment(data.users[0].expires_after).format('x')
           const wabaService = new WabaService()
-          return wabaService.updateWabizApiKeyAndExpireyTime(wabaNumber, data.users[0].token, data.users[0].expires_after)
+          return wabaService.updateWabizApiKeyAndExpireyTime(wabaNumber, data.users[0].token, data.users[0].expires_after, userId)
         } else {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: { } })
         }
@@ -32,19 +32,19 @@ class InternalFunctions {
     return apiCalled.promise
   }
 
-  setAuthDataInRedis (wabaNumber) {
+  setAuthDataInRedis (wabaNumber, userId) {
     const dataFetched = q.defer()
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(wabaData => {
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
         if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
-          return this.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaNumber)
+          return this.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaNumber, userId)
         } else {
           return { baseUrl: wabaData.wabizBaseUrl, apiKey: wabaData.apiKey, graphApiKey: wabaData.graphApiKey, timeLeftToExpire }
         }
       })
-      .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook))
+      .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook, userId))
       .then(data => dataFetched.resolve(data))
       .catch(err => {
         __logger.error('error in auth', err)
@@ -55,6 +55,10 @@ class InternalFunctions {
 }
 
 class Authentication {
+  constructor (userId) {
+    this.userId = userId
+  }
+
   getFaceBookTokensByWabaNumber (wabaNumber) {
     __logger.info('inside getFaceBookTokensByWabaNumber', wabaNumber)
     const dataFetched = q.defer()
@@ -63,7 +67,7 @@ class Authentication {
       .then(data => {
         if (!data) {
           const internalFunctions = new InternalFunctions()
-          return internalFunctions.setAuthDataInRedis(wabaNumber)
+          return internalFunctions.setAuthDataInRedis(wabaNumber, this.userId)
         } else {
           return data
         }

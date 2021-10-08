@@ -4,6 +4,7 @@ class redisPubSubMechanismWorker {
   constructor () {
     this.app = {}
     this.redis = require('./../lib/db/redis_pubsub.js')
+    this.db = require('../lib/db')
     // this.mongo = require('./../lib/db/mongo.js')
   }
 
@@ -13,6 +14,14 @@ class redisPubSubMechanismWorker {
         __logger.info(result)
       })
       .catch((error) => {
+        __logger.info(error)
+        process.exit(1)
+      })
+
+    await this.db.init()
+      .then((result) => {
+        __logger.info(result)
+      }).catch((error) => {
         __logger.info(error)
         process.exit(1)
       })

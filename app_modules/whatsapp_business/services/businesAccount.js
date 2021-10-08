@@ -739,7 +739,7 @@ class businesAccountService {
     return dbData.promise
   }
 
-  updateWabizApiKeyAndExpireyTime (wabaNumber, apiKey, expireyTime) {
+  updateWabizApiKeyAndExpireyTime (wabaNumber, apiKey, expireyTime, userId) {
     __logger.info('updateServiceProviderDetails', wabaNumber, expireyTime)
     const dataUpdated = q.defer()
     let phoneCode = ''
@@ -757,14 +757,14 @@ class businesAccountService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizApiKeyAndExpireyTime(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          saveHistoryData(wabizData, __constants.ENTITY_NAME.WABA_INFORMATION, phoneCode + wabaNumber, 'system')
+          saveHistoryData(wabizData, __constants.ENTITY_NAME.WABA_INFORMATION, phoneCode + wabaNumber, userId)
           dataUpdated.resolve(true)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('error:bgdfgd ', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
