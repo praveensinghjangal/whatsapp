@@ -18,6 +18,7 @@ const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId,
 }
 
 const getTemplateList = (req, res) => {
+  console.log('66666666666666666666666666')
   __logger.info('Get Templates List API Called', req.query)
   const { messageTemplateStatusId } = req.query
   const params = [req.user.user_id]
@@ -28,6 +29,7 @@ const getTemplateList = (req, res) => {
 
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId), params)
     .then(result => {
+      console.log('4444444444444444444', result)
       if (result && result.length === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {

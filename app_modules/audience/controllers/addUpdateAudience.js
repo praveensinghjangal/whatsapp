@@ -5,11 +5,39 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const q = require('q')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+// const fetchTemplates = require('../../templates/controllers/fetchTemplates')
+const HttpService = require('../../../lib/http_service')
 
 /**
  * @namespace -Whatsapp-Audience-Controller(Add/Update)-
  * @description API’s related to whatsapp audience.
  */
+
+/**
+ *  @name getApprovedTemplate
+ * @description API bring the approved templated
+ */
+function getApprovedTemplate (userId, wabaNumber, headers) {
+  const http = new HttpService(60000)
+  const templateData = q.defer()
+  const header = {
+    Authorization: headers
+  }
+  __logger.info('calling get getCategory of chat api', headers)
+  http.Get('http://localhost:3000/helowhatsapp/api/templates?messageTemplateStatusId=1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9', header)
+    .then(data => {
+      if (data.length) {
+        templateData.resolve(true)
+      } else {
+        templateData.resolve(false)
+      }
+      // return templateData.resolve(data)
+    })
+    .catch(err => {
+      return templateData.reject(err)
+    })
+  return templateData.promise
+}
 
 /**
  * @memberof -Whatsapp-Audience-Controller(Add/Update)-
@@ -38,7 +66,18 @@ const addUpdateAudienceData = (req, res) => {
   __logger.info('add update audience API called', req.body)
   __logger.info('add update audience API called', req.user)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-
+  const wabaNumber = req.user.wabaPhoneNumber
+  const headers = req.headers.authorization
+  getApprovedTemplate(userId, wabaNumber, headers)
+    .then(templatesExists => {
+      console.log('212323', templatesExists)
+      if (!templatesExists) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
+      }
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err || err })
+    })
   processRecordInBulk(req.body, userId)
     .then(data => {
       __logger.info('processRecordInBulk::', { data })
