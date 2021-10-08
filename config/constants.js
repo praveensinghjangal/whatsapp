@@ -368,6 +368,9 @@ const TYNTEC_MESSAGE_EVENTS = {
   unknown: 'MessageStatus::unknown',
   deleted: 'MessageStatus::deleted'
 }
+const FACEBOOK_MESSAGE_EVENTS = {
+  moMessage: 'MoMessage'
+}
 const WEB_HOOK_END_POINT = {
   incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
   messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e'
@@ -400,6 +403,21 @@ const AGREEMENT_STATUS_MAPPING = {
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
+const CONTINUE_SENDING_MESSAGE_STATUS_FB = ['delivered', 'accepted', 'failed']
+const INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC = {
+  sent: 'accepted',
+  delivered: 'delivered',
+  read: 'seen',
+  failed: 'failed',
+  deleted: 'deleted'
+}
+const TYNTEC_TO_FB_EVENT_KEY = 'MessageStatus::'
+const FACEBOOK_CONTENT_TYPE = {
+  text: 'text',
+  media: 'media',
+  contacts: 'contacts',
+  location: 'location'
+}
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
 const INTERACTIVE = 'interactive'
@@ -478,6 +496,7 @@ module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH
 module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
 module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
 module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
+module.exports.FACEBOOK_MESSAGE_EVENTS = FACEBOOK_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
 module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
 module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
@@ -487,6 +506,10 @@ module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
 module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
 module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
 module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS
+module.exports.CONTINUE_SENDING_MESSAGE_STATUS_FB = CONTINUE_SENDING_MESSAGE_STATUS_FB
+module.exports.INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC = INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC
+module.exports.TYNTEC_TO_FB_EVENT_KEY = TYNTEC_TO_FB_EVENT_KEY
+module.exports.FACEBOOK_CONTENT_TYPE = FACEBOOK_CONTENT_TYPE
 module.exports.SAMPLE_AGREEMENT_URL = SAMPLE_AGREEMENT_URL
 module.exports.TEMPLATE_FLOW_APPROVAL = TEMPLATE_FLOW_APPROVAL
 module.exports.STATIC = STATIC
