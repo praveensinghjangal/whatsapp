@@ -78,7 +78,8 @@ class MessgaeHistoryService {
           statusTime: moment.utc(dataObj.statusTime).format('YYYY-MM-DDTHH:mm:ss'),
           state: dataObj.state,
           endConsumerNumber: ecNum,
-          businessNumber: bnNum
+          businessNumber: bnNum,
+          errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]'
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         return queryParam

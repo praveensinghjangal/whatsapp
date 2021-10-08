@@ -39,6 +39,5 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/plans', plans)
   app.use(apiUrlPrefix + '/audience', audience)
   app.use(apiUrlPrefix + '/frontEnd', frontEnd)
-
   require('../lib/swagger')(app, '/' + __config.api_prefix + '/api')
 }

@@ -23,7 +23,7 @@ const queryProvider = require('../queryProvider')
 
 // Get Segment Data
 const getSegmentData = (req, res) => {
-  __logger.info('Inside getSegmentData', req.user.userId)
+  // __logger.info('Inside getSegmentData', req.user.userId)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getSegmentData(), [])
     .then(results => {
       __logger.info('Then 1')

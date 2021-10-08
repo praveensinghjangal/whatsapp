@@ -424,6 +424,10 @@ class validate {
           required: true,
           minLength: 1
         },
+        errors: {
+          type: 'array',
+          required: false
+        },
         endConsumerNumber: {
           type: 'string',
           required: false
