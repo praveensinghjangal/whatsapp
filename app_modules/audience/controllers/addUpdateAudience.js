@@ -216,9 +216,9 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
     .then(optinData => {
       const verifiedAudiences = [...audiencesToBeVerified]
       const invalidAudiences = []
-      if (optinData && optinData.data && optinData.data.length !== 0) {
+      if (optinData && optinData.length !== 0) {
         // it means invalid numbers are present
-        optinData.data.map(opt => {
+        optinData.map(opt => {
           //  remove "opt.input" from verifiedAudiences and push them into invalidAudiences
           const audience = _.remove(verifiedAudiences, (aud) => {
             return aud.phoneNumber === opt.input
