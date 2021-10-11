@@ -77,7 +77,7 @@ const addUpdateAudienceData = (req, res) => {
       return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
     })
     .then(({ oldDataOfAudiences, newDataOfAudiences, verifiedAudiences }) => {
-      return processRecordInBulk(req.body, userId)
+      return processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences)
     })
     .then(data => {
       __logger.info('processRecordInBulk::', { data })
@@ -103,13 +103,20 @@ function updateAudienceData (inputData, oldAudienceData) {
   return audienceData.promise
 }
 
-const singleRecordProcess = (data, userId) => {
+const singleRecordProcess = (data, userId, oldData = null) => {
   __logger.info('Inside singleRecordProcess :: ', { data }, userId)
   const dataSaved = q.defer()
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
-    .then(data => audienceService.getAudienceTableDataByPhoneNumber([data.phoneNumber], userId, data.wabaPhoneNumber))
+    .then(data => {
+      if (oldData) {
+        const old = q.defer()
+        old.resolve([oldData])
+        return old.promise
+      }
+      return audienceService.getAudienceTableDataByPhoneNumber([data.phoneNumber], userId, data.wabaPhoneNumber)
+    })
     .then(audiencesData => {
       const audienceData = audiencesData[0]
       __logger.info('audienceData:: then 2', { audienceData })
@@ -128,15 +135,15 @@ const singleRecordProcess = (data, userId) => {
   return dataSaved.promise
 }
 
-const processRecordInBulk = (data, userId) => {
+const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => {
   let p = q()
   const thePromises = []
   // if (!data.length || data.length > 10000) {
-  if (!data.length) {
+  if (!newDataOfAudiences.length) {
     return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
   }
-  data.forEach(singleObject => {
-    p = p.then(() => singleRecordProcess(singleObject, userId))
+  newDataOfAudiences.forEach((singleObject, index) => {
+    p = p.then(() => singleRecordProcess(singleObject, userId, oldDataOfAudiences[index]))
       .catch(err => err)
     thePromises.push(p)
   })
