@@ -50,6 +50,15 @@ class WabaAccount {
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
 }
 
+class Authentication {
+  constructor (providerId, userId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.authentication = new providers[this.providerName].Authentication(userId)
+  }
+
+  getFaceBookTokensByWabaNumber (wabaNumber) { return this.authentication.getFaceBookTokensByWabaNumber(wabaNumber) }
+}
+
 class Audience {
   constructor (providerId, maxConcurrent, userId) {
     this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
@@ -60,4 +69,4 @@ class Audience {
   saveOptin (wabaNumber, payload) { return this.audience.saveOptin(wabaNumber, payload) }
 }
 
-module.exports = { Messaage, Template, WabaAccount, Audience }
+module.exports = { Messaage, Template, WabaAccount, Authentication, Audience }

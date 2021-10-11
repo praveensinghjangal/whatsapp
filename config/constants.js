@@ -276,7 +276,8 @@ const TYNTEC_ENDPOINTS = {
   getMedia: '/chat-api/v2/media/:mediaId'
 }
 const FACEBOOK_ENDPOINTS = {
-  saveOptin: '/v1/contacts'
+  saveOptin: '/v1/contacts',
+  login: '/v1/users/login'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -437,6 +438,11 @@ const DLT_PANEL_ENDPOINTS = {
 
 }
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
+const HW_MYSQL = 'helo_whatsapp'
+const FB_REDIS_KEY_BUFFER_TIME = 1800000 // 30 minutes
+const FB_REDIS_KEY_FOLDER = 'token:'
+const FB_REDIS_TOKEN_EXPIRY_KEY = 'token_expiry_identification_key:'
+const FB_REDIS_TOKEN_EXPIRY = 'token_expiry_identification_key'
 const FACEBOOK_RESPONSES = {
   stable: { displayName: 'stable' },
   valid: { displayName: 'valid' }
@@ -516,4 +522,9 @@ module.exports.STATIC = STATIC
 module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
+module.exports.HW_MYSQL = HW_MYSQL
+module.exports.FB_REDIS_KEY_BUFFER_TIME = FB_REDIS_KEY_BUFFER_TIME
+module.exports.FB_REDIS_KEY_FOLDER = FB_REDIS_KEY_FOLDER
+module.exports.FB_REDIS_TOKEN_EXPIRY_KEY = FB_REDIS_TOKEN_EXPIRY_KEY
+module.exports.FB_REDIS_TOKEN_EXPIRY = FB_REDIS_TOKEN_EXPIRY
 module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES
