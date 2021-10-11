@@ -9,11 +9,11 @@ const WabaService = require('../../whatsapp_business/services/businesAccount')
 const RedisService = require('../../../lib/redis_service/redisService')
 
 class InternalFunctions {
-  WabaLoginApi (username, password, url, graphApiKey, wabaNumber, userId) {
+  WabaLoginApi (username, password, url, graphApiKey, userAccountIdByProvider, wabaNumber, userId) {
     const apiCalled = q.defer()
     const http = new HttpService(60000)
     const headers = { Authorization: `Basic ${Buffer.from(`${username}:${password}`).toString('base64') || ''}` }
-    const resolveObj = { graphApiKey: graphApiKey, baseUrl: url }
+    const resolveObj = { graphApiKey: graphApiKey, baseUrl: url, userAccountIdByProvider }
     http.Post({}, 'body', url + __constants.FACEBOOK_ENDPOINTS.login, headers, __config.service_provider_id.facebook)
       .then(data => {
         __logger.info('post metadata api response', data)
@@ -39,9 +39,9 @@ class InternalFunctions {
       .then(wabaData => {
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
         if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
-          return this.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaNumber, userId)
+          return this.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaData.userAccountIdByProvider, wabaNumber, userId)
         } else {
-          return { baseUrl: wabaData.wabizBaseUrl, apiKey: wabaData.apiKey, graphApiKey: wabaData.graphApiKey, timeLeftToExpire }
+          return { baseUrl: wabaData.wabizBaseUrl, apiKey: wabaData.apiKey, graphApiKey: wabaData.graphApiKey, userAccountIdByProvider: wabaData.userAccountIdByProvider, timeLeftToExpire }
         }
       })
       .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook, userId))
