@@ -40,17 +40,17 @@ class AudienceService {
   }
 
   // waba
-  getAudienceTableDataByPhoneNumber (phoneNumber, userId, wabaPhoneNumber) {
-    __logger.info('inside get audience by id service', phoneNumber)
+  getAudienceTableDataByPhoneNumber (phoneNumbers, userId, wabaPhoneNumber) {
+    __logger.info('inside get audience by id service', phoneNumbers)
     const audienceData = q.defer()
     const queryFilter = wabaPhoneNumber || userId
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumbers])
       .then(result => {
         __logger.info('Query Result', { result })
         if (result && result.length === 0) {
           audienceData.resolve({ })
         } else {
-          audienceData.resolve(result[0])
+          audienceData.resolve(result)
         }
       })
       .catch(err => {

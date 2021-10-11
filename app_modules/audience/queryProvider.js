@@ -63,7 +63,7 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
   let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", segment_id as "segmentId",
-  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, 
+  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, isFacebookVerified, 
   awnm.aud_mapping_id as "wabaPhoneNumber",optin_source_id as "optinSourceId",
   awnm.aud_mapping_id as "audienceMappingId"
   FROM audience aud   
@@ -77,7 +77,7 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
   if (wabaPhoneNumber) {
     query = query + '  awnm.waba_phone_number= ? and'
   }
-  query = query + ' aud.phone_number= ?'
+  query = query + ' aud.phone_number in (?)'
   return query
 }
 

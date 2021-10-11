@@ -7,6 +7,8 @@ const q = require('q')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // const fetchTemplates = require('../../templates/controllers/fetchTemplates')
 const HttpService = require('../../../lib/http_service')
+const integrationService = require('../../../app_modules/integration')
+const _ = require('lodash')
 
 /**
  * @namespace -Whatsapp-Audience-Controller(Add/Update)-
@@ -17,16 +19,15 @@ const HttpService = require('../../../lib/http_service')
  *  @name getApprovedTemplate
  * @description API bring the approved templated
  */
-function getApprovedTemplate (userId, wabaNumber, headers) {
+function getApprovedTemplate (authToken) {
   const http = new HttpService(60000)
   const templateData = q.defer()
   const header = {
-    Authorization: headers
+    Authorization: authToken
   }
-  __logger.info('calling get getCategory of chat api', headers)
   http.Get('http://localhost:3000/helowhatsapp/api/templates?messageTemplateStatusId=1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9', header)
     .then(data => {
-      if (data.length) {
+      if (data && data.data && data.data.length) {
         templateData.resolve(true)
       } else {
         templateData.resolve(false)
@@ -66,19 +67,18 @@ const addUpdateAudienceData = (req, res) => {
   __logger.info('add update audience API called', req.body)
   __logger.info('add update audience API called', req.user)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const wabaNumber = req.user.wabaPhoneNumber
-  const headers = req.headers.authorization
-  getApprovedTemplate(userId, wabaNumber, headers)
+  const authToken = req.headers.authorization
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
+  getApprovedTemplate(authToken)
     .then(templatesExists => {
-      console.log('212323', templatesExists)
       if (!templatesExists) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
       }
+      return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
     })
-    .catch(err => {
-      return __util.send(res, { type: err.type, err: err.err || err })
+    .then(({ oldDataOfAudiences, newDataOfAudiences, verifiedAudiences }) => {
+      return processRecordInBulk(req.body, userId)
     })
-  processRecordInBulk(req.body, userId)
     .then(data => {
       __logger.info('processRecordInBulk::', { data })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
@@ -109,8 +109,9 @@ const singleRecordProcess = (data, userId) => {
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
-    .then(data => audienceService.getAudienceTableDataByPhoneNumber(data.phoneNumber, userId, data.wabaPhoneNumber))
-    .then(audienceData => {
+    .then(data => audienceService.getAudienceTableDataByPhoneNumber([data.phoneNumber], userId, data.wabaPhoneNumber))
+    .then(audiencesData => {
+      const audienceData = audiencesData[0]
       __logger.info('audienceData:: then 2', { audienceData })
       data.userId = userId
       if (audienceData.audienceId) {
@@ -130,6 +131,7 @@ const singleRecordProcess = (data, userId) => {
 const processRecordInBulk = (data, userId) => {
   let p = q()
   const thePromises = []
+  // if (!data.length || data.length > 10000) {
   if (!data.length) {
     return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
   }
@@ -184,6 +186,70 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+}
+
+const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, providerId, maxTpsToProvider) => {
+  const markAsVerified = q.defer()
+  if (!audiences.length) {
+    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
+  }
+  const phoneNumbers = audiences.map(audienceObj => {
+    return audienceObj.phoneNumber
+  })
+  const audiencesOnlyToBeUpdated = [] // these audiences will only be updated, and saveOptin api will not be called for these.
+  const audiencesToBeVerified = []
+  const phoneNumbersToBeVerified = []
+  const audienceService = new AudienceService()
+  audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
+    .then(audiencesData => {
+      audiencesData.map(audience => {
+        if (audience.isFacebookVerified) {
+          audiencesOnlyToBeUpdated.push(audience)
+        } else {
+          audiencesToBeVerified.push({ ...audience, isFacebookVerified: true })
+          phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
+        }
+      })
+      const audienceService = new integrationService.Audience(providerId, maxTpsToProvider, userId)
+      return audienceService.saveOptin(wabaPhoneNumber, phoneNumbersToBeVerified)
+    })
+    .then(optinData => {
+      const verifiedAudiences = [...audiencesToBeVerified]
+      const invalidAudiences = []
+      if (optinData && optinData.data && optinData.data.length !== 0) {
+        // it means invalid numbers are present
+        optinData.data.map(opt => {
+          //  remove "opt.input" from verifiedAudiences and push them into invalidAudiences
+          const audience = _.remove(verifiedAudiences, (aud) => {
+            return aud.phoneNumber === opt.input
+          })
+          if (audience.length) {
+            audience.map(aud => {
+              invalidAudiences.push({ ...aud, isFacebookVerified: false })
+            })
+          }
+        })
+      }
+      const oldAudiences = [...audiencesOnlyToBeUpdated, ...verifiedAudiences, ...invalidAudiences]
+      const oldDataOfAudiences = []
+      audiences = audiences.map(aud => {
+        const found = _.find(oldAudiences, (a) => {
+          return a.phoneNumber === aud.phoneNumber
+        })
+        if (found !== undefined) {
+          // pushing the old data so that oldDataOfAudiences and newDataOfAudiences's data have same position in the array
+          oldDataOfAudiences.push(found)
+          return { ...aud, isFacebookVerified: found.isFacebookVerified }
+        } else {
+          return aud
+        }
+      })
+      markAsVerified.resolve({ oldDataOfAudiences: oldDataOfAudiences, newDataOfAudiences: audiences, verifiedAudiences })
+    })
+    .catch(err => {
+      markAsVerified.reject({ type: err.type, err: err.err || err })
+    })
+  return markAsVerified.promise
 }
 
 /**

@@ -33,7 +33,7 @@ const checkOptinForFacebook = (content, optinText, servicProviderId, maxTpsToPro
         audienceService.saveOptin(wabaPhoneNumber, [phoneNumber])
           .then(responseData => {
             if (responseData && responseData.data && responseData.data.length === 0) {
-              // invalid phone number array is empty. Therefore it is a valid phone number
+              // "invalid phone number" array is empty. Therefore it is a valid phone number
               isOptin.resolve(true)
             } else {
               isOptin.resolve(false)
