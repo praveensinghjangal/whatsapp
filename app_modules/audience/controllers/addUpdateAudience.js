@@ -124,13 +124,13 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
         channels: [
           'whatsapp'
         ],
-        countryCode: 'IN', //!
+        countryCode: found.countryCode,
         whatsapp: {
           contentType: 'template',
           from: wabaPhoneNumber,
           // from: '918080800808',
           template: {
-            templateId: 'register_thanks_2',
+            templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
             language: {
               policy: 'deterministic',
               code: 'en'
@@ -138,12 +138,12 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
             components: [
 
               {
-                type: 'header',
+                type: 'body',
                 parameters: [
-                  {
-                    type: 'text',
-                    text: 'Body Param 1'
-                  }
+                  // {
+                  //   type: 'text',
+                  //   text: 'Body Param 1'
+                  // }
                 ]
               }
             ]
@@ -308,6 +308,9 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   const audienceService = new AudienceService()
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
+      if (audiencesData.length === 0) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
+      }
       audiencesData.map(audience => {
         if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
           audiencesOnlyToBeUpdated.push({ ...audience, isFacebookVerified: true })
