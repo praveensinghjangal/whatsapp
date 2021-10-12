@@ -133,6 +133,12 @@ class validate {
           minLength: 1,
           maxLength: 60
         },
+        countryCode: {
+          type: 'string',
+          required: false,
+          default: 'IN',
+          enum: __constants.COUNTRY_LIST_ALPHA_TWO
+        },
         isFacebookVerified: {
           type: 'boolean',
           required: false,
@@ -218,6 +224,12 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 60
+        },
+        countryCode: {
+          type: 'string',
+          required: false,
+          default: 'IN',
+          enum: __constants.COUNTRY_LIST_ALPHA_TWO
         },
         isFacebookVerified: {
           type: 'boolean',

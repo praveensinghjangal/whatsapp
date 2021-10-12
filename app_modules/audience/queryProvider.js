@@ -4,15 +4,15 @@ const columnMapService = new ColumnMapService()
 const addAudienceData = () => {
   return `INSERT INTO audience 
   (audience_id, phone_number, channel, optin, optin_source_id,
-  segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number,first_message,last_message,isFacebookVerified)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?, ?)`
+  segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number,first_message,last_message,isFacebookVerified,countryCode)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?, ?, ?)`
 }
 
 const updateAudienceRecord = () => {
   return `UPDATE audience
   SET channel=?, optin=?, optin_source_id=?,
   segment_id=?, chat_flow_id=?, name=?, email=?, gender=?,
-  country=?, updated_by =?,updated_on = now(),waba_phone_number =?,first_message = ?, last_message = ?, isFacebookVerified = ?
+  country=?, updated_by =?,updated_on = now(),waba_phone_number =?,first_message = ?, last_message = ?, isFacebookVerified = ?, countryCode = ?
     WHERE audience_id=? and phone_number=? and is_active=true`
 }
 

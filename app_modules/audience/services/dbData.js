@@ -48,7 +48,7 @@ class AudienceService {
       .then(result => {
         __logger.info('Query Result', { result })
         if (result && result.length === 0) {
-          audienceData.resolve({ })
+          audienceData.resolve([])
         } else {
           audienceData.resolve(result)
         }
@@ -78,7 +78,8 @@ class AudienceService {
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
       createdBy: newData.userId,
-      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false)
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false),
+      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : 'IN')
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
@@ -143,9 +144,9 @@ class AudienceService {
       firstMessageValue: null,
       lastMessageValue: null,
       isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : oldData.isFacebookVerified,
+      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : 'IN'),
       audienceId: oldData.audienceId,
       phoneNumber: oldData.phoneNumber
-
     }
 
     const queryParam = []
