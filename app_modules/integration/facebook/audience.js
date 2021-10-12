@@ -46,9 +46,7 @@ class Audience {
       Accept: '*/*',
       Authorization: `Bearer ${__config.adminAuthTokenHeloFb}`
     }
-    const batchSize = 2
-    const chunkSize = 2
-    const batchesOfPhoneNumbersToBeVerified = _.chunk(listOfPhoneNumbers, chunkSize)
+    const batchesOfPhoneNumbersToBeVerified = _.chunk(listOfPhoneNumbers, __constants.CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES)
     const listOfBodies = []
     // list of bodies
     batchesOfPhoneNumbersToBeVerified.map(numberArray => {
@@ -61,7 +59,7 @@ class Audience {
       })
     })
 
-    qalllib.qASyncWithBatch(apiCallFn, listOfBodies, batchSize, this.http, url, headers, __config.service_provider_id.facebook, __constants.RESPONSE_MESSAGES.SUCCESS.status_code, __constants.FACEBOOK_RESPONSES.stable.displayName, __constants.FACEBOOK_RESPONSES.valid.displayName, __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
+    qalllib.qASyncWithBatch(apiCallFn, listOfBodies, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, this.http, url, headers, __config.service_provider_id.facebook, __constants.RESPONSE_MESSAGES.SUCCESS.status_code, __constants.FACEBOOK_RESPONSES.stable.displayName, __constants.FACEBOOK_RESPONSES.valid.displayName, __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
       if (data.reject.length) {
         return deferred.reject(data.reject[0])
       }

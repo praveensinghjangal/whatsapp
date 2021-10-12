@@ -197,6 +197,7 @@ const INTERNAL_END_POINTS = {
   heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss',
   templateApproval: '/helowhatsapp/api/templates/:templateId/submit/:evaluationResult',
   templateList: '/helowhatsapp/api/templates/list',
+  getTemplateListWithStatusId: '/helowhatsapp/api/templates/?messageTemplateStatusId={{statusId}}',
   templateInfo: '/helowhatsapp/api/templates/:userId/:templateId',
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
@@ -423,6 +424,11 @@ const FACEBOOK_RESPONSES = {
   stable: { displayName: 'stable' },
   valid: { displayName: 'valid' }
 }
+const ADD_UPDATE_TEMPLATE_LIMIT = 10000
+const BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES = 2
+const CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES = 2
+const BATCH_SIZE_FOR_SAVE_OPTIN = 2
+const CHUNK_SIZE_FOR_SAVE_OPTIN = 2
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -494,3 +500,8 @@ module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
 module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES
+module.exports.ADD_UPDATE_TEMPLATE_LIMIT = ADD_UPDATE_TEMPLATE_LIMIT
+module.exports.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES = BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES
+module.exports.CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES = CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES
+module.exports.BATCH_SIZE_FOR_SAVE_OPTIN = BATCH_SIZE_FOR_SAVE_OPTIN
+module.exports.CHUNK_SIZE_FOR_SAVE_OPTIN = CHUNK_SIZE_FOR_SAVE_OPTIN

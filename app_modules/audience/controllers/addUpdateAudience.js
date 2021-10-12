@@ -2,6 +2,7 @@ const ValidatonService = require('../services/validation')
 const AudienceService = require('../services/dbData')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
+const __config = require('../../../config')
 const __logger = require('../../../lib/logger')
 const q = require('q')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
@@ -9,6 +10,8 @@ const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const HttpService = require('../../../lib/http_service')
 const integrationService = require('../../../app_modules/integration')
 const _ = require('lodash')
+const qalllib = require('qalllib')
+const request = require('request')
 
 /**
  * @namespace -Whatsapp-Audience-Controller(Add/Update)-
@@ -25,7 +28,9 @@ function getApprovedTemplate (authToken) {
   const header = {
     Authorization: authToken
   }
-  http.Get('http://localhost:3000/helowhatsapp/api/templates?messageTemplateStatusId=1d9d14ca-d3ec-4bea-b3de-05fcb8ceabd9', header)
+  let url = __config.base_url + __constants.INTERNAL_END_POINTS.getTemplateListWithStatusId
+  url = url.replace('{{statusId}}', __constants.TEMPLATE_STATUS.approved.statusCode)
+  http.Get(url, header)
     .then(data => {
       if (data && data.data && data.data.length) {
         templateData.resolve(true)
@@ -69,6 +74,9 @@ const addUpdateAudienceData = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const authToken = req.headers.authorization
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
+  if (req.body && req.body.length > __constants.ADD_UPDATE_TEMPLATE_LIMIT) {
+    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
+  }
   getApprovedTemplate(authToken)
     .then(templatesExists => {
       if (!templatesExists) {
@@ -77,7 +85,20 @@ const addUpdateAudienceData = (req, res) => {
       return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
     })
     .then(({ oldDataOfAudiences, newDataOfAudiences, verifiedAudiences }) => {
-      return processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences)
+      if (verifiedAudiences.length) {
+        const sendMessage = q.defer()
+        processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences).then(processResponse => {
+          // processResponse is an array of audiences that got updated.
+          sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, authToken, req.user.wabaPhoneNumber).then(resp => {
+            sendMessage.resolve(resp)
+          }).catch(err => {
+            sendMessage.reject(err)
+          })
+        })
+        return sendMessage.promise
+      } else {
+        return processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences)
+      }
     })
     .then(data => {
       __logger.info('processRecordInBulk::', { data })
@@ -87,6 +108,84 @@ const addUpdateAudienceData = (req, res) => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err || err })
     })
+}
+
+const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, authToken, wabaPhoneNumber) => {
+  // verified audiences should be present in updatedAudiences.
+  const apiCalled = q.defer()
+  const listOfBodies = []
+  verifiedAudiences.map(verifiedAud => {
+    const found = _.find(updatedAudiences, (aud) => {
+      return aud.phoneNumber === verifiedAud.phoneNumber
+    })
+    if (found !== undefined) {
+      listOfBodies.push({
+        to: verifiedAud.phoneNumber,
+        channels: [
+          'whatsapp'
+        ],
+        countryCode: 'IN', //!
+        whatsapp: {
+          contentType: 'template',
+          from: wabaPhoneNumber,
+          // from: '918080800808',
+          template: {
+            templateId: 'register_thanks_2',
+            language: {
+              policy: 'deterministic',
+              code: 'en'
+            },
+            components: [
+
+              {
+                type: 'header',
+                parameters: [
+                  {
+                    type: 'text',
+                    text: 'Body Param 1'
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      })
+    }
+  })
+  const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)
+  const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
+  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, request, url, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
+    if (data.reject.length) {
+      return apiCalled.reject(data.reject[0])
+    }
+    let resolvedData = []
+    data.resolve.map(res => {
+      resolvedData = [...resolvedData, res]
+    })
+    return apiCalled.resolve(resolvedData)
+  }).catch(err => {
+    return apiCalled.reject(err)
+  })
+    .done()
+  return apiCalled.promise
+}
+
+const sendOptinMessage = (body, request, url, authToken, notAuthorizedJwtMessage, serverErrorMessage) => {
+  const apiCalled = q.defer()
+  const options = {
+    url,
+    body: body,
+    headers: { Authorization: authToken },
+    json: true
+  }
+  request.post(options, (err, httpResponse, body) => {
+    if (err) {
+      __logger.info('err----------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err)
+      return apiCalled.reject({ type: serverErrorMessage, err: err })
+    }
+    return apiCalled.resolve(body)
+  })
+  return apiCalled.promise
 }
 
 function updateAudienceData (inputData, oldAudienceData) {
@@ -210,8 +309,8 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
       audiencesData.map(audience => {
-        if (audience.isFacebookVerified) {
-          audiencesOnlyToBeUpdated.push(audience)
+        if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
+          audiencesOnlyToBeUpdated.push({ ...audience, isFacebookVerified: true })
         } else {
           audiencesToBeVerified.push({ ...audience, isFacebookVerified: true })
           phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
