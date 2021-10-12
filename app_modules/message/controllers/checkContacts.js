@@ -2,6 +2,7 @@ const __logger = require('../../../lib/logger')
 const __util = require('../../../lib/util')
 // const ValidatonService = require('../services/validation')
 const integrationService = require('../../../app_modules/integration')
+const __constants = require('../../../config/constants')
 
 /**
  * @namespace -WhatsApp-Message-Controller-Media-
@@ -30,7 +31,9 @@ const checkContacts = (req, res) => {
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   const audienceService = new integrationService.Audience(req.user.providerId, maxTpsToProvider, userId)
   audienceService.saveOptin(req.user.wabaPhoneNumber, ['+918097353703', '+917021814935', '+918424908149'])
-    .then(mediaData => __util.send(res, { type: mediaData.type, data: mediaData.data }))
+    .then(mediaData => {
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: mediaData })
+    })
     .catch(err => {
       __logger.error('save optin::error: ', err)
       return __util.send(res, { type: err.type, err: err.err || {} })
