@@ -318,7 +318,7 @@ class businesAccountService {
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaData(), [wabaNumber])
       .then(result => {
-        // __logger.info('resulttttttttttttttttttttttttttt', result[0], wabaNumber)
+        // __logger.info('resulttttttttttttttttttttttttttt', result)
         if (result && result.length === 0) {
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
         } else {
@@ -737,6 +737,37 @@ class businesAccountService {
         dbData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
+  }
+
+  updateWabizApiKeyAndExpireyTime (wabaNumber, apiKey, expireyTime, userId) {
+    __logger.info('updateServiceProviderDetails', wabaNumber, expireyTime)
+    const dataUpdated = q.defer()
+    let phoneCode = ''
+    if (wabaNumber.includes('91')) {
+      phoneCode = wabaNumber.substring(0, 2)
+      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
+    }
+    if (wabaNumber.includes('+91')) {
+      phoneCode = wabaNumber.substring(0, 3)
+      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
+    }
+    const wabizData = { apiKey, expireyTime, phoneCode, wabaNumber }
+    const queryParam = []
+    _.each(wabizData, (val) => queryParam.push(val))
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizApiKeyAndExpireyTime(), queryParam)
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          saveHistoryData(wabizData, __constants.ENTITY_NAME.WABA_INFORMATION, phoneCode + wabaNumber, userId)
+          dataUpdated.resolve(true)
+        } else {
+          dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error:bgdfgd ', err)
+        dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataUpdated.promise
   }
 }
 

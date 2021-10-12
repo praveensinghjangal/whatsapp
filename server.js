@@ -13,8 +13,11 @@ const SERVER_SCRIPTS = {
   tyntecOutGoingQueueConsumer: './workers/message_consumers/tyntecOutGoingQueueConsumer.js',
   tyntecIncoming: './workers/message_consumers/tyntecIncoming.js',
   tyntecMessageStatus: './workers/message_consumers/tyntecMessageStatus.js',
+  facebookIncoming: './workers/message_consumers/facebookIncoming.js',
+  facebookMessageStatus: './workers/message_consumers/facebookMessageStatus.js',
   retrySendingPayload: './workers/message_consumers/retrySendingPayload.js',
-  fetchAndUpdateTemplateStatus: './workers/schedulers/fetchAndUpdateTemplateStatus.js'
+  fetchAndUpdateTemplateStatus: './workers/schedulers/fetchAndUpdateTemplateStatus.js',
+  redisPubSubMechanism: './workers/redisPubSubMechanism.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {
