@@ -3,7 +3,7 @@ const __config = require('../../../config')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const request = require('request')
-
+const setUserConfig = require('../../../middlewares/setUserConfig')
 const checkOptinMessage = (content, optinText) => {
   __logger.info('checkOptinMessage::>>>>>>>>>>>>>..')
   const isOptin = q.defer()
@@ -48,10 +48,15 @@ function addAudienceAndOptin (inputPayload, redisData) {
         audienceDataToBePosted[0].optin = true
         audienceDataToBePosted[0].optinSourceId = __config.optinSource.message
       }
+      // const authService = new SetUserConfig()
+      return setUserConfig.getUserData(redisData.userId)
+    }).then(data => {
+      const apiToken = data.authToken
+
       const options = {
         url,
         body: audienceDataToBePosted,
-        headers: { Authorization: __config.internalApiCallToken },
+        headers: { Authorization: apiToken },
         json: true
       }
       __logger.info('addAudienceAndOptin::optionssssssssssssssssssssss', options)
