@@ -114,7 +114,8 @@ const getWabaData = () => {
   wi.wabiz_api_key_expires_on as "wabizApiKeyExpiresOn",
   wi.wabiz_base_url as "wabizBaseUrl",
   wi.graph_api_key as "graphApiKey",
-  wi.max_tps_to_provider as "maxTpsToProvider"
+  wi.max_tps_to_provider as "maxTpsToProvider",
+  wi.user_id as "userId"
   from waba_information wi
   join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
   join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
