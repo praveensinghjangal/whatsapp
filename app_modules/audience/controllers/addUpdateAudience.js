@@ -89,7 +89,7 @@ const addUpdateAudienceData = (req, res) => {
         const sendMessage = q.defer()
         processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences).then(processResponse => {
           // processResponse is an array of audiences that got updated.
-          sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, authToken, req.user.wabaPhoneNumber).then(resp => {
+          sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber).then(resp => {
             sendMessage.resolve(resp)
           }).catch(err => {
             sendMessage.reject(err)
@@ -110,7 +110,7 @@ const addUpdateAudienceData = (req, res) => {
     })
 }
 
-const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, authToken, wabaPhoneNumber) => {
+const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber) => {
   // verified audiences should be present in updatedAudiences.
   const apiCalled = q.defer()
   const listOfBodies = []
@@ -119,39 +119,48 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       return aud.phoneNumber === verifiedAud.phoneNumber
     })
     if (found !== undefined) {
-      listOfBodies.push({
-        to: verifiedAud.phoneNumber,
-        channels: [
-          'whatsapp'
-        ],
-        countryCode: found.countryCode,
-        whatsapp: {
-          contentType: 'template',
-          from: wabaPhoneNumber,
-          // from: '918080800808',
-          template: {
-            templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
-            language: {
-              policy: 'deterministic',
-              code: 'en'
-            },
-            components: [
-
-              {
-                type: 'body',
-                parameters: [
-                  // {
-                  //   type: 'text',
-                  //   text: 'Body Param 1'
-                  // }
-                ]
-              }
-            ]
-          }
-        }
+      const found2 = _.find(newDataOfAudiences, au => {
+        return au.phoneNumber === verifiedAud.phoneNumber
       })
+      if (!found2.isIncomingMessage) {
+        listOfBodies.push({
+          to: verifiedAud.phoneNumber,
+          channels: [
+            'whatsapp'
+          ],
+          countryCode: found.countryCode,
+          whatsapp: {
+            contentType: 'template',
+            from: wabaPhoneNumber,
+            // from: '918080800808',
+            template: {
+              templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
+              language: {
+                policy: 'deterministic',
+                code: 'en'
+              },
+              components: [
+
+                {
+                  type: 'body',
+                  parameters: [
+                    // {
+                    //   type: 'text',
+                    //   text: 'Body Param 1'
+                    // }
+                  ]
+                }
+              ]
+            }
+          }
+        })
+      }
     }
   })
+  if (listOfBodies.length === 0) {
+    // dont send message
+    return apiCalled.resolve([])
+  }
   const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, request, url, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
