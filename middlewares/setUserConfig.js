@@ -95,4 +95,24 @@ const setEndUserConfig = (req, res, next) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
 }
-module.exports = { setUserConfig, setEndUserConfig }
+
+const getUserData = userId => {
+  const userData = q.defer()
+  if (!userId) {
+    userData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Please provide userId of type string'] })
+    return userData.promise
+  }
+  getRedisDataStatus(userId)
+    .then(redisData => {
+      if (redisData.exists) return redisData.data
+      return setDataInRedis(userId)
+    })
+    .then(userConfig => userData.resolve(userConfig))
+    .catch(err => {
+      __logger.info('err in get user config from db', err)
+      userData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+  return userData.promise
+}
+
+module.exports = { setUserConfig, setEndUserConfig, getUserData }
