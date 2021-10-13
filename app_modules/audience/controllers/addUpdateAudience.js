@@ -275,12 +275,46 @@ const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => 
 const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   __logger.info('inside markOptinByPhoneNumber', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   const input = req.body
   // TODO: if number is invalid then ? save optin as false and isFacebookVerified as false ? or just return the function from here
   input.optin = true
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
   const validate = new ValidatonService()
-  validate.checkOptinInput(input)
+  validate.checkOptinInput(input).then(data => {
+    const audienceService = new AudienceService()
+    return audienceService.getAudienceTableDataByPhoneNumber([req.body.phoneNumber], userId, req.user.wabaPhoneNumber)
+  }).then(audiencesData => {
+    if (audiencesData.length === 0) {
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.NOT_FOUND })
+    }
+    const optinCalled = q.defer()
+    const phoneNumbersToBeVerified = []
+    audiencesData.map(audience => {
+      if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
+      } else {
+        phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
+      }
+    })
+    if (phoneNumbersToBeVerified.length === 0) {
+      // already verified
+      optinCalled.resolve([])
+      return optinCalled.promise
+    } else {
+      const audienceService = new integrationService.Audience(req.user.providerId, maxTpsToProvider, userId)
+      return audienceService.saveOptin(req.user.wabaPhoneNumber, phoneNumbersToBeVerified)
+    }
+  }).then(optinData => {
+    if (optinData && optinData.length !== 0) {
+      // its an invalid number
+      input.isFacebookVerified = false
+      input.optin = false
+    } else {
+      input.isFacebookVerified = true
+      // todo: send the message
+      input.optin = true
+    }
+  })
     .then(data => singleRecordProcess(input, userId))
     .then(data => {
       __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
