@@ -287,6 +287,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   __logger.info('inside markOptinByPhoneNumber', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
+  let oldAudienceData = null
   const input = req.body
   const authToken = req.headers.authorization
   // TODO: if number is invalid then ? save optin as false and isFacebookVerified as false ? or just return the function from here
@@ -304,10 +305,10 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
     const optinCalled = q.defer()
     const phoneNumbersToBeVerified = []
 
-    const audience = audiencesData[0]
-    if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
+    oldAudienceData = audiencesData[0]
+    if (oldAudienceData.isFacebookVerified || oldAudienceData.isFacebookVerified === 1) {
     } else {
-      phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
+      phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
     }
     if (phoneNumbersToBeVerified.length === 0) {
       // already verified
@@ -363,7 +364,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       return sendOptinMessage(listOfBodies, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
     }
   })
-    .then(data => singleRecordProcess(input, userId))
+    .then(data => singleRecordProcess(input, userId, oldAudienceData))
     .then(data => {
       __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
       for (var key in data) {
