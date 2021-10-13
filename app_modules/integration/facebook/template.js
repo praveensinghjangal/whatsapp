@@ -1,94 +1,80 @@
+
 const q = require('q')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
-const tyntectConfig = __config.integration.tyntec
+// const tyntectConfig = __config.integration.tyntec
 const __constants = require('../../../config/constants')
-const RedisService = require('../../../lib/redis_service/redisService')
-const DataMapper = require('./dataMapper')
+// const RedisService = require('../../../lib/redis_service/redisService')
 const __logger = require('../../../lib/logger')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
+// const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const IntegrationService = require('..')
+const _ = require('lodash')
 const getStatusMapping = require('../service/getStatusMapping')
 
-const mapStatusOfAllLocalization = localizationArray => {
-  let p = q()
-  const thePromises = []
-  localizationArray.forEach(singleObject => {
-    p = p.then(() => getStatusMapping(singleObject.status, __config.service_provider_id.tyntec))
-      .then(data => {
-        singleObject.messageTemplateStatusId = data.messageTemplateStatusId
-        return singleObject
+class InternalFunctions {
+  setTheMappingOfMessageData (templateData, whatsAppAccountId) {
+    console.log('dsfsdfsfgdgsdghsdg', templateData)
+    const finalData = []
+    __logger.info('integration :: get template list data', templateData, templateData.data)
+    if (!(templateData.data && templateData.data.length === 1 && templateData.data[0] === undefined)) {
+      const dataGroupedByName = _.chain(templateData.data)
+        .groupBy('name')
+        .map((value, key) => ({ name: key, users: value }))
+        .value()
+      dataGroupedByName.map((val, t) => {
+        console.log('vallll', val, t)
+        const localization = []
+        dataGroupedByName[t].users.map((user) => {
+          const localizationValue = {
+            status: user.status,
+            rejectionReason: user.rejected_reason,
+            language: user.language,
+            components: _.cloneDeep(user.components),
+            createdAt: user.last_updated_time,
+            lastUpdated: user.last_updated_time,
+            qualityScore: _.cloneDeep(user.quality_score)
+          }
+          localization.push(localizationValue)
+        })
+        finalData.push({ whatsAppAccountId: whatsAppAccountId, templateName: val.users[0].name, category: val.users[0].category, templateId: val.users[0].name, localization: localization })
       })
-      .catch(err => err)
-    thePromises.push(p)
-  })
-  return q.all(thePromises)
+      return finalData
+    } else {
+      return []
+    }
+  }
 }
 
 class Template {
-  constructor (maxConcurrent, userId) {
-    this.http = new HttpService(60000, maxConcurrent, userId)
-    this.dataMapper = new DataMapper()
-  }
-
-  // when this service will be called we will call waba to get phone number to use here in redis
-  addTemplate (templateData, wabaNumber) {
-    __logger.info('Tyntec addTemplate ::>>>>>>>>>>>>>>>>>>>>> ', templateData)
-    const deferred = q.defer()
-    let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.addTemplate
-    let headers = {}
-    let spId = ''
-    const redisService = new RedisService()
-    redisService.getWabaDataByPhoneNumber(wabaNumber)
-      .then(data => {
-        __logger.info('dataatatatat', { data }, typeof data)
-        url = url.split(':accountId').join(data.userAccountIdByProvider || '')
-        headers = {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          apikey: data.apiKey
-        }
-        spId = data.serviceProviderId
-        return this.dataMapper.addTemplate(templateData)
-      })
-      .then(reqBody => this.http.Post(reqBody, 'body', url, headers, spId))
-      .then(data => {
-        // __logger.info('add responseeeeeeeeeeeeeeeeeeeeeeeeeeeee', data, data.statusCode, JSON.stringify(data.body))
-        __logger.info('integration :: Add template data', { data })
-        if (data && data.statusCode === 201) {
-          deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
-        } else {
-          return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
-        }
-      })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-    return deferred.promise
+  constructor (userId) {
+    this.userId = userId
+    this.http = new HttpService(60000)
   }
 
   getTemplateList (wabaNumber) {
     const deferred = q.defer()
+    let whatsAppAccountId
     if (wabaNumber) {
-      const redisService = new RedisService()
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
+      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           __logger.info('dataatatatat', { data }, typeof data)
-          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getTemplateList
-          url = url.split(':accountId').join(data.userAccountIdByProvider || '')
+          whatsAppAccountId = data.userAccountIdByProvider
+          let url = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}`
+          url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
           __logger.info('URL====', url)
-          const headers = {
+          return this.http.Get(url, {
             'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
-          }
-          return this.http.Get(url, headers, data.serviceProviderId)
+            Accept: 'application/json'
+          })
         })
         .then((templateData) => {
-          __logger.info('integration :: get template list data', { templateData })
-          if (templateData && templateData.constructor.name.toLowerCase() === 'array') {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
-          } else if (templateData && templateData.status === 404) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: [] })
+          if (templateData) {
+            const internalFunctions = new InternalFunctions()
+            const data = internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId)
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: data })
           } else {
-            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: templateData.title || templateData, data: {} })
+            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.NOT_FOUND, data: {} })
           }
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
@@ -104,27 +90,35 @@ class Template {
     const deferred = q.defer()
     let isData = false
     let tempData = {}
+    let whatsAppAccountId
+
     if (wabaNumber && templateId) {
-      const redisService = new RedisService()
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
+      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
+          whatsAppAccountId = data.userAccountIdByProvider
           __logger.info('dataatatatat', { data }, typeof data)
-          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getTemplateInfo
-          url = url.split(':accountId').join(data.userAccountIdByProvider || '').split(':templateId').join(templateId || '')
+          let url = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&name=${templateId}`
+          url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
           __logger.info('URL====', url)
           const headers = {
             'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
+            Accept: 'application/json'
           }
-          return this.http.Get(url, headers, data.serviceProviderId)
+          return this.http.Get(url, headers)
         })
         .then(templateData => {
           __logger.info('integration :: get template info data', { templateData })
-          if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {
+          var dataAfterExactStringMatch = _.find(templateData.data, { name: templateId })
+          const exactStringMatch = []
+          exactStringMatch.push(dataAfterExactStringMatch)
+          templateData.data = exactStringMatch
+          if (templateData) {
+            const internalFunctions = new InternalFunctions()
+            const data = internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId)
             isData = true
-            tempData = templateData
-            return mapStatusOfAllLocalization(templateData.localizations || [])
+            tempData = data
+            return this.mapStatusOfAllLocalization(data.localizations || [])
           } else {
             return templateData
           }
@@ -135,10 +129,8 @@ class Template {
             tempData.localizations = templateData
             templateData = tempData
           }
-          if (templateData && templateData.constructor.name.toLowerCase() === 'object' && templateData.templateId) {
+          if (templateData) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
-          } else if (templateData && templateData.status === 404) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
           } else {
             return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: templateData.title || templateData, data: {} })
           }
@@ -151,31 +143,40 @@ class Template {
     }
   }
 
+  mapStatusOfAllLocalization (localizationArray) {
+    let p = q()
+    const thePromises = []
+    localizationArray.forEach(singleObject => {
+      p = p.then(() => getStatusMapping(singleObject.status, 'a4f03720-3a33-4b94-b88a-e10453492183'))
+        .then(data => {
+          singleObject.messageTemplateStatusId = data.messageTemplateStatusId
+          return singleObject
+        })
+        .catch(err => err)
+      thePromises.push(p)
+    })
+    return q.all(thePromises)
+  }
+
   deleteTemplate (wabaNumber, templateId) {
     __logger.info('deleteTemplate::Template Service >>>>>>>>>>>>>>>>>>>>>>>>>>', { wabaNumber, templateId })
     const deferred = q.defer()
     if (wabaNumber && templateId) {
-      const redisService = new RedisService()
-      let redisData
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
+      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           __logger.info('deleteTemplate::getWabaDataByPhoneNumber >>>>>>>>>>>>', { data, typeof: typeof data })
-          redisData = data
           const headers = {
             'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
+            Accept: 'application/json'
           }
-          if (!redisData || !redisData.userAccountIdByProvider || !redisData.apiKey) {
-            return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
-          }
-          let deleteUrl = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.deleteTemplate
-          deleteUrl = deleteUrl.split(':accountId').join(redisData.userAccountIdByProvider || '').split(':templateId').join(templateId || '')
-          return this.http.Delete(deleteUrl, headers, redisData.serviceProviderId)
+          let deleteUrl = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.deleteTemplate}${data.graphApiKey}&name=${templateId}`
+          deleteUrl = deleteUrl.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
+          return this.http.Delete(deleteUrl, headers)
         })
         .then(templateData => {
           __logger.info('deleteTemplate::Tyntec response =======?>', { wabaNumber, templateId })
-          if (templateData && templateData.statusCode === 204) {
+          if (templateData) {
             return deferred.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_SENT_FOR_DELETION, data: {} })
           } else {
             return deferred.reject({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
@@ -190,5 +191,4 @@ class Template {
     }
   }
 }
-
 module.exports = Template

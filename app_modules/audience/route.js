@@ -25,6 +25,7 @@ const addUpdateOptinController = require('./controllers/addUpdateOptinSourceMast
 
 // Waba Controller
 const addUpdateWabaNoMapping = require('./controllers/addUpdateWabaNoMapping')
+const testing = require('./controllers/test')
 
 // Routes
 
@@ -50,5 +51,6 @@ router.get('/optin/url/redirect/:wabaNumber', redirectToOptinUrlController.redir
 
 // Waba
 router.post('/internal/waba', tokenBasedAuth, addUpdateWabaNoMapping.addUpdateWabaNoMapping)
+router.post('/testapi', testing.testApi)
 
 module.exports = router
