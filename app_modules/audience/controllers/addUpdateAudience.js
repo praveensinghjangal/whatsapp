@@ -89,7 +89,7 @@ const addUpdateAudienceData = (req, res) => {
         const sendMessage = q.defer()
         processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences).then(processResponse => {
           // processResponse is an array of audiences that got updated.
-          sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, authToken, req.user.wabaPhoneNumber).then(resp => {
+          sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber).then(resp => {
             sendMessage.resolve(resp)
           }).catch(err => {
             sendMessage.reject(err)
@@ -110,7 +110,7 @@ const addUpdateAudienceData = (req, res) => {
     })
 }
 
-const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, authToken, wabaPhoneNumber) => {
+const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber) => {
   // verified audiences should be present in updatedAudiences.
   const apiCalled = q.defer()
   const listOfBodies = []
@@ -119,39 +119,48 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       return aud.phoneNumber === verifiedAud.phoneNumber
     })
     if (found !== undefined) {
-      listOfBodies.push({
-        to: verifiedAud.phoneNumber,
-        channels: [
-          'whatsapp'
-        ],
-        countryCode: found.countryCode,
-        whatsapp: {
-          contentType: 'template',
-          from: wabaPhoneNumber,
-          // from: '918080800808',
-          template: {
-            templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
-            language: {
-              policy: 'deterministic',
-              code: 'en'
-            },
-            components: [
-
-              {
-                type: 'body',
-                parameters: [
-                  // {
-                  //   type: 'text',
-                  //   text: 'Body Param 1'
-                  // }
-                ]
-              }
-            ]
-          }
-        }
+      const found2 = _.find(newDataOfAudiences, au => {
+        return au.phoneNumber === verifiedAud.phoneNumber
       })
+      if (!found2.isIncomingMessage) {
+        listOfBodies.push({
+          to: verifiedAud.phoneNumber,
+          channels: [
+            'whatsapp'
+          ],
+          countryCode: found.countryCode,
+          whatsapp: {
+            contentType: 'template',
+            from: wabaPhoneNumber,
+            // from: '918080800808',
+            template: {
+              templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
+              language: {
+                policy: 'deterministic',
+                code: 'en'
+              },
+              components: [
+
+                {
+                  type: 'body',
+                  parameters: [
+                    // {
+                    //   type: 'text',
+                    //   text: 'Body Param 1'
+                    // }
+                  ]
+                }
+              ]
+            }
+          }
+        })
+      }
     }
   })
+  if (listOfBodies.length === 0) {
+    // dont send message
+    return apiCalled.resolve([])
+  }
   const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)
   qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
     if (data.reject.length) {
@@ -169,7 +178,7 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
   return apiCalled.promise
 }
 
-const sendOptinMessage = (body, request, authToken, notAuthorizedJwtMessage, serverErrorMessage) => {
+const sendOptinMessage = (body, authToken) => {
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const options = {
@@ -182,7 +191,7 @@ const sendOptinMessage = (body, request, authToken, notAuthorizedJwtMessage, ser
   request.post(options, (err, httpResponse, body) => {
     if (err) {
       __logger.info('err----------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err)
-      return apiCalled.reject({ type: serverErrorMessage, err: err })
+      return apiCalled.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     }
     return apiCalled.resolve(body)
   })
@@ -278,6 +287,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   __logger.info('inside markOptinByPhoneNumber', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
+  let oldAudienceData = null
   const input = req.body
   const authToken = req.headers.authorization
   // TODO: if number is invalid then ? save optin as false and isFacebookVerified as false ? or just return the function from here
@@ -295,10 +305,10 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
     const optinCalled = q.defer()
     const phoneNumbersToBeVerified = []
 
-    const audience = audiencesData[0]
-    if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
+    oldAudienceData = audiencesData[0]
+    if (oldAudienceData.isFacebookVerified || oldAudienceData.isFacebookVerified === 1) {
     } else {
-      phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
+      phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
     }
     if (phoneNumbersToBeVerified.length === 0) {
       // already verified
@@ -351,10 +361,10 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
           }
         }
       })
-      return sendOptinMessage(listOfBodies, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
+      return sendOptinMessage(listOfBodies, authToken)
     }
   })
-    .then(data => singleRecordProcess(input, userId))
+    .then(data => singleRecordProcess(input, userId, oldAudienceData))
     .then(data => {
       __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
       for (var key in data) {
