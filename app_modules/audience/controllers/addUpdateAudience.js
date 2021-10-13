@@ -178,7 +178,7 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
   return apiCalled.promise
 }
 
-const sendOptinMessage = (body, request, authToken, notAuthorizedJwtMessage, serverErrorMessage) => {
+const sendOptinMessage = (body, authToken) => {
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const options = {
@@ -191,7 +191,7 @@ const sendOptinMessage = (body, request, authToken, notAuthorizedJwtMessage, ser
   request.post(options, (err, httpResponse, body) => {
     if (err) {
       __logger.info('err----------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err)
-      return apiCalled.reject({ type: serverErrorMessage, err: err })
+      return apiCalled.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     }
     return apiCalled.resolve(body)
   })
@@ -361,7 +361,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
           }
         }
       })
-      return sendOptinMessage(listOfBodies, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
+      return sendOptinMessage(listOfBodies, authToken)
     }
   })
     .then(data => singleRecordProcess(input, userId, oldAudienceData))
