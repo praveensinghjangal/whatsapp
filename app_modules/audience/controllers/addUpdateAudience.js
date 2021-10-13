@@ -162,8 +162,7 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
     return apiCalled.resolve([])
   }
   const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)
-  const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
-  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, request, url, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
+  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
     if (data.reject.length) {
       return apiCalled.reject(data.reject[0])
     }
@@ -179,14 +178,16 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
   return apiCalled.promise
 }
 
-const sendOptinMessage = (body, request, url, authToken, notAuthorizedJwtMessage, serverErrorMessage) => {
+const sendOptinMessage = (body, request, authToken, notAuthorizedJwtMessage, serverErrorMessage) => {
   const apiCalled = q.defer()
+  const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const options = {
     url,
     body: body,
     headers: { Authorization: authToken },
     json: true
   }
+
   request.post(options, (err, httpResponse, body) => {
     if (err) {
       __logger.info('err----------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err)
@@ -282,10 +283,12 @@ const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => 
  */
 
 const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
+  const wabaPhoneNumber = req.user.wabaPhoneNumber
   __logger.info('inside markOptinByPhoneNumber', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   const input = req.body
+  const authToken = req.headers.authorization
   // TODO: if number is invalid then ? save optin as false and isFacebookVerified as false ? or just return the function from here
   input.optin = true
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
@@ -297,14 +300,15 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
     if (audiencesData.length === 0) {
       return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.NOT_FOUND })
     }
+
     const optinCalled = q.defer()
     const phoneNumbersToBeVerified = []
-    audiencesData.map(audience => {
-      if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
-      } else {
-        phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
-      }
-    })
+
+    const audience = audiencesData[0]
+    if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
+    } else {
+      phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
+    }
     if (phoneNumbersToBeVerified.length === 0) {
       // already verified
       optinCalled.resolve([])
@@ -315,13 +319,48 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
     }
   }).then(optinData => {
     if (optinData && optinData.length !== 0) {
+      const notVerified = q.defer()
       // its an invalid number
       input.isFacebookVerified = false
       input.optin = false
+      notVerified.resolve([])
+      return notVerified.promise
     } else {
       input.isFacebookVerified = true
-      // todo: send the message
       input.optin = true
+      // todo: send the message
+      var listOfBodies = []
+      listOfBodies.push({
+        to: req.body.phoneNumber,
+        channels: [
+          'whatsapp'
+        ],
+        countryCode: 'IN',
+        whatsapp: {
+          contentType: 'template',
+          from: wabaPhoneNumber,
+          // from: '918080800808',
+          template: {
+            templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
+            language: {
+              policy: 'deterministic',
+              code: 'en'
+            },
+            components: [
+              {
+                type: 'body',
+                parameters: [
+                  // {
+                  //   type: 'text',
+                  //   text: 'Body Param 1'
+                  // }
+                ]
+              }
+            ]
+          }
+        }
+      })
+      return sendOptinMessage(listOfBodies, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
     }
   })
     .then(data => singleRecordProcess(input, userId))
