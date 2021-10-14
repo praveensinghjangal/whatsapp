@@ -13,15 +13,16 @@ const apiCallFn = (body, http, url, headers, facebookProvider, successStatusCode
     .then(data => {
       if (data && data.statusCode === successStatusCode) {
         if (data.body && data.body.meta && data.body.meta.api_status && data.body.meta.api_status === stableDisplayName) {
-          const invalidContacts = data.body.contacts.filter(contact => {
-            if (contact.status !== validDisplayName) {
-              contact.input = contact.input.substring(1)
-              return true
-            }
-            return false
-          })
-          // returns the list of numbers which are not "valid"
-          apiCall.resolve({ data: invalidContacts })
+          // const invalidContacts = data.body.contacts.filter(contact => {
+          //   if (contact.status !== validDisplayName) {
+          //     contact.input = contact.input.substring(1)
+          //     return true
+          //   }
+          //   return false
+          // })
+          // // returns the list of numbers which are not "valid"
+          // returns all the list of numbers (valid + all types of invalid)
+          apiCall.resolve({ data: data.body.contacts })
         } else {
           return apiCall.reject({ type: errorCallingProvider, err: data.body })
         }
