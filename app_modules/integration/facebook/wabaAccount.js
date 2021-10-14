@@ -8,6 +8,10 @@ const RedisService = require('../../../lib/redis_service/redisService')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
 const urlValidator = require('../../../lib/util/url')
+const AuthService = require('../facebook/authService')
+// const fs = require('fs')
+// var FileReader = require('filereader')
+// const imageToBase64 = require('image-to-base64')
 
 class WabaAccount {
   constructor (maxConcurrent, userId) {
@@ -51,22 +55,42 @@ class WabaAccount {
     }
   }
 
-  updateProfilePic (wabaNumber, profilePicBuffer) {
+  getProfilePic (wabaNumber) {
+    const deferred = q.defer()
+    const authService = new AuthService(this.userId)
+    authService.getFaceBookTokensByWabaNumber(wabaNumber)
+      .then((data) => {
+        const url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.getProfilePic
+        const headers = {
+          'Content-Type': '[{"key":"Content-Type","value":"application/json"}]',
+          Accept: '*/*',
+          Authorization: `Bearer ${data.apiKey}`
+        }
+        return this.http.getMedia(url, headers, __config.service_provider_id.facebook)
+      }).then(resp => {
+        deferred.resolve(resp)
+      })
+    return deferred.promise
+  }
+
+  updateProfilePic (wabaNumber, profilePicFile) {
     __logger.info('wabaNumber & profilePic--', wabaNumber)
     const deferred = q.defer()
-    const redisService = new RedisService()
-    redisService.getWabaDataByPhoneNumber(wabaNumber)
-      .then(data => {
-        __logger.info('dataatatatat then 1', { data })
-        let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateProfilePic
+
+    const authService = new AuthService(this.userId)
+    authService.getFaceBookTokensByWabaNumber(wabaNumber)
+      //
+      .then((data) => {
+        let url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.profilePicUpdate
         url = url.split(':phoneNumber').join(data.id || '')
         __logger.info('URL====', url)
         const headers = {
           'Content-Type': 'image/png',
           Accept: 'application/problem+json',
-          apikey: data.apiKey
+          Authorization: `Bearer ${data.apiKey}`
         }
-        return this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
+
+        return this.http.Post(profilePicFile, 'body', url, headers, __config.service_provider_id.facebook)
       })
       .then((accountData) => {
         __logger.info('Dataaaaa then 2', { accountData })
@@ -78,7 +102,9 @@ class WabaAccount {
           return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: {} })
         }
       })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   }
 

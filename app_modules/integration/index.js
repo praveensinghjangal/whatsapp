@@ -41,6 +41,8 @@ class WabaAccount {
 
   updateProfilePic (wabaNumber, profilePic) { return this.wabaAccount.updateProfilePic(wabaNumber, profilePic) }
 
+  getProfilePic (wabaNumber) { return this.wabaAccount.getProfilePic(wabaNumber) }
+
   getAccountPhoneNoList (wabaNumber) { return this.wabaAccount.getAccountPhoneNoList(wabaNumber) }
 
   getCurrentProfile (wabaNumber) { return this.wabaAccount.getCurrentProfile(wabaNumber) }

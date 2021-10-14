@@ -278,7 +278,9 @@ const TYNTEC_ENDPOINTS = {
 }
 const FACEBOOK_ENDPOINTS = {
   saveOptin: '/v1/contacts',
-  login: '/v1/users/login'
+  login: '/v1/users/login',
+  profilePicUpdate: '/v1/settings/profile/photo',
+  getProfilePic: '/v1/settings/profile/photo?format=link'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
