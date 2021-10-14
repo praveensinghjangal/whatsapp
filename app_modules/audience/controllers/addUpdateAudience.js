@@ -161,8 +161,8 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
     // dont send message
     return apiCalled.resolve([])
   }
-  const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)
-  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
+  const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
+  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
     if (data.reject.length) {
       return apiCalled.reject(data.reject[0])
     }
@@ -245,18 +245,37 @@ const singleRecordProcess = (data, userId, oldData = null) => {
 }
 
 const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => {
-  let p = q()
-  const thePromises = []
+  const p = q.defer()
   // if (!data.length || data.length > 10000) {
   if (!newDataOfAudiences.length) {
     return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
   }
-  newDataOfAudiences.forEach((singleObject, index) => {
-    p = p.then(() => singleRecordProcess(singleObject, userId, oldDataOfAudiences[index]))
-      .catch(err => err)
-    thePromises.push(p)
+
+  // qalllib
+  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, oldDataOfAudiences).then(data => {
+    if (data.reject.length) {
+      return p.reject(data.reject)
+    }
+    return p.resolve(data.resolve)
+  }).catch(err => {
+    return p.reject(err)
   })
-  return q.all(thePromises)
+    .done()
+
+  // newDataOfAudiences.forEach((singleObject, index) => {
+  //   p = p.then(() => singleRecordProcess(singleObject, userId, oldDataOfAudiences[index]))
+  //     .catch(err => err)
+  //   thePromises.push(p)
+  // })
+  // return q.all(thePromises)
+  return p.promise
+}
+
+const singleRecordProcessForQalllib = (singleObject, userId, oldDataOfAudiences) => {
+  const oldData = _.find(oldDataOfAudiences, (aud) => {
+    return aud.phoneNumber === singleObject.phoneNumber
+  })
+  return singleRecordProcess(singleObject, userId, oldData)
 }
 
 /**

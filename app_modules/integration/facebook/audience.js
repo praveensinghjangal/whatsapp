@@ -52,7 +52,7 @@ class Audience {
           Accept: '*/*',
           Authorization: `Bearer ${data.apiKey}`
         }
-        const batchesOfPhoneNumbersToBeVerified = _.chunk(listOfPhoneNumbers, __constants.CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES)
+        const batchesOfPhoneNumbersToBeVerified = _.chunk(listOfPhoneNumbers, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)
         const listOfBodies = []
         // list of bodies
         batchesOfPhoneNumbersToBeVerified.map(numberArray => {
@@ -64,7 +64,7 @@ class Audience {
             force_check: false
           })
         })
-        return qalllib.qASyncWithBatch(apiCallFn, listOfBodies, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, this.http, url, headers, __config.service_provider_id.facebook, __constants.RESPONSE_MESSAGES.SUCCESS.status_code, __constants.FACEBOOK_RESPONSES.stable.displayName, __constants.FACEBOOK_RESPONSES.valid.displayName, __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
+        return qalllib.qASyncWithBatch(apiCallFn, listOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, this.http, url, headers, __config.service_provider_id.facebook, __constants.RESPONSE_MESSAGES.SUCCESS.status_code, __constants.FACEBOOK_RESPONSES.stable.displayName, __constants.FACEBOOK_RESPONSES.valid.displayName, __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
       })
       .then(data => {
         if (data.reject.length) {
