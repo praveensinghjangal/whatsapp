@@ -24,7 +24,7 @@ const mapStatusOfAllLocalization = localizationArray => {
   return q.all(thePromises)
 }
 
-class Template {
+class TemplateTemp {
   constructor (maxConcurrent, userId) {
     this.http = new HttpService(60000, maxConcurrent, userId)
     this.dataMapper = new DataMapper()
@@ -191,4 +191,4 @@ class Template {
   }
 }
 
-module.exports = Template
+module.exports = TemplateTemp

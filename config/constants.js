@@ -279,7 +279,9 @@ const FACEBOOK_ENDPOINTS = {
   saveOptin: '/v1/contacts',
   login: '/v1/users/login',
   getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
-  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token='
+  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  updateAboutProfile: '/v1/settings/profile/about',
+  updateBusinessProfile: '/v1/settings/business/profile'
 
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
