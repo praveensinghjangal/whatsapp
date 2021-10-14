@@ -7,7 +7,7 @@ const __constants = require('../../../config/constants')
 // const RedisService = require('../../../lib/redis_service/redisService')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
-const urlValidator = require('../../../lib/util/url')
+// const urlValidator = require('../../../lib/util/url')
 
 const IntegrationService = require('../index')
 
