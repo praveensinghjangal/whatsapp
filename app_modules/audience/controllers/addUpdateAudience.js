@@ -84,20 +84,21 @@ const addUpdateAudienceData = (req, res) => {
       }
       return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
     })
-    .then(({ oldDataOfAudiences, newDataOfAudiences, verifiedAudiences }) => {
+    .then(({ newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences }) => {
       if (verifiedAudiences.length) {
         const sendMessage = q.defer()
-        processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences).then(processResponse => {
+        processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
+          .then(processResponse => {
           // processResponse is an array of audiences that got updated.
-          sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber).then(resp => {
-            sendMessage.resolve(resp)
-          }).catch(err => {
-            sendMessage.reject(err)
+            sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber).then(resp => {
+              sendMessage.resolve(resp)
+            }).catch(err => {
+              sendMessage.reject(err)
+            })
           })
-        })
         return sendMessage.promise
       } else {
-        return processRecordInBulk(userId, oldDataOfAudiences, newDataOfAudiences)
+        return processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
       }
     })
     .then(data => {
@@ -119,10 +120,10 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       return aud.phoneNumber === verifiedAud.phoneNumber
     })
     if (found !== undefined) {
-      const found2 = _.find(newDataOfAudiences, au => {
-        return au.phoneNumber === verifiedAud.phoneNumber
-      })
-      if (!found2.isIncomingMessage) {
+      // const found2 = _.find(newDataOfAudiences, au => {
+      //   return au.phoneNumber === verifiedAud.phoneNumber
+      // })
+      if (!verifiedAud.isIncomingMessage) {
         listOfBodies.push({
           to: verifiedAud.phoneNumber,
           channels: [
@@ -244,7 +245,7 @@ const singleRecordProcess = (data, userId, oldData = null) => {
   return dataSaved.promise
 }
 
-const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => {
+const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
   const p = q.defer()
   // if (!data.length || data.length > 10000) {
   if (!newDataOfAudiences.length) {
@@ -252,7 +253,7 @@ const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => 
   }
 
   // qalllib
-  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, oldDataOfAudiences).then(data => {
+  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, mappingOfOldAndNewDataBasedOnPhoneNumber).then(data => {
     if (data.reject.length) {
       return p.reject(data.reject)
     }
@@ -271,10 +272,8 @@ const processRecordInBulk = (userId, oldDataOfAudiences, newDataOfAudiences) => 
   return p.promise
 }
 
-const singleRecordProcessForQalllib = (singleObject, userId, oldDataOfAudiences) => {
-  const oldData = _.find(oldDataOfAudiences, (aud) => {
-    return aud.phoneNumber === singleObject.phoneNumber
-  })
+const singleRecordProcessForQalllib = (singleObject, userId, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
+  const oldData = mappingOfOldAndNewDataBasedOnPhoneNumber[singleObject.phoneNumber].old
   return singleRecordProcess(singleObject, userId, oldData)
 }
 
@@ -338,7 +337,13 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       return audienceService.saveOptin(req.user.wabaPhoneNumber, phoneNumbersToBeVerified)
     }
   }).then(optinData => {
-    if (optinData && optinData.length !== 0) {
+    const invalidContacts = optinData.filter(contact => {
+      if (contact.status !== __constants.FACEBOOK_RESPONSES.valid.displayName) {
+        return true
+      }
+      return false
+    })
+    if (invalidContacts && invalidContacts.length !== 0) {
       const notVerified = q.defer()
       // its an invalid number
       input.isFacebookVerified = false
@@ -348,7 +353,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
     } else {
       input.isFacebookVerified = true
       input.optin = true
-      // todo: send the message
+      // send the message
       var listOfBodies = []
       listOfBodies.push({
         to: req.body.phoneNumber,
@@ -404,20 +409,23 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   const phoneNumbers = audiences.map(audienceObj => {
     return audienceObj.phoneNumber
   })
-  const audiencesOnlyToBeUpdated = [] // these audiences will only be updated, and saveOptin api will not be called for these.
-  const audiencesToBeVerified = []
+  // const audiencesOnlyToBeUpdated = [] // these audiences will only be updated, and saveOptin api will not be called for these.
+  // const audiencesToBeVerified = []
   const phoneNumbersToBeVerified = []
   const audienceService = new AudienceService()
+  let oldAudiencesData = []
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
       if (audiencesData.length === 0) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
       }
+      // db data
+      oldAudiencesData = [...audiencesData]
       audiencesData.map(audience => {
         if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
-          audiencesOnlyToBeUpdated.push({ ...audience, isFacebookVerified: true })
+          // audiencesOnlyToBeUpdated.push({ ...audience, isFacebookVerified: true })
         } else {
-          audiencesToBeVerified.push({ ...audience, isFacebookVerified: true })
+          // audiencesToBeVerified.push({ ...audience, isFacebookVerified: true })
           phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
         }
       })
@@ -425,37 +433,39 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
       return audienceService.saveOptin(wabaPhoneNumber, phoneNumbersToBeVerified)
     })
     .then(optinData => {
-      const verifiedAudiences = [...audiencesToBeVerified]
+      // const verifiedAudiences = [...audiencesToBeVerified]
+      const newDataOfAudiences = []
+      let mappingOfOldAndNewDataBasedOnPhoneNumber = {}
+      const verifiedAudiences = []
       const invalidAudiences = []
-      if (optinData && optinData.length !== 0) {
-        // it means invalid numbers are present
-        optinData.map(opt => {
-          //  remove "opt.input" from verifiedAudiences and push them into invalidAudiences
-          const audience = _.remove(verifiedAudiences, (aud) => {
-            return aud.phoneNumber === opt.input
-          })
-          if (audience.length) {
-            audience.map(aud => {
-              invalidAudiences.push({ ...aud, isFacebookVerified: false })
-            })
+      for (let i = 0; i < oldAudiencesData.length; i++) {
+        const oldAud = oldAudiencesData[i]
+        const newAud = _.find(audiences, aud => {
+          return aud.phoneNumber === oldAud.phoneNumber
+        })
+        const optinValue = _.find(optinData, (opt) => {
+          return opt.input === `+${oldAud.phoneNumber}`
+        })
+        if (optinValue) {
+          // phone number was sent for verification
+          if (optinValue.status !== __constants.FACEBOOK_RESPONSES.valid.displayName) {
+            // invalid number
+            invalidAudiences.push({ ...oldAud, isFacebookVerified: false, isIncomingMessage: newAud.isIncomingMessage })
+            mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: false }, old: { ...oldAud, isFacebookVerified: false, isIncomingMessage: newAud.isIncomingMessage } } }
+            newDataOfAudiences.push({ ...newAud, isFacebookVerified: false })
+          } else {
+            verifiedAudiences.push({ ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage })
+            newDataOfAudiences.push({ ...newAud, isFacebookVerified: true })
+            mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
           }
-        })
-      }
-      const oldAudiences = [...audiencesOnlyToBeUpdated, ...verifiedAudiences, ...invalidAudiences]
-      const oldDataOfAudiences = []
-      audiences = audiences.map(aud => {
-        const found = _.find(oldAudiences, (a) => {
-          return a.phoneNumber === aud.phoneNumber
-        })
-        if (found !== undefined) {
-          // pushing the old data so that oldDataOfAudiences and newDataOfAudiences's data have same position in the array
-          oldDataOfAudiences.push(found)
-          return { ...aud, isFacebookVerified: found.isFacebookVerified }
         } else {
-          return aud
+          // audiencesOnlyToBeUpdated.push({ ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage })
+          newDataOfAudiences.push({ ...newAud, isFacebookVerified: true })
+          mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
         }
-      })
-      markAsVerified.resolve({ oldDataOfAudiences: oldDataOfAudiences, newDataOfAudiences: audiences, verifiedAudiences })
+      }
+      // const oldAudiences = [...audiencesOnlyToBeUpdated, ...verifiedAudiences, ...invalidAudiences]
+      markAsVerified.resolve({ newDataOfAudiences: newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences })
     })
     .catch(err => {
       markAsVerified.reject({ type: err.type, err: err.err || err })
