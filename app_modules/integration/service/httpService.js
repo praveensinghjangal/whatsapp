@@ -21,7 +21,7 @@ class HttpRequestOg {
     })
   }
 
-  postDoNotUse (inputRequest, inputReqType, url, headers, serviceProviderId) {
+  postDoNotUse (inputRequest, inputReqType, url, headers, serviceProviderId, isJson = null) {
     const deferred = q.defer()
     const options = {
       method: 'POST',
@@ -29,14 +29,14 @@ class HttpRequestOg {
       timeout: this.timeInSeconds,
       headers: headers,
       [inputReqType]: inputRequest,
-      json: false,
+      json: (isJson === null) ? false : isJson,
       rejectUnauthorized: false
     }
-    console.log('eeeeeeeeewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww', options)
-    // __logger.info('request for HTTP post ', options)
+    __logger.info('request for HTTP post ', options)
     request(options, (error, response, body) => {
       __logger.info('response from api ', error, response, body)
-      // const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
+      const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
+      saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
         __logger.error('errrrrrrrrrrrrr', error)
         deferred.reject(error)
@@ -132,7 +132,6 @@ class HttpRequestOg {
       json: isJson,
       rejectUnauthorized: false
     }
-    console.log('eeeeeeeeewwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww...........', options)
     request(options, (error, response, body) => {
       __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')
