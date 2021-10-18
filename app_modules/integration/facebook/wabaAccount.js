@@ -1,6 +1,6 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
-const __config = require('../../../config')
+// const __config = require('../../../config')
 // const tyntectConfig = __config.integration.tyntec
 const __constants = require('../../../config/constants')
 // const saveApiLog = require('../service/saveApiLog')
@@ -9,10 +9,11 @@ const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
 // const urlValidator = require('../../../lib/util/url')
 
-const IntegrationService = require('../index')
+const AuthService = require('../facebook/authService')
 
 class WabaAccount {
-  constructor (userId) {
+  constructor (maxConcurrent, userId) {
+    this.userId = userId
     this.http = new HttpService(60000)
     this.dataMapper = new DataMapper()
   }
@@ -27,7 +28,7 @@ class WabaAccount {
       let apiKey
       //   let spId = ''
       //   let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateProfile
-      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           console.log('test', data)
@@ -54,7 +55,7 @@ class WabaAccount {
             Accept: '*/*',
             Authorization: `Bearer ${apiKey}`
           }
-          return this.http.Post(data, url, headers)
+          return this.http.Post(data, 'body', url, headers)
         })
         .then(accountData => {
           if (accountData) {
