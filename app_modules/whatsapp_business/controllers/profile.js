@@ -568,6 +568,7 @@ const updateProfilePic = (req, res) => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} })
     } else {
       const imageData = req.files && req.files[0].buffer
+
       businessAccountService.checkUserIdExist(userId)
         .then(results => {
           __logger.info('got result', results.record)
@@ -584,7 +585,7 @@ const updateProfilePic = (req, res) => {
                 phoneNumber: results.record.phoneNumber
               }
               results.record.userId = userId
-              businessAccountService.updateBusinessData(reqBody, results.record, req.headers.authorization)
+              businessAccountService.updateBusinessData(reqBody, results.record, userId)
               return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
             }
           } else {

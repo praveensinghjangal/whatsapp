@@ -94,7 +94,7 @@ class WabaAccount {
       })
       .then((accountData) => {
         __logger.info('Dataaaaa then 2', { accountData })
-        if (accountData && accountData.statusCode === 204) {
+        if (accountData && accountData.statusCode === 201) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else if (accountData && accountData.statusCode === 400) {
           return deferred.resolve({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: {} })
