@@ -18,12 +18,54 @@ class WabaAccount {
     this.dataMapper = new DataMapper()
   }
 
+  updateProfileOnly (baseUrl, apiKey, wabaData) {
+    const deferred = q.defer()
+    const url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateAboutProfile}`
+    __logger.info('URL====', url)
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: '*/*',
+      Authorization: `Bearer ${apiKey}`
+    }
+    this.http.Patch({ text: wabaData.whatsappStatus }, url, headers)
+      .then(reqBody => {
+        return this.dataMapper.updateBusinessProfileDetails(wabaData)
+      })
+      .then(data => {
+        const url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateBusinessProfile}`
+        const headers = {
+          'Content-Type': 'application/json',
+          Accept: '*/*',
+          Authorization: `Bearer ${apiKey}`
+        }
+        return this.http.Post(data, 'body', url, headers)
+      }).then(resp => {
+        deferred.resolve(resp)
+      }).catch(err => {
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return deferred.promise
+  }
+
+  updateWebhookUrl (baseUrl, apiKey, wabaData) {
+    const url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateWebhook}`
+    __logger.info('URL====', url)
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: '*/*',
+      Authorization: `Bearer ${apiKey}`
+    }
+    return this.http.Patch({
+      webhooks: {
+        url: wabaData.webhookPostUrl
+      }
+    }, url, headers)
+  }
+
   updateProfile (wabaNumber, wabaData) {
     __logger.info('inside update profile', wabaNumber, wabaData)
     const deferred = q.defer()
     if (wabaNumber && wabaData) {
-      let headers = {}
-      let url
       let baseUrl
       let apiKey
       //   let spId = ''
@@ -34,28 +76,11 @@ class WabaAccount {
           console.log('test', data)
           baseUrl = data.baseUrl
           apiKey = data.apiKey
-          url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateAboutProfile}`
-          __logger.info('dataatatatat', data, typeof data)
-          __logger.info('URL====', url)
-          headers = {
-            'Content-Type': 'application/json',
-            Accept: '*/*',
-            Authorization: `Bearer ${apiKey}`
+          if (wabaData.webhookPostUrl) {
+            return this.updateWebhookUrl(baseUrl, apiKey, wabaData)
+          } else {
+            return this.updateProfileOnly(baseUrl, apiKey, wabaData)
           }
-          return this.http.Patch({ text: wabaData.whatsappStatus }, url, headers)
-        })
-
-        .then(reqBody => {
-          return this.dataMapper.updateBusinessProfileDetails(wabaData)
-        })
-        .then(data => {
-          url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateBusinessProfile}`
-          headers = {
-            'Content-Type': 'application/json',
-            Accept: '*/*',
-            Authorization: `Bearer ${apiKey}`
-          }
-          return this.http.Post(data, 'body', url, headers)
         })
         .then(accountData => {
           if (accountData) {
@@ -65,11 +90,10 @@ class WabaAccount {
           }
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-      return deferred.promise
     } else {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
-      return deferred.promise
     }
+    return deferred.promise
   }
 }
 

@@ -281,8 +281,8 @@ const FACEBOOK_ENDPOINTS = {
   getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
   deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
   updateAboutProfile: '/v1/settings/profile/about',
-  updateBusinessProfile: '/v1/settings/business/profile'
-
+  updateBusinessProfile: '/v1/settings/business/profile',
+  updateWebhook: '/v1/settings/application'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
