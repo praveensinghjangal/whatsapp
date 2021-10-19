@@ -113,6 +113,40 @@ const addUpdateAudienceData = (req, res) => {
     })
 }
 
+const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
+  return {
+    to: to,
+    channels: [
+      'whatsapp'
+    ],
+    countryCode: countryCode,
+    whatsapp: {
+      contentType: 'template',
+      from: from,
+      // from: '918080800808',
+      template: {
+        templateId: templateId,
+        language: {
+          policy: 'deterministic',
+          code: 'en'
+        },
+        components: [
+
+          {
+            type: 'body',
+            parameters: [
+              // {
+              //   type: 'text',
+              //   text: 'Body Param 1'
+              // }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
+
 const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber) => {
   // verified audiences should be present in updatedAudiences.
   const apiCalled = q.defer()
@@ -126,37 +160,8 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       //   return au.phoneNumber === verifiedAud.phoneNumber
       // })
       if (!verifiedAud.isIncomingMessage) {
-        listOfBodies.push({
-          to: verifiedAud.phoneNumber,
-          channels: [
-            'whatsapp'
-          ],
-          countryCode: found.countryCode,
-          whatsapp: {
-            contentType: 'template',
-            from: wabaPhoneNumber,
-            // from: '918080800808',
-            template: {
-              templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
-              language: {
-                policy: 'deterministic',
-                code: 'en'
-              },
-              components: [
-
-                {
-                  type: 'body',
-                  parameters: [
-                    // {
-                    //   type: 'text',
-                    //   text: 'Body Param 1'
-                    // }
-                  ]
-                }
-              ]
-            }
-          }
-        })
+        const body = getTemplateBodyForOptinMessage(verifiedAud.phoneNumber, found.countryCode, wabaPhoneNumber, 'b108dfad_b704_4491_b719_50d88161ac85')
+        listOfBodies.push(body)
       }
     }
   })
@@ -357,36 +362,8 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       input.optin = true
       // send the message
       var listOfBodies = []
-      listOfBodies.push({
-        to: req.body.phoneNumber,
-        channels: [
-          'whatsapp'
-        ],
-        countryCode: 'IN',
-        whatsapp: {
-          contentType: 'template',
-          from: wabaPhoneNumber,
-          // from: '918080800808',
-          template: {
-            templateId: 'b108dfad_b704_4491_b719_50d88161ac85',
-            language: {
-              policy: 'deterministic',
-              code: 'en'
-            },
-            components: [
-              {
-                type: 'body',
-                parameters: [
-                  // {
-                  //   type: 'text',
-                  //   text: 'Body Param 1'
-                  // }
-                ]
-              }
-            ]
-          }
-        }
-      })
+      const body = getTemplateBodyForOptinMessage(req.body.phoneNumber, 'IN', wabaPhoneNumber, 'b108dfad_b704_4491_b719_50d88161ac85')
+      listOfBodies.push(body)
       return sendOptinMessage(listOfBodies, authToken)
     }
   })
