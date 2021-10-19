@@ -29,7 +29,8 @@ function getApprovedTemplate (authToken) {
     Authorization: authToken
   }
   let url = __config.base_url + __constants.INTERNAL_END_POINTS.getTemplateListWithStatusId
-  url = url.replace('{{statusId}}', __constants.TEMPLATE_STATUS.approved.statusCode)
+  // url = url.replace('{{statusId}}', __constants.TEMPLATE_STATUS.approved.statusCode)
+  url = url + __constants.TEMPLATE_STATUS.approved.statusCode
   http.Get(url, header)
     .then(data => {
       if (data && data.data && data.data.length) {

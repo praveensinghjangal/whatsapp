@@ -197,7 +197,7 @@ const INTERNAL_END_POINTS = {
   heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss',
   templateApproval: '/helowhatsapp/api/templates/:templateId/submit/:evaluationResult',
   templateList: '/helowhatsapp/api/templates/list',
-  getTemplateListWithStatusId: '/helowhatsapp/api/templates/?messageTemplateStatusId={{statusId}}',
+  getTemplateListWithStatusId: '/helowhatsapp/api/templates?messageTemplateStatusId=',
   templateInfo: '/helowhatsapp/api/templates/:userId/:templateId',
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
