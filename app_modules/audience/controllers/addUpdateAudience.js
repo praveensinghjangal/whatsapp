@@ -12,6 +12,7 @@ const integrationService = require('../../../app_modules/integration')
 const _ = require('lodash')
 const qalllib = require('qalllib')
 const request = require('request')
+const RedisService = require('../../../lib/redis_service/redisService')
 
 /**
  * @namespace -Whatsapp-Audience-Controller(Add/Update)-
@@ -149,38 +150,49 @@ const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
 const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber) => {
   // verified audiences should be present in updatedAudiences.
   const apiCalled = q.defer()
-  const listOfBodies = []
-  verifiedAudiences.map(verifiedAud => {
-    const found = _.find(updatedAudiences, (aud) => {
-      return aud.phoneNumber === verifiedAud.phoneNumber
-    })
-    if (found !== undefined) {
-      // const found2 = _.find(newDataOfAudiences, au => {
-      //   return au.phoneNumber === verifiedAud.phoneNumber
-      // })
-      if (!verifiedAud.isIncomingMessage) {
-        const body = getTemplateBodyForOptinMessage(verifiedAud.phoneNumber, found.countryCode, wabaPhoneNumber, 'b108dfad_b704_4491_b719_50d88161ac85')
-        listOfBodies.push(body)
+
+  // get optin template id..
+  const redisService = new RedisService()
+  redisService.getOptinTemplateId(wabaPhoneNumber, authToken)
+    .then(data => {
+      console.log(data)
+      const optinTemplateId = data.optinTemplateId
+      const listOfBodies = []
+      verifiedAudiences.map(verifiedAud => {
+        const found = _.find(updatedAudiences, (aud) => {
+          return aud.phoneNumber === verifiedAud.phoneNumber
+        })
+        if (found !== undefined) {
+          // const found2 = _.find(newDataOfAudiences, au => {
+          //   return au.phoneNumber === verifiedAud.phoneNumber
+          // })
+          if (!verifiedAud.isIncomingMessage) {
+            const body = getTemplateBodyForOptinMessage(verifiedAud.phoneNumber, found.countryCode, wabaPhoneNumber, optinTemplateId)
+            listOfBodies.push(body)
+          }
+        }
+      })
+      if (listOfBodies.length === 0) {
+        // dont send message
+        const defer = q.defer()
+        defer.resolve({ resolve: [], reject: [] })
+        return defer.promise
       }
-    }
-  })
-  if (listOfBodies.length === 0) {
-    // dont send message
-    return apiCalled.resolve([])
-  }
-  const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
-  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, authToken).then(data => {
-    if (data.reject.length) {
-      return apiCalled.reject(data.reject[0])
-    }
-    let resolvedData = []
-    data.resolve.map(res => {
-      resolvedData = [...resolvedData, res]
+      const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
+      return qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, authToken)
     })
-    return apiCalled.resolve(resolvedData)
-  }).catch(err => {
-    return apiCalled.reject(err)
-  })
+    .then(data => {
+      if (data.reject.length) {
+        return apiCalled.reject(data.reject[0])
+      }
+      let resolvedData = []
+      data.resolve.map(res => {
+        resolvedData = [...resolvedData, res]
+      })
+      return apiCalled.resolve(resolvedData)
+    }).catch(err => {
+      return apiCalled.reject(err)
+    })
     .done()
   return apiCalled.promise
 }

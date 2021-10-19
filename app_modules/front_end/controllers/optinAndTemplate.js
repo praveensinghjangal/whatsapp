@@ -163,4 +163,4 @@ const addUpdateOptinAndTemplate = (req, res) => {
     })
 }
 
-module.exports = { post: addUpdateOptinAndTemplate, get: getOptinAndTemplate }
+module.exports = { post: addUpdateOptinAndTemplate, get: getOptinAndTemplate, getTemplateIdData: getTemplateIdData }
