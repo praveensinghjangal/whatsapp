@@ -90,7 +90,7 @@ class WabaAccount {
           Authorization: `Bearer ${data.apiKey}`
         }
 
-        return this.http.Post(profilePicFile, 'body', url, headers, __config.service_provider_id.facebook, true)
+        return this.http.Post(profilePicFile, 'body', url, headers, __config.service_provider_id.facebook, false)
       })
       .then((accountData) => {
         __logger.info('Dataaaaa then 2', { accountData })

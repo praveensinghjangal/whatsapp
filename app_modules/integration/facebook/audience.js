@@ -22,6 +22,7 @@ const apiCallFn = (body, http, url, headers, facebookProvider, successStatusCode
           // })
           // // returns the list of numbers which are not "valid"
           // returns all the list of numbers (valid + all types of invalid)
+          __logger.info('Facebook saveOptin Response ::>>>>>>>>>>>>>>>>>>>>> ', data.body)
           apiCall.resolve({ data: data.body.contacts })
         } else {
           return apiCall.reject({ type: errorCallingProvider, err: data.body })
@@ -50,7 +51,6 @@ class Audience {
         const url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.saveOptin
         const headers = {
           'Content-Type': 'application/json',
-          Accept: '*/*',
           Authorization: `Bearer ${data.apiKey}`
         }
         const batchesOfPhoneNumbersToBeVerified = _.chunk(listOfPhoneNumbers, __constants.CHUNK_SIZE_FOR_SAVE_OPTIN)

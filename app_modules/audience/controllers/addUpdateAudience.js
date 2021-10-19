@@ -164,7 +164,7 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
     return apiCalled.resolve([])
   }
   const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
-  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, request, authToken, __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED_JWT.message, __constants.RESPONSE_MESSAGES.SERVER_ERROR).then(data => {
+  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, authToken).then(data => {
     if (data.reject.length) {
       return apiCalled.reject(data.reject[0])
     }
@@ -183,10 +183,11 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
 const sendOptinMessage = (body, authToken) => {
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
+  const headers = { 'Content-Type': 'application/json', Authorization: authToken }
   const options = {
     url,
     body: body,
-    headers: { Authorization: authToken },
+    headers: headers,
     json: true
   }
 
@@ -250,7 +251,7 @@ const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataB
   const p = q.defer()
   // if (!data.length || data.length > 10000) {
   if (!newDataOfAudiences.length) {
-    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
+    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
   }
 
   // qalllib
@@ -418,7 +419,7 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
       if (audiencesData.length === 0) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.EXPECT_ARRAY })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {} })
       }
       // db data
       oldAudiencesData = [...audiencesData]
@@ -469,7 +470,7 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
       markAsVerified.resolve({ newDataOfAudiences: newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences })
     })
     .catch(err => {
-      markAsVerified.reject({ type: err.type, err: err.err || err })
+      markAsVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return markAsVerified.promise
 }
