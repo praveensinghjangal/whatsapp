@@ -29,7 +29,7 @@ class HttpRequestOg {
       timeout: this.timeInSeconds,
       headers: headers,
       [inputReqType]: inputRequest,
-      json: (isJson === null) ? false : isJson,
+      json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
     __logger.info('request for HTTP post ', options)
