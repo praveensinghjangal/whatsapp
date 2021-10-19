@@ -32,7 +32,6 @@ class WabaAccount {
           __logger.info('URL====', url)
           const headers = {
             'Content-Type': 'application/json',
-            Accept: 'application/json',
             apikey: data.apiKey
           }
           return this.http.Get(url, headers, data.serviceProviderId)
@@ -63,7 +62,6 @@ class WabaAccount {
         const url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.getProfilePic
         const headers = {
           'Content-Type': '[{"key":"Content-Type","value":"application/json"}]',
-          Accept: '*/*',
           Authorization: `Bearer ${data.apiKey}`
         }
         return this.http.getMedia(url, headers, __config.service_provider_id.facebook)
