@@ -64,7 +64,7 @@ class WabaAccount {
           'Content-Type': '[{"key":"Content-Type","value":"application/json"}]',
           Authorization: `Bearer ${data.apiKey}`
         }
-        return this.http.getMedia(url, headers, __config.service_provider_id.facebook)
+        return this.http.Get(url, headers, __config.service_provider_id.facebook)
       }).then(resp => {
         deferred.resolve(resp)
       })

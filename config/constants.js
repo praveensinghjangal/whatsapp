@@ -154,7 +154,7 @@ const MQ = {
   tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   fbIncoming: { type: 'queue', q_name: 'fb_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
-  fbMessageStatus: { type: 'queue', q_name: '_messafbge_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
+  fbMessageStatus: { type: 'queue', q_name: 'fb_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   delay_failed_to_redirect_10_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_20_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_20_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 20000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },

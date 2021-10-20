@@ -71,19 +71,20 @@ function getApprovedTemplate (authToken) {
  * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
  */
 const addUpdateAudienceData = (req, res) => {
-  __logger.info('add update audience API called', req.body)
-  __logger.info('add update audience API called', req.user)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const authToken = req.headers.authorization
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   if (req.body && req.body.length > __constants.ADD_UPDATE_TEMPLATE_LIMIT) {
-    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.UPDATE_TEMPLATE_LIMIT_EXCEEDED })
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.UPDATE_TEMPLATE_LIMIT_EXCEEDED, err: {} })
+  }
+  if (!req.body.length) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED })
   }
   getApprovedTemplate(authToken)
     .then(templatesExists => {
       console.log('in to exixting template', templatesExists)
       if (!templatesExists) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.APPROVED_TEMPLATE_NOT_FOUND, err: {} })
       }
       return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
     })
@@ -110,7 +111,7 @@ const addUpdateAudienceData = (req, res) => {
     })
     .catch(err => {
       __logger.error('error: ', err)
-      return __util.send({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }
 
@@ -204,9 +205,9 @@ const sendOptinMessage = (body, authToken) => {
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const headers = { 'Content-Type': 'application/json', Authorization: authToken }
   http.Post(body, 'body', url, headers)
-    .then(data => apiCalled.resolve(data))
+    .then(data => apiCalled.resolve(data.body))
     .catch(err => {
-      return apiCalled.resolve({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      return apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return apiCalled.promise
 }
@@ -259,7 +260,6 @@ const singleRecordProcess = (data, userId, oldData = null) => {
 
 const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
   const p = q.defer()
-  // if (!data.length || data.length > 10000) {
   if (!newDataOfAudiences.length) {
     return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_AUDIENCE, err: {} })
   }
@@ -274,13 +274,6 @@ const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataB
     return p.reject(err)
   })
     .done()
-
-  // newDataOfAudiences.forEach((singleObject, index) => {
-  //   p = p.then(() => singleRecordProcess(singleObject, userId, oldDataOfAudiences[index]))
-  //     .catch(err => err)
-  //   thePromises.push(p)
-  // })
-  // return q.all(thePromises)
   return p.promise
 }
 
@@ -404,9 +397,6 @@ const getOptinTemplateIdAndSendMessage = (to, from, authToken) => {
 
 const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, providerId, maxTpsToProvider) => {
   const markAsVerified = q.defer()
-  if (!audiences.length) {
-    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_AUDIENCE, err: {} })
-  }
   const phoneNumbers = audiences.map(audienceObj => {
     return audienceObj.phoneNumber
   })
@@ -418,15 +408,13 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
       if (audiencesData.length === 0) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_AUDIENCE, err: {} })
+        return markAsVerified.reject({ type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED, err: {} })
       }
       // db data
       oldAudiencesData = [...audiencesData]
       audiencesData.forEach(audience => {
         if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
-          // audiencesOnlyToBeUpdated.push({ ...audience, isFacebookVerified: true })
         } else {
-          // audiencesToBeVerified.push({ ...audience, isFacebookVerified: true })
           phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
         }
       })
@@ -434,7 +422,6 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
       return audienceService.saveOptin(wabaPhoneNumber, phoneNumbersToBeVerified)
     })
     .then(optinData => {
-      // const verifiedAudiences = [...audiencesToBeVerified]
       const newDataOfAudiences = []
       let mappingOfOldAndNewDataBasedOnPhoneNumber = {}
       const verifiedAudiences = []
@@ -460,16 +447,14 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
             mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
           }
         } else {
-          // audiencesOnlyToBeUpdated.push({ ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage })
           newDataOfAudiences.push({ ...newAud, isFacebookVerified: true })
           mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
         }
       }
-      // const oldAudiences = [...audiencesOnlyToBeUpdated, ...verifiedAudiences, ...invalidAudiences]
       markAsVerified.resolve({ newDataOfAudiences: newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences })
     })
     .catch(err => {
-      markAsVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      markAsVerified.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return markAsVerified.promise
 }
