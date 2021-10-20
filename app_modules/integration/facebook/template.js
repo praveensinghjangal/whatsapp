@@ -14,8 +14,8 @@ const AuthService = require('../facebook/authService')
 
 class InternalFunctions {
   setTheMappingOfMessageData (templateData, whatsAppAccountId) {
-    console.log('dsfsdfsfgdgsdghsdg', templateData)
     const finalData = []
+
     __logger.info('integration :: get template list data', templateData, templateData.data)
     if (templateData.data && templateData.data[0]) {
       const dataGroupedByName = _.chain(templateData.data)
@@ -23,23 +23,21 @@ class InternalFunctions {
         .map((value, key) => ({ name: key, users: value }))
         .value()
       dataGroupedByName.map((val, t) => {
-        console.log('vallll', val, t)
         const localization = []
         dataGroupedByName[t].users.map((user) => {
           const localizationValue = {
             status: user.status,
             rejectionReason: user.rejected_reason,
             language: user.language,
-            components: _.cloneDeep(user.components),
+            components: user.components,
             createdAt: user.last_updated_time,
             lastUpdated: user.last_updated_time,
-            qualityScore: _.cloneDeep(user.quality_score)
+            qualityScore: user.quality_score
           }
           localization.push(localizationValue)
         })
         finalData.push({ whatsAppAccountId: whatsAppAccountId, templateName: val.users[0].name, category: val.users[0].category, templateId: val.users[0].name, localizations: localization })
       })
-      console.log('--------------->', finalData)
       return finalData
     } else {
       return []
@@ -50,7 +48,7 @@ class InternalFunctions {
 class Template {
   constructor (maxConcurrent, userId) {
     this.userId = userId
-    this.http = new HttpService(60000)
+    this.http = new HttpService(60000, maxConcurrent, userId)
   }
 
   getTemplateList (wabaNumber) {
@@ -59,10 +57,7 @@ class Template {
     if (wabaNumber) {
       const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
-      // const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
-      // authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
-          __logger.info('dataatatatat', { data }, typeof data)
           whatsAppAccountId = data.userAccountIdByProvider
           let url = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}`
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
@@ -70,7 +65,7 @@ class Template {
           return this.http.Get(url, {
             'Content-Type': 'application/json',
             Accept: 'application/json'
-          })
+          }, data.serviceProviderId)
         })
         .then((templateData) => {
           if (templateData) {
@@ -100,21 +95,22 @@ class Template {
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           whatsAppAccountId = data.userAccountIdByProvider
-          __logger.info('dataatatatat', { data }, typeof data)
           let url = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&name=${templateId}`
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json'
           }
-          return this.http.Get(url, headers)
+          return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then(templateData => {
           __logger.info('integration :: get template info data', { templateData })
-          var dataAfterExactStringMatch = _.find(templateData.data, { name: templateId })
-          const exactStringMatch = []
-          exactStringMatch.push(dataAfterExactStringMatch)
-          templateData.data = exactStringMatch
+          if (templateData && templateData.data && templateData.data.length > 0) {
+            const dataAfterExactStringMatch = templateData.data.filter(s => s.name === templateId)
+            templateData.data = dataAfterExactStringMatch
+          } else {
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: templateData.error || {} })
+          }
           if (templateData) {
             const internalFunctions = new InternalFunctions()
             let data = internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId)
@@ -132,11 +128,7 @@ class Template {
             tempData.localizations = templateData
             templateData = tempData
           }
-          if (templateData) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
-          } else {
-            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: templateData.title || templateData, data: {} })
-          }
+          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
       return deferred.promise
@@ -150,7 +142,7 @@ class Template {
     let p = q()
     const thePromises = []
     localizationArray.forEach(singleObject => {
-      p = p.then(() => getStatusMapping(singleObject.status, 'a4f03720-3a33-4b94-b88a-e10453492183'))
+      p = p.then(() => getStatusMapping(singleObject.status, __config.service_provider_id.facebook))
         .then(data => {
           singleObject.messageTemplateStatusId = data.messageTemplateStatusId
           return singleObject
@@ -175,7 +167,7 @@ class Template {
           }
           let deleteUrl = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.deleteTemplate}${data.graphApiKey}&name=${templateId}`
           deleteUrl = deleteUrl.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
-          return this.http.Delete(deleteUrl, headers)
+          return this.http.Delete(deleteUrl, headers, data.serviceProviderId)
         })
         .then(templateData => {
           __logger.info('deleteTemplate::Tyntec response =======?>', { wabaNumber, templateId })

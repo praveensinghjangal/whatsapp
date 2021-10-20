@@ -182,10 +182,9 @@ class DataMapper {
         const body = {
           vertical: data.service_provider_business_category_name,
           address: `${wabaData.address || ''}` + ', ' + `${wabaData.city || ''}` + ', ' + `${wabaData.state || ''}` + ', ' + `${wabaData.country || ''}` + ', ' + 'Pin Code ' + `${wabaData.postalCode || ''}`,
-          description: wabaData.description,
-          email: wabaData.email,
-          websites: wabaData.websites
-          // about: wabaData.whatsappStatus
+          description: wabaData.description || '',
+          email: wabaData.email || '',
+          websites: wabaData.websites || ''
         }
         __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
