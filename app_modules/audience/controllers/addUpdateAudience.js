@@ -203,13 +203,6 @@ const sendOptinMessage = (body, authToken) => {
   const http = new HttpService(60000)
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const headers = { 'Content-Type': 'application/json', Authorization: authToken }
-  const options = {
-    url,
-    body: body,
-    headers: headers,
-    json: true
-  }
-  __logger.info('Inside sendOPtinMessage ', options)
   http.Post(body, 'body', url, headers)
     .then(data => apiCalled.resolve(data))
     .catch(err => {

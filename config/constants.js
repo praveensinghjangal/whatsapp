@@ -92,7 +92,8 @@ const REDIS_TTL = {
   userConfig: 300,
   wabaData: 900,
   templateData: 300,
-  childMessage: 360
+  childMessage: 360,
+  optinTemplateData: 43200
 }
 const SERVER_TIMEOUT = 2 * 60 * 1000
 const ENTITY_NAME = {
@@ -446,6 +447,7 @@ const FB_REDIS_KEY_BUFFER_TIME = 1800000 // 30 minutes
 const FB_REDIS_KEY_FOLDER = 'token:'
 const FB_REDIS_TOKEN_EXPIRY_KEY = 'token_expiry_identification_key:'
 const FB_REDIS_TOKEN_EXPIRY = 'token_expiry_identification_key'
+const REDIS_OPTIN_TEMPLATE_DATA_KEY = 'optin_template_'
 const FACEBOOK_RESPONSES = {
   stable: { displayName: 'stable' },
   valid: { displayName: 'valid' }
@@ -537,6 +539,7 @@ module.exports.FB_REDIS_KEY_BUFFER_TIME = FB_REDIS_KEY_BUFFER_TIME
 module.exports.FB_REDIS_KEY_FOLDER = FB_REDIS_KEY_FOLDER
 module.exports.FB_REDIS_TOKEN_EXPIRY_KEY = FB_REDIS_TOKEN_EXPIRY_KEY
 module.exports.FB_REDIS_TOKEN_EXPIRY = FB_REDIS_TOKEN_EXPIRY
+module.exports.REDIS_OPTIN_TEMPLATE_DATA_KEY = REDIS_OPTIN_TEMPLATE_DATA_KEY
 module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES
 module.exports.ADD_UPDATE_TEMPLATE_LIMIT = ADD_UPDATE_TEMPLATE_LIMIT
 module.exports.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES = BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES
