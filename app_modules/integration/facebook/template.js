@@ -10,13 +10,14 @@ const __logger = require('../../../lib/logger')
 const IntegrationService = require('..')
 const _ = require('lodash')
 const getStatusMapping = require('../service/getStatusMapping')
+const AuthService = require('../facebook/authService')
 
 class InternalFunctions {
   setTheMappingOfMessageData (templateData, whatsAppAccountId) {
     console.log('dsfsdfsfgdgsdghsdg', templateData)
     const finalData = []
     __logger.info('integration :: get template list data', templateData, templateData.data)
-    if (!(templateData.data && templateData.data.length === 1 && templateData.data[0] === undefined)) {
+    if (templateData.data && templateData.data[0]) {
       const dataGroupedByName = _.chain(templateData.data)
         .groupBy('name')
         .map((value, key) => ({ name: key, users: value }))
@@ -36,8 +37,9 @@ class InternalFunctions {
           }
           localization.push(localizationValue)
         })
-        finalData.push({ whatsAppAccountId: whatsAppAccountId, templateName: val.users[0].name, category: val.users[0].category, templateId: val.users[0].name, localization: localization })
+        finalData.push({ whatsAppAccountId: whatsAppAccountId, templateName: val.users[0].name, category: val.users[0].category, templateId: val.users[0].name, localizations: localization })
       })
+      console.log('--------------->', finalData)
       return finalData
     } else {
       return []
@@ -46,7 +48,7 @@ class InternalFunctions {
 }
 
 class Template {
-  constructor (userId) {
+  constructor (maxConcurrent, userId) {
     this.userId = userId
     this.http = new HttpService(60000)
   }
@@ -55,14 +57,16 @@ class Template {
     const deferred = q.defer()
     let whatsAppAccountId
     if (wabaNumber) {
-      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
+      // const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      // authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           __logger.info('dataatatatat', { data }, typeof data)
           whatsAppAccountId = data.userAccountIdByProvider
           let url = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}`
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
-          __logger.info('URL====', url)
+          __logger.info('URL====###########################', url)
           return this.http.Get(url, {
             'Content-Type': 'application/json',
             Accept: 'application/json'
@@ -91,16 +95,14 @@ class Template {
     let isData = false
     let tempData = {}
     let whatsAppAccountId
-
     if (wabaNumber && templateId) {
-      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           whatsAppAccountId = data.userAccountIdByProvider
           __logger.info('dataatatatat', { data }, typeof data)
           let url = `${__constants.FACEBOOK_BASEURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&name=${templateId}`
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
-          __logger.info('URL====', url)
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json'
@@ -115,7 +117,8 @@ class Template {
           templateData.data = exactStringMatch
           if (templateData) {
             const internalFunctions = new InternalFunctions()
-            const data = internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId)
+            let data = internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId)
+            data = data[0]
             isData = true
             tempData = data
             return this.mapStatusOfAllLocalization(data.localizations || [])
