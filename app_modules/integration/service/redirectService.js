@@ -27,7 +27,6 @@ class RedirectService {
       payload.retryCount = 0
       payload.wabaNumber = wabaNumber
     }
-    console.log('pppppppppppppppp', payload, validPayload)
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
         __logger.info('data then 1', { data })
