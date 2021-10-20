@@ -131,13 +131,13 @@ const sendTemplateForEvaluaion = (req, res) => {
   validate.templateApproval(req.body)
     .then(result => {
       if (!__constants.TEMPLATE_EVALUATION_RESPONSE.includes(evaluationResponse)) {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, data: {} })
       } else {
         templateService = new integrationService.Template(req.endUserConfig.serviceProviderId, req.endUserConfig.maxTpsToProvider, userId)
         if (req.endUserConfig && req.endUserConfig.serviceProviderId) {
           return templateDbService.getTemplateInfo(userId, templateId)
         } else {
-          return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVICE_PROVIDER_NOT_PRESENT, data: {} })
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVICE_PROVIDER_NOT_PRESENT, err: {}, data: {} })
         }
       }
     })
@@ -218,7 +218,7 @@ const sendTemplateForEvaluaion = (req, res) => {
             return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
           })
       } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR || err.type, err: err.err || err })
+        return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       }
     })
 }

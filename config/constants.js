@@ -150,6 +150,7 @@ const MQ = {
   tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   fbOutgoing: { type: 'queue', q_name: 'fb_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  fbSendmessageError: { type: 'queue', q_name: 'fb_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   fbIncoming: { type: 'queue', q_name: 'fb_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
@@ -282,7 +283,10 @@ const FACEBOOK_ENDPOINTS = {
   deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
   updateAboutProfile: '/v1/settings/profile/about',
   updateBusinessProfile: '/v1/settings/business/profile',
-  updateWebhook: '/v1/settings/application'
+  updateWebhook: '/v1/settings/application',
+  sendMessage: '/v1/messages/',
+  addTemplate: '/message_templates',
+  getMedia: '/v1/media/:MediaId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -452,7 +456,8 @@ const FACEBOOK_RESPONSES = {
   stable: { displayName: 'stable' },
   valid: { displayName: 'valid' }
 }
-const FACEBOOK_BASEURL = 'https://graph.facebook.com'
+const FACEBOOK_GRAPHURL = 'https://graph.facebook.com/'
+const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -534,4 +539,5 @@ module.exports.FB_REDIS_KEY_FOLDER = FB_REDIS_KEY_FOLDER
 module.exports.FB_REDIS_TOKEN_EXPIRY_KEY = FB_REDIS_TOKEN_EXPIRY_KEY
 module.exports.FB_REDIS_TOKEN_EXPIRY = FB_REDIS_TOKEN_EXPIRY
 module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES
-module.exports.FACEBOOK_BASEURL = FACEBOOK_BASEURL
+module.exports.FACEBOOK_GRAPHURL = FACEBOOK_GRAPHURL
+module.exports.FACEBOOK_GRAPHURL_VERSION = FACEBOOK_GRAPHURL_VERSION

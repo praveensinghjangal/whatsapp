@@ -927,7 +927,6 @@ const getCountTemplateAllocated = (req, res) => {
   __logger.info('inside function to get template allocated count', req.params)
   const businessAccountService = new BusinessAccountService()
   const validate = new ValidatonService()
-  console.log('------', typeof req.params.userId)
   validate.getTemplateAllocated(req.params)
     .then(data => businessAccountService.getCountTempAllocated(req.params.userId))
     .then(dbData => {
