@@ -320,7 +320,6 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   let oldAudienceData = null
   const input = req.body
   const authToken = req.headers.authorization
-  // TODO: if number is invalid then ? save optin as false and isFacebookVerified as false ? or just return the function from here
   input.optin = true
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
   const validate = new ValidatonService()
@@ -366,10 +365,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       input.isFacebookVerified = true
       input.optin = true
       // send the message
-      var listOfBodies = []
-      const body = getTemplateBodyForOptinMessage(req.body.phoneNumber, 'IN', wabaPhoneNumber, 'b108dfad_b704_4491_b719_50d88161ac85')
-      listOfBodies.push(body)
-      return sendOptinMessage(listOfBodies, authToken)
+      return getOptinTemplateIdAndSendMessage(req.body.phoneNumber, wabaPhoneNumber, authToken)
     }
   })
     .then(data => singleRecordProcess(input, userId, oldAudienceData))
@@ -383,6 +379,27 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+}
+
+const getOptinTemplateIdAndSendMessage = (to, from, authToken) => {
+  const deferred = q.defer()
+  var listOfBodies = []
+  const redisService = new RedisService()
+  // get optin template id..
+  redisService.getOptinTemplateId(from, authToken)
+    .then(data => {
+      console.log(data)
+      const optinTemplateId = data.optinTemplateId
+      const body = getTemplateBodyForOptinMessage(to, 'IN', from, optinTemplateId)
+      listOfBodies.push(body)
+      // sending message
+      return sendOptinMessage(listOfBodies, authToken)
+    }).then(data => {
+      deferred.resolve([])
+    }).catch(err => {
+      deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+  return deferred.promise
 }
 
 const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, providerId, maxTpsToProvider) => {
