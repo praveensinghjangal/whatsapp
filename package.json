@@ -14,7 +14,7 @@
     "develop-redis-pubsub": "NODE_ENV=development WORKER_TYPE=redisPubSubMechanism node server.js",
     "v8Profile": "node --prof server.js",
     "standard": "standard --fix"
-    },
+  },
   "nodemonConfig": {
     "env": {
       "NODE_ENV": "development"
@@ -89,6 +89,7 @@
     "qrcode": "1.4.4",
     "rate-limiter-flexible": "2.1.10",
     "redis": "2.8.0",
+    "redis-commander": "^0.7.2",
     "request": "2.88.2",
     "serve-favicon": "2.5.0",
     "socket.io": "2.2.0",
