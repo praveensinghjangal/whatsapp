@@ -20,34 +20,6 @@ const RedisService = require('../../../lib/redis_service/redisService')
  */
 
 /**
- *  @name getApprovedTemplate
- * @description API bring the approved templated
- */
-function getApprovedTemplate (authToken) {
-  const http = new HttpService(60000)
-  const templateData = q.defer()
-  const header = {
-    Authorization: authToken
-  }
-  let url = __config.base_url + __constants.INTERNAL_END_POINTS.getTemplateListWithStatusId
-  // url = url.replace('{{statusId}}', __constants.TEMPLATE_STATUS.approved.statusCode)
-  url = url + __constants.TEMPLATE_STATUS.approved.statusCode
-  http.Get(url, header)
-    .then(data => {
-      if (data && data.data && data.data.length) {
-        templateData.resolve(true)
-      } else {
-        templateData.resolve(false)
-      }
-      // return templateData.resolve(data)
-    })
-    .catch(err => {
-      return templateData.reject(err)
-    })
-  return templateData.promise
-}
-
-/**
  * @memberof -Whatsapp-Audience-Controller(Add/Update)-
  * @name AddUpdateAudienceData
  * @path {POST} /audience
@@ -74,19 +46,21 @@ const addUpdateAudienceData = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const authToken = req.headers.authorization
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
+  let optinTemplateId = ''
   if (req.body && req.body.length > __constants.ADD_UPDATE_TEMPLATE_LIMIT) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.UPDATE_TEMPLATE_LIMIT_EXCEEDED, err: {} })
   }
   if (!req.body.length) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED })
   }
-  getApprovedTemplate(authToken)
-    .then(templatesExists => {
-      console.log('in to exixting template', templatesExists)
-      if (!templatesExists) {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.APPROVED_TEMPLATE_NOT_FOUND, err: {} })
+  const redisService = new RedisService()
+  redisService.getOptinTemplateId(req.user.wabaPhoneNumber, authToken)
+    .then(data => {
+      if (data && data.optinTemplateId) {
+        optinTemplateId = data.optinTemplateId
+        return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
       }
-      return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.APPROVED_TEMPLATE_NOT_FOUND, err: {} })
     })
     .then(({ newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences }) => {
       if (verifiedAudiences.length) {
@@ -94,11 +68,12 @@ const addUpdateAudienceData = (req, res) => {
         processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
           .then(processResponse => {
           // processResponse is an array of audiences that got updated.
-            sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber).then(resp => {
-              sendMessage.resolve(resp)
-            }).catch(err => {
-              sendMessage.reject(err)
-            })
+            return sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber, optinTemplateId)
+          })
+          .then(resp => {
+            sendMessage.resolve(resp)
+          }).catch(err => {
+            sendMessage.reject(err)
           })
         return sendMessage.promise
       } else {
@@ -149,40 +124,31 @@ const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
   }
 }
 
-const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber) => {
+const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber, optinTemplateId) => {
   // verified audiences should be present in updatedAudiences.
   const apiCalled = q.defer()
 
   // get optin template id..
-  const redisService = new RedisService()
-  redisService.getOptinTemplateId(wabaPhoneNumber, authToken)
-    .then(data => {
-      console.log(data)
-      const optinTemplateId = data.optinTemplateId
-      const listOfBodies = []
-      verifiedAudiences.map(verifiedAud => {
-        const found = _.find(updatedAudiences, (aud) => {
-          return aud.phoneNumber === verifiedAud.phoneNumber
-        })
-        if (found !== undefined) {
-          // const found2 = _.find(newDataOfAudiences, au => {
-          //   return au.phoneNumber === verifiedAud.phoneNumber
-          // })
-          if (!verifiedAud.isIncomingMessage) {
-            const body = getTemplateBodyForOptinMessage(verifiedAud.phoneNumber, found.countryCode, wabaPhoneNumber, optinTemplateId)
-            listOfBodies.push(body)
-          }
-        }
-      })
-      if (listOfBodies.length === 0) {
-        // dont send message
-        const defer = q.defer()
-        defer.resolve({ resolve: [], reject: [] })
-        return defer.promise
-      }
-      const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
-      return qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, authToken)
+  const listOfBodies = []
+  verifiedAudiences.map(verifiedAud => {
+    const found = _.find(updatedAudiences, (aud) => {
+      return aud.phoneNumber === verifiedAud.phoneNumber
     })
+    if (found !== undefined) {
+      if (!verifiedAud.isIncomingMessage) {
+        const body = getTemplateBodyForOptinMessage(verifiedAud.phoneNumber, found.countryCode, wabaPhoneNumber, optinTemplateId)
+        listOfBodies.push(body)
+      }
+    }
+  })
+  if (listOfBodies.length === 0) {
+    // dont send message
+    const defer = q.defer()
+    defer.resolve({ resolve: [], reject: [] })
+    return defer.promise
+  }
+  const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
+  qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, authToken)
     .then(data => {
       if (data.reject.length) {
         return apiCalled.reject(data.reject[0])
@@ -191,6 +157,7 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       data.resolve.map(res => {
         resolvedData = [...resolvedData, res]
       })
+      console.log('vivek vivek', resolvedData)
       return apiCalled.resolve(resolvedData)
     }).catch(err => {
       return apiCalled.reject(err)
@@ -205,8 +172,12 @@ const sendOptinMessage = (body, authToken) => {
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const headers = { 'Content-Type': 'application/json', Authorization: authToken }
   http.Post(body, 'body', url, headers)
-    .then(data => apiCalled.resolve(data.body))
+    .then(data => {
+      console.log('vivek 1', data.body)
+      return apiCalled.resolve(data.body)
+    })
     .catch(err => {
+      console.log('vivek 2', err)
       return apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return apiCalled.promise
@@ -311,56 +282,71 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   let oldAudienceData = null
+  let optinTemplateId = ''
   const input = req.body
   const authToken = req.headers.authorization
   input.optin = true
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
   const validate = new ValidatonService()
-  validate.checkOptinInput(input).then(data => {
-    const audienceService = new AudienceService()
-    return audienceService.getAudienceTableDataByPhoneNumber([req.body.phoneNumber], userId, req.user.wabaPhoneNumber)
-  }).then(audiencesData => {
-    if (audiencesData.length === 0) {
-      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: __constants.RESPONSE_MESSAGES.NOT_FOUND })
-    }
-
-    const optinCalled = q.defer()
-    const phoneNumbersToBeVerified = []
-
-    oldAudienceData = audiencesData[0]
-    if (oldAudienceData.isFacebookVerified || oldAudienceData.isFacebookVerified === 1) {
-    } else {
-      phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
-    }
-    if (phoneNumbersToBeVerified.length === 0) {
-      // already verified
-      optinCalled.resolve([])
-      return optinCalled.promise
-    } else {
-      const audienceService = new integrationService.Audience(req.user.providerId, maxTpsToProvider, userId)
-      return audienceService.saveOptin(req.user.wabaPhoneNumber, phoneNumbersToBeVerified)
-    }
-  }).then(optinData => {
-    const invalidContacts = optinData.filter(contact => {
-      if (contact.status !== __constants.FACEBOOK_RESPONSES.valid.displayName) {
-        return true
-      }
-      return false
+  validate.checkOptinInput(input)
+    .then(data => {
+      const redisService = new RedisService()
+      return redisService.getOptinTemplateId(req.user.wabaPhoneNumber, authToken)
     })
-    if (invalidContacts && invalidContacts.length !== 0) {
-      const notVerified = q.defer()
-      // its an invalid number
-      input.isFacebookVerified = false
-      input.optin = false
-      notVerified.resolve([])
-      return notVerified.promise
-    } else {
-      input.isFacebookVerified = true
-      input.optin = true
-      // send the message
-      return getOptinTemplateIdAndSendMessage(req.body.phoneNumber, wabaPhoneNumber, authToken)
-    }
-  })
+    .then(data => {
+      if (data && data.optinTemplateId) {
+        optinTemplateId = data.optinTemplateId
+        const audienceService = new AudienceService()
+        return audienceService.getAudienceTableDataByPhoneNumber([req.body.phoneNumber], userId, req.user.wabaPhoneNumber)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.APPROVED_TEMPLATE_NOT_FOUND, err: {} })
+      }
+    }).then(audiencesData => {
+      if (audiencesData.length === 0) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED, err: __constants.RESPONSE_MESSAGES.NOT_FOUND })
+      }
+
+      const optinCalled = q.defer()
+      const phoneNumbersToBeVerified = []
+
+      oldAudienceData = audiencesData[0]
+      if (oldAudienceData.isFacebookVerified || oldAudienceData.isFacebookVerified === 1) {
+      } else {
+        phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
+      }
+      if (phoneNumbersToBeVerified.length === 0) {
+      // already verified
+        optinCalled.resolve([])
+        return optinCalled.promise
+      } else {
+        const audienceService = new integrationService.Audience(req.user.providerId, maxTpsToProvider, userId)
+        return audienceService.saveOptin(req.user.wabaPhoneNumber, phoneNumbersToBeVerified)
+      }
+    }).then(optinData => {
+      const invalidContacts = optinData.filter(contact => {
+        if (contact.status !== __constants.FACEBOOK_RESPONSES.valid.displayName) {
+          return true
+        }
+        return false
+      })
+      if (invalidContacts && invalidContacts.length !== 0) {
+        const notVerified = q.defer()
+        // its an invalid number
+        input.isFacebookVerified = false
+        input.optin = false
+        notVerified.resolve([])
+        return notVerified.promise
+      } else {
+        input.isFacebookVerified = true
+        input.optin = true
+        // send the message
+        const listOfBodies = []
+        const body = getTemplateBodyForOptinMessage(req.body.phoneNumber, 'IN', wabaPhoneNumber, optinTemplateId)
+        listOfBodies.push(body)
+        // sending message
+        return sendOptinMessage(listOfBodies, authToken)
+      }
+    })
     .then(data => singleRecordProcess(input, userId, oldAudienceData))
     .then(data => {
       __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
@@ -372,27 +358,6 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-}
-
-const getOptinTemplateIdAndSendMessage = (to, from, authToken) => {
-  const deferred = q.defer()
-  var listOfBodies = []
-  const redisService = new RedisService()
-  // get optin template id..
-  redisService.getOptinTemplateId(from, authToken)
-    .then(data => {
-      console.log(data)
-      const optinTemplateId = data.optinTemplateId
-      const body = getTemplateBodyForOptinMessage(to, 'IN', from, optinTemplateId)
-      listOfBodies.push(body)
-      // sending message
-      return sendOptinMessage(listOfBodies, authToken)
-    }).then(data => {
-      deferred.resolve([])
-    }).catch(err => {
-      deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-    })
-  return deferred.promise
 }
 
 const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, providerId, maxTpsToProvider) => {

@@ -165,7 +165,7 @@ const singleRuleCheck = (data, wabaPhoneNumber, index, authToken) => {
         isValid.reject({ valid: false, err })
       })
   } else {
-    isValid.resolve({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
+    isValid.reject({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
   }
   return isValid.promise
 }
