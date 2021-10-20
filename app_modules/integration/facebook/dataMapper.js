@@ -174,6 +174,38 @@ class DataMapper {
       .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return apiReqBody.promise
   }
+
+  updateBusinessProfileDetails (wabaData) {
+    const apiReqBody = q.defer()
+    getWabaCategoryMapping(wabaData.businessCategoryId, __config.service_provider_id.facebook)
+      .then(data => {
+        const body = {
+          vertical: data.service_provider_business_category_name,
+          address: `${wabaData.address || ''}` + ', ' + `${wabaData.city || ''}` + ', ' + `${wabaData.state || ''}` + ', ' + `${wabaData.country || ''}` + ', ' + 'Pin Code ' + `${wabaData.postalCode || ''}`,
+          description: wabaData.description || '',
+          email: wabaData.email || '',
+          websites: wabaData.websites || ''
+        }
+        __logger.info('updateProfileDetails:: data', body)
+        apiReqBody.resolve(body)
+      })
+      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return apiReqBody.promise
+  }
+
+  // updateAboutDetails (wabaData) {
+  //   const apiReqBody = q.defer()
+  //   getWabaCategoryMapping(wabaData.businessCategoryId, __config.service_provider_id.facebook)
+  //     .then(data => {
+  //       const body = {
+  //         about: wabaData.whatsappStatus
+  //       }
+  //       __logger.info('updateProfileDetails:: data', body)
+  //       apiReqBody.resolve(body)
+  //     })
+  //     .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  //   return apiReqBody.promise
+  // }
 }
 
 module.exports = DataMapper

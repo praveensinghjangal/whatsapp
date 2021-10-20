@@ -277,7 +277,12 @@ const TYNTEC_ENDPOINTS = {
 }
 const FACEBOOK_ENDPOINTS = {
   saveOptin: '/v1/contacts',
-  login: '/v1/users/login'
+  login: '/v1/users/login',
+  getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  updateAboutProfile: '/v1/settings/profile/about',
+  updateBusinessProfile: '/v1/settings/business/profile',
+  updateWebhook: '/v1/settings/application'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -447,6 +452,7 @@ const FACEBOOK_RESPONSES = {
   stable: { displayName: 'stable' },
   valid: { displayName: 'valid' }
 }
+const FACEBOOK_BASEURL = 'https://graph.facebook.com'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -528,3 +534,4 @@ module.exports.FB_REDIS_KEY_FOLDER = FB_REDIS_KEY_FOLDER
 module.exports.FB_REDIS_TOKEN_EXPIRY_KEY = FB_REDIS_TOKEN_EXPIRY_KEY
 module.exports.FB_REDIS_TOKEN_EXPIRY = FB_REDIS_TOKEN_EXPIRY
 module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES
+module.exports.FACEBOOK_BASEURL = FACEBOOK_BASEURL
