@@ -8,10 +8,10 @@ const queryProvider = require('../queryProvider')
 const StatusService = require('../services/status')
 const RuleEngine = require('../services/ruleEngine')
 
-const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId, maxTpsToProvider) => {
+const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId, maxTpsToProvider, queryParams) => {
   const statusUpdated = q.defer()
   const statusService = new StatusService()
-  statusService.compareAndUpdateStatus([templateId], providerId, wabaPhoneNumber, userId, maxTpsToProvider)
+  statusService.compareAndUpdateStatus([templateId], providerId, wabaPhoneNumber, userId, maxTpsToProvider, queryParams)
     .then(data => statusUpdated.resolve(data))
     .catch(err => statusUpdated.resolve(err))
   return statusUpdated.promise
@@ -44,7 +44,7 @@ const getTemplateInfo = (req, res) => {
   __logger.info('Get Templates Info API Called', req.params)
   const ruleEngine = new RuleEngine()
   let finalResult
-  compareAndUpdateStatus(req.params.templateId, req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id, req.user.maxTpsToProvider)
+  compareAndUpdateStatus(req.params.templateId, req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id, req.user.maxTpsToProvider, req.query)
     .then(statusUpdated => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
     .then(result => {
       __logger.info('then 1', { result })
