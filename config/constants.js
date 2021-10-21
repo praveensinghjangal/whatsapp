@@ -151,6 +151,7 @@ const MQ = {
   tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   fbOutgoing: { type: 'queue', q_name: 'fb_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  fbSendmessageError: { type: 'queue', q_name: 'fb_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   fbIncoming: { type: 'queue', q_name: 'fb_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
@@ -282,7 +283,14 @@ const FACEBOOK_ENDPOINTS = {
   login: '/v1/users/login',
   profilePicUpdate: '/v1/settings/profile/photo',
   getProfilePic: '/v1/settings/profile/photo?format=link',
-  updateWebhook: '/v1/settings/application'
+  getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  updateAboutProfile: '/v1/settings/profile/about',
+  updateBusinessProfile: '/v1/settings/business/profile',
+  updateWebhook: '/v1/settings/application',
+  sendMessage: '/v1/messages/',
+  addTemplate: '/message_templates',
+  getMedia: '/v1/media/:MediaId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -462,6 +470,8 @@ const CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE = 2
 const BATCH_SIZE_FOR_SAVE_OPTIN = 2
 const CHUNK_SIZE_FOR_SAVE_OPTIN = 2
 const DEFAULT_COUNTRY_CODE = 'IN'
+const FACEBOOK_GRAPHURL = 'https://graph.facebook.com/'
+const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -552,3 +562,5 @@ module.exports.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE = CHUNK_SIZE_FOR_SEND_S
 module.exports.BATCH_SIZE_FOR_SAVE_OPTIN = BATCH_SIZE_FOR_SAVE_OPTIN
 module.exports.CHUNK_SIZE_FOR_SAVE_OPTIN = CHUNK_SIZE_FOR_SAVE_OPTIN
 module.exports.DEFAULT_COUNTRY_CODE = DEFAULT_COUNTRY_CODE
+module.exports.FACEBOOK_GRAPHURL = FACEBOOK_GRAPHURL
+module.exports.FACEBOOK_GRAPHURL_VERSION = FACEBOOK_GRAPHURL_VERSION

@@ -110,7 +110,6 @@ const addUpdateTemplates = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, messageTemplateStatusId: statusChanged.statusCode, statusName: statusChanged.displayName, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
-      console.log('eeeeeeeeeee', err)
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })

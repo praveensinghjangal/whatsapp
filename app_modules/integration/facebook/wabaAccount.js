@@ -3,55 +3,32 @@ const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const facebookConfig = __config.integration.facebook
 const __constants = require('../../../config/constants')
-// const saveApiLog = require('../service/saveApiLog')
-const RedisService = require('../../../lib/redis_service/redisService')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
 const urlValidator = require('../../../lib/util/url')
 const AuthService = require('../facebook/authService')
-// const fs = require('fs')
-// var FileReader = require('filereader')
-// const imageToBase64 = require('image-to-base64')
-
+const RedisService = require('../../../lib/redis_service/redisService')
 class WabaAccount {
   constructor (maxConcurrent, userId) {
+    this.userId = userId
     this.http = new HttpService(60000, maxConcurrent, userId)
     this.dataMapper = new DataMapper()
   }
 
-  getAccountInfo (wabaNumber) {
-    __logger.info('wabaNumber', wabaNumber)
+  callFacebookApi (baseUrl, apiKey, wabaData) {
     const deferred = q.defer()
-    if (wabaNumber) {
-      const redisService = new RedisService()
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
-        .then(data => {
-          __logger.info('dataatatatat then 1', data, typeof data)
-          const url = facebookConfig.baseUrl[wabaNumber] + __constants.FACEBOOK_ENDPOINTS.updateWebhook
-          // url = url.split(':accountId').join(data.userAccountIdByProvider || '')
-          __logger.info('URL====', url)
-          const headers = {
-            'Content-Type': 'application/json',
-            apikey: data.apiKey
-          }
-          return this.http.Get(url, headers, data.serviceProviderId)
-        })
-        .then((accountData) => {
-          __logger.info('accountData then 2', { accountData })
-          if (accountData && accountData.constructor.name.toLowerCase() === 'object') {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: accountData })
-          } else if (accountData && accountData.status === 404) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
-          } else {
-            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData.whatsAppAccountId || accountData, data: {} })
-          }
-        })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-      return deferred.promise
+    if (wabaData && wabaData.whatsappStatus) {
+      const url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateAboutProfile}`
+      __logger.info('URL====', url)
+      const headers = {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`
+      }
+      deferred.resolve(this.http.Patch({ text: wabaData.whatsappStatus }, url, headers, __config.service_provider_id.facebook))
     } else {
-      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
-      return deferred.promise
+      deferred.resolve(true)
     }
+    return deferred.promise
   }
 
   getProfilePic (wabaNumber) {
@@ -74,7 +51,6 @@ class WabaAccount {
   updateProfilePic (wabaNumber, profilePicFile) {
     __logger.info('wabaNumber & profilePic--', wabaNumber)
     const deferred = q.defer()
-
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(wabaNumber)
       //
@@ -87,7 +63,6 @@ class WabaAccount {
           Accept: 'application/problem+json',
           Authorization: `Bearer ${data.apiKey}`
         }
-
         return this.http.Post(profilePicFile, 'body', url, headers, __config.service_provider_id.facebook, false)
       })
       .then((accountData) => {
@@ -106,39 +81,60 @@ class WabaAccount {
     return deferred.promise
   }
 
-  getAccountPhoneNoList (wabaNumber) {
-    __logger.info('wabaNumber----', wabaNumber)
+  // getAccountPhoneNoList (wabaNumber) {
+  //   __logger.info('wabaNumber----', wabaNumber)
+  //   const deferred = q.defer()
+  //   if (wabaNumber) {
+  //     const redisService = new RedisService()
+  //     redisService.getWabaDataByPhoneNumber(wabaNumber)
+  //       .then(data => {
+  //         __logger.info('dataatatatat', data, typeof data)
+  //         let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.getAccountPhoneNumberList
+  //         url = url.split(':accountId').join(data.userAccountIdByProvider || '')
+  //         __logger.info('URL====', url)
+  //         const headers = {
+  //           'Content-Type': 'application/json',
+  //           Accept: 'application/json',
+  //           apikey: data.apiKey
+  //         }
+  //         return this.http.Get(url, headers, data.serviceProviderId)
+  //       })
+  //       .then((accountData) => {
+  //         if (accountData && accountData.constructor.name.toLowerCase() === 'array' && accountData.length > 0) {
+  //           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: accountData })
+  //         } else if (accountData && accountData.status === 404) {
+  //           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+  //         } else {
+  //           return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData.phoneNumber || accountData, data: {} })
+  //         }
+  //       })
+  //       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  //     return deferred.promise
+  //   } else {
+  //     deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
+  //     return deferred.promise
+  //   }
+  // }
+
+  updateProfileOnly (baseUrl, apiKey, wabaData) {
     const deferred = q.defer()
-    if (wabaNumber) {
-      const redisService = new RedisService()
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
-        .then(data => {
-          __logger.info('dataatatatat', data, typeof data)
-          let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.getAccountPhoneNumberList
-          url = url.split(':accountId').join(data.userAccountIdByProvider || '')
-          __logger.info('URL====', url)
-          const headers = {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
-          }
-          return this.http.Get(url, headers, data.serviceProviderId)
-        })
-        .then((accountData) => {
-          if (accountData && accountData.constructor.name.toLowerCase() === 'array' && accountData.length > 0) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: accountData })
-          } else if (accountData && accountData.status === 404) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
-          } else {
-            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData.phoneNumber || accountData, data: {} })
-          }
-        })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-      return deferred.promise
-    } else {
-      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
-      return deferred.promise
-    }
+    this.callFacebookApi(baseUrl, apiKey, wabaData)
+      .then(reqBody => {
+        return this.dataMapper.updateBusinessProfileDetails(wabaData)
+      })
+      .then(data => {
+        const url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateBusinessProfile}`
+        const headers = {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`
+        }
+        return this.http.Post(data, 'body', url, headers, __config.service_provider_id.facebook)
+      }).then(resp => {
+        deferred.resolve(resp)
+      }).catch(err => {
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return deferred.promise
   }
 
   getCurrentProfile (wabaNumber) {
@@ -180,41 +176,23 @@ class WabaAccount {
     __logger.info('inside update profile', wabaNumber, wabaData)
     const deferred = q.defer()
     if (wabaNumber && wabaData) {
-      let headers = {}
-      let spId = ''
-      let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.updateProfile
-      const redisService = new RedisService()
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
+      const authService = new AuthService(this.userId)
+      authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
-          __logger.info('dataatatatat', data, typeof data)
-          url = url.split(':phoneNumber').join(data.id || '')
-          __logger.info('URL====', url)
-          headers = {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
-          }
-          spId = data.serviceProviderId
-          return this.dataMapper.updateProfileDetails(wabaData)
+          return this.updateProfileOnly(data.baseUrl, data.apiKey, wabaData)
         })
-        .then(reqBody => this.http.Patch(reqBody, url, headers, spId))
         .then(accountData => {
-          if (accountData && accountData.statusCode === 204) {
+          if (accountData) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
-          } else if (accountData && accountData.statusCode === 404) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
-          } else if (accountData && accountData.body.status === 400) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
           } else {
             return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData.statusCode, data: {} })
           }
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-      return deferred.promise
     } else {
-      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
-      return deferred.promise
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber and wabaData' })
     }
+    return deferred.promise
   }
 
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) {
