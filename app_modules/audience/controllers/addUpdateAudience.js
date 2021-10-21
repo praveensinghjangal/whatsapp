@@ -60,22 +60,11 @@ const addUpdateAudienceData = (req, res) => {
         optinTemplateId = data.optinTemplateId
         return markFacebookVerifiedOfValidNumbers(req.body, userId, req.user.wabaPhoneNumber, req.user.providerId, maxTpsToProvider)
       }
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.APPROVED_TEMPLATE_NOT_FOUND, err: {} })
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.APPROVED_TEMPLATE_NOT_FOUND, err: {}, data: {} })
     })
     .then(({ newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences }) => {
       if (verifiedAudiences.length) {
-        const sendMessage = q.defer()
-        processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
-          .then(processResponse => {
-          // processResponse is an array of audiences that got updated.
-            return sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, req.user.wabaPhoneNumber, optinTemplateId)
-          })
-          .then(resp => {
-            sendMessage.resolve(resp)
-          }).catch(err => {
-            sendMessage.reject(err)
-          })
-        return sendMessage.promise
+        return processInBulkAndSendSuccessOptin(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, req.user.wabaPhoneNumber, optinTemplateId)
       } else {
         return processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
       }
@@ -88,6 +77,21 @@ const addUpdateAudienceData = (req, res) => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
+}
+
+function processInBulkAndSendSuccessOptin (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, wabaPhoneNumber, optinTemplateId) {
+  const deferred = q.defer()
+  processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
+    .then(processResponse => {
+      // processResponse is an array of audiences that got updated.
+      return sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, wabaPhoneNumber, optinTemplateId)
+    })
+    .then(resp => {
+      deferred.resolve(resp)
+    }).catch(err => {
+      deferred.reject(err)
+    })
+  return deferred.promise
 }
 
 const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
@@ -232,18 +236,20 @@ const singleRecordProcess = (data, userId, oldData = null) => {
 const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
   const p = q.defer()
   if (!newDataOfAudiences.length) {
-    return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_AUDIENCE, err: {} })
+    p.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_AUDIENCE, err: {} })
+    return p.promise
   }
 
   // qalllib
-  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, mappingOfOldAndNewDataBasedOnPhoneNumber).then(data => {
-    if (data.reject.length) {
-      return p.reject(data.reject)
-    }
-    return p.resolve(data.resolve)
-  }).catch(err => {
-    return p.reject(err)
-  })
+  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, mappingOfOldAndNewDataBasedOnPhoneNumber)
+    .then(data => {
+      if (data.reject.length) {
+        return p.reject(data.reject)
+      }
+      return p.resolve(data.resolve)
+    }).catch(err => {
+      return p.reject(err)
+    })
     .done()
   return p.promise
 }
