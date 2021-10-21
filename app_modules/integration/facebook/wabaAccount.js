@@ -246,7 +246,6 @@ class WabaAccount {
         return this.http.Patch({ webhooks: { url: incomingMessageUrl } }, url, headers, __config.service_provider_id.facebook)
       })
       .then(defaultAccountUpdated => {
-        console.log('vivek')
         if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 201) {
           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 404) {

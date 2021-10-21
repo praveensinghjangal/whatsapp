@@ -159,7 +159,6 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       data.resolve.map(res => {
         resolvedData = [...resolvedData, res]
       })
-      console.log('vivek vivek', resolvedData)
       return apiCalled.resolve(resolvedData)
     }).catch(err => {
       return apiCalled.reject(err)
