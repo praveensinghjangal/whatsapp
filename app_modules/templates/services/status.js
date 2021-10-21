@@ -85,7 +85,7 @@ class StatusService {
     return statusChanged.promise
   }
 
-  singleStatusCompareAndChange (templateId, serviceProviderId, wabaNumber, userId, maxTpsToProvider) {
+  singleStatusCompareAndChange (templateId, serviceProviderId, wabaNumber, userId, maxTpsToProvider, queryParams) {
     __logger.info('singleStatusCompareAndChange::', { templateId, serviceProviderId })
     const compared = q.defer()
     const templateIntegrationService = new integrationService.Template(serviceProviderId, maxTpsToProvider, userId)
@@ -94,7 +94,7 @@ class StatusService {
     let secondLocalizationStatusFromProvider = ''
     let firstRejectReason = ''
     let secondRejectReason = ''
-    templateIntegrationService.getTemplateInfo(wabaNumber, templateId)
+    templateIntegrationService.getTemplateInfo(wabaNumber, templateId, queryParams)
       .then(result => {
         __logger.info('singleStatusCompareAndChange::integration result then 1', { result })
         if (result && result.code === __constants.RESPONSE_MESSAGES.SUCCESS.code) {
@@ -151,11 +151,11 @@ class StatusService {
     return compared.promise
   }
 
-  processBulkStatusCompareAndChange (templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider) {
+  processBulkStatusCompareAndChange (templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider, queryParams) {
     let p = q()
     const thePromises = []
     templateIdArr.forEach(singleTemplateId => {
-      p = p.then(() => this.singleStatusCompareAndChange(singleTemplateId, serviceProviderId, wabaNumber, userId, maxTpsToProvider))
+      p = p.then(() => this.singleStatusCompareAndChange(singleTemplateId, serviceProviderId, wabaNumber, userId, maxTpsToProvider, queryParams))
         .catch(err => {
           if (err && typeof err === 'object') err.valid = false
           return err
@@ -165,12 +165,12 @@ class StatusService {
     return q.all(thePromises)
   }
 
-  compareAndUpdateStatus (templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider = 10) {
+  compareAndUpdateStatus (templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider = 10, queryParams) {
     const comparedAndUpdated = q.defer()
     const validate = new ValidatonService()
     __logger.info('compareAndUpdateStatus::', { templateIdArr, serviceProviderId })
     validate.compareAndUpdateStatusService({ templateIdArr, serviceProviderId, wabaNumber, userId })
-      .then(valRes => this.processBulkStatusCompareAndChange(templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider))
+      .then(valRes => this.processBulkStatusCompareAndChange(templateIdArr, serviceProviderId, wabaNumber, userId, maxTpsToProvider, queryParams))
       .then(result => {
         __logger.info('compareAndUpdateStatus::After bulk process', { result })
         const redisService = new RedisService()
