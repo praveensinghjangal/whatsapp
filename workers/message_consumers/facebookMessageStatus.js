@@ -37,7 +37,7 @@ const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
 
 const setTheMappingOfMessageData = (messageDataFromFacebook) => {
   return {
-    messageId: messageDataFromFacebook.statuses[0].id,
+    messageId: messageDataFromFacebook.statuses[0].id || null,
     channel: __constants.DELIVERY_CHANNEL.whatsapp,
     event: `${__constants.TYNTEC_TO_FB_EVENT_KEY}${messageDataFromFacebook.statuses[0].status}`,
     deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,

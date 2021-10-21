@@ -22,16 +22,16 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     event: __constants.FACEBOOK_MESSAGE_EVENTS.moMessage,
     channel: __constants.DELIVERY_CHANNEL.whatsapp,
     whatsapp: {
-      senderName: messageDataFromFacebook.contacts[0].profile.name
+      senderName: messageDataFromFacebook.contacts[0].profile.name || null
     },
-    messageId: messageDataFromFacebook.messages[0].id,
+    messageId: messageDataFromFacebook.messages[0].id || null,
     timestamp: moment.utc(+(messageDataFromFacebook.messages[0].timestamp + '000')).format('YYYY-MM-DDTHH:mm:ss'),
     receivedAt: moment.utc(+(messageDataFromFacebook.messages[0].timestamp + '000')).format('YYYY-MM-DDTHH:mm:ss')
   }
   if (messageDataFromFacebook.messages[0].text) {
     // text & url
     messageData.content = {
-      text: messageDataFromFacebook.messages[0].text.body,
+      text: messageDataFromFacebook.messages[0].text.body || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
   } else if (messageDataFromFacebook.messages[0].image || messageDataFromFacebook.messages[0].voice || messageDataFromFacebook.messages[0].video || messageDataFromFacebook.messages[0].sticker) {
@@ -40,8 +40,8 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       content: {
         media: {
           url: '',
-          type: messageDataFromFacebook.messages[0].type,
-          mediaId: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].id
+          type: messageDataFromFacebook.messages[0].type || null,
+          mediaId: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].id || null
         },
         contentType: __constants.FACEBOOK_CONTENT_TYPE.media
       }
@@ -52,9 +52,9 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       content: {
         media: {
           url: '',
-          type: messageDataFromFacebook.messages[0].type,
-          caption: messageDataFromFacebook.messages[0].document.caption,
-          mediaId: messageDataFromFacebook.messages[0].document.id
+          type: messageDataFromFacebook.messages[0].type || null,
+          caption: messageDataFromFacebook.messages[0].document.caption || null,
+          mediaId: messageDataFromFacebook.messages[0].document.id || null
         },
         contentType: __constants.FACEBOOK_CONTENT_TYPE.media
       }
@@ -74,18 +74,18 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       content: {
         contacts: [
           {
-            ims: messageDataFromFacebook.messages[0].contacts.ims,
-            org: messageDataFromFacebook.messages[0].contacts.org,
+            ims: messageDataFromFacebook.messages[0].contacts.ims || null,
+            org: messageDataFromFacebook.messages[0].contacts.org || null,
             name: {
-              lastName: messageDataFromFacebook.messages[0].contacts.name.last_name,
-              firstName: messageDataFromFacebook.messages[0].contacts.name.first_name,
+              lastName: messageDataFromFacebook.messages[0].contacts.name.last_name || null,
+              firstName: messageDataFromFacebook.messages[0].contacts.name.first_name || null,
               middleName: '',
-              formattedName: messageDataFromFacebook.messages[0].contacts.name.formatted_name
+              formattedName: messageDataFromFacebook.messages[0].contacts.name.formatted_name || null
             },
-            urls: messageDataFromFacebook.messages[0].contacts.urls,
-            emails: messageDataFromFacebook.messages[0].contacts.emails,
-            phones: messageDataFromFacebook.messages[0].contacts.phones,
-            addresses: messageDataFromFacebook.messages[0].contacts.addresses
+            urls: messageDataFromFacebook.messages[0].contacts.urls || null,
+            emails: messageDataFromFacebook.messages[0].contacts.emails || null,
+            phones: messageDataFromFacebook.messages[0].contacts.phones || null,
+            addresses: messageDataFromFacebook.messages[0].contacts.addresses || null
           }
         ],
         contentType: __constants.FACEBOOK_CONTENT_TYPE.contacts
@@ -96,8 +96,8 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     messageData.content = {
       content: {
         location: {
-          latitude: messageDataFromFacebook.messages[0].location.latitude,
-          longitude: messageDataFromFacebook.messages[0].location.longitude
+          latitude: messageDataFromFacebook.messages[0].location.latitude || null,
+          longitude: messageDataFromFacebook.messages[0].location.longitude || null
         },
         contentType: __constants.FACEBOOK_CONTENT_TYPE.location
       }
