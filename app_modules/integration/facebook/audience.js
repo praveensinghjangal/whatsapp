@@ -7,31 +7,23 @@ const __logger = require('../../../lib/logger')
 const qalllib = require('qalllib')
 const _ = require('lodash')
 const AuthService = require('./authService')
-const apiCallFn = (body, http, url, headers, facebookProvider, successStatusCode, stableDisplayName, validDisplayName, errorCallingProvider, serverError) => {
+const apiCallFn = (body, url, headers, http) => {
   const apiCall = q.defer()
-  http.Post(body, 'body', url, headers, facebookProvider)
+  http.Post(body, 'body', url, headers, __config.service_provider_id.facebook)
     .then(data => {
-      if (data && data.statusCode === successStatusCode) {
-        if (data.body && data.body.meta && data.body.meta.api_status && data.body.meta.api_status === stableDisplayName) {
-          // const invalidContacts = data.body.contacts.filter(contact => {
-          //   if (contact.status !== validDisplayName) {
-          //     contact.input = contact.input.substring(1)
-          //     return true
-          //   }
-          //   return false
-          // })
-          // // returns the list of numbers which are not "valid"
+      if (data && data.statusCode === __constants.RESPONSE_MESSAGES.SUCCESS.status_code) {
+        if (data.body && data.body.meta && data.body.meta.api_status && data.body.meta.api_status === __constants.FACEBOOK_RESPONSES.stable.displayName && data.body.contacts) {
           // returns all the list of numbers (valid + all types of invalid)
           __logger.info('Facebook saveOptin Response ::>>>>>>>>>>>>>>>>>>>>> ', data.body)
           apiCall.resolve({ data: data.body.contacts })
         } else {
-          return apiCall.reject({ type: errorCallingProvider, err: data.body })
+          return apiCall.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
         }
       } else {
-        return apiCall.reject({ type: errorCallingProvider, err: data.body })
+        return apiCall.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
       }
     })
-    .catch(err => apiCall.reject({ type: err.type || serverError, err: err.err || err }))
+    .catch(err => apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return apiCall.promise
 }
 
@@ -65,16 +57,18 @@ class Audience {
             force_check: false
           })
         })
-        return qalllib.qASyncWithBatch(apiCallFn, listOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, this.http, url, headers, __config.service_provider_id.facebook, __constants.RESPONSE_MESSAGES.SUCCESS.status_code, __constants.FACEBOOK_RESPONSES.stable.displayName, __constants.FACEBOOK_RESPONSES.valid.displayName, __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, __constants.RESPONSE_MESSAGES.SERVER_ERROR)
+        return qalllib.qASyncWithBatch(apiCallFn, listOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, url, headers, this.http)
       })
       .then(data => {
-        if (data.reject.length) {
+        if (data && data.reject && data.reject.length) {
           return deferred.reject(data.reject[0])
         }
         let resolvedData = []
-        data.resolve.map(res => {
-          resolvedData = [...resolvedData, ...res.data]
-        })
+        if (data && data.resolve && data.resolve.length !== 0) {
+          data.resolve.map(res => {
+            resolvedData = [...resolvedData, ...res.data]
+          })
+        }
         return deferred.resolve(resolvedData)
       })
       .catch(err => {

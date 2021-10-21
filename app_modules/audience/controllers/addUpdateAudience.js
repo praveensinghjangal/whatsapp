@@ -104,25 +104,24 @@ const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
     whatsapp: {
       contentType: 'template',
       from: from,
-      // from: '918080800808',
       template: {
         templateId: templateId,
         language: {
           policy: 'deterministic',
           code: 'en'
-        },
-        components: [
-
-          {
-            type: 'body',
-            parameters: [
-              // {
-              //   type: 'text',
-              //   text: 'Body Param 1'
-              // }
-            ]
-          }
-        ]
+        }
+        // components: [
+        //   //! to be verified
+        //   {
+        //     type: 'body',
+        //     parameters: [
+        //       // {
+        //       //   type: 'text',
+        //       //   text: 'Body Param 1'
+        //       // }
+        //     ]
+        //   }
+        // ]
       }
     }
   }
@@ -134,11 +133,11 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
 
   // get optin template id..
   const listOfBodies = []
-  verifiedAudiences.map(verifiedAud => {
+  verifiedAudiences.forEach(verifiedAud => {
     const found = _.find(updatedAudiences, (aud) => {
       return aud.phoneNumber === verifiedAud.phoneNumber
     })
-    if (found !== undefined) {
+    if (found !== undefined || (found && Object.keys(found).length !== 0)) {
       if (!verifiedAud.isIncomingMessage) {
         const body = getTemplateBodyForOptinMessage(verifiedAud.phoneNumber, found.countryCode, wabaPhoneNumber, optinTemplateId)
         listOfBodies.push(body)
@@ -147,9 +146,8 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
   })
   if (listOfBodies.length === 0) {
     // dont send message
-    const defer = q.defer()
-    defer.resolve({ resolve: [], reject: [] })
-    return defer.promise
+    apiCalled.resolve({ resolve: [], reject: [] })
+    return apiCalled.promise
   }
   const batchesOfBodies = _.chunk(listOfBodies, __constants.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE)
   qalllib.qASyncWithBatch(sendOptinMessage, batchesOfBodies, __constants.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE, authToken)
@@ -177,11 +175,9 @@ const sendOptinMessage = (body, authToken) => {
   const headers = { 'Content-Type': 'application/json', Authorization: authToken }
   http.Post(body, 'body', url, headers)
     .then(data => {
-      console.log('vivek 1', data.body)
       return apiCalled.resolve(data.body)
     })
     .catch(err => {
-      console.log('vivek 2', err)
       return apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return apiCalled.promise
@@ -347,7 +343,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
         input.optin = true
         // send the message
         const listOfBodies = []
-        const body = getTemplateBodyForOptinMessage(req.body.phoneNumber, 'IN', wabaPhoneNumber, optinTemplateId)
+        const body = getTemplateBodyForOptinMessage(req.body.phoneNumber, __constants.DEFAULT_COUNTRY_CODE, wabaPhoneNumber, optinTemplateId)
         listOfBodies.push(body)
         // sending message
         return sendOptinMessage(listOfBodies, authToken)
@@ -378,8 +374,8 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   let oldAudiencesData = []
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
-      if (audiencesData.length === 0) {
-        return markAsVerified.reject({ type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED, err: {} })
+      if (audiencesData && audiencesData.length === 0) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED, err: {} })
       }
       // db data
       oldAudiencesData = [...audiencesData]

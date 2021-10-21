@@ -136,7 +136,7 @@ class validate {
         countryCode: {
           type: 'string',
           required: false,
-          default: 'IN',
+          default: __constants.DEFAULT_COUNTRY_CODE,
           enum: __constants.COUNTRY_LIST_ALPHA_TWO
         },
         isFacebookVerified: {
@@ -228,7 +228,7 @@ class validate {
         countryCode: {
           type: 'string',
           required: false,
-          default: 'IN',
+          default: __constants.DEFAULT_COUNTRY_CODE,
           enum: __constants.COUNTRY_LIST_ALPHA_TWO
         },
         isFacebookVerified: {
