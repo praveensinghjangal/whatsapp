@@ -82,8 +82,7 @@ class Template {
     }
   }
 
-  getTemplateInfo (wabaNumber, templateId) {
-    __logger.info(wabaNumber, templateId)
+  getTemplateInfo (wabaNumber, templateId, queryParams) {
     const deferred = q.defer()
     let isData = false
     let tempData = {}
@@ -93,8 +92,13 @@ class Template {
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           whatsAppAccountId = data.userAccountIdByProvider
-          let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&name=${templateId}`
+          const obj = { ...queryParams, name: templateId }
+          const qs = new URLSearchParams(obj).toString()
+          // let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&name=${templateId}`
+          let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&${qs}`
+
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
+          console.log('herererererer', url)
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json'
@@ -126,7 +130,7 @@ class Template {
             tempData.localizations = templateData
             templateData = tempData
           }
-          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
+          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: [] })
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
       return deferred.promise

@@ -26,7 +26,7 @@ class Template {
 
   getTemplateList (wabaNumber) { return this.template.getTemplateList(wabaNumber) }
 
-  getTemplateInfo (wabaNumber, templateId) { return this.template.getTemplateInfo(wabaNumber, templateId) }
+  getTemplateInfo (wabaNumber, templateId, queryParam) { return this.template.getTemplateInfo(wabaNumber, templateId, queryParam) }
 
   deleteTemplate (wabaNumber, templateId) { return this.template.deleteTemplate(wabaNumber, templateId) }
 }
