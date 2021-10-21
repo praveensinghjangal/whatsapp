@@ -10,8 +10,12 @@ class InternalFunctions {
     const webHookApplied = q.defer()
     __logger.info('set Webhook Of Provider --> function called', wabaNumber, providerId)
     const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
-    const incomingMessage = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.incomingMessage
-    const messageStatus = __config.webHookUrl + __constants.WEB_HOOK_END_POINT.messageStatus
+    let incomingMessage = __config.provider_config[providerId].incomingMessage
+    let messageStatus = __config.provider_config[providerId].messageStatus
+    if (__config.provider_config[providerId].name === 'facebook') {
+      incomingMessage = incomingMessage + wabaNumber
+      messageStatus = messageStatus + wabaNumber
+    }
     __logger.info('set Webhook Of Provider --> fURL formed', incomingMessage, messageStatus)
     wabaAccountService.setWebhook(wabaNumber, incomingMessage, messageStatus)
       .then(data => {

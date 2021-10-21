@@ -1,7 +1,7 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
-const tyntectConfig = __config.integration.tyntec
+const facebookConfig = __config.integration.facebook
 const __constants = require('../../../config/constants')
 // const saveApiLog = require('../service/saveApiLog')
 const RedisService = require('../../../lib/redis_service/redisService')
@@ -27,8 +27,8 @@ class WabaAccount {
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
           __logger.info('dataatatatat then 1', data, typeof data)
-          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getAccountInfo
-          url = url.split(':accountId').join(data.userAccountIdByProvider || '')
+          const url = facebookConfig.baseUrl[wabaNumber] + __constants.FACEBOOK_ENDPOINTS.updateWebhook
+          // url = url.split(':accountId').join(data.userAccountIdByProvider || '')
           __logger.info('URL====', url)
           const headers = {
             'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ class WabaAccount {
         return this.http.Get(url, headers, __config.service_provider_id.facebook)
       }).then(resp => {
         deferred.resolve(resp)
-      })
+      }).catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return deferred.promise
   }
 
@@ -114,7 +114,7 @@ class WabaAccount {
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
           __logger.info('dataatatatat', data, typeof data)
-          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getAccountPhoneNumberList
+          let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.getAccountPhoneNumberList
           url = url.split(':accountId').join(data.userAccountIdByProvider || '')
           __logger.info('URL====', url)
           const headers = {
@@ -149,7 +149,7 @@ class WabaAccount {
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
           __logger.info('dataatatatat', data, typeof data)
-          let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.getCurrentProfile
+          let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.getCurrentProfile
           url = url.split(':phoneNumber').join(data.id || '')
           __logger.info('URL====', url)
           const headers = {
@@ -182,7 +182,7 @@ class WabaAccount {
     if (wabaNumber && wabaData) {
       let headers = {}
       let spId = ''
-      let url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateProfile
+      let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.updateProfile
       const redisService = new RedisService()
       redisService.getWabaDataByPhoneNumber(wabaNumber)
         .then(data => {
@@ -232,45 +232,22 @@ class WabaAccount {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide valid https URL for statusUrl.' })
       return deferred.promise
     }
-    let headers = {}
-    let spId = ''
-    const url = tyntectConfig.baseUrl + __constants.TYNTEC_ENDPOINTS.updateDefaultApp
-    const redisService = new RedisService()
-    redisService.getWabaDataByPhoneNumber(wabaNumber)
-      .then(data => {
-        __logger.info('dataatatatat', data, typeof data, 'API URL -->', url)
-        headers = {
+
+    const authService = new AuthService(this.userId)
+    authService.getFaceBookTokensByWabaNumber(wabaNumber)
+      .then((data) => {
+        const url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.updateWebhook
+        __logger.info('URL====', url)
+        const headers = {
           'Content-Type': 'application/json',
-          Accept: 'application/json',
-          apikey: data.apiKey
+          Authorization: `Bearer ${data.apiKey}`
         }
-        spId = data.serviceProviderId
-        const reqBody = { webhooks: [] }
-        if (incomingMessageUrl) {
-          reqBody.webhooks.push({
-            events: [__constants.TYNTEC_MESSAGE_EVENTS.moMessage],
-            callbackUrl: incomingMessageUrl
-          })
-        }
-        if (statusUrl) {
-          reqBody.webhooks.push({
-            events: [
-              __constants.TYNTEC_MESSAGE_EVENTS.accepted,
-              __constants.TYNTEC_MESSAGE_EVENTS.delivered,
-              __constants.TYNTEC_MESSAGE_EVENTS.seen,
-              __constants.TYNTEC_MESSAGE_EVENTS.failed,
-              __constants.TYNTEC_MESSAGE_EVENTS.channelFailed,
-              __constants.TYNTEC_MESSAGE_EVENTS.unknown,
-              __constants.TYNTEC_MESSAGE_EVENTS.deleted
-            ],
-            callbackUrl: statusUrl
-          })
-        }
-        __logger.info('request body -------->', reqBody)
-        return this.http.Patch(reqBody, url, headers, spId)
+
+        return this.http.Patch({ webhooks: { url: incomingMessageUrl } }, url, headers, __config.service_provider_id.facebook)
       })
       .then(defaultAccountUpdated => {
-        if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 204) {
+        console.log('vivek')
+        if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 201) {
           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 404) {
           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })

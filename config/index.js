@@ -117,17 +117,25 @@ module.exports = {
     [process.env.SERVICE_PROVIDER_ID_TYNTEC]: {
       name: 'tyntec',
       queueName: process.env.SERVICE_PROVIDER_QUEUE_TYNTEC_OUTGOING,
-      servicProviderId: process.env.SERVICE_PROVIDER_ID_TYNTEC
+      servicProviderId: process.env.SERVICE_PROVIDER_ID_TYNTEC,
+      incomingMessage: process.env.WEB_HOOK_URL + __constants.WEB_HOOK_END_POINT.incomingMessage,
+      messageStatus: process.env.WEB_HOOK_URL + __constants.WEB_HOOK_END_POINT.messageStatus
+
     },
     [process.env.SERVICE_PROVIDER_ID_DEMO]: {
       name: 'demo',
       queueName: process.env.SERVICE_PROVIDER_QUEUE_DEMO,
-      servicProviderId: process.env.SERVICE_PROVIDER_ID_DEMO
+      servicProviderId: process.env.SERVICE_PROVIDER_ID_DEMO,
+      incomingMessage: process.env.WEB_HOOK_URL + __constants.WEB_HOOK_END_POINT.incomingMessage,
+      messageStatus: process.env.WEB_HOOK_URL + __constants.WEB_HOOK_END_POINT.messageStatus
+
     },
     [process.env.SERVICE_PROVIDER_ID_FB]: {
       name: 'facebook',
       queueName: process.env.SERVICE_PROVIDER_QUEUE_FB_OUTGOING,
-      servicProviderId: process.env.SERVICE_PROVIDER_ID_FB
+      servicProviderId: process.env.SERVICE_PROVIDER_ID_FB,
+      incomingMessage: process.env.WEB_HOOK_URL + __constants.WEB_HOOK_END_POINT.fbWebhook,
+      messageStatus: process.env.WEB_HOOK_URL + __constants.WEB_HOOK_END_POINT.fbWebhook
     }
   },
   service_provider_id: {
