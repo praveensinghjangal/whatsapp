@@ -210,7 +210,11 @@ class Template {
         return this.http.Post(fbRequestbody[0], 'body', url, headers, __config.service_provider_id.facebook)
       })
       .then(reqBody => {
-        return this.http.Post(fbRequestbody[1], 'body', url, headers, __config.service_provider_id.facebook)
+        if (templateData && templateData.secondLanguageRequired && fbRequestbody && fbRequestbody.length > 1 && fbRequestbody[1]) {
+          return this.http.Post(fbRequestbody[1], 'body', url, headers, __config.service_provider_id.facebook)
+        } else {
+          return reqBody
+        }
       })
       .then(data => {
         __logger.info('integration :: Add template data', { data })
