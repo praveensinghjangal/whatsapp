@@ -79,7 +79,7 @@ class AudienceService {
       country: newData.country || oldData.country,
       createdBy: newData.userId,
       isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false),
-      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : 'IN')
+      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : __constants.DEFAULT_COUNTRY_CODE)
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
@@ -144,7 +144,7 @@ class AudienceService {
       firstMessageValue: null,
       lastMessageValue: null,
       isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : oldData.isFacebookVerified,
-      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : 'IN'),
+      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : __constants.DEFAULT_COUNTRY_CODE),
       audienceId: oldData.audienceId,
       phoneNumber: oldData.phoneNumber
     }
