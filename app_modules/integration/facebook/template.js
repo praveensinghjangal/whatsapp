@@ -13,7 +13,7 @@ const DataMapper = require('./dataMapper')
 class InternalFunctions {
   setTheMappingOfMessageData (templateData, whatsAppAccountId) {
     const finalData = []
-    __logger.info('integration :: get template list data', templateData, templateData.data)
+    __logger.info('integration :: Inside mapping function', templateData, templateData.data)
     if (templateData.data && templateData.data[0]) {
       const dataGroupedByName = _.chain(templateData.data)
         .groupBy('name')
@@ -130,7 +130,7 @@ class Template {
             tempData.localizations = templateData
             templateData = tempData
           }
-          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: [] })
+          return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
         })
         .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
       return deferred.promise
@@ -217,7 +217,7 @@ class Template {
       })
       .then(data => {
         __logger.info('integration :: Add template data', { data })
-        if (data && data.id) {
+        if (data && data.body && data.body.id) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { id: data.id } })
         } else {
           return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
