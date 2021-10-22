@@ -9,7 +9,7 @@ const { isArray } = require('../../../lib/util')
 class InternalService {
   createInitialBody (td) {
     const body = [{
-      name: td.templateName,
+      name: td.messageTemplateId,
       language: td.languageCode,
       components: [
         {
@@ -23,7 +23,7 @@ class InternalService {
     }
     if (td.secondLanguageRequired) {
       body.push({
-        name: td.templateName,
+        name: td.messageTemplateId,
         language: td.secondLanguageCode,
         components: [
           {
