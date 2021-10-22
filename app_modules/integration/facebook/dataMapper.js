@@ -80,6 +80,13 @@ class InternalService {
         filename: td.whatsapp.media.filename
       }
       body.type = 'document'
+    } else if (td.whatsapp.contentType === 'template') {
+      body.template = {
+        namespace: td.whatsapp.templateId,
+        name: td.whatsapp.templateId,
+        language: td.whatsapp.template.language,
+        components: td.whatsapp.template.components
+      }
     }
     return body
   }
