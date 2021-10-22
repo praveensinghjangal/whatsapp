@@ -159,7 +159,7 @@ class Template {
     __logger.info('deleteTemplate::Template Service >>>>>>>>>>>>>>>>>>>>>>>>>>', { wabaNumber, templateId })
     const deferred = q.defer()
     if (wabaNumber && templateId) {
-      const authService = new IntegrationService.Authentication(__config.service_provider_id.facebook, this.userId)
+      const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           __logger.info('deleteTemplate::getWabaDataByPhoneNumber >>>>>>>>>>>>', { data, typeof: typeof data })
