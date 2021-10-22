@@ -289,7 +289,7 @@ const FACEBOOK_ENDPOINTS = {
   updateBusinessProfile: '/v1/settings/business/profile',
   updateWebhook: '/v1/settings/application',
   sendMessage: '/v1/messages/',
-  addTemplate: '/message_templates',
+  addTemplate: '/message_templates?access_token=',
   getMedia: '/v1/media/:MediaId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']

@@ -198,10 +198,9 @@ class Template {
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(wabaNumber)
       .then(data => {
-        url = url + data.userAccountIdByProvider + __constants.FACEBOOK_ENDPOINTS.addTemplate
+        url = url + data.userAccountIdByProvider + __constants.FACEBOOK_ENDPOINTS.addTemplate + data.graphApiKey
         headers = {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${data.apiKey}`
+          'Content-Type': 'application/json'
         }
         return this.dataMapper.addTemplate(templateData)
       })
