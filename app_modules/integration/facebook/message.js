@@ -25,8 +25,8 @@ class Message {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${data.apiKey}`
         }
+        reqObj = { headers, payload: JSON.parse(JSON.stringify(payload)) }
         const fbPayload = this.dataMapper.sendMessage(payload)
-        reqObj = { headers, fbPayload }
         return this.http.Post(fbPayload, 'body', data.baseUrl + __constants.FACEBOOK_ENDPOINTS.sendMessage, headers, __config.service_provider_id.facebook)
       })
       .then(apiRes => {

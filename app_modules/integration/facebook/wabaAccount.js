@@ -53,7 +53,6 @@ class WabaAccount {
     const deferred = q.defer()
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(wabaNumber)
-      //
       .then((data) => {
         let url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.profilePicUpdate
         url = url.split(':phoneNumber').join(data.id || '')

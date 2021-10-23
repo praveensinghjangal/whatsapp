@@ -37,27 +37,23 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
   } else if (messageDataFromFacebook.messages[0].image || messageDataFromFacebook.messages[0].voice || messageDataFromFacebook.messages[0].video || messageDataFromFacebook.messages[0].sticker) {
     // image, voice, video, sticker
     messageData.content = {
-      content: {
-        media: {
-          url: '',
-          type: messageDataFromFacebook.messages[0].type || null,
-          mediaId: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].id || null
-        },
-        contentType: __constants.FACEBOOK_CONTENT_TYPE.media
-      }
+      media: {
+        url: '',
+        type: messageDataFromFacebook.messages[0].type || null,
+        mediaId: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].id || null
+      },
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.media
     }
   } else if (messageDataFromFacebook.messages[0].document) {
     // document
     messageData.content = {
-      content: {
-        media: {
-          url: '',
-          type: messageDataFromFacebook.messages[0].type || null,
-          caption: messageDataFromFacebook.messages[0].document.caption || null,
-          mediaId: messageDataFromFacebook.messages[0].document.id || null
-        },
-        contentType: __constants.FACEBOOK_CONTENT_TYPE.media
-      }
+      media: {
+        url: '',
+        type: messageDataFromFacebook.messages[0].type || null,
+        caption: messageDataFromFacebook.messages[0].document.caption || null,
+        mediaId: messageDataFromFacebook.messages[0].document.id || null
+      },
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.media
     }
   } else if (messageDataFromFacebook.messages[0].contacts) {
     // contacts
@@ -71,36 +67,32 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       })
     }
     messageData.content = {
-      content: {
-        contacts: [
-          {
-            ims: messageDataFromFacebook.messages[0].contacts.ims || null,
-            org: messageDataFromFacebook.messages[0].contacts.org || null,
-            name: {
-              lastName: messageDataFromFacebook.messages[0].contacts.name.last_name || null,
-              firstName: messageDataFromFacebook.messages[0].contacts.name.first_name || null,
-              middleName: '',
-              formattedName: messageDataFromFacebook.messages[0].contacts.name.formatted_name || null
-            },
-            urls: messageDataFromFacebook.messages[0].contacts.urls || null,
-            emails: messageDataFromFacebook.messages[0].contacts.emails || null,
-            phones: messageDataFromFacebook.messages[0].contacts.phones || null,
-            addresses: messageDataFromFacebook.messages[0].contacts.addresses || null
-          }
-        ],
-        contentType: __constants.FACEBOOK_CONTENT_TYPE.contacts
-      }
+      contacts: [
+        {
+          ims: messageDataFromFacebook.messages[0].contacts.ims || null,
+          org: messageDataFromFacebook.messages[0].contacts.org || null,
+          name: {
+            lastName: messageDataFromFacebook.messages[0].contacts.name.last_name || null,
+            firstName: messageDataFromFacebook.messages[0].contacts.name.first_name || null,
+            middleName: '',
+            formattedName: messageDataFromFacebook.messages[0].contacts.name.formatted_name || null
+          },
+          urls: messageDataFromFacebook.messages[0].contacts.urls || null,
+          emails: messageDataFromFacebook.messages[0].contacts.emails || null,
+          phones: messageDataFromFacebook.messages[0].contacts.phones || null,
+          addresses: messageDataFromFacebook.messages[0].contacts.addresses || null
+        }
+      ],
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.contacts
     }
   } else if (messageDataFromFacebook.messages[0].location) {
     // location
     messageData.content = {
-      content: {
-        location: {
-          latitude: messageDataFromFacebook.messages[0].location.latitude || null,
-          longitude: messageDataFromFacebook.messages[0].location.longitude || null
-        },
-        contentType: __constants.FACEBOOK_CONTENT_TYPE.location
-      }
+      location: {
+        latitude: messageDataFromFacebook.messages[0].location.latitude || null,
+        longitude: messageDataFromFacebook.messages[0].location.longitude || null
+      },
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.location
     }
   }
   messageData.retryCount = messageDataFromFacebook.retryCount ? messageDataFromFacebook.retryCount : 0
