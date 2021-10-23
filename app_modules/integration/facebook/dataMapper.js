@@ -82,10 +82,10 @@ class InternalService {
       body.type = 'document'
     } else if (td.whatsapp.contentType === 'template') {
       body.template = {
-        namespace: td.whatsapp.templateId,
-        name: td.whatsapp.templateId,
+        namespace: __constants.NAME_SPACE_FB,
+        name: td.whatsapp.template.templateId,
         language: td.whatsapp.template.language,
-        components: td.whatsapp.template.components
+        components: td.whatsapp.template.components || []
       }
     }
     return body
