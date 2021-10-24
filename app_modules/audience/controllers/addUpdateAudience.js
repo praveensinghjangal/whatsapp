@@ -373,15 +373,64 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
   let oldAudiencesData = []
   audienceService.getAudienceTableDataByPhoneNumber(phoneNumbers, userId, wabaPhoneNumber)
     .then(audiencesData => {
-      if (audiencesData && audiencesData.length === 0) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED, err: {} })
-      }
-      // db data
-      oldAudiencesData = [...audiencesData]
-      audiencesData.forEach(audience => {
-        if (audience.isFacebookVerified || audience.isFacebookVerified === 1) {
+      // audiencesData => data that needs to be updated (ie. they're already present in db)
+      oldAudiencesData = []
+      // adding the new data(to be added in db) in oldAudiencesData
+      const reqBodyArray = [...audiences]
+      // input body
+      reqBodyArray.forEach(bodyAud => {
+        // db data
+        const found = _.find(audiencesData, (aud) => (bodyAud.phoneNumber === aud.phoneNumber))
+        const isDbDataPresent = !!((found !== undefined) || (found && Object.keys(found).length !== 0))
+        // "optin" key exists in req body
+        if ('optin' in bodyAud) {
+          // audience wants to opt in
+          if (bodyAud.optin) {
+            // aud is present in db
+            if (isDbDataPresent) {
+              if (found.isFacebookVerified || found.isFacebookVerified === 1) {
+                // do nothing, since its already verified
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true })
+              } else {
+                // verfy it
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true })
+                phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
+              }
+              // not present in db and needs optin
+            } else {
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true })
+              phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
+            }
+            // audience doesnt want to optin / want to remove optin
+          } else {
+            if (isDbDataPresent) {
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false })
+            } else {
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
+            }
+          }
+          // "optin" key is not present in the body. So check db data.
         } else {
-          phoneNumbersToBeVerified.push(`+${audience.phoneNumber}`)
+          // aud is already present in db.
+          if (isDbDataPresent) {
+            if (found.optin) {
+              if (found.isFacebookVerified || found.isFacebookVerified === 1) {
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true })
+              } else {
+                // db optin is true and is not verified yet, then send a message
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true })
+                phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
+              }
+            } else {
+              // if optin in db is false, do nothing.
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false })
+            }
+          } else {
+            // if db data is not present, push it into array. optin=> set to false because optin not sepecified in body and aud is new.
+            // oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
+            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
+            // phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
+          }
         }
       })
       const audienceService = new integrationService.Audience(providerId, maxTpsToProvider, userId)
@@ -401,20 +450,20 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
           return opt.input === `+${oldAud.phoneNumber}`
         })
         if (optinValue) {
-          // phone number was sent for verification
+          // phone number was sent for verification. it means, optin=> true & isFacebookVerified=> false previously.
           if (optinValue.status !== __constants.FACEBOOK_RESPONSES.valid.displayName) {
             // invalid number
-            invalidAudiences.push({ ...oldAud, isFacebookVerified: false, isIncomingMessage: newAud.isIncomingMessage })
-            mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: false }, old: { ...oldAud, isFacebookVerified: false, isIncomingMessage: newAud.isIncomingMessage } } }
-            newDataOfAudiences.push({ ...newAud, isFacebookVerified: false })
+            invalidAudiences.push({ ...oldAud, isFacebookVerified: false, optin: oldAud.optin, isIncomingMessage: newAud.isIncomingMessage })
+            mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: false, optin: oldAud.optin }, old: { ...oldAud, isFacebookVerified: false, isIncomingMessage: newAud.isIncomingMessage } } }
+            newDataOfAudiences.push({ ...newAud, isFacebookVerified: false, optin: oldAud.optin })
           } else {
-            verifiedAudiences.push({ ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage })
-            newDataOfAudiences.push({ ...newAud, isFacebookVerified: true })
-            mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
+            verifiedAudiences.push({ ...oldAud, isFacebookVerified: true, optin: oldAud.optin, isIncomingMessage: newAud.isIncomingMessage })
+            newDataOfAudiences.push({ ...newAud, isFacebookVerified: true, optin: oldAud.optin })
+            mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true, optin: oldAud.optin }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
           }
         } else {
-          newDataOfAudiences.push({ ...newAud, isFacebookVerified: true })
-          mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: true }, old: { ...oldAud, isFacebookVerified: true, isIncomingMessage: newAud.isIncomingMessage } } }
+          newDataOfAudiences.push({ ...newAud, isFacebookVerified: oldAud.isFacebookVerified, optin: oldAud.optin })
+          mappingOfOldAndNewDataBasedOnPhoneNumber = { ...mappingOfOldAndNewDataBasedOnPhoneNumber, [oldAud.phoneNumber]: { new: { ...newAud, isFacebookVerified: oldAud.isFacebookVerified, optin: oldAud.optin }, old: { ...oldAud, isFacebookVerified: oldAud.isFacebookVerified, optin: oldAud.optin, isIncomingMessage: newAud.isIncomingMessage } } }
         }
       }
       markAsVerified.resolve({ newDataOfAudiences: newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences })
