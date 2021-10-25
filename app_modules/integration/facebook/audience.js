@@ -37,6 +37,12 @@ class Audience {
     __logger.info('Facebook saveOptin ::>>>>>>>>>>>>>>>>>>>>> ', listOfPhoneNumbers)
     const deferred = q.defer()
     // wabaNumber = '917666118833'
+
+    if (listOfPhoneNumbers.length === 0) {
+      deferred.resolve([])
+      return deferred.promise
+    }
+
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(wabaNumber)
       .then(data => {

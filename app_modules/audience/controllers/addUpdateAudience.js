@@ -446,9 +446,12 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
         const newAud = _.find(audiences, aud => {
           return aud.phoneNumber === oldAud.phoneNumber
         })
-        const optinValue = _.find(optinData, (opt) => {
-          return opt.input === `+${oldAud.phoneNumber}`
-        })
+        let optinValue
+        if (optinData && optinData.length !== 0) {
+          optinValue = _.find(optinData, (opt) => {
+            return opt.input === `+${oldAud.phoneNumber}`
+          })
+        }
         if (optinValue) {
           // phone number was sent for verification. it means, optin=> true & isFacebookVerified=> false previously.
           if (optinValue.status !== __constants.FACEBOOK_RESPONSES.valid.displayName) {
