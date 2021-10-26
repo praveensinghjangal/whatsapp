@@ -213,7 +213,8 @@ const MESSAGE_STATUS = {
   delivered: 'delivered',
   accepted: 'accepted',
   failed: 'failed',
-  pending: 'waiting for pending delivery'
+  pending: 'waiting for pending delivery',
+  rejected: 'rejected'
 }
 const MESSAGE_STATUS_FOR_DISPLAY = [
   MESSAGE_STATUS.inProcess,
@@ -221,7 +222,8 @@ const MESSAGE_STATUS_FOR_DISPLAY = [
   MESSAGE_STATUS.delivered,
   MESSAGE_STATUS.seen,
   MESSAGE_STATUS.deleted,
-  MESSAGE_STATUS.failed
+  MESSAGE_STATUS.failed,
+  MESSAGE_STATUS.rejected
 ]
 const VALIDATOR = {
   email: '^(([^<>()\\[\\]\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
