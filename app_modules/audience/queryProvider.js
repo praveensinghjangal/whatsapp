@@ -4,7 +4,7 @@ const columnMapService = new ColumnMapService()
 const addAudienceData = () => {
   return `INSERT INTO audience 
   (audience_id, phone_number, channel, optin, optin_source_id,
-  segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number,first_message,last_message,isFacebookVerified,countryCode)
+  segment_id,chat_flow_id, name, email, gender, country,created_by,isFacebookVerified,countryCode,waba_phone_number,first_message,last_message)
   VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?, ?, ?)`
 }
 
@@ -93,7 +93,7 @@ const getOptinByPhoneNumber = () => {
 const getWabaNumberFromDb = () => {
   return `select CONCAT(wi.phone_code ,wi.phone_number ) as "wabaPhoneNumber"
   from waba_information wi
-  where user_id = ? and wi.is_active=1`
+  where wi.user_id = ? and wi.is_active=1`
 }
 // Optin Master
 
