@@ -22,7 +22,7 @@ const request = require('request')
  * @description API’s related to whatsapp message.
  */
 
-const updateAudience = (audienceNumber, audOptin, wabaNumber) => {
+const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
   const audUpdated = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
   const audienceDataToBePosted = [{
@@ -35,7 +35,7 @@ const updateAudience = (audienceNumber, audOptin, wabaNumber) => {
   const options = {
     url,
     body: audienceDataToBePosted,
-    headers: { Authorization: __config.internalApiCallToken },
+    headers: { Authorization: authToken },
     json: true
   }
   request.post(options, (err, httpResponse, body) => {
@@ -77,11 +77,11 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   return statusSent.promise
 }
 
-const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber) => {
+const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, authToken) => {
   __logger.info('checkOptinStaus::>>>>>>>>>>>', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
-    updateAudience(endUserPhoneNumber, true, wabaNumber)
+    updateAudience(endUserPhoneNumber, true, wabaNumber, authToken)
     canSendMessage.resolve(true)
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
@@ -141,7 +141,7 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider) => {
   return q.all(thePromises)
 }
 
-const singleRuleCheck = (data, wabaPhoneNumber, index) => {
+const singleRuleCheck = (data, wabaPhoneNumber, index, authToken) => {
   const isValid = q.defer()
   if (data && data.whatsapp) {
     if (data.whatsapp.from !== wabaPhoneNumber) {
@@ -151,7 +151,7 @@ const singleRuleCheck = (data, wabaPhoneNumber, index) => {
     checkIfNoExists(data.whatsapp.from)
       .then(noValRes => {
         data.redisData = noValRes.data.redisData || {}
-        return checkOptinStaus(data.to, data.whatsapp.template, data.isOptin, data.whatsapp.from)
+        return checkOptinStaus(data.to, data.whatsapp.template, data.isOptin, data.whatsapp.from, authToken)
       })
       .then(canSendMessage => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
       .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
@@ -165,16 +165,16 @@ const singleRuleCheck = (data, wabaPhoneNumber, index) => {
         isValid.reject({ valid: false, err })
       })
   } else {
-    isValid.resolve({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
+    isValid.reject({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
   }
   return isValid.promise
 }
 
-const ruleCheck = (data, wabaPhoneNumber) => {
+const ruleCheck = (data, wabaPhoneNumber, authToken) => {
   let p = q()
   const thePromises = []
   data.forEach((singleObject, index) => {
-    p = p.then(() => singleRuleCheck(singleObject, wabaPhoneNumber, index))
+    p = p.then(() => singleRuleCheck(singleObject, wabaPhoneNumber, index, authToken))
       .catch(err => err)
     thePromises.push(p)
   })
@@ -201,7 +201,7 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
-    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber))
+    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber, req.headers.authorization))
     .then(isValid => {
       __logger.info('sendMessageToQueue :: Rules checked then 2', isValid, req.body.length)
       const invalidReq = _.filter(isValid, { valid: false })

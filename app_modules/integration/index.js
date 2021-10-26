@@ -1,7 +1,8 @@
 const providerConfig = require('../../config').provider_config
 const providers = { // keep on adding providers here
   demo: require('./demo'),
-  tyntec: require('./tyntec')
+  tyntec: require('./tyntec'),
+  facebook: require('./facebook')
 }
 // functions will be called as per provider
 class Messaage {
@@ -25,7 +26,7 @@ class Template {
 
   getTemplateList (wabaNumber) { return this.template.getTemplateList(wabaNumber) }
 
-  getTemplateInfo (wabaNumber, templateId) { return this.template.getTemplateInfo(wabaNumber, templateId) }
+  getTemplateInfo (wabaNumber, templateId, queryParam) { return this.template.getTemplateInfo(wabaNumber, templateId, queryParam) }
 
   deleteTemplate (wabaNumber, templateId) { return this.template.deleteTemplate(wabaNumber, templateId) }
 }
@@ -40,6 +41,8 @@ class WabaAccount {
 
   updateProfilePic (wabaNumber, profilePic) { return this.wabaAccount.updateProfilePic(wabaNumber, profilePic) }
 
+  getProfilePic (wabaNumber) { return this.wabaAccount.getProfilePic(wabaNumber) }
+
   getAccountPhoneNoList (wabaNumber) { return this.wabaAccount.getAccountPhoneNoList(wabaNumber) }
 
   getCurrentProfile (wabaNumber) { return this.wabaAccount.getCurrentProfile(wabaNumber) }
@@ -49,4 +52,22 @@ class WabaAccount {
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) { return this.wabaAccount.setWebhook(wabaNumber, incomingMessageUrl, statusUrl) }
 }
 
-module.exports = { Messaage, Template, WabaAccount }
+class Authentication {
+  constructor (providerId, userId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.authentication = new providers[this.providerName].Authentication(userId)
+  }
+
+  getFaceBookTokensByWabaNumber (wabaNumber) { return this.authentication.getFaceBookTokensByWabaNumber(wabaNumber) }
+}
+
+class Audience {
+  constructor (providerId, maxConcurrent, userId) {
+    this.providerName = providerConfig[providerId].name // id will be fetched from db by on user login and extracted frm jwt and sent here
+    this.audience = new providers[this.providerName].Audience(maxConcurrent, userId)
+  }
+
+  saveOptin (wabaNumber, payload) { return this.audience.saveOptin(wabaNumber, payload) }
+}
+
+module.exports = { Messaage, Template, WabaAccount, Authentication, Audience }

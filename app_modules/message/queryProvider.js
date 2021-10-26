@@ -3,8 +3,8 @@ const __constants = require('../../config/constants')
 const addMessageHistoryData = (messageId) => {
   return `INSERT INTO message_history
   (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number)
-  VALUES (?,?,?,?,?,?,?,?)`
+  end_consumer_number, business_number, errors)
+  VALUES (?,?,?,?,?,?,?,?,?)`
 }
 
 const getMessageTableDataWithId = () => {
@@ -16,7 +16,7 @@ const getMessageTableDataWithId = () => {
 }
 
 const getMessageIdByServiceProviderMsgId = () => {
-  return `select message_id as "messageId" , service_provider_id as  "serviceProviderId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber" 
+  return `select message_id as "messageId" , service_provider_id as  "serviceProviderId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber", errors as "errors" 
   from message_history
   where is_active = 1 and service_provider_message_id = ? limit 1`
 }

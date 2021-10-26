@@ -62,11 +62,15 @@ module.exports = (vivaMessageId, serviceProviderMessageId, payload, fromNumber) 
   __logger.info('Inside function to store incoming message in incoming_message_payload table', vivaMessageId, serviceProviderMessageId)
   let redisData = {}
   const redisService = new RedisService()
+
   validateInput({ vivaMessageId, serviceProviderMessageId, payload, fromNumber })
-    .then(valres => redisService.getWabaDataByPhoneNumber(payload.to))
+    .then(valres => {
+      return redisService.getWabaDataByPhoneNumber(payload.to)
+    })
     .then(data => {
       __logger.info(' then 2', { data })
       redisData = data
+
       return addAudienceAndOptin(payload, data)
     })
     .then(data => {

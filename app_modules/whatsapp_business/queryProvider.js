@@ -108,7 +108,14 @@ const getWabaData = () => {
   wi.optin_text as "optinText",
   pd.plan_priority as "planPriority",
   wi.chatbot_activated as "chatbotActivated",
-  wi.user_account_id_by_provider as "userAccountIdByProvider"
+  wi.user_account_id_by_provider as "userAccountIdByProvider",
+  wi.wabiz_username as "wabizUsername",
+  wi.wabiz_password as "wabizPassword",
+  wi.wabiz_api_key_expires_on as "wabizApiKeyExpiresOn",
+  wi.wabiz_base_url as "wabizBaseUrl",
+  wi.graph_api_key as "graphApiKey",
+  wi.max_tps_to_provider as "maxTpsToProvider",
+  wi.user_id as "userId"
   from waba_information wi
   join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
   join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
@@ -281,6 +288,12 @@ const getServiceTotalProviderCount = () => {
   where sp.is_active =true`
 }
 
+const updateWabizApiKeyAndExpireyTime = () => {
+  return `update waba_information
+  set api_key = ?,wabiz_api_key_expires_on = ?
+  WHERE phone_code= ? and phone_number = ? and is_active = true`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -311,5 +324,6 @@ module.exports = {
   getServiceProvider,
   insertServiceProviderData,
   updateServiceProviderData,
-  getServiceTotalProviderCount
+  getServiceTotalProviderCount,
+  updateWabizApiKeyAndExpireyTime
 }

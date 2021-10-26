@@ -3,9 +3,9 @@ const __config = require('../../../config')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const request = require('request')
-
-const isTyntecOptinMessage = (content, optinText) => {
-  __logger.info('isTyntecOptinMessage::>>>>>>>>>>>>>..')
+const setUserConfig = require('../../../middlewares/setUserConfig')
+const checkOptinMessage = (content, optinText) => {
+  __logger.info('checkOptinMessage::>>>>>>>>>>>>>..')
   const isOptin = q.defer()
   if (content && content.contentType === 'text' && content.text && optinText) {
     content.text = content.text.trim()
@@ -37,9 +37,10 @@ function addAudienceAndOptin (inputPayload, redisData) {
     isIncomingMessage: true,
     wabaPhoneNumber: redisData.id
   }]
-  if (!audienceDataToBePosted.name) delete audienceDataToBePosted.name
-  if (__config.provider_config[redisData.serviceProviderId].name === 'tyntec') {
-    isOptinMessage = isTyntecOptinMessage
+  if (!audienceDataToBePosted[0].name) delete audienceDataToBePosted[0].name
+  const providers = ['tyntec', 'facebook']
+  if (providers.indexOf(__config.provider_config[redisData.serviceProviderId].name) !== -1) {
+    isOptinMessage = checkOptinMessage
   }
   isOptinMessage(inputPayload.content, redisData.optinText)
     .then(isoptin => {
@@ -47,10 +48,15 @@ function addAudienceAndOptin (inputPayload, redisData) {
         audienceDataToBePosted[0].optin = true
         audienceDataToBePosted[0].optinSourceId = __config.optinSource.message
       }
+      // const authService = new SetUserConfig()
+      return setUserConfig.getUserData(redisData.userId)
+    }).then(data => {
+      const apiToken = data.authToken
+
       const options = {
         url,
         body: audienceDataToBePosted,
-        headers: { Authorization: __config.internalApiCallToken },
+        headers: { Authorization: apiToken },
         json: true
       }
       __logger.info('addAudienceAndOptin::optionssssssssssssssssssssss', options)

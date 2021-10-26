@@ -162,6 +162,14 @@ class validate {
                     type: 'number',
                     required: true,
                     minLength: 1
+                  },
+                  name: {
+                    type: 'string',
+                    required: false
+                  },
+                  address: {
+                    type: 'string',
+                    required: false
                   }
                 }
               },
@@ -423,6 +431,10 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1
+        },
+        errors: {
+          type: 'array',
+          required: false
         },
         endConsumerNumber: {
           type: 'string',

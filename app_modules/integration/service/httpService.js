@@ -21,7 +21,7 @@ class HttpRequestOg {
     })
   }
 
-  postDoNotUse (inputRequest, inputReqType, url, headers, serviceProviderId) {
+  postDoNotUse (inputRequest, inputReqType, url, headers, serviceProviderId, isJson = null) {
     const deferred = q.defer()
     const options = {
       method: 'POST',
@@ -29,7 +29,7 @@ class HttpRequestOg {
       timeout: this.timeInSeconds,
       headers: headers,
       [inputReqType]: inputRequest,
-      json: true,
+      json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
     __logger.info('request for HTTP post ', options)

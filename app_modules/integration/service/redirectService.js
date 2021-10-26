@@ -27,7 +27,6 @@ class RedirectService {
       payload.retryCount = 0
       payload.wabaNumber = wabaNumber
     }
-    console.log('pppppppppppppppp', payload, validPayload)
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
         __logger.info('data then 1', { data })
@@ -73,6 +72,7 @@ class RedirectService {
       payload.content.text = payload.content.text.trim()
       __logger.info('payload text', payload.content.text, payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText)
       if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText) {
+        // TODO:
         payload.isVavaOptin = true
       }
     }

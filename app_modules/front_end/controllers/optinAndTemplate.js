@@ -5,6 +5,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const HttpService = require('../../../lib/http_service')
 const __config = require('../../../config')
+const __db = require('../../../lib/db')
 
 /**
  * @namespace -GET-SET-OPTIN-&-Template-Controller-
@@ -156,6 +157,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinTextApi(req.body.optinText, req.headers.authorization))
     .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization))
+    .then(data => __db.redis.key_delete(__constants.REDIS_OPTIN_TEMPLATE_DATA_KEY + req.user.wabaPhoneNumber))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {
       __logger.error('error: ', err)
@@ -163,4 +165,4 @@ const addUpdateOptinAndTemplate = (req, res) => {
     })
 }
 
-module.exports = { post: addUpdateOptinAndTemplate, get: getOptinAndTemplate }
+module.exports = { post: addUpdateOptinAndTemplate, get: getOptinAndTemplate, getTemplateIdData: getTemplateIdData }

@@ -92,7 +92,8 @@ const REDIS_TTL = {
   userConfig: 300,
   wabaData: 900,
   templateData: 300,
-  childMessage: 360
+  childMessage: 360,
+  optinTemplateData: 43200
 }
 const SERVER_TIMEOUT = 2 * 60 * 1000
 const ENTITY_NAME = {
@@ -149,21 +150,28 @@ const MQ = {
   mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  fbOutgoing: { type: 'queue', q_name: 'fb_outgoing', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  fbSendmessageError: { type: 'queue', q_name: 'fb_sendmessage_error', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
   tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
+  fbIncoming: { type: 'queue', q_name: 'fb_incoming', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
+  fbMessageStatus: { type: 'queue', q_name: 'fb_message_status', q_options: { durable: true }, prefetchCount: 20, createChannel: true },
   delay_failed_to_redirect_10_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_20_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_20_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 20000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: 15, createChannel: true },
   retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: 1, createChannel: true },
-  tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: 15, createChannel: true }
+  tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: 15, createChannel: true },
+  fbOutgoingSync: { type: 'queue', q_name: 'fb_outgoing_sync', q_options: { durable: true }, prefetchCount: 15, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
-  tyntec: 5
+  tyntec: 5,
+  facebook: 5
 }
 const OUTGOING_MESSAGE_RETRY = {
-  tyntec: 5
+  tyntec: 5,
+  facebook: 5
 }
 const DELIVERY_CHANNEL = {
   whatsapp: 'whatsapp'
@@ -191,6 +199,7 @@ const INTERNAL_END_POINTS = {
   heloOssBasePath: '/helowhatsapp/api/frontEnd/helo-oss',
   templateApproval: '/helowhatsapp/api/templates/:templateId/submit/:evaluationResult',
   templateList: '/helowhatsapp/api/templates/list',
+  getTemplateListWithStatusId: '/helowhatsapp/api/templates?messageTemplateStatusId=',
   templateInfo: '/helowhatsapp/api/templates/:userId/:templateId',
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
@@ -268,6 +277,20 @@ const TYNTEC_ENDPOINTS = {
   updateProfile: '/chat-api/v2/channels/whatsapp/phone-numbers/:phoneNumber/settings/profile',
   updateDefaultApp: '/chat-api/v2/applications/default',
   getMedia: '/chat-api/v2/media/:mediaId'
+}
+const FACEBOOK_ENDPOINTS = {
+  saveOptin: '/v1/contacts',
+  login: '/v1/users/login',
+  profilePicUpdate: '/v1/settings/profile/photo',
+  getProfilePic: '/v1/settings/profile/photo?format=link',
+  getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  updateAboutProfile: '/v1/settings/profile/about',
+  updateBusinessProfile: '/v1/settings/business/profile',
+  updateWebhook: '/v1/settings/application',
+  sendMessage: '/v1/messages/',
+  addTemplate: '/message_templates?access_token=',
+  getMedia: '/v1/media/:MediaId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -359,9 +382,13 @@ const TYNTEC_MESSAGE_EVENTS = {
   unknown: 'MessageStatus::unknown',
   deleted: 'MessageStatus::deleted'
 }
+const FACEBOOK_MESSAGE_EVENTS = {
+  moMessage: 'MoMessage'
+}
 const WEB_HOOK_END_POINT = {
   incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
-  messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e'
+  messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e',
+  fbWebhook: '/helowhatsapp/api/web-hooks/facebook/queue/messageandincomingdata/cd84929f-b458-4760-8f8a-a43984f1f4db/'
 }
 const MENU_BASED_TEMPLATE_STATUS = {
   requested: { statusCode: '59903410-b3c5-4312-a444-617f04f6116e', displayName: 'Requested' },
@@ -391,6 +418,21 @@ const AGREEMENT_STATUS_MAPPING = {
 }
 const AGREEMENT_EVALUATION_RESPONSE = ['approved', 'rejected']
 const CONTINUE_SENDING_MESSAGE_STATUS = ['delivered', 'channelFailed', 'failed']
+const CONTINUE_SENDING_MESSAGE_STATUS_FB = ['delivered', 'accepted', 'failed']
+const INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC = {
+  sent: 'accepted',
+  delivered: 'delivered',
+  read: 'seen',
+  failed: 'failed',
+  deleted: 'deleted'
+}
+const TYNTEC_TO_FB_EVENT_KEY = 'MessageStatus::'
+const FACEBOOK_CONTENT_TYPE = {
+  text: 'text',
+  media: 'media',
+  contacts: 'contacts',
+  location: 'location'
+}
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
 const INTERACTIVE = 'interactive'
@@ -410,6 +452,32 @@ const DLT_PANEL_ENDPOINTS = {
 
 }
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
+const HW_MYSQL = 'helo_whatsapp'
+const FB_REDIS_KEY_BUFFER_TIME = 1800000 // 30 minutes
+const FB_REDIS_KEY_FOLDER = 'token:'
+const FB_REDIS_TOKEN_EXPIRY_KEY = 'token_expiry_identification_key:'
+const FB_REDIS_TOKEN_EXPIRY = 'token_expiry_identification_key'
+const REDIS_OPTIN_TEMPLATE_DATA_KEY = 'optin_template_'
+const FACEBOOK_RESPONSES = {
+  stable: { displayName: 'stable' },
+  valid: { displayName: 'valid' }
+}
+const ADD_UPDATE_TEMPLATE_LIMIT = 10000
+const BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES = 2
+const CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES = 2
+const BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE = 2
+const CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE = 2
+const BATCH_SIZE_FOR_SAVE_OPTIN = 2
+const CHUNK_SIZE_FOR_SAVE_OPTIN = 2
+const DEFAULT_COUNTRY_CODE = 'IN'
+const NAME_SPACE_FB = '29642c6d_62d8_4981_8c02_8bebdebfcbed'
+const FACEBOOK_GRAPHURL = 'https://graph.facebook.com/'
+const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
+const HEADER_HANDLE = {
+  video: '3:cmNzLWZsb3cubXA0:dmlkZW8vbXA0:ARaeTQefIvdx7preEi97FEyMthItXjjbUl-HgKwjnwNYkoRoKIXPdEX9dZtwbyAfouU3XGBzwLogL-IJSQI1MuK7UzcCsQO7xbD23Tdv-m5c8A:e:1635322172:ARasyMDonA6UQsVkQUc',
+  document: '3:RkUtYXNzZXNzbWVudC5wZGY=:YXBwbGljYXRpb24vcGRm:ARbYQ0s6513RaoAfwTIj25IqGC0OgSuTCc5eLuWrjy_ALzkLOomSuIeoTPSK9lRzCZSUESTaD7fYCtGRIq3iP0gq7j5vWM8jdwEwdg0xeIu__g:e:1635322280:ARbIUJhxOCoX6fd32FU',
+  image: '3:UGljc0FydF8wMi0xOS0wNy40Ny4wNy5qcGc=:aW1hZ2UvanBlZw==:ARYiA3-0ZU4-vsxvjZVGUZwP_o_qNkCa-QO0rL6cDHNwC6vesEZGBqVAXSSjE_N8zbAcTLG2tetlwgMRxXMxG8shSXaR-F_1pUyCqPqU9EB_Jw:e:1635317666:ARZ3iTS3u2ohm_muC0Q'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -445,6 +513,7 @@ module.exports.RESET_PASSWORD_TOKEN_EXPIREY_TIME = RESET_PASSWORD_TOKEN_EXPIREY_
 module.exports.TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_DEFAULT_LANGUAGE_STATUS
 module.exports.TEMPLATE_DEFAULT_STATUS = TEMPLATE_DEFAULT_STATUS
 module.exports.TYNTEC_ENDPOINTS = TYNTEC_ENDPOINTS
+module.exports.FACEBOOK_ENDPOINTS = FACEBOOK_ENDPOINTS
 module.exports.MESSAGE_TRANSACTION_TYPE = MESSAGE_TRANSACTION_TYPE
 module.exports.TEMPLATE_APPROVE_STATUS = TEMPLATE_APPROVE_STATUS
 module.exports.TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_PARTIAL_APPROVE_STATUS
@@ -464,6 +533,7 @@ module.exports.CHAT_APP_BASE_PATH = CHAT_APP_BASE_PATH
 module.exports.WABA_STATUS_MAPPING = WABA_STATUS_MAPPING
 module.exports.FILE_MAX_UPLOAD_IN_BYTE = FILE_MAX_UPLOAD_IN_BYTE
 module.exports.TYNTEC_MESSAGE_EVENTS = TYNTEC_MESSAGE_EVENTS
+module.exports.FACEBOOK_MESSAGE_EVENTS = FACEBOOK_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
 module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
 module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
@@ -473,9 +543,32 @@ module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
 module.exports.AGREEMENT_STATUS_MAPPING = AGREEMENT_STATUS_MAPPING
 module.exports.AGREEMENT_EVALUATION_RESPONSE = AGREEMENT_EVALUATION_RESPONSE
 module.exports.CONTINUE_SENDING_MESSAGE_STATUS = CONTINUE_SENDING_MESSAGE_STATUS
+module.exports.CONTINUE_SENDING_MESSAGE_STATUS_FB = CONTINUE_SENDING_MESSAGE_STATUS_FB
+module.exports.INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC = INCOMING_MESSAGE_STATUS_MAPPING_FROM_FB_TO_TYNTEC
+module.exports.TYNTEC_TO_FB_EVENT_KEY = TYNTEC_TO_FB_EVENT_KEY
+module.exports.FACEBOOK_CONTENT_TYPE = FACEBOOK_CONTENT_TYPE
 module.exports.SAMPLE_AGREEMENT_URL = SAMPLE_AGREEMENT_URL
 module.exports.TEMPLATE_FLOW_APPROVAL = TEMPLATE_FLOW_APPROVAL
 module.exports.STATIC = STATIC
 module.exports.INTERACTIVE = INTERACTIVE
 module.exports.DLT_PANEL_ENDPOINTS = DLT_PANEL_ENDPOINTS
 module.exports.SUPPORT_ROLE_ID = SUPPORT_ROLE_ID
+module.exports.HW_MYSQL = HW_MYSQL
+module.exports.FB_REDIS_KEY_BUFFER_TIME = FB_REDIS_KEY_BUFFER_TIME
+module.exports.FB_REDIS_KEY_FOLDER = FB_REDIS_KEY_FOLDER
+module.exports.FB_REDIS_TOKEN_EXPIRY_KEY = FB_REDIS_TOKEN_EXPIRY_KEY
+module.exports.FB_REDIS_TOKEN_EXPIRY = FB_REDIS_TOKEN_EXPIRY
+module.exports.REDIS_OPTIN_TEMPLATE_DATA_KEY = REDIS_OPTIN_TEMPLATE_DATA_KEY
+module.exports.FACEBOOK_RESPONSES = FACEBOOK_RESPONSES
+module.exports.ADD_UPDATE_TEMPLATE_LIMIT = ADD_UPDATE_TEMPLATE_LIMIT
+module.exports.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES = BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES
+module.exports.CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES = CHUNK_SIZE_FOR_ADD_UPDATE_AUDIENCES
+module.exports.BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE = BATCH_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE
+module.exports.CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE = CHUNK_SIZE_FOR_SEND_SUCCESS_OPTIN_MESSAGE
+module.exports.BATCH_SIZE_FOR_SAVE_OPTIN = BATCH_SIZE_FOR_SAVE_OPTIN
+module.exports.CHUNK_SIZE_FOR_SAVE_OPTIN = CHUNK_SIZE_FOR_SAVE_OPTIN
+module.exports.DEFAULT_COUNTRY_CODE = DEFAULT_COUNTRY_CODE
+module.exports.FACEBOOK_GRAPHURL = FACEBOOK_GRAPHURL
+module.exports.FACEBOOK_GRAPHURL_VERSION = FACEBOOK_GRAPHURL_VERSION
+module.exports.HEADER_HANDLE = HEADER_HANDLE
+module.exports.NAME_SPACE_FB = NAME_SPACE_FB

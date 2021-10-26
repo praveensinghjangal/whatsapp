@@ -4,16 +4,16 @@ const columnMapService = new ColumnMapService()
 const addAudienceData = () => {
   return `INSERT INTO audience 
   (audience_id, phone_number, channel, optin, optin_source_id,
-  segment_id,chat_flow_id, name, email, gender, country,created_by,waba_phone_number,first_message,last_message)
-  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?)`
+  segment_id,chat_flow_id, name, email, gender, country,created_by,isFacebookVerified,countryCode,waba_phone_number,first_message,last_message)
+  VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?, ?, ?)`
 }
 
 const updateAudienceRecord = () => {
   return `UPDATE audience
   SET channel=?, optin=?, optin_source_id=?,
   segment_id=?, chat_flow_id=?, name=?, email=?, gender=?,
-  country=?, updated_by =?,updated_on = now(),waba_phone_number =?,first_message = ?, last_message = ? 
-  WHERE audience_id=? and phone_number=? and is_active=true`
+  country=?, updated_by =?,updated_on = now(),waba_phone_number =?,first_message = ?, last_message = ?, isFacebookVerified = ?, countryCode = ?
+    WHERE audience_id=? and phone_number=? and is_active=true`
 }
 
 const getAudienceRecordList = (columnArray) => {
@@ -63,7 +63,7 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
   let query = `SELECT audience_id as "audienceId", aud.phone_number as "phoneNumber",
   channel, first_message as "firstMessage",
   last_message as "lastMessage", segment_id as "segmentId",
-  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, 
+  chat_flow_id as "chatFlowId",name, aud.email, gender, aud.country,optin, isFacebookVerified, 
   awnm.aud_mapping_id as "wabaPhoneNumber",optin_source_id as "optinSourceId",
   awnm.aud_mapping_id as "audienceMappingId"
   FROM audience aud   
@@ -77,7 +77,7 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
   if (wabaPhoneNumber) {
     query = query + '  awnm.waba_phone_number= ? and'
   }
-  query = query + ' aud.phone_number= ?'
+  query = query + ' aud.phone_number in (?)'
   return query
 }
 
@@ -93,7 +93,7 @@ const getOptinByPhoneNumber = () => {
 const getWabaNumberFromDb = () => {
   return `select CONCAT(wi.phone_code ,wi.phone_number ) as "wabaPhoneNumber"
   from waba_information wi
-  where user_id = ? and wi.is_active=1`
+  where wi.user_id = ? and wi.is_active=1`
 }
 // Optin Master
 

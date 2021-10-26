@@ -40,17 +40,17 @@ class AudienceService {
   }
 
   // waba
-  getAudienceTableDataByPhoneNumber (phoneNumber, userId, wabaPhoneNumber) {
-    __logger.info('inside get audience by id service', phoneNumber)
+  getAudienceTableDataByPhoneNumber (phoneNumbers, userId, wabaPhoneNumber) {
+    __logger.info('inside get audience by id service', phoneNumbers)
     const audienceData = q.defer()
     const queryFilter = wabaPhoneNumber || userId
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumbers])
       .then(result => {
         __logger.info('Query Result', { result })
         if (result && result.length === 0) {
-          audienceData.resolve({ })
+          audienceData.resolve([])
         } else {
-          audienceData.resolve(result[0])
+          audienceData.resolve(result)
         }
       })
       .catch(err => {
@@ -68,6 +68,7 @@ class AudienceService {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
       phoneNumber: newData.phoneNumber || oldData.phoneNumber,
       channel: newData.channel || oldData.channel,
+      // TODO:
       optin: typeof newData.optin === 'boolean' ? newData.optin : false,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
@@ -76,7 +77,9 @@ class AudienceService {
       email: newData.email || oldData.email,
       gender: newData.gender || oldData.gender,
       country: newData.country || oldData.country,
-      createdBy: newData.userId
+      createdBy: newData.userId,
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : (oldData.isFacebookVerified ? oldData.isFacebookVerified : false),
+      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : __constants.DEFAULT_COUNTRY_CODE)
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
@@ -127,6 +130,7 @@ class AudienceService {
     // this.updateAudience(newData, oldData)
     var audienceData = {
       channel: newData.channel || oldData.channel,
+      // TODO:
       optin: typeof newData.optin === 'boolean' ? newData.optin : oldData.optin,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
@@ -139,9 +143,10 @@ class AudienceService {
       wabaPhoneNumber: newData.wabaPhoneNumber || oldData.wabaPhoneNumber,
       firstMessageValue: null,
       lastMessageValue: null,
+      isFacebookVerified: typeof newData.isFacebookVerified === 'boolean' ? newData.isFacebookVerified : oldData.isFacebookVerified,
+      countryCode: newData.countryCode ? newData.countryCode : (oldData.countryCode ? oldData.countryCode : __constants.DEFAULT_COUNTRY_CODE),
       audienceId: oldData.audienceId,
       phoneNumber: oldData.phoneNumber
-
     }
 
     const queryParam = []
