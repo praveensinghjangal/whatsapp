@@ -73,10 +73,6 @@ class Authentication {
         }
       })
       .then(data => dataFetched.resolve(data))
-      // .then(data => {
-      //   data.baseUrl = 'https://10.40.13.240:9090'
-      //   dataFetched.resolve(data)
-      // })
       .catch(err => {
         __logger.error('error in auth', err)
         dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
