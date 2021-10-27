@@ -144,26 +144,27 @@ const TEMPLATE_BUTTON_TYPE = [{
 }, {
   buttonType: null
 }]
+const PRE_FETCH_COUNT = parseInt(process.env.PRE_FETCH_COUNT)
 const MQ = {
-  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  fbOutgoing: { type: 'queue', q_name: 'fb_outgoing', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  fbSendmessageError: { type: 'queue', q_name: 'fb_sendmessage_error', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  fbIncoming: { type: 'queue', q_name: 'fb_incoming', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  fbMessageStatus: { type: 'queue', q_name: 'fb_message_status', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  delay_failed_to_redirect_10_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  delay_failed_to_redirect_20_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_20_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 20000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true },
-  fbOutgoingSync: { type: 'queue', q_name: 'fb_outgoing_sync', q_options: { durable: true }, prefetchCount: process.env.PRE_FETCH_COUNT, createChannel: true }
+  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  tyntecOutgoing: { type: 'queue', q_name: 'tyntec_outgoing', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  fbOutgoing: { type: 'queue', q_name: 'fb_outgoing', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  fbSendmessageError: { type: 'queue', q_name: 'fb_sendmessage_error', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  tyntecIncoming: { type: 'queue', q_name: 'tyntec_incoming', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  fbIncoming: { type: 'queue', q_name: 'fb_incoming', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  tyntecMessageStatus: { type: 'queue', q_name: 'tyntec_message_status', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  fbMessageStatus: { type: 'queue', q_name: 'fb_message_status', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  delay_failed_to_redirect_10_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  delay_failed_to_redirect_20_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_20_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 20000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  delay_failed_to_redirect_30_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_30_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 30000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  delay_failed_to_redirect_40_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_40_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 40000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  delay_failed_to_redirect_50_sec: { type: 'queue', q_name: 'delay_failed_to_redirect_50_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 50000, deadLetterExchange: '', deadLetterRoutingKey: 'retry_failed_to_redirect_payload' }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  retry_failed_to_redirect_payload: { type: 'queue', q_name: 'retry_failed_to_redirect_payload', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
+  fbOutgoingSync: { type: 'queue', q_name: 'fb_outgoing_sync', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5,
