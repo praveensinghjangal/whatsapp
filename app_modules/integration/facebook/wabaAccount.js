@@ -48,7 +48,7 @@ class WabaAccount {
     return deferred.promise
   }
 
-  updateProfilePic (wabaNumber, profilePicFile) {
+  updateProfilePic (wabaNumber, profilePicFile, contentType) {
     __logger.info('wabaNumber & profilePic--', wabaNumber)
     const deferred = q.defer()
     const authService = new AuthService(this.userId)
@@ -58,7 +58,7 @@ class WabaAccount {
         url = url.split(':phoneNumber').join(data.id || '')
         __logger.info('URL====', url)
         const headers = {
-          'Content-Type': 'image/png',
+          'Content-Type': contentType,
           Accept: 'application/problem+json',
           Authorization: `Bearer ${data.apiKey}`
         }

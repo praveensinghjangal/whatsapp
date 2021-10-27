@@ -586,7 +586,7 @@ const updateProfilePic = (req, res) => {
               }
               results.record.userId = userId
               businessAccountService.updateBusinessData(reqBody, results.record, userId)
-              return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer)
+              return wabaAccountService.updateProfilePic(req.user.wabaPhoneNumber, req.files[0].buffer, req.files[0].mimetype)
             }
           } else {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
