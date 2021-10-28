@@ -769,6 +769,23 @@ class businesAccountService {
       })
     return dataUpdated.promise
   }
+
+  setNamespace (namespace, wabaInformationId) {
+    const deferred = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setNamespace(), [namespace, wabaInformationId])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          deferred.resolve(true)
+        } else {
+          deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: while set namespace in waba_information db ', err)
+        deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return deferred.promise
+  }
 }
 
 module.exports = businesAccountService
