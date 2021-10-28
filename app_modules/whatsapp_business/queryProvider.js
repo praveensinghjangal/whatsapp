@@ -67,6 +67,11 @@ const updateBusinessProfileVerificationStatus = () => {
   set business_manager_verified=?,updated_on=now(),updated_by=? WHERE user_id=? and is_active = true`
 }
 
+const setNamespace = () => {
+  return `update waba_information
+  set template_namespace=? WHERE waba_information_id =? and is_active = true`
+}
+
 const addWabaTableData = () => {
   return `insert into waba_information (facebook_manager_id ,phone_code ,phone_number,can_receive_sms,
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
@@ -115,7 +120,9 @@ const getWabaData = () => {
   wi.wabiz_base_url as "wabizBaseUrl",
   wi.graph_api_key as "graphApiKey",
   wi.max_tps_to_provider as "maxTpsToProvider",
-  wi.user_id as "userId"
+  wi.user_id as "userId",
+  wi.template_namespace as "namespace",
+  wi.waba_information_id as "wabaInformationId"
   from waba_information wi
   join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
   join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
@@ -298,6 +305,7 @@ module.exports = {
   getBusinessCategory,
   getBusinessProfile,
   updateBusinessProfileVerificationStatus,
+  setNamespace,
   getWabaTableDataByUserId,
   addWabaTableData,
   updateWabaTableData,
