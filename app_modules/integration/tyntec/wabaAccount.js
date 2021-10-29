@@ -51,7 +51,7 @@ class WabaAccount {
     }
   }
 
-  updateProfilePic (wabaNumber, profilePicBuffer) {
+  updateProfilePic (wabaNumber, profilePicBuffer, contentType) {
     __logger.info('wabaNumber & profilePic--', wabaNumber)
     const deferred = q.defer()
     const redisService = new RedisService()
@@ -62,7 +62,7 @@ class WabaAccount {
         url = url.split(':phoneNumber').join(data.id || '')
         __logger.info('URL====', url)
         const headers = {
-          'Content-Type': 'image/png',
+          'Content-Type': contentType,
           Accept: 'application/problem+json',
           apikey: data.apiKey
         }
