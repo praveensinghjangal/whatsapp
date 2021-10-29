@@ -22,7 +22,6 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
         whatsAppAccountId = data.userAccountIdByProvider
         let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getWaba}${data.graphApiKey}`
         url = url.split(':userAccountIdByProvider').join(whatsAppAccountId || '')
-        console.log('herererererer', url)
         const headers = {
           'Content-Type': 'application/json',
           Accept: 'application/json'

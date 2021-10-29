@@ -97,7 +97,6 @@ class Template {
           let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}&${qs}`
 
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
-          console.log('herererererer', url)
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json'
