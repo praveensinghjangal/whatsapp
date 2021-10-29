@@ -13,8 +13,8 @@ class InternalFunctions {
     let incomingMessage = __config.provider_config[providerId].incomingMessage
     let messageStatus = __config.provider_config[providerId].messageStatus
     if (__config.provider_config[providerId].name === 'facebook') {
-      incomingMessage = incomingMessage + wabaNumber
-      messageStatus = messageStatus + wabaNumber
+      incomingMessage = incomingMessage + '/' + wabaNumber
+      messageStatus = messageStatus + '/' + wabaNumber
     }
     __logger.info('set Webhook Of Provider --> fURL formed', incomingMessage, messageStatus)
     wabaAccountService.setWebhook(wabaNumber, incomingMessage, messageStatus)

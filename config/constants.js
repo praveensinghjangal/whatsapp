@@ -389,7 +389,7 @@ const FACEBOOK_MESSAGE_EVENTS = {
 const WEB_HOOK_END_POINT = {
   incomingMessage: '/helowhatsapp/api/web-hooks/tyntec/queue/incomingdata/e464e894-0ded-4122-86bc-4e215f9f8f5a',
   messageStatus: '/helowhatsapp/api/web-hooks/tyntec/queue/messageStatus/eaa82947-06f0-410a-bd2a-768ef0c4966e',
-  fbWebhook: '/helowhatsapp/api/web-hooks/facebook/queue/messageandincomingdata/cd84929f-b458-4760-8f8a-a43984f1f4db/'
+  fbWebhook: '/helowhatsapp/api/web-hooks/facebook/queue/messageandincomingdata/cd84929f-b458-4760-8f8a-a43984f1f4db'
 }
 const MENU_BASED_TEMPLATE_STATUS = {
   requested: { statusCode: '59903410-b3c5-4312-a444-617f04f6116e', displayName: 'Requested' },
