@@ -21,7 +21,7 @@ class WabaAccount {
   }
 
   updateProfilePic (wabaNumber, profilePicBuffer, contentType) {
-    __logger.info('Demo updateProfilePic', wabaNumber, profilePicBuffer, contentType)
+    __logger.info('Demo updateProfilePic', wabaNumber, contentType)
     const deferred = q.defer()
     deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
     return deferred.promise
