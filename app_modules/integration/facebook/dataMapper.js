@@ -78,7 +78,7 @@ class InternalService {
         ]
       })
       if (td.secondLanguageBodyTextVarExample && isArray(td.secondLanguageBodyTextVarExample) && td.secondLanguageBodyTextVarExample.length > 0) {
-        body[1].components[0].example = { body_text: td.secondLanguageBodyTextVarExample }
+        body[1].components[0].example = { body_text: [td.secondLanguageBodyTextVarExample] }
       }
     }
     return body
