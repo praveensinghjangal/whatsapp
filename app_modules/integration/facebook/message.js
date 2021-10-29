@@ -12,22 +12,28 @@ class Message {
     this.http = new HttpService(60000, maxConcurrent, userId)
     this.dataMapper = new DataMapper()
     this.userId = userId
+    this.maxTpsToProvider = maxConcurrent
   }
 
   sendMessage (payload) {
     const deferred = q.defer()
     let reqObj = {}
+    let baseUrl = ''
+    let headers = {}
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(payload.whatsapp.from)
       .then(data => {
         __logger.info('called to send message', payload)
-        const headers = {
+        headers = {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${data.apiKey}`
         }
+        baseUrl = data.baseUrl
         reqObj = { headers, payload: JSON.parse(JSON.stringify(payload)) }
-        const fbPayload = this.dataMapper.sendMessage(payload)
-        return this.http.Post(fbPayload, 'body', data.baseUrl + __constants.FACEBOOK_ENDPOINTS.sendMessage, headers, __config.service_provider_id.facebook)
+        return this.dataMapper.sendMessage(payload, this.maxTpsToProvider)
+      })
+      .then((fbPayload) => {
+        return this.http.Post(fbPayload, 'body', baseUrl + __constants.FACEBOOK_ENDPOINTS.sendMessage, headers, __config.service_provider_id.facebook)
       })
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
