@@ -6,7 +6,7 @@ class Audience {
   }
 
   saveOptin (wabaNumber, listOfPhoneNumbers) {
-    __logger.info('Tyntec saveOptin ::>>>>>>>>>>>>>>>>>>>>> ', listOfPhoneNumbers)
+    __logger.info('Tyntec saveOptin inside integration layer', listOfPhoneNumbers)
     const deferred = q.defer()
     // {
     //     input: '+917666545750',

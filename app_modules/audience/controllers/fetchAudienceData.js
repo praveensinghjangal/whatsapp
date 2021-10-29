@@ -109,7 +109,7 @@ const getAudienceRecordList = (req, res) => {
 
 function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
   const dataFetched = q.defer()
-
+  __logger.info('inside getOptinStatusByPhoneNumber', { phoneNumber, wabaNumber })
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber, wabaNumber])
     .then(result => {
       __logger.info('optin sssssssssssssssssssssssssss-> then 1', { result }, phoneNumber, wabaNumber)

@@ -9,13 +9,14 @@ const _ = require('lodash')
 const AuthService = require('./authService')
 const apiCallFn = (body, url, headers, http) => {
   const apiCall = q.defer()
+  __logger.info('Inside saveOptin (checkContacts) api call ', { body, url })
   http.Post(body, 'body', url, headers, __config.service_provider_id.facebook)
     .then(data => {
       if (data && data.statusCode === __constants.RESPONSE_MESSAGES.SUCCESS.status_code) {
         if (data.body && data.body.meta && data.body.meta.api_status && data.body.meta.api_status === __constants.FACEBOOK_RESPONSES.stable.displayName && data.body.contacts) {
+          __logger.info('facebook saveOptin (checkContacts) Response', data)
           // returns all the list of numbers (valid + all types of invalid)
-          __logger.info('Facebook saveOptin Response ::>>>>>>>>>>>>>>>>>>>>> ', data.body)
-          apiCall.resolve({ data: data.body.contacts })
+          return apiCall.resolve({ data: data.body.contacts })
         } else {
           return apiCall.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
         }
@@ -34,9 +35,8 @@ class Audience {
   }
 
   saveOptin (wabaNumber, listOfPhoneNumbers) {
-    __logger.info('Facebook saveOptin ::>>>>>>>>>>>>>>>>>>>>> ', listOfPhoneNumbers)
+    __logger.info('Inside facebook saveOptin inside integration layer', { wabaNumber, listOfPhoneNumbers })
     const deferred = q.defer()
-    // wabaNumber = '917666118833'
 
     if (listOfPhoneNumbers.length === 0) {
       deferred.resolve([])

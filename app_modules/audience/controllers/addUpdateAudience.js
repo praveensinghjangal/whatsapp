@@ -70,7 +70,7 @@ const addUpdateAudienceData = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('processRecordInBulk::', { data })
+      __logger.info('processRecordInBulk response::', { data })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => {
@@ -81,6 +81,7 @@ const addUpdateAudienceData = (req, res) => {
 
 function processInBulkAndSendSuccessOptin (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, wabaPhoneNumber, optinTemplateId) {
   const deferred = q.defer()
+  __logger.info('Inside processInBulkAndSendSuccessOptin')
   processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
     .then(processResponse => {
       // processResponse is an array of audiences that got updated.
@@ -110,18 +111,6 @@ const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
           policy: 'deterministic',
           code: 'en'
         }
-        // components: [
-        //   //! to be verified
-        //   {
-        //     type: 'body',
-        //     parameters: [
-        //       // {
-        //       //   type: 'text',
-        //       //   text: 'Body Param 1'
-        //       // }
-        //     ]
-        //   }
-        // ]
       }
     }
   }
@@ -130,7 +119,7 @@ const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
 const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAudiences, newDataOfAudiences, authToken, wabaPhoneNumber, optinTemplateId) => {
   // verified audiences should be present in updatedAudiences.
   const apiCalled = q.defer()
-
+  __logger.info('inside sendOptinSuccessMessageToVerifiedAudiences', { verifiedAudiences, updatedAudiences })
   // get optin template id..
   const listOfBodies = []
   verifiedAudiences.forEach(verifiedAud => {
@@ -169,6 +158,7 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
 
 const sendOptinMessage = (body, authToken) => {
   const apiCalled = q.defer()
+  __logger.info('inside sendOptinMessage. It calls sendMessageToQueue api ', body)
   const http = new HttpService(60000)
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const headers = { 'Content-Type': 'application/json', Authorization: authToken }
@@ -184,13 +174,14 @@ const sendOptinMessage = (body, authToken) => {
 
 function updateAudienceData (inputData, oldAudienceData) {
   const audienceData = q.defer()
+  __logger.info('Inside updateAudienceData', { inputData, oldAudienceData })
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.updateAudience(inputData)
     .then(() => audienceService.updateAudienceDataService(inputData, oldAudienceData))
     .then(data => audienceData.resolve(data))
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('error in updateAudience Data: ', err)
       audienceData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return audienceData.promise
@@ -230,6 +221,7 @@ const singleRecordProcess = (data, userId, oldData = null) => {
 
 const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
   const p = q.defer()
+  __logger.info('Inside processRecordInBulk')
   if (!newDataOfAudiences.length) {
     p.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_AUDIENCE, err: {} })
     return p.promise
@@ -279,7 +271,7 @@ const singleRecordProcessForQalllib = (singleObject, userId, mappingOfOldAndNewD
 
 const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
   const wabaPhoneNumber = req.user.wabaPhoneNumber
-  __logger.info('inside markOptinByPhoneNumber', req.body)
+  __logger.info('inside markOptinByPhoneNumberAndAddOptinSource', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   let oldAudienceData = null
@@ -316,7 +308,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
         phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
       }
       if (phoneNumbersToBeVerified.length === 0) {
-      // already verified
+        // already verified
         optinCalled.resolve([])
         return optinCalled.promise
       } else {
@@ -363,11 +355,10 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
 
 const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, providerId, maxTpsToProvider) => {
   const markAsVerified = q.defer()
+  __logger.info('Inside function markFacebookVerifiedOfValidNumbers', { audiences })
   const phoneNumbers = audiences.map(audienceObj => {
     return audienceObj.phoneNumber
   })
-  // const audiencesOnlyToBeUpdated = [] // these audiences will only be updated, and saveOptin api will not be called for these.
-  // const audiencesToBeVerified = []
   const phoneNumbersToBeVerified = []
   const audienceService = new AudienceService()
   let oldAudiencesData = []
@@ -375,7 +366,7 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
     .then(audiencesData => {
       // audiencesData => data that needs to be updated (ie. they're already present in db)
       oldAudiencesData = []
-      // adding the new data(to be added in db) in oldAudiencesData
+      // // adding the new data(to be added in db) in oldAudiencesData
       const reqBodyArray = [...audiences]
       // input body
       reqBodyArray.forEach(bodyAud => {

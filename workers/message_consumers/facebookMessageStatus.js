@@ -8,6 +8,7 @@ const moment = require('moment')
 
 const sendToFacebookMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
+  __logger.info('inside sendToFacebookMessageStatusQueue', { message })
   queueObj.sendToQueue(__constants.MQ.fbMessageStatus, JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => messageRouted.reject(err))
@@ -16,6 +17,7 @@ const sendToFacebookMessageStatusQueue = (message, queueObj) => {
 
 const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
   const messageHistoryService = new MessageHistoryService()
+  __logger.info('inside pendingMessageToSendMechanism')
   let messageId
   messageHistoryService.getVivaMsgIdByserviceProviderMsgId(queueDataobject)
     .then(messageData => {

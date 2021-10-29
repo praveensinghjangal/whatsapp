@@ -60,12 +60,11 @@ const getTemplateIdData = authToken => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
   const headers = { Authorization: authToken }
-  __logger.info('calling get metadata', headers)
+  __logger.info('calling getTemplateIdData', headers)
   http.Get(__config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.metadata, headers)
     .then(data => {
-      __logger.info('get metadata api response', data)
+      __logger.info('getTemplateIdData api response', { data })
       data = data.body || data
-      __logger.info('datatatattatatatatat', { data })
       if (data && data.code && data.code === 2000) {
         apiCalled.resolve(data)
       } else {

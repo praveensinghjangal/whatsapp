@@ -24,6 +24,7 @@ const request = require('request')
 
 const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
   const audUpdated = q.defer()
+  __logger.info('inside updateAudience', { audienceNumber, audOptin, wabaNumber })
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
   const audienceDataToBePosted = [{
     phoneNumber: audienceNumber,
@@ -52,6 +53,7 @@ const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
 
 const saveAndSendMessageStatus = (payload, serviceProviderId) => {
   const statusSent = q.defer()
+  __logger.info('Inside saveAndSendMessageStatus')
   const messageHistoryService = new MessageHistoryService()
   const redirectService = new RedirectService()
   const statusData = {
@@ -78,7 +80,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
 }
 
 const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, authToken) => {
-  __logger.info('checkOptinStaus::>>>>>>>>>>>', endUserPhoneNumber, templateObj, isOptin)
+  __logger.info('checkOptinStaus', { endUserPhoneNumber, templateObj, isOptin })
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
     updateAudience(endUserPhoneNumber, true, wabaNumber, authToken)
@@ -101,6 +103,7 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
 
 const checkIfNoExists = number => {
   const exists = q.defer()
+  __logger.info('Inside checkIfNoExists', { number })
   const redisService = new RedisService()
   redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
@@ -113,6 +116,7 @@ const checkIfNoExists = number => {
 
 const sendToQueue = (data, providerId, userId, maxTpsToProvider) => {
   const messageSent = q.defer()
+  __logger.info('inside sendToQueue')
   const uniqueId = new UniqueId()
   data.messageId = uniqueId.uuid()
   const queueData = {
@@ -143,6 +147,7 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider) => {
 
 const singleRuleCheck = (data, wabaPhoneNumber, index, authToken) => {
   const isValid = q.defer()
+  __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
   if (data && data.whatsapp) {
     if (data.whatsapp.from !== wabaPhoneNumber) {
       isValid.reject({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })

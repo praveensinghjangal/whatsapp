@@ -772,6 +772,7 @@ class businesAccountService {
 
   setNamespace (namespace, wabaInformationId) {
     const deferred = q.defer()
+    __logger.info('inside setNamespace in db', { namespace, wabaInformationId })
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setNamespace(), [namespace, wabaInformationId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
