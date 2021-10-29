@@ -41,12 +41,12 @@ class AudienceService {
 
   // waba
   getAudienceTableDataByPhoneNumber (phoneNumbers, userId, wabaPhoneNumber) {
-    __logger.info('inside get audience by id service', phoneNumbers)
+    __logger.info('inside getAudienceTableDataByPhoneNumber', phoneNumbers)
     const audienceData = q.defer()
     const queryFilter = wabaPhoneNumber || userId
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumbers])
       .then(result => {
-        __logger.info('Query Result', { result })
+        __logger.info('getAudienceTableDataByPhoneNumber query Result', { result })
         if (result && result.length === 0) {
           audienceData.resolve([])
         } else {
@@ -54,7 +54,7 @@ class AudienceService {
         }
       })
       .catch(err => {
-        __logger.error('error in get audience by id function: ', err)
+        __logger.error('error in getAudienceTableDataByPhoneNumber: ', err)
         audienceData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return audienceData.promise
@@ -62,13 +62,12 @@ class AudienceService {
 
   // waba
   addAudienceDataService (newData, oldData) {
-    // __logger.info('Add audience service called', newData, oldData)
+    __logger.info('Add audience service called', newData, oldData)
     const audienceDataAdded = q.defer()
     var audienceData = {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
       phoneNumber: newData.phoneNumber || oldData.phoneNumber,
       channel: newData.channel || oldData.channel,
-      // TODO:
       optin: typeof newData.optin === 'boolean' ? newData.optin : false,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,
@@ -130,7 +129,6 @@ class AudienceService {
     // this.updateAudience(newData, oldData)
     var audienceData = {
       channel: newData.channel || oldData.channel,
-      // TODO:
       optin: typeof newData.optin === 'boolean' ? newData.optin : oldData.optin,
       optinSourceId: newData.optinSourceId || oldData.optinSourceId,
       segmentId: newData.segmentId || oldData.segmentId,

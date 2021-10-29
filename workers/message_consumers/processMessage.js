@@ -37,6 +37,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus) => {
 
 const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
   const messageRouted = q.defer()
+  __logger.info('inside callApiAndSendToQueue', { messageData, queue })
   const http = new HttpService(60000)
   const headers = {
     Authorization: __config.authTokens[0]
@@ -75,6 +76,7 @@ const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
 
 const sendToRespectiveProviderQueue = (message, queueObj, queue, mqData) => {
   const messageRouted = q.defer()
+  __logger.info('inside sendToRespectiveProviderQueue', { message, queue })
   queueObj.sendToQueue(__constants.MQ[message.config.queueName], JSON.stringify(message))
     .then(queueResponse => saveAndSendMessageStatus(message.payload, message.config.servicProviderId))
     .then(statusResponse => queueObj.channel[queue].ack(mqData))

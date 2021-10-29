@@ -13,6 +13,7 @@ const BusinessAccountService = require('../../whatsapp_business/services/busines
 
 const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId, wabaDataFromRedis) => {
   const deferred = q.defer()
+  __logger.info('inside getWabaDetails', { wabaNumber, wabaDataFromRedis })
   let whatsAppAccountId
   if (wabaNumber) {
     const authService = new AuthService(this.userId)
@@ -30,7 +31,6 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
         return http.Get(url, headers, __config.service_provider_id.facebook)
       })
       .then(wabaData => {
-        console.log('---------------------->', wabaData)
         __logger.info('integration :: get waba data', { wabaData })
         const namespace = wabaData.message_template_namespace
         wabaDataFromRedis.namespace = namespace

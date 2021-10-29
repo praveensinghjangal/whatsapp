@@ -230,6 +230,7 @@ class MessgaeHistoryService {
 
   getVivaMsgIdByserviceProviderMsgId (rmqObject) {
     const messageId = q.defer()
+    __logger.info('inside getVivaMsgIdByserviceProviderMsgId')
     const msgIdDbCheck = rmqObject.messageId || null
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getVivaMsgIdByserviceProviderMsgId(), [msgIdDbCheck])
       .then(result => {
