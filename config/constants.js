@@ -478,6 +478,15 @@ const HEADER_HANDLE = {
   document: '3:RkUtYXNzZXNzbWVudC5wZGY=:YXBwbGljYXRpb24vcGRm:ARbYQ0s6513RaoAfwTIj25IqGC0OgSuTCc5eLuWrjy_ALzkLOomSuIeoTPSK9lRzCZSUESTaD7fYCtGRIq3iP0gq7j5vWM8jdwEwdg0xeIu__g:e:1635322280:ARbIUJhxOCoX6fd32FU',
   image: '3:UGljc0FydF8wMi0xOS0wNy40Ny4wNy5qcGc=:aW1hZ2UvanBlZw==:ARYiA3-0ZU4-vsxvjZVGUZwP_o_qNkCa-QO0rL6cDHNwC6vesEZGBqVAXSSjE_N8zbAcTLG2tetlwgMRxXMxG8shSXaR-F_1pUyCqPqU9EB_Jw:e:1635317666:ARZ3iTS3u2ohm_muC0Q'
 }
+const FACEBOOK_APP_ID = 571422390685863
+const MIMETYPE = {
+  png: 'image/png',
+  jpeg: 'image/jpeg',
+  jpg: 'image/jpg',
+  mp4: 'video/mp4',
+  pdf: 'application/pdf'
+
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -572,3 +581,5 @@ module.exports.FACEBOOK_GRAPHURL = FACEBOOK_GRAPHURL
 module.exports.FACEBOOK_GRAPHURL_VERSION = FACEBOOK_GRAPHURL_VERSION
 module.exports.HEADER_HANDLE = HEADER_HANDLE
 module.exports.NAME_SPACE_FB = NAME_SPACE_FB
+module.exports.FACEBOOK_APP_ID = FACEBOOK_APP_ID
+module.exports.MIMETYPE = MIMETYPE

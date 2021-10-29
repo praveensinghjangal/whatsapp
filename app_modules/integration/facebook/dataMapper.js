@@ -6,6 +6,7 @@ const getCategoryMapping = require('../service/getCategoryMapping')
 const getWabaCategoryMapping = require('../service/getWabaCategoryMapping')
 const __logger = require('../../../lib/logger')
 const { isArray } = require('../../../lib/util')
+const ResumableApi = require('./resumableApi')
 class InternalService {
   createInitialBody (td) {
     const body = [{
@@ -91,7 +92,8 @@ class InternalService {
     return body
   }
 
-  addHeader (body, td) {
+  addHeader (body, td, headerHandleData) {
+    __logger.info('Inside addHeader in datamapper')
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.headerType) {
       const headerData = {
         type: 'HEADER',
@@ -99,7 +101,7 @@ class InternalService {
       }
       if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase()) headerData.text = td.headerText
       if (td.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.headerTextVarExample && isArray(td.headerTextVarExample) && td.headerTextVarExample.length > 0) headerData.example = { header_text: td.headerTextVarExample[0] }
-      if (td.headerType.toLowerCase() !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.mediaExampleUrl) headerData.example = { header_handle: __constants.HEADER_HANDLE[td.headerType.toLowerCase()] ? __constants.HEADER_HANDLE[td.headerType.toLowerCase()] : td.mediaExampleUrl }
+      if (td.headerType.toLowerCase() !== __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && td.mediaExampleUrl) headerData.example = { header_handle: headerHandleData || '' }
       body[0].components.push(headerData)
       if (td.secondLanguageRequired) {
         const headerData = {
@@ -144,7 +146,7 @@ class InternalService {
           {
             type: 'PHONE_NUMBER',
             text: td.buttonData.phoneButtonText,
-            phone_number: td.buttonData.phoneNumber
+            phone_number: `+91${td.buttonData.phoneNumber}`
           }
         ]
       })
@@ -160,7 +162,7 @@ class InternalService {
             {
               type: 'PHONE_NUMBER',
               text: td.buttonData.secondLanguagePhoneButtonText,
-              phone_number: td.buttonData.phoneNumber
+              phone_number: `+91${td.buttonData.phoneNumber}`
             }
           ]
         })
@@ -191,25 +193,38 @@ class InternalService {
 }
 
 class DataMapper {
-  addTemplate (templateData) {
+  addTemplate (templateData, accesToken) {
+    __logger.info('Inside addTemplate in dataMapper')
     const apiReqBody = q.defer()
     const internalService = new InternalService()
+    const resumableApi = new ResumableApi()
     let body = internalService.createInitialBody(templateData)
     getCategoryMapping(templateData.messageTemplateCategoryId, __config.service_provider_id.facebook)
       .then(data => {
+        __logger.info('Inside getCategoryMapping response')
         if (body && body[0]) {
           body[0].category = data.service_provider_category
         }
         if (body && body[1]) {
           body[1].category = data.service_provider_category
         }
-        body = internalService.addHeader(body, templateData)
+        if (templateData.mediaExampleUrl) {
+          return resumableApi.createHeaderHandleDataFromMediaUrl(templateData.mediaExampleUrl, accesToken)
+        } else {
+          return null
+        }
+      }).then(headerHandleData => {
+        __logger.info('headerHandleData response')
+        body = internalService.addHeader(body, templateData, headerHandleData)
         body = internalService.addFooter(body, templateData)
         body = internalService.addCallToActionButton(body, templateData)
         body = internalService.addQuickReplyButton(body, templateData)
         apiReqBody.resolve(body)
       })
-      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('error inside addTemplate : ', err)
+        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return apiReqBody.promise
   }
 
