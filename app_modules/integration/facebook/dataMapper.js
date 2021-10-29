@@ -64,7 +64,7 @@ class InternalService {
       ]
     }]
     if (td.bodyTextVarExample && isArray(td.bodyTextVarExample) && td.bodyTextVarExample.length > 0) {
-      body[0].components[0].example = { body_text: td.bodyTextVarExample }
+      body[0].components[0].example = { body_text: [td.bodyTextVarExample] }
     }
     if (td.secondLanguageRequired) {
       body.push({
