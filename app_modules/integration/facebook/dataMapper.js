@@ -32,10 +32,9 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
       .then(wabaData => {
         console.log('---------------------->', wabaData)
         __logger.info('integration :: get waba data', { wabaData })
-        const namespace = wabaData.message_template_namespace
-        wabaDataFromRedis.namespace = namespace
+        wabaDataFromRedis.namespace = wabaData.message_template_namespace
         const businessAccountService = new BusinessAccountService()
-        return businessAccountService.setNamespace(namespace, wabaInformationId)
+        return businessAccountService.setNamespace(wabaData.message_template_namespace, wabaInformationId)
       })
       .then((resp) => {
         const redisService = new RedisService()

@@ -13,7 +13,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus) => {
   const messageHistoryService = new MessageHistoryService()
   const redirectService = new RedirectService()
   const statusData = {
-    messageId: payload.messageId,
+    messageId:      payload.messageId,
     serviceProviderId: serviceProviderId,
     deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
