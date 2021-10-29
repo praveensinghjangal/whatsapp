@@ -39,7 +39,7 @@ class WabaAccount {
 
   getAccountInfo (wabaNumber) { return this.wabaAccount.getAccountInfo(wabaNumber) }
 
-  updateProfilePic (wabaNumber, profilePic) { return this.wabaAccount.updateProfilePic(wabaNumber, profilePic) }
+  updateProfilePic (wabaNumber, profilePic, contentType) { return this.wabaAccount.updateProfilePic(wabaNumber, profilePic, contentType) }
 
   getProfilePic (wabaNumber) { return this.wabaAccount.getProfilePic(wabaNumber) }
 
