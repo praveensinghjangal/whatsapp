@@ -6,6 +6,51 @@ const getCategoryMapping = require('../service/getCategoryMapping')
 const getWabaCategoryMapping = require('../service/getWabaCategoryMapping')
 const __logger = require('../../../lib/logger')
 const { isArray } = require('../../../lib/util')
+const RedisService = require('../../../lib/redis_service/redisService')
+const AuthService = require('./authService')
+const HttpService = require('../service/httpService')
+const BusinessAccountService = require('../../whatsapp_business/services/businesAccount')
+
+const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId, wabaDataFromRedis) => {
+  const deferred = q.defer()
+  let whatsAppAccountId
+  if (wabaNumber) {
+    const authService = new AuthService(this.userId)
+    authService.getFaceBookTokensByWabaNumber(wabaNumber)
+      .then(data => {
+        whatsAppAccountId = data.userAccountIdByProvider
+        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getWaba}${data.graphApiKey}`
+        url = url.split(':userAccountIdByProvider').join(whatsAppAccountId || '')
+        console.log('herererererer', url)
+        const headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
+        const http = new HttpService(60000, maxTpsToProvider, userid)
+        return http.Get(url, headers, __config.service_provider_id.facebook)
+      })
+      .then(wabaData => {
+        console.log('---------------------->', wabaData)
+        __logger.info('integration :: get waba data', { wabaData })
+        const namespace = wabaData.message_template_namespace
+        wabaDataFromRedis.namespace = namespace
+        const businessAccountService = new BusinessAccountService()
+        return businessAccountService.setNamespace(namespace, wabaInformationId)
+      })
+      .then((resp) => {
+        const redisService = new RedisService()
+        return redisService.setWabaDataInRedis(wabaNumber, wabaDataFromRedis)
+      })
+      .then((data) => {
+        return deferred.resolve(wabaDataFromRedis.namespace)
+      })
+      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return deferred.promise
+  } else {
+    deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing' })
+    return deferred.promise
+  }
+}
 class InternalService {
   createInitialBody (td) {
     const body = [{
@@ -39,7 +84,28 @@ class InternalService {
     return body
   }
 
-  sendMessageFbBody (td) {
+  getNamespaceForTheTemplate (wabaPhoneNumber, maxTpsToProvider) {
+    const namespaceReceived = q.defer()
+    __logger.info('Inside function to get namespace for the template', { wabaPhoneNumber })
+    const redisService = new RedisService()
+    redisService.getWabaDataByPhoneNumber(wabaPhoneNumber)
+      .then(data => {
+        if (data.namespace) {
+          return data.namespace
+        } else {
+          return getWabaDetails(wabaPhoneNumber, data.userId, maxTpsToProvider, data.wabaInformationId, data)
+        }
+      })
+      .then(namespace => {
+        namespaceReceived.resolve(namespace)
+      })
+      .catch((err) => {
+        namespaceReceived.reject(err)
+      })
+    return namespaceReceived.promise
+  }
+
+  async sendMessageFbBody (td, maxTpsToProvider) {
     const body = {
       to: td.to,
       type: td.whatsapp.contentType,
@@ -82,7 +148,8 @@ class InternalService {
       body.type = 'document'
     } else if (td.whatsapp.contentType === 'template') {
       body.template = {
-        namespace: __constants.NAME_SPACE_FB,
+        // namespace: __constants.NAME_SPACE_FB,
+        namespace: await this.getNamespaceForTheTemplate(td.whatsapp.from, maxTpsToProvider),
         name: td.whatsapp.template.templateId,
         language: td.whatsapp.template.language,
         components: td.whatsapp.template.components || []
@@ -264,10 +331,17 @@ class DataMapper {
   //   return apiReqBody.promise
   // }
 
-  sendMessage (data) {
+  sendMessage (data, maxTpsToProvider) {
+    const deferred = q.defer()
     const internalService = new InternalService()
-    const body = internalService.sendMessageFbBody(data)
-    return body
+    internalService.sendMessageFbBody(data, maxTpsToProvider)
+      .then(body => {
+        deferred.resolve(body)
+      })
+      .catch(err => {
+        deferred.reject(err)
+      })
+    return deferred.promise
   }
 }
 
