@@ -47,16 +47,17 @@ class HttpRequestOg {
     return deferred.promise
   }
 
-  getDoNotUse (url, headers, serviceProviderId) {
+  getDoNotUse (url, headers, serviceProviderId, encoding = true, isJson = null) {
     const deferred = q.defer()
     const options = {
       method: 'GET',
       url: url,
       timeout: this.timeInSeconds,
       headers: headers,
-      json: true,
+      json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
+    if (encoding === null) options.encoding = null
     request(options, (error, response, body) => {
       __logger.info('response from api ', error, response, body)
       const url = options.url.split('/').slice(3).join('/')

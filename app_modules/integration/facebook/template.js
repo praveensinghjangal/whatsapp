@@ -201,7 +201,7 @@ class Template {
         headers = {
           'Content-Type': 'application/json'
         }
-        return this.dataMapper.addTemplate(templateData)
+        return this.dataMapper.addTemplate(templateData, data.graphApiKey)
       })
       .then(reqBody => {
         fbRequestbody = reqBody
@@ -219,7 +219,7 @@ class Template {
         if (data && data.body && data.body.id) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { id: data.id } })
         } else {
-          return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
+          return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body.error || data.body })
         }
       })
       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
