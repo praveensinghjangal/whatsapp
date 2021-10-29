@@ -290,7 +290,8 @@ const FACEBOOK_ENDPOINTS = {
   updateWebhook: '/v1/settings/application',
   sendMessage: '/v1/messages/',
   addTemplate: '/message_templates?access_token=',
-  getMedia: '/v1/media/:MediaId'
+  getMedia: '/v1/media/:MediaId',
+  getWaba: 'v12.0/:userAccountIdByProvider?access_token='
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
