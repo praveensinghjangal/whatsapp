@@ -10,9 +10,11 @@ const templates = require('../app_modules/templates/route')
 const plans = require('../app_modules/plans/route')
 const audience = require('../app_modules/audience/route')
 const frontEnd = require('../app_modules/front_end/route')
+const headerManipulator = require('../middlewares/headerManipulator')
 
 module.exports = function (app) {
   // region all api
+  app.use(headerManipulator)
   app.all('*', function (request, response, next) {
     const uuid = request.id
     request.req_ip = (request.headers['x-forwarded-for'] ? request.headers['x-forwarded-for'].split(',').shift().trim() : request.ip)

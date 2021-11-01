@@ -4,106 +4,113 @@ const moment = require('moment')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
-const __config = require('../../../config')
 const config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const TemplateParamValidationService = require('../../templates/services/paramValidation')
-const audienceFetchController = require('../../audience/controllers/fetchAudienceData')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __logger = require('../../../lib/logger')
 const templateParamValidationService = new TemplateParamValidationService()
 const MessageHistoryService = require('../services/dbData')
 const RedirectService = require('../../integration/service/redirectService')
 const RedisService = require('../../../lib/redis_service/redisService')
-const request = require('request')
+const qalllib = require('qalllib')
+const __db = require('../../../lib/db')
+const queryProvider = require('../queryProvider')
+
 /**
  * @namespace -WhatsApp-Message-Controller-SendMessage-
  * @description API’s related to whatsapp message.
  */
 
-const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
-  const audUpdated = q.defer()
-  __logger.info('inside updateAudience', { audienceNumber, audOptin, wabaNumber })
-  const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
-  const audienceDataToBePosted = [{
-    phoneNumber: audienceNumber,
-    channel: __constants.DELIVERY_CHANNEL.whatsapp,
-    optinSourceId: __config.optinSource.direct,
-    optin: audOptin,
-    wabaPhoneNumber: wabaNumber
-  }]
-  const options = {
-    url,
-    body: audienceDataToBePosted,
-    headers: { Authorization: authToken },
-    json: true
-  }
-  request.post(options, (err, httpResponse, body) => {
-    __logger.info('aud update response', { body })
-    if (err) {
-      __logger.info('aud update response', err)
-      audUpdated.reject(err)
-    } else {
-      audUpdated.resolve(true)
+const getBulkTemplates = async (messages, wabaPhoneNumber) => {
+  const bulkTemplateCheck = q.defer()
+  const templateIdArr = []
+  const map = new Map()
+  for (const item of messages) {
+    if (item.whatsapp && item.whatsapp.template && item.whatsapp.template.templateId) {
+      if (!map.has(item.whatsapp.template.templateId)) {
+        map.set(item.whatsapp.template.templateId, true)
+        templateIdArr.push({
+          from: item.whatsapp.from,
+          templateId: item.whatsapp.template.templateId
+        })
+      }
     }
-  })
-  return audUpdated.promise
+  }
+  const uniqueTemplateIdAndNotInGlobal = []
+  const templateDataObj = {}
+  for (let i = 0; i < templateIdArr.length; i++) {
+    const templateData = await __db.redis.get(templateIdArr[i].templateId + '___' + templateIdArr[i].from)
+    if (!templateData) {
+      uniqueTemplateIdAndNotInGlobal.push(templateIdArr[i])
+    } else {
+      templateDataObj[templateIdArr[i]] = JSON.parse(templateData)
+    }
+  }
+  if (uniqueTemplateIdAndNotInGlobal.length === 0) {
+    bulkTemplateCheck.resolve(templateDataObj)
+    return bulkTemplateCheck.promise
+  }
+  const onlyTemplateId = uniqueTemplateIdAndNotInGlobal.map(templateIdArr => templateIdArr.templateId)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [wabaPhoneNumber, onlyTemplateId])
+    .then(result => {
+      if (result && result.length === 0) {
+        const returnObj = JSON.parse(JSON.stringify(__constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND))
+        return rejectionHandler({ type: returnObj, err: {} })
+      } else {
+        return result
+      }
+    })
+    .then(dbData => {
+      _.each(dbData, singleObj => {
+        if (singleObj.templateId) {
+          const dataObject = {
+            templateId: singleObj.message_template_id,
+            headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
+            bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d}}/g) || []).length : 0,
+            footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d}}/g) || []).length : 0,
+            phoneNumber: singleObj.phone_number
+          }
+          dataObject.approvedLanguages = []
+          if (singleObj.first_localization_status === __constants.TEMPLATE_APPROVE_STATUS) dataObject.approvedLanguages.push(singleObj.first_language_code)
+          if (singleObj.second_localization_status === __constants.TEMPLATE_APPROVE_STATUS) dataObject.approvedLanguages.push(singleObj.second_language_code)
+          if (singleObj.header_type && singleObj.header_type !== 'text') dataObject.headerParamCount = dataObject.headerParamCount + 1
+          templateDataObj[dataObject.templateId] = dataObject
+          __db.redis.setex(dataObject.templateId + '___' + dataObject.phoneNumber, JSON.stringify(dataObject), __constants.REDIS_TTL.templateData)
+        }
+      })
+      return bulkTemplateCheck.resolve(templateDataObj)
+    })
+    .catch(err => {
+      if (err && err.type) {
+        if (err.type.status_code) delete err.type.status_code
+        return bulkTemplateCheck.resolve(err.type)
+      }
+      return bulkTemplateCheck.reject(err)
+    })
+  return bulkTemplateCheck.promise
 }
 
-const saveAndSendMessageStatus = (payload, serviceProviderId) => {
+const saveAndSendMessageStatus = (payload) => {
   const statusSent = q.defer()
-  __logger.info('Inside saveAndSendMessageStatus')
-  const messageHistoryService = new MessageHistoryService()
   const redirectService = new RedirectService()
   const statusData = {
     messageId: payload.messageId,
-    serviceProviderId: serviceProviderId,
     deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.inProcess,
-    endConsumerNumber: payload.to,
-    businessNumber: payload.whatsapp.from
+    from: payload.to,
+    to: payload.whatsapp.from
   }
-  messageHistoryService.addMessageHistoryDataService(statusData)
-    .then(statusDataAdded => {
-      statusData.to = statusData.businessNumber
-      statusData.from = statusData.endConsumerNumber
-      delete statusData.serviceProviderId
-      delete statusData.businessNumber
-      delete statusData.endConsumerNumber
-      return redirectService.webhookPost(statusData.to, statusData)
-    })
+  redirectService.webhookPost(statusData.to, statusData)
     .then(data => statusSent.resolve(data))
     .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return statusSent.promise
 }
 
-const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, authToken) => {
-  __logger.info('checkOptinStaus', { endUserPhoneNumber, templateObj, isOptin })
-  const canSendMessage = q.defer()
-  if (isOptin && templateObj) {
-    updateAudience(endUserPhoneNumber, true, wabaNumber, authToken)
-    canSendMessage.resolve(true)
-  } else {
-    audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
-      .then(data => {
-        if (data.tempOptin) {
-          canSendMessage.resolve(true)
-        } else if (data.optin && templateObj) {
-          canSendMessage.resolve(true)
-        } else {
-          canSendMessage.reject({ type: __constants.RESPONSE_MESSAGES.CANNOT_SEND_MESSAGE, err: {}, data: {} })
-        }
-      })
-      .catch(err => canSendMessage.reject(err))
-    return canSendMessage.promise
-  }
-}
-
-const checkIfNoExists = number => {
+const checkIfNoExists = (number) => {
   const exists = q.defer()
-  __logger.info('Inside checkIfNoExists', { number })
   const redisService = new RedisService()
   redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
@@ -114,76 +121,70 @@ const checkIfNoExists = number => {
   return exists.promise
 }
 
-const sendToQueue = (data, providerId, userId, maxTpsToProvider) => {
+const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   const messageSent = q.defer()
   __logger.info('inside sendToQueue')
   const uniqueId = new UniqueId()
   data.messageId = uniqueId.uuid()
   const queueData = {
     config: config.provider_config[providerId],
-    payload: data
+    payload: data,
+    authToken: headers.authorization
   }
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
-  const planPriority = data.redisData.planPriority
+  const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
   delete data.redisData
   rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
-    .then(queueResponse => saveAndSendMessageStatus(data, providerId))
-    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, acceptedAt: new Date() }))
+    .then(queueResponse => saveAndSendMessageStatus(data))
+    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId }))
     .catch(err => messageSent.reject(err))
   return messageSent.promise
 }
 
-const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider) => {
-  let p = q()
-  const thePromises = []
-  data.forEach(singleObject => {
-    p = p.then(() => sendToQueue(singleObject, providerId, userId, maxTpsToProvider))
-      .catch(err => err)
-    thePromises.push(p)
-  })
-  return q.all(thePromises)
+const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) => {
+  const sendSingleMessage = q.defer()
+  qalllib.qASyncWithBatch(sendToQueue, data, 250, providerId, userId, maxTpsToProvider, headers)
+    .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
+    .catch(function (error) {
+      return sendSingleMessage.reject(error)
+    })
+    .done()
+  return sendSingleMessage.promise
 }
 
-const singleRuleCheck = (data, wabaPhoneNumber, index, authToken) => {
-  const isValid = q.defer()
+const singleRuleCheck = (data, wabaPhoneNumber, redisData) => {
+  const processSingleMessage = q.defer()
   __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
-  if (data && data.whatsapp) {
-    if (data.whatsapp.from !== wabaPhoneNumber) {
-      isValid.reject({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
-      return isValid.promise
-    }
-    checkIfNoExists(data.whatsapp.from)
-      .then(noValRes => {
-        data.redisData = noValRes.data.redisData || {}
-        return checkOptinStaus(data.to, data.whatsapp.template, data.isOptin, data.whatsapp.from, authToken)
-      })
-      .then(canSendMessage => templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from))
-      .then(tempValRes => isValid.resolve({ valid: true, data: {} }))
-      .catch(err => {
-        err = err || {}
-        err.position = index
-        err.code = err.type.code || 0
-        err.message = err.type.message || ''
-        delete err.err
-        delete err.type
-        isValid.reject({ valid: false, err })
-      })
-  } else {
-    isValid.reject({ valid: false, err: { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, position: index } })
+  if (data.whatsapp.from !== wabaPhoneNumber) {
+    processSingleMessage.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
+    return processSingleMessage.promise
   }
-  return isValid.promise
+  templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from, redisData)
+    .then(tempValRes => processSingleMessage.resolve({ valid: true, data: {} }))
+    .catch(err => {
+      if (err && err.type) {
+        if (err.type.status_code) delete err.type.status_code
+        return processSingleMessage.reject(err.type)
+      }
+      return processSingleMessage.reject(err)
+    }
+    )
+  return processSingleMessage.promise
 }
 
-const ruleCheck = (data, wabaPhoneNumber, authToken) => {
-  let p = q()
-  const thePromises = []
-  data.forEach((singleObject, index) => {
-    p = p.then(() => singleRuleCheck(singleObject, wabaPhoneNumber, index, authToken))
-      .catch(err => err)
-    thePromises.push(p)
-  })
-  return q.all(thePromises)
+const ruleCheck = (body, wabaPhoneNumber, redisData) => {
+  const sendSingleMessage = q.defer()
+  console.log('bodybodybodybodybody', body)
+  console.log('redisDataredisDataredisData', redisData)
+
+  qalllib.qASyncWithBatch(singleRuleCheck, body, 250, wabaPhoneNumber, redisData)
+    .then(data => sendSingleMessage.resolve(data))
+    .catch(function (error) {
+      return sendSingleMessage.reject(error)
+    })
+    .done()
+  return sendSingleMessage.promise
 }
 
 /**
@@ -204,24 +205,33 @@ const ruleCheck = (data, wabaPhoneNumber, authToken) => {
 const controller = (req, res) => {
   __logger.info('sendMessageToQueue :: API to send message called')
   const validate = new ValidatonService()
+  const messageHistoryService = new MessageHistoryService()
+  const rejected = []
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
-    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber, req.headers.authorization))
-    .then(isValid => {
-      __logger.info('sendMessageToQueue :: Rules checked then 2', isValid, req.body.length)
-      const invalidReq = _.filter(isValid, { valid: false })
-      if (invalidReq.length > 0) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
-      } else {
-        return sendToQueueBulk(req.body, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider)
+    .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
+    .then(data => getBulkTemplates(req.body, req.user.wabaPhoneNumber))
+    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber, valRes))
+    .then(processedMessages => {
+      if (processedMessages && processedMessages.reject && processedMessages.reject.length > 0) {
+        rejected.push(...processedMessages.reject)
       }
+      if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
+        return null
+      } else {
+        messageHistoryService.addMessageHistoryDataInBulk(processedMessages.resolve, req.body.userId, { vivaReqId: req.headers.vivaReqId })
+      }
+    })
+    .then(msgAdded => {
+      if (!msgAdded) return []
+      return sendToQueueBulk(req.body, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
     .then(sendToQueueRes => {
       __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: sendToQueueRes })
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes, ...rejected] })
     })
     .catch(err => {
-      __logger.error('sendMessageToQueue :: error', err)
+      console.log('send message ctrl error : ', err)
       __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }

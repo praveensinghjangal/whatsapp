@@ -391,60 +391,65 @@ class validate {
 
     const schema = {
       id: '/addMessageHistoryData',
-      type: 'object',
+      type: 'array',
       required: true,
-      additionalProperties: false,
-      anyOf: [
-        {
-          required:
-          ['messageId']
-        },
-        {
-          required:
-          ['serviceProviderMessageId']
-        }
-      ],
-      properties: {
-        messageId: {
-          type: 'string',
-          minLength: 1
-        },
-        serviceProviderMessageId: {
-          type: 'string',
-          minLength: 1
-        },
-        serviceProviderId: {
-          type: 'string',
-          required: false
-        },
-        deliveryChannel: {
-          type: 'string',
-          required: false,
-          minLength: 1
-        },
-        statusTime: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        state: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        errors: {
-          type: 'array',
-          required: false
-        },
-        endConsumerNumber: {
-          type: 'string',
-          required: false
-        },
-        businessNumber: {
-          type: 'string',
-          required: false
-        }
+      minItems: 1,
+      items: {
+        type: 'object',
+        required: true,
+        additionalProperties: true,
+        anyOf: [
+          {
+            required:
+            ['messageId']
+          },
+          {
+            required:
+            ['serviceProviderMessageId']
+          }
+        ],
+        properties: {
+          messageId: {
+            type: 'string',
+            minLength: 1
+          },
+          serviceProviderMessageId: {
+            type: 'string',
+            minLength: 1
+          },
+          serviceProviderId: {
+            type: 'string',
+            required: false
+          },
+          deliveryChannel: {
+            type: 'string',
+            required: false,
+            minLength: 1
+          },
+          statusTime: {
+            type: 'string',
+            required: true,
+            minLength: 1
+          },
+          state: {
+            type: 'string',
+            required: true,
+            minLength: 1
+          },
+          errors: {
+            type: 'array',
+            required: false
+          },
+          endConsumerNumber: {
+            type: 'string',
+            required: false
+          },
+          businessNumber: {
+            type: 'string',
+            required: false
+          }
 
+        }
       }
     }
 

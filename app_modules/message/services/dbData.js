@@ -97,6 +97,31 @@ class MessgaeHistoryService {
     return messageHistoryDataAdded.promise
   }
 
+  addMessageHistoryDataInBulk (dataObj) {
+    __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>23', dataObj)
+    const messageHistoryDataAdded = q.defer()
+    const validate = new ValidatonService()
+    const msgInsertData = []
+    __logger.info('Add message history service called', dataObj)
+    validate.addMessageHistory(dataObj)
+      .then(dbData => {
+        _.each(dataObj, (singleMessage, i) => {
+          msgInsertData.push(['aaaaaaaaaaaa', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', moment.utc().format('YYYY-MM-DDTHH:mm:ss'), 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', null])
+        })
+        return msgInsertData
+      })
+      .then(values => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(), [values]))
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          messageHistoryDataAdded.resolve(result)
+        } else {
+          messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+        }
+      })
+      .catch(err => messageHistoryDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return messageHistoryDataAdded.promise
+  }
+
   getMessageCount (userId, startDate, endDate) {
     __logger.info('getMessageCount::>>>>>>>>>>>>')
     const messageStatus = q.defer()

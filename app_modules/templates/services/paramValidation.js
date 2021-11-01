@@ -5,7 +5,6 @@ const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
-const RedisService = require('../../../lib/redis_service/redisService')
 
 class TemplateParamValidationService {
   // not used
@@ -76,61 +75,55 @@ class TemplateParamValidationService {
     return dataStored.promise
   }
 
-  checkIfParamsEqual (templateObject, phoneNumber) {
+  checkIfParamsEqual (templateObject, phoneNumber, redisData) {
     __logger.info('inside checkIfParamsEqual')
     const dataStored = q.defer()
     if (!templateObject) {
       dataStored.resolve(true)
       return dataStored.promise
     }
-    const redisService = new RedisService()
-    redisService.getTemplateDataByIdAndPhoneNumber(templateObject.templateId + '___' + phoneNumber)
-      .then(redisData => {
-        let headerOccurenceCount = 0
-        let bodyOccurenceCount = 0
-        let footerOccurenceCount = 0
-        let headerParamCount = 0
-        let bodyParamCount = 0
-        let footerParamCount = 0
-        _.each(templateObject.components, compObj => {
-          if (compObj.type.toLowerCase() === 'header') {
-            headerOccurenceCount++
-            if (compObj.parameters) {
-              headerParamCount = compObj.parameters.length
-            }
-          }
-          if (compObj.type.toLowerCase() === 'body') {
-            bodyOccurenceCount++
-            if (compObj.parameters) {
-              bodyParamCount = compObj.parameters.length
-            }
-          }
-          if (compObj.type.toLowerCase() === 'footer') {
-            footerOccurenceCount++
-            if (compObj.parameters) {
-              footerParamCount = compObj.parameters.length
-            }
-          }
-        })
-        if (headerOccurenceCount > 1 || bodyOccurenceCount > 1 || footerOccurenceCount > 1) {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.COMPONENTS_COUNT_MISMATCH, err: {}, data: {} })
+    let headerOccurenceCount = 0
+    let bodyOccurenceCount = 0
+    let footerOccurenceCount = 0
+    let headerParamCount = 0
+    let bodyParamCount = 0
+    let footerParamCount = 0
+    _.each(templateObject.components, compObj => {
+      if (compObj.type.toLowerCase() === 'header') {
+        headerOccurenceCount++
+        if (compObj.parameters) {
+          headerParamCount = compObj.parameters.length
         }
-        if (headerParamCount !== redisData.headerParamCount) {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.HEADER_PARAM_MISMATCH, err: {}, data: {} })
+      }
+      if (compObj.type.toLowerCase() === 'body') {
+        bodyOccurenceCount++
+        if (compObj.parameters) {
+          bodyParamCount = compObj.parameters.length
         }
-        if (bodyParamCount !== redisData.bodyParamCount) {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BODY_PARAM_MISMATCH, err: {}, data: {} })
+      }
+      if (compObj.type.toLowerCase() === 'footer') {
+        footerOccurenceCount++
+        if (compObj.parameters) {
+          footerParamCount = compObj.parameters.length
         }
-        if (footerParamCount !== redisData.footerParamCount) {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.FOOTER_PARAM_MISMATCH, err: {}, data: {} })
-        }
-        if (!redisData.approvedLanguages.some(lang => lang.toLowerCase() === templateObject.language.code.toLowerCase())) {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.LANGUAGE_NOT_APPROVED, err: {}, data: {} })
-        }
-        return dataStored.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_VALID, data: {} })
-      })
-      .catch(err => dataStored.reject(err))
-
+      }
+    })
+    if (headerOccurenceCount > 1 || bodyOccurenceCount > 1 || footerOccurenceCount > 1) {
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.COMPONENTS_COUNT_MISMATCH, err: {}, data: {} })
+    }
+    if (headerParamCount !== redisData.headerParamCount) {
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.HEADER_PARAM_MISMATCH, err: {}, data: {} })
+    }
+    if (bodyParamCount !== redisData.bodyParamCount) {
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BODY_PARAM_MISMATCH, err: {}, data: {} })
+    }
+    if (footerParamCount !== redisData.footerParamCount) {
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.FOOTER_PARAM_MISMATCH, err: {}, data: {} })
+    }
+    if (!redisData.approvedLanguages.some(lang => lang.toLowerCase() === templateObject.language.code.toLowerCase())) {
+      return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.LANGUAGE_NOT_APPROVED, err: {}, data: {} })
+    }
+    dataStored.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_VALID, data: {} })
     return dataStored.promise
   }
 }
