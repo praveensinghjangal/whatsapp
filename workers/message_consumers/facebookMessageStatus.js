@@ -112,7 +112,6 @@ class FacebookConsumer {
               })
           } catch (err) {
             __logger.error('facebook message status QueueConsumer::error while parsing: ', err.toString())
-            console.log('---', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
