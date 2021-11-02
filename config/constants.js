@@ -144,7 +144,10 @@ const TEMPLATE_BUTTON_TYPE = [{
 }, {
   buttonType: null
 }]
-const PRE_FETCH_COUNT = parseInt(process.env.PRE_FETCH_COUNT)
+let PRE_FETCH_COUNT = parseInt(process.env.PRE_FETCH_COUNT)
+if (!PRE_FETCH_COUNT) {
+  PRE_FETCH_COUNT = 0
+}
 const MQ = {
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: PRE_FETCH_COUNT, createChannel: true },

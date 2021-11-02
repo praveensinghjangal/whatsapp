@@ -90,14 +90,12 @@ class InternalService {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaPhoneNumber)
       .then((data) => {
-        const saved = q.defer()
         if (data.namespace) {
-          saved.resolve(data.namespace)
+          return data.namespace
         } else {
-          // call fb api, store it in db, store it in redis, return
-          saved.resolve(getWabaDetails(wabaPhoneNumber, data.userId, maxTpsToProvider, data.wabaInformationId, data))
+          // call fb api, store it in db, store it in redis & return
+          return getWabaDetails(wabaPhoneNumber, data.userId, maxTpsToProvider, data.wabaInformationId, data)
         }
-        return saved.promise
       })
       .then(namespace => {
         namespaceReceived.resolve(namespace)
