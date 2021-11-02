@@ -97,20 +97,15 @@ class MessgaeHistoryService {
     return messageHistoryDataAdded.promise
   }
 
-  addMessageHistoryDataInBulk (dataObj) {
+  addMessageHistoryDataInBulk (dataObj, serviceProviderId) {
     __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>23', dataObj)
     const messageHistoryDataAdded = q.defer()
-    const validate = new ValidatonService()
     const msgInsertData = []
-    __logger.info('Add message history service called', dataObj)
-    validate.addMessageHistory(dataObj)
-      .then(dbData => {
-        _.each(dataObj, (singleMessage, i) => {
-          msgInsertData.push(['aaaaaaaaaaaa', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', moment.utc().format('YYYY-MM-DDTHH:mm:ss'), 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', 'aaaaaaaaaaaa', null])
-        })
-        return msgInsertData
-      })
-      .then(values => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(), [values]))
+    _.each(dataObj, (singleMessage, i) => {
+      msgInsertData.push([singleMessage.messageId, null, serviceProviderId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]'])
+    })
+
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(), [msgInsertData])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           messageHistoryDataAdded.resolve(result)

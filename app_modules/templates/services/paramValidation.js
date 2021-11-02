@@ -76,7 +76,6 @@ class TemplateParamValidationService {
   }
 
   checkIfParamsEqual (templateObject, phoneNumber, redisData) {
-    __logger.info('inside checkIfParamsEqual')
     const dataStored = q.defer()
     if (!templateObject) {
       dataStored.resolve(true)
@@ -111,16 +110,16 @@ class TemplateParamValidationService {
     if (headerOccurenceCount > 1 || bodyOccurenceCount > 1 || footerOccurenceCount > 1) {
       return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.COMPONENTS_COUNT_MISMATCH, err: {}, data: {} })
     }
-    if (headerParamCount !== redisData.headerParamCount) {
+    if (headerParamCount !== redisData[templateObject.templateId].headerParamCount) {
       return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.HEADER_PARAM_MISMATCH, err: {}, data: {} })
     }
-    if (bodyParamCount !== redisData.bodyParamCount) {
+    if (bodyParamCount !== redisData[templateObject.templateId].bodyParamCount) {
       return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BODY_PARAM_MISMATCH, err: {}, data: {} })
     }
-    if (footerParamCount !== redisData.footerParamCount) {
+    if (footerParamCount !== redisData[templateObject.templateId].footerParamCount) {
       return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.FOOTER_PARAM_MISMATCH, err: {}, data: {} })
     }
-    if (!redisData.approvedLanguages.some(lang => lang.toLowerCase() === templateObject.language.code.toLowerCase())) {
+    if (!redisData[templateObject.templateId].approvedLanguages.some(lang => lang.toLowerCase() === templateObject.language.code.toLowerCase())) {
       return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.LANGUAGE_NOT_APPROVED, err: {}, data: {} })
     }
     dataStored.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_VALID, data: {} })

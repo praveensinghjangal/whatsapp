@@ -45,7 +45,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     if (!templateData) {
       uniqueTemplateIdAndNotInGlobal.push(templateIdArr[i])
     } else {
-      templateDataObj[templateIdArr[i]] = JSON.parse(templateData)
+      templateDataObj[templateIdArr[i].templateId] = JSON.parse(templateData)
     }
   }
   if (uniqueTemplateIdAndNotInGlobal.length === 0) {
@@ -53,7 +53,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     return bulkTemplateCheck.promise
   }
   const onlyTemplateId = uniqueTemplateIdAndNotInGlobal.map(templateIdArr => templateIdArr.templateId)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [wabaPhoneNumber, onlyTemplateId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [wabaPhoneNumber.substring(2), onlyTemplateId])
     .then(result => {
       if (result && result.length === 0) {
         const returnObj = JSON.parse(JSON.stringify(__constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND))
@@ -64,7 +64,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     })
     .then(dbData => {
       _.each(dbData, singleObj => {
-        if (singleObj.templateId) {
+        if (singleObj.message_template_id) {
           const dataObject = {
             templateId: singleObj.message_template_id,
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
@@ -124,12 +124,10 @@ const checkIfNoExists = (number) => {
 const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   const messageSent = q.defer()
   __logger.info('inside sendToQueue')
-  const uniqueId = new UniqueId()
-  data.messageId = uniqueId.uuid()
+  data.authToken = headers.authorization
   const queueData = {
     config: config.provider_config[providerId],
-    payload: data,
-    authToken: headers.authorization
+    payload: data
   }
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
@@ -161,7 +159,11 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData) => {
     return processSingleMessage.promise
   }
   templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from, redisData)
-    .then(tempValRes => processSingleMessage.resolve({ valid: true, data: {} }))
+    .then(tempValRes => {
+      const uniqueId = new UniqueId()
+      data.messageId = uniqueId.uuid()
+      processSingleMessage.resolve(data)
+    })
     .catch(err => {
       if (err && err.type) {
         if (err.type.status_code) delete err.type.status_code
@@ -219,7 +221,7 @@ const controller = (req, res) => {
       if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
         return null
       } else {
-        messageHistoryService.addMessageHistoryDataInBulk(processedMessages.resolve, req.body.userId, { vivaReqId: req.headers.vivaReqId })
+        return messageHistoryService.addMessageHistoryDataInBulk(processedMessages.resolve, req.user.providerId, req.body.userId, { vivaReqId: req.headers.vivaReqId })
       }
     })
     .then(msgAdded => {
