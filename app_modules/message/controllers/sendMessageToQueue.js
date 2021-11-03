@@ -151,7 +151,7 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
   return sendSingleMessage.promise
 }
 
-const singleRuleCheck = (data, wabaPhoneNumber, redisData) => {
+const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   const processSingleMessage = q.defer()
   __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
   if (data.whatsapp.from !== wabaPhoneNumber) {
@@ -175,12 +175,12 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData) => {
   return processSingleMessage.promise
 }
 
-const ruleCheck = (body, wabaPhoneNumber, redisData) => {
+const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
   const sendSingleMessage = q.defer()
   console.log('bodybodybodybodybody', body)
   console.log('redisDataredisDataredisData', redisData)
 
-  qalllib.qASyncWithBatch(singleRuleCheck, body, 250, wabaPhoneNumber, redisData)
+  qalllib.qASyncWithBatch(singleRuleCheck, body, 250, wabaPhoneNumber, redisData, userRedisData)
     .then(data => sendSingleMessage.resolve(data))
     .catch(function (error) {
       return sendSingleMessage.reject(error)
@@ -209,11 +209,15 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
+  let redisData
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
     .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
-    .then(data => getBulkTemplates(req.body, req.user.wabaPhoneNumber))
-    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber, valRes))
+    .then(data => {
+      redisData = data
+      getBulkTemplates(req.body, req.user.wabaPhoneNumber)
+    })
+    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber, valRes, redisData))
     .then(processedMessages => {
       if (processedMessages && processedMessages.reject && processedMessages.reject.length > 0) {
         rejected.push(...processedMessages.reject)
