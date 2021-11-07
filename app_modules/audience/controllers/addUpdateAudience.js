@@ -144,11 +144,13 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
       if (data.reject.length) {
         return apiCalled.reject(data.reject[0])
       }
-      let resolvedData = []
-      data.resolve.map(res => {
-        resolvedData = [...resolvedData, res]
-      })
-      return apiCalled.resolve(resolvedData)
+      // let resolvedData = []
+      // data.resolve.map(res => {
+      //   resolvedData = [...resolvedData, res]
+      // })
+      // return apiCalled.resolve(resolvedData)
+
+      return apiCalled.resolve(updatedAudiences)
     }).catch(err => {
       return apiCalled.reject(err)
     })

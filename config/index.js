@@ -196,11 +196,6 @@ module.exports = {
     },
     tyntec: {
       baseUrl: process.env.TYNTEC_BASE_URL
-    },
-    facebook: {
-      baseUrl: {
-        [process.env.WABA_NUMBER_HELO_FB]: process.env.BASE_URL_HELO_FB
-      }
     }
   },
   authentication: {
@@ -303,6 +298,5 @@ module.exports = {
   mqObjectKey: process.env.MQ_OBJECT_KEY,
   heloOssToken: process.env.HELO_OSS_TOKEN,
   heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL,
-  heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN,
-  adminAuthTokenHeloFb: process.env.ADMIN_AUTH_TOKEN_HELO_FB
+  heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN
 }

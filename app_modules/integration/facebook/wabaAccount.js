@@ -1,13 +1,13 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
-const facebookConfig = __config.integration.facebook
+// const facebookConfig = __config.integration.facebook
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
 const urlValidator = require('../../../lib/util/url')
 const AuthService = require('../facebook/authService')
-const RedisService = require('../../../lib/redis_service/redisService')
+// const RedisService = require('../../../lib/redis_service/redisService')
 class WabaAccount {
   constructor (maxConcurrent, userId) {
     this.userId = userId
@@ -136,40 +136,40 @@ class WabaAccount {
     return deferred.promise
   }
 
-  getCurrentProfile (wabaNumber) {
-    __logger.info('wabaNumber----', wabaNumber)
-    const deferred = q.defer()
-    if (wabaNumber) {
-      const redisService = new RedisService()
-      redisService.getWabaDataByPhoneNumber(wabaNumber)
-        .then(data => {
-          __logger.info('dataatatatat', data, typeof data)
-          let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.getCurrentProfile
-          url = url.split(':phoneNumber').join(data.id || '')
-          __logger.info('URL====', url)
-          const headers = {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            apikey: data.apiKey
-          }
-          return this.http.Get(url, headers, data.serviceProviderId)
-        })
-        .then((accountData) => {
-          if (accountData && accountData.constructor.name.toLowerCase() === 'object' && accountData !== {}) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: accountData })
-          } else if (accountData && accountData.status === 404) {
-            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
-          } else {
-            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData, data: {} })
-          }
-        })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
-      return deferred.promise
-    } else {
-      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
-      return deferred.promise
-    }
-  }
+  // getCurrentProfile (wabaNumber) {
+  //   __logger.info('wabaNumber----', wabaNumber)
+  //   const deferred = q.defer()
+  //   if (wabaNumber) {
+  //     const redisService = new RedisService()
+  //     redisService.getWabaDataByPhoneNumber(wabaNumber)
+  //       .then(data => {
+  //         __logger.info('dataatatatat', data, typeof data)
+  //         let url = facebookConfig.baseUrl[wabaNumber] + __constants.TYNTEC_ENDPOINTS.getCurrentProfile
+  //         url = url.split(':phoneNumber').join(data.id || '')
+  //         __logger.info('URL====', url)
+  //         const headers = {
+  //           'Content-Type': 'application/json',
+  //           Accept: 'application/json',
+  //           apikey: data.apiKey
+  //         }
+  //         return this.http.Get(url, headers, data.serviceProviderId)
+  //       })
+  //       .then((accountData) => {
+  //         if (accountData && accountData.constructor.name.toLowerCase() === 'object' && accountData !== {}) {
+  //           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: accountData })
+  //         } else if (accountData && accountData.status === 404) {
+  //           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+  //         } else {
+  //           return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: accountData, data: {} })
+  //         }
+  //       })
+  //       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  //     return deferred.promise
+  //   } else {
+  //     deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
+  //     return deferred.promise
+  //   }
+  // }
 
   updateProfile (wabaNumber, wabaData) {
     __logger.info('inside update profile', wabaNumber, wabaData)

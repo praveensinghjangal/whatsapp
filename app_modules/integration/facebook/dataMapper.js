@@ -32,9 +32,10 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
       })
       .then(wabaData => {
         __logger.info('integration :: get waba data', { wabaData })
-        wabaDataFromRedis.namespace = wabaData.message_template_namespace
+        const namespace = wabaData.message_template_namespace
+        wabaDataFromRedis.namespace = namespace
         const businessAccountService = new BusinessAccountService()
-        return businessAccountService.setNamespace(wabaData.message_template_namespace, wabaInformationId)
+        return businessAccountService.setNamespace(namespace, wabaInformationId)
       })
       .then((resp) => {
         const redisService = new RedisService()
@@ -88,10 +89,11 @@ class InternalService {
     __logger.info('Inside function to get namespace for the template', { wabaPhoneNumber })
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaPhoneNumber)
-      .then(data => {
+      .then((data) => {
         if (data.namespace) {
           return data.namespace
         } else {
+          // call fb api, store it in db, store it in redis & return
           return getWabaDetails(wabaPhoneNumber, data.userId, maxTpsToProvider, data.wabaInformationId, data)
         }
       })
