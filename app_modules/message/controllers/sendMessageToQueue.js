@@ -237,7 +237,12 @@ const controller = (req, res) => {
     })
     .catch(err => {
       console.log('send message ctrl error : ', err)
-      __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      if (err && err.type && err.type.code && err.type.code === 3021) {
+        delete err.type.status_code
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })
+      } else {
+        __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      }
     })
 }
 
