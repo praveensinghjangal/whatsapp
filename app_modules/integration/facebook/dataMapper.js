@@ -104,6 +104,27 @@ class InternalService {
     return namespaceReceived.promise
   }
 
+  mapComponent (components) {
+    if (!components || components.length <= 0) {
+      return []
+    }
+    _.each(components, (component) => {
+      _.each(component.parameters, (parameter) => {
+        if (parameter.media) {
+          parameter.type = parameter.media.type
+          parameter[parameter.media.type] = parameter.media
+          delete parameter[parameter.media.type].caption
+          if (parameter[parameter.media.type].url) {
+            parameter[parameter.media.type].link = parameter[parameter.media.type].url
+            delete parameter[parameter.media.type].url
+          }
+          delete parameter.media
+        }
+      })
+    })
+    return components
+  }
+
   async sendMessageFbBody (td, maxTpsToProvider) {
     const body = {
       to: td.to,
@@ -151,7 +172,7 @@ class InternalService {
         namespace: await this.getNamespaceForTheTemplate(td.whatsapp.from, maxTpsToProvider),
         name: td.whatsapp.template.templateId,
         language: td.whatsapp.template.language,
-        components: td.whatsapp.template.components || []
+        components: this.mapComponent(td.whatsapp.template.components)
       }
     }
     return body
