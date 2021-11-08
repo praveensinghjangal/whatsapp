@@ -116,7 +116,7 @@ class TemplateParamValidationService {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.HEADER_PARAM_MISMATCH, err: {}, data: {} })
       }
       if (bodyParamCount !== redisData[templateObject.templateId].bodyParamCount) {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BODY_PARAM_MISMATCH, err: {}, data: {}  })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BODY_PARAM_MISMATCH, err: {}, data: {} })
       }
       if (footerParamCount !== redisData[templateObject.templateId].footerParamCount) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.FOOTER_PARAM_MISMATCH, err: {}, data: {} })
