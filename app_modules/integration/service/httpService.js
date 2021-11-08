@@ -2,23 +2,23 @@ const request = require('request')
 const q = require('q')
 const __logger = require('../../../lib/logger')
 const saveApiLog = require('../../integration/service/saveApiLog')
-const Bottleneck = require('bottleneck/es5')
-const __config = require('../../../config')
+// const Bottleneck = require('bottleneck/es5')
+// const __config = require('../../../config')
 
 class HttpRequestOg {
   constructor (timeout, maxConcurrent, userId) {
     this.timeInSeconds = timeout || 3 * 60 * 60 * 1000 // hour * minutes * seconds * miliseconds
-    this.rateLimitter = new Bottleneck({
-      maxConcurrent: maxConcurrent || 10,
-      id: userId || 'generic',
-      datastore: 'redis',
-      clearDatastore: true,
-      clientOptions: {
-        host: __config.redis_local.host,
-        port: __config.redis_local.port,
-        auth_pass: __config.redis_local.auth_pass
-      }
-    })
+    // this.rateLimitter = new Bottleneck({
+    //   maxConcurrent: maxConcurrent || 10,
+    //   id: userId || 'generic',
+    //   datastore: 'redis',
+    //   clearDatastore: true,
+    //   clientOptions: {
+    //     host: __config.redis_local.host,
+    //     port: __config.redis_local.port,
+    //     auth_pass: __config.redis_local.auth_pass
+    //   }
+    // })
   }
 
   postDoNotUse (inputRequest, inputReqType, url, headers, serviceProviderId, isJson = null) {
@@ -201,13 +201,13 @@ class HttpRequestOg {
 class HttpRequest extends HttpRequestOg {
   constructor (timeout, maxConcurrent, userId) {
     super(timeout, maxConcurrent, userId)
-    this.Get = this.rateLimitter.wrap(this.getDoNotUse)
-    this.Post = this.rateLimitter.wrap(this.postDoNotUse)
-    this.Put = this.rateLimitter.wrap(this.putDoNotUse)
-    this.Patch = this.rateLimitter.wrap(this.patchDoNotUse)
-    this.Delete = this.rateLimitter.wrap(this.deleteDoNotUse)
-    this.resolvePost = this.rateLimitter.wrap(this.ResolvePostDoNotUse)
-    this.getMedia = this.rateLimitter.wrap(this.getMediaDoNotUse)
+    this.Get = this.getDoNotUse
+    this.Post = this.postDoNotUse
+    this.Put = this.putDoNotUse
+    this.Patch = this.patchDoNotUse
+    this.Delete = this.deleteDoNotUse
+    this.resolvePost = this.ResolvePostDoNotUse
+    this.getMedia = this.getMediaDoNotUse
   }
 }
 
