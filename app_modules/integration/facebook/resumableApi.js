@@ -64,7 +64,6 @@ class ResumableApi {
         }
         await this.getUploadAfterSession(sessionToken, accessToken)
       } catch (error) {
-        console.log('error===========>', error)
         __logger.error('error inside addTemplate : ', error)
         throw new Error(error)
       }

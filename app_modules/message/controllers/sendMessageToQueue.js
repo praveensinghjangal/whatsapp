@@ -8,7 +8,7 @@ const config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const TemplateParamValidationService = require('../../templates/services/paramValidation')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
+// const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __logger = require('../../../lib/logger')
 const templateParamValidationService = new TemplateParamValidationService()
 const MessageHistoryService = require('../services/dbData')
@@ -54,17 +54,9 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
   }
   const onlyTemplateId = uniqueTemplateIdAndNotInGlobal.map(templateIdArr => templateIdArr.templateId)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [wabaPhoneNumber.substring(2), onlyTemplateId])
-    .then(result => {
-      if (result && result.length === 0) {
-        const returnObj = JSON.parse(JSON.stringify(__constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND))
-        return rejectionHandler({ type: returnObj, err: {} })
-      } else {
-        return result
-      }
-    })
     .then(dbData => {
       _.each(dbData, singleObj => {
-        if (singleObj.message_template_id) {
+        if (singleObj && singleObj.message_template_id) {
           const dataObject = {
             templateId: singleObj.message_template_id,
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
@@ -117,13 +109,14 @@ const checkIfNoExists = (number) => {
       __logger.info('datatat', { data })
       exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: { redisData: data } })
     })
-    .catch(err => exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => {
+      exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
   return exists.promise
 }
 
 const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   const messageSent = q.defer()
-  __logger.info('inside sendToQueue')
   data.authToken = headers.authorization
   const queueData = {
     config: config.provider_config[providerId],
@@ -132,7 +125,6 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
-  delete data.redisData
   rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
     .then(queueResponse => saveAndSendMessageStatus(data))
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId }))
@@ -142,7 +134,7 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
 
 const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) => {
   const sendSingleMessage = q.defer()
-  qalllib.qASyncWithBatch(sendToQueue, data, 250, providerId, userId, maxTpsToProvider, headers)
+  qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, providerId, userId, maxTpsToProvider, headers)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
       return sendSingleMessage.reject(error)
@@ -155,14 +147,19 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   const processSingleMessage = q.defer()
   __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
   if (data.whatsapp.from !== wabaPhoneNumber) {
-    processSingleMessage.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
+    const modifiedRejectPromise = { ...__constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS }
+
+    delete modifiedRejectPromise.status_code
+    modifiedRejectPromise.message = modifiedRejectPromise.message + ' from :- ' + data.whatsapp.from + ' wabaNumber :- ' + wabaPhoneNumber
+    processSingleMessage.reject(modifiedRejectPromise)
     return processSingleMessage.promise
   }
   templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from, redisData)
     .then(tempValRes => {
       const uniqueId = new UniqueId()
       data.messageId = uniqueId.uuid()
-      processSingleMessage.resolve(data)
+      data.redisData = userRedisData.data.redisData || null
+      return processSingleMessage.resolve(data)
     })
     .catch(err => {
       if (err && err.type) {
@@ -177,10 +174,8 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
 
 const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
   const sendSingleMessage = q.defer()
-  console.log('bodybodybodybodybody', body)
-  console.log('redisDataredisDataredisData', redisData)
 
-  qalllib.qASyncWithBatch(singleRuleCheck, body, 250, wabaPhoneNumber, redisData, userRedisData)
+  qalllib.qASyncWithBatch(singleRuleCheck, body, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, wabaPhoneNumber, redisData, userRedisData)
     .then(data => sendSingleMessage.resolve(data))
     .catch(function (error) {
       return sendSingleMessage.reject(error)
@@ -209,15 +204,15 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
-  let redisData
+  let userRedisData
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
     .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
     .then(data => {
-      redisData = data
-      getBulkTemplates(req.body, req.user.wabaPhoneNumber)
+      userRedisData = data
+      return getBulkTemplates(req.body, req.user.wabaPhoneNumber)
     })
-    .then(valRes => ruleCheck(req.body, req.user.wabaPhoneNumber, valRes, redisData))
+    .then(redisData => ruleCheck(req.body, req.user.wabaPhoneNumber, redisData, userRedisData))
     .then(processedMessages => {
       if (processedMessages && processedMessages.reject && processedMessages.reject.length > 0) {
         rejected.push(...processedMessages.reject)
@@ -230,11 +225,15 @@ const controller = (req, res) => {
     })
     .then(msgAdded => {
       if (!msgAdded) return []
-      return sendToQueueBulk(req.body, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
+      return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
     .then(sendToQueueRes => {
       __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
-      __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes, ...rejected] })
+      if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
+      } else {
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes, ...rejected] })
+      }
     })
     .catch(err => {
       console.log('send message ctrl error : ', err)

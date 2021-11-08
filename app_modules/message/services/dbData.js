@@ -108,7 +108,7 @@ class MessgaeHistoryService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(), [msgInsertData])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
-          messageHistoryDataAdded.resolve(result)
+          messageHistoryDataAdded.resolve(dataObj)
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }

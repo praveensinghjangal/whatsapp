@@ -283,7 +283,6 @@ module.exports = class RuleEngine {
         templateStatus.resolve({ complete: true })
       })
       .catch(err => {
-        console.log('eeeeeeeeeeeeeeeeee', err)
         __logger.info('err::', err)
         templateStatus.resolve({ complete: false, err: err })
       })
