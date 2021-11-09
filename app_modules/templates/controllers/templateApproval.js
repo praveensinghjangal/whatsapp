@@ -208,7 +208,7 @@ const sendTemplateForEvaluaion = (req, res) => {
     .catch(err => {
       __logger.error('error sendTemplateForEvaluaion: ', err)
       // if tyntec call is failed roll back status to requested
-      if (err && err.type && err.type.code && err.type.code === 5005) {
+      if (err && err.type && err.type.code && (err.type.code === 5005 || err.type.code === 4031)) {
         const statusService = new StatusService()
         statusService.rollBackStatusService(userId, templateId, '', callerUserId)
           .then(isRollBacked => {
