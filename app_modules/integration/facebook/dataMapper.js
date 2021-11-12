@@ -11,6 +11,7 @@ const RedisService = require('../../../lib/redis_service/redisService')
 const AuthService = require('./authService')
 const HttpService = require('../service/httpService')
 const BusinessAccountService = require('../../whatsapp_business/services/businesAccount')
+const csc = require('country-state-city').default
 
 const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId, wabaDataFromRedis) => {
   const deferred = q.defer()
@@ -339,7 +340,7 @@ class DataMapper {
       .then(data => {
         const body = {
           vertical: data.service_provider_business_category_name,
-          address: `${wabaData.address || ''}` + ', ' + `${wabaData.city || ''}` + ', ' + `${wabaData.state || ''}` + ', ' + `${wabaData.country || ''}` + ', ' + 'Pin Code ' + `${wabaData.postalCode || ''}`,
+          address: `${wabaData.address || ''}` + ', ' + `${csc.getCityById(wabaData.city).name || ''}` + ', ' + `${csc.getStateById(wabaData.state).name || ''}` + ', ' + `${csc.getCountryById(wabaData.country).name || ''}` + ', ' + 'Pin Code ' + `${wabaData.postalCode || ''}`,
           description: wabaData.description || '',
           email: wabaData.email || '',
           websites: wabaData.websites || ''
