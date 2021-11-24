@@ -72,16 +72,16 @@ class businesAccountService {
   }
 
   /**
-  * @memberof -Whatsapp-Business-Account-(WABA)-Services-
-  * @name insertBusinessData
-  * @description This service is used to check if record does not exists and then insert waba data .
-  * @body {string} userId
-  * @body {object} businessData
-  * @body {object} businessOldData
-  * @response {object} businessAccountObj  -  Object which is inserted in DB.
-  * @author Arjun Bhole 3rd June, 2020
-  *  * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
-  */
+     * @memberof -Whatsapp-Business-Account-(WABA)-Services-
+     * @name insertBusinessData
+     * @description This service is used to check if record does not exists and then insert waba data .
+     * @body {string} userId
+     * @body {object} businessData
+     * @body {object} businessOldData
+     * @response {object} businessAccountObj  -  Object which is inserted in DB.
+     * @author Arjun Bhole 3rd June, 2020
+     *  * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
+     */
   insertBusinessData (userId, businessData, businessOldData) {
     __logger.info('insertBusinessData::>>>>>>>>>>...', businessOldData)
     const dataInserted = q.defer()
@@ -138,16 +138,16 @@ class businesAccountService {
   }
 
   /**
-  * @memberof -Whatsapp-Business-Account-(WABA)-Services-
-  * @name updateBusinessInfo
-  * @description This service is used to check if record exists and then update waba data .
-  * @body {string} userId
-  * @body {object} businessData
-  * @body {object} businessOldData
-  * @response {object} businessAccountObj  -  Object which is inserted in DB.
-  * @author Arjun Bhole 3rd June, 2020
-  *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
-  */
+     * @memberof -Whatsapp-Business-Account-(WABA)-Services-
+     * @name updateBusinessInfo
+     * @description This service is used to check if record exists and then update waba data .
+     * @body {string} userId
+     * @body {object} businessData
+     * @body {object} businessOldData
+     * @response {object} businessAccountObj  -  Object which is inserted in DB.
+     * @author Arjun Bhole 3rd June, 2020
+     *  * *** Last-Updated :- Danish Galiyara 2nd December, 2020 ***
+     */
   /* To do the handling of facebook manager id when null  */
   updateBusinessInfo (userId, businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
     const dataUpdated = q.defer()
@@ -364,9 +364,9 @@ class businesAccountService {
   updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId, wabaInformationId) {
     __logger.info('updateWabaNumberAndPhoneCode::>>>>>>>>>>>>>.')
     /* To do
-        Update all the tables with waba Number
-        currently updating only waba info table
-     */
+                Update all the tables with waba Number
+                currently updating only waba info table
+             */
     const dataUpdated = q.defer()
     if (wabaProfileSetupStatusId && (wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.submitted.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode)) {
       dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
@@ -772,7 +772,6 @@ class businesAccountService {
 
   setNamespace (namespace, wabaInformationId) {
     const deferred = q.defer()
-    __logger.info('inside setNamespace in db', { namespace, wabaInformationId })
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setNamespace(), [namespace, wabaInformationId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {

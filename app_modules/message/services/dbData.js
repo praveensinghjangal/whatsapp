@@ -97,6 +97,26 @@ class MessgaeHistoryService {
     return messageHistoryDataAdded.promise
   }
 
+  addMessageHistoryDataInBulk (dataObj, serviceProviderId) {
+    __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>23', dataObj)
+    const messageHistoryDataAdded = q.defer()
+    const msgInsertData = []
+    _.each(dataObj, (singleMessage, i) => {
+      msgInsertData.push([singleMessage.messageId, null, serviceProviderId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]'])
+    })
+
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(), [msgInsertData])
+      .then(result => {
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          messageHistoryDataAdded.resolve(dataObj)
+        } else {
+          messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+        }
+      })
+      .catch(err => messageHistoryDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return messageHistoryDataAdded.promise
+  }
+
   getMessageCount (userId, startDate, endDate) {
     __logger.info('getMessageCount::>>>>>>>>>>>>')
     const messageStatus = q.defer()

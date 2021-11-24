@@ -1,7 +1,6 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
-// const facebookConfig = __config.integration.facebook
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const qalllib = require('qalllib')

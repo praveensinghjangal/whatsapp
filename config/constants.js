@@ -177,7 +177,8 @@ const MESSAGE_STATUS = {
   delivered: 'delivered',
   accepted: 'accepted',
   failed: 'failed',
-  pending: 'waiting for pending delivery'
+  pending: 'waiting for pending delivery',
+  rejected: 'rejected'
 }
 const MESSAGE_STATUS_FOR_DISPLAY = [
   MESSAGE_STATUS.inProcess,
@@ -185,7 +186,8 @@ const MESSAGE_STATUS_FOR_DISPLAY = [
   MESSAGE_STATUS.delivered,
   MESSAGE_STATUS.seen,
   MESSAGE_STATUS.deleted,
-  MESSAGE_STATUS.failed
+  MESSAGE_STATUS.failed,
+  MESSAGE_STATUS.rejected
 ]
 const VALIDATOR = {
   email: '^(([^<>()\\[\\]\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
@@ -453,6 +455,7 @@ const MIMETYPE = {
 
 }
 
+const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -547,3 +550,4 @@ module.exports.HEADER_HANDLE = HEADER_HANDLE
 module.exports.NAME_SPACE_FB = NAME_SPACE_FB
 module.exports.FACEBOOK_APP_ID = FACEBOOK_APP_ID
 module.exports.MIMETYPE = MIMETYPE
+module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
