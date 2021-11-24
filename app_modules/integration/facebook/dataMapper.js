@@ -33,16 +33,15 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
       })
       .then(wabaData => {
         __logger.info('integration :: get waba data', { wabaData })
-        const namespace = wabaData.message_template_namespace
-        wabaDataFromRedis.namespace = namespace
+        wabaDataFromRedis.namespace = wabaData.message_template_namespace
         const businessAccountService = new BusinessAccountService()
-        return businessAccountService.setNamespace(namespace, wabaInformationId)
+        return businessAccountService.setNamespace(wabaData.message_template_namespace, wabaInformationId)
       })
-      .then((resp) => {
+      .then(resp => {
         const redisService = new RedisService()
         return redisService.setWabaDataInRedis(wabaNumber, wabaDataFromRedis)
       })
-      .then((data) => {
+      .then(data => {
         return deferred.resolve(wabaDataFromRedis.namespace)
       })
       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))

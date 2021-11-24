@@ -45,11 +45,8 @@ class InternalFunctions {
         }
       })
       .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook, userId))
-      // .then(data => dataFetched.resolve(data))
-      .then(data => {
-        data.baseUrl = 'https://10.40.13.240:9090'
-        dataFetched.resolve(data)
-      }).catch(err => {
+      .then(data => dataFetched.resolve(data))
+      .catch(err => {
         __logger.error('error in auth', err)
         dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
@@ -75,10 +72,7 @@ class Authentication {
           return data
         }
       })
-      .then(data => {
-        // data.baseUrl = 'https://10.40.13.240:9090'
-        dataFetched.resolve(data)
-      })
+      .then(data => dataFetched.resolve(data))
       .catch(err => {
         __logger.error('error in auth', err)
         dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
