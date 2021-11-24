@@ -758,6 +758,7 @@ class businesAccountService {
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           saveHistoryData(wabizData, __constants.ENTITY_NAME.WABA_INFORMATION, phoneCode + wabaNumber, userId)
+          __db.redis.key_delete(phoneCode + wabaNumber)
           dataUpdated.resolve(true)
         } else {
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })

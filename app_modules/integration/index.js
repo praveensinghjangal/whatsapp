@@ -59,6 +59,7 @@ class Authentication {
   }
 
   getFaceBookTokensByWabaNumber (wabaNumber) { return this.authentication.getFaceBookTokensByWabaNumber(wabaNumber) }
+  setFaceBookTokensByWabaNumber (wabaNumber) { return this.authentication.setFaceBookTokensByWabaNumber(wabaNumber) }
 }
 
 class Audience {

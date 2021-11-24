@@ -20,7 +20,7 @@ class InternalFunctions {
         data = data.body || data
         if (data && data.users && data.users.length > 0 && data.users[0].token) {
           resolveObj.apiKey = data.users[0].token
-          resolveObj.timeLeftToExpire = +moment(data.users[0].expires_after).format('x')
+          resolveObj.timeLeftToExpire = +moment(data.users[0].expires_after).format('x') - new Date().getTime()
           const wabaService = new WabaService()
           return wabaService.updateWabizApiKeyAndExpireyTime(wabaNumber, data.users[0].token, data.users[0].expires_after, userId)
         } else {
@@ -31,32 +31,33 @@ class InternalFunctions {
       .catch(err => apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return apiCalled.promise
   }
+}
 
-  setAuthDataInRedis (wabaNumber, userId) {
+class Authentication {
+  constructor (userId) {
+    this.userId = userId
+  }
+
+  setFaceBookTokensByWabaNumber (wabaNumber) {
     const dataFetched = q.defer()
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(wabaData => {
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
         if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
-          return this.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaData.userAccountIdByProvider, wabaNumber, userId)
+          const internalFunctions = new InternalFunctions()
+          return internalFunctions.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaData.userAccountIdByProvider, wabaNumber, this.userId)
         } else {
           return { baseUrl: wabaData.wabizBaseUrl, apiKey: wabaData.apiKey, graphApiKey: wabaData.graphApiKey, userAccountIdByProvider: wabaData.userAccountIdByProvider, timeLeftToExpire }
         }
       })
-      .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook, userId))
+      .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook, this.userId))
       .then(data => dataFetched.resolve(data))
       .catch(err => {
         __logger.error('error in auth', err)
         dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return dataFetched.promise
-  }
-}
-
-class Authentication {
-  constructor (userId) {
-    this.userId = userId
   }
 
   getFaceBookTokensByWabaNumber (wabaNumber) {
@@ -66,8 +67,7 @@ class Authentication {
     redisService.getFacebookAuthKeys(wabaNumber)
       .then(data => {
         if (!data) {
-          const internalFunctions = new InternalFunctions()
-          return internalFunctions.setAuthDataInRedis(wabaNumber, this.userId)
+          return this.setFaceBookTokensByWabaNumber(wabaNumber, this.userId)
         } else {
           return data
         }
