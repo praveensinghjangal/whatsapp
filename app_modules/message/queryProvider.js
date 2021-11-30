@@ -3,20 +3,20 @@ const __constants = require('../../config/constants')
 const addMessageHistoryData = (messageId) => {
   return `INSERT INTO message_history
   (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors)
-  VALUES (?,?,?,?,?,?,?,?,?)`
+  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const getMessageTableDataWithId = () => {
   return `SELECT message_id as "messageId",
   delivery_channel as "deliveryChannel",status_time  as "statusTime", state, 
-  end_consumer_number as "endConsumerNumber", business_number as  "businessNumber"
+  end_consumer_number as "endConsumerNumber", business_number as  "businessNumber", custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour"
   FROM message_history
   where message_id =? order by id desc`
 }
 
 const getMessageIdByServiceProviderMsgId = () => {
-  return `select message_id as "messageId" , service_provider_id as  "serviceProviderId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber", errors as "errors" 
+  return `select message_id as "messageId" , service_provider_id as  "serviceProviderId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber", errors as "errors" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour"
   from message_history
   where is_active = 1 and service_provider_message_id = ? limit 1`
 }
@@ -191,7 +191,7 @@ const getVivaMsgIdByserviceProviderMsgId = () => {
 const addMessageHistoryDataInBulk = () => {
   return `INSERT INTO message_history
   (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors)
+  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
 

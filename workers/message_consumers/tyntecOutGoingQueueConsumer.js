@@ -20,7 +20,11 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.forwarded,
     endConsumerNumber: payload.to,
-    businessNumber: payload.whatsapp.from
+    businessNumber: payload.whatsapp.from,
+    customOne: payload.whatsapp.customOne || null,
+    customTwo: payload.whatsapp.customTwo || null,
+    customThree: payload.whatsapp.customThree || null,
+    customFour: payload.whatsapp.customFour || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {

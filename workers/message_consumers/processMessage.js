@@ -20,7 +20,11 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: (isSyncstatus) ? __constants.MESSAGE_STATUS.pending : (statusName ? __constants.MESSAGE_STATUS[statusName] : __constants.MESSAGE_STATUS.resourceAllocated),
     endConsumerNumber: payload.to,
-    businessNumber: payload.whatsapp.from
+    businessNumber: payload.whatsapp.from,
+    customOne: payload.whatsapp.customOne || null,
+    customTwo: payload.whatsapp.customTwo || null,
+    customThree: payload.whatsapp.customThree || null,
+    customFour: payload.whatsapp.customFour || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
