@@ -89,6 +89,10 @@ class FacebookConsumer {
                 statusData.messageId = statusDataAdded.messageId
                 statusData.to = statusDataAdded.businessNumber
                 statusData.from = statusDataAdded.endConsumerNumber
+                statusData.customOne = statusDataAdded.custom.customOne
+                statusData.customTwo = statusDataAdded.custom.customTwo
+                statusData.customThree = statusDataAdded.custom.customThree
+                statusData.customFour = statusDataAdded.custom.customFour
                 delete messageData.retryCount
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber

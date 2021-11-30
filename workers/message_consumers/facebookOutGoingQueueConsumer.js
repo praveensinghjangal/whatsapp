@@ -20,7 +20,11 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.forwarded,
     endConsumerNumber: payload.to,
-    businessNumber: payload.whatsapp.from
+    businessNumber: payload.whatsapp.from,
+    customOne: payload.whatsapp.customOne || null,
+    customTwo: payload.whatsapp.customTwo || null,
+    customThree: payload.whatsapp.customThree || null,
+    customFour: payload.whatsapp.customFour || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -58,7 +62,6 @@ class MessageConsumer {
     const queueObj = __constants.MQ[__config.mqObjectKey]
     if (queueObj && queueObj.q_name) {
       const queue = queueObj.q_name
-      let messageData
       __db.init()
         .then(result => {
           const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
@@ -66,7 +69,7 @@ class MessageConsumer {
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
               const mqDataReceived = mqData
-              messageData = JSON.parse(mqData.content.toString())
+              const messageData = JSON.parse(mqData.content.toString())
               __logger.info('facebook outgoing queue consumer::received:', { mqData })
               __logger.info('facebook outgoing queue consumer:: messageData received:', messageData)
               if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {

@@ -107,6 +107,30 @@ class validate {
                 required: true,
                 minLength: 1
               },
+              customOne: {
+                type: 'string',
+                required: false,
+                minLength: 1,
+                maxLength: 50
+              },
+              customTwo: {
+                type: 'string',
+                required: false,
+                minLength: 1,
+                maxLength: 50
+              },
+              customThree: {
+                type: 'string',
+                required: false,
+                minLength: 1,
+                maxLength: 50
+              },
+              customFour: {
+                type: 'string',
+                required: false,
+                minLength: 1,
+                maxLength: 50
+              },
               contentType: {
                 type: 'string',
                 required: true,
@@ -393,7 +417,7 @@ class validate {
       id: '/addMessageHistoryData',
       type: 'object',
       required: true,
-      additionalProperties: false,
+      additionalProperties: true,
       anyOf: [
         {
           required:
