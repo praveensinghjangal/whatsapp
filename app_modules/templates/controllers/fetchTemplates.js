@@ -64,8 +64,8 @@ const getTemplateInfo = (req, res) => {
       finalResult[0] = finalResult[0].replace(/{{\d{1,3}}}/g, (match, key) => '<var' + match.slice(2).slice(0, -2) + '>')
       finalResult[0] = JSON.parse(finalResult[0]) || {}
       finalResult[0].isPersonalised = !!((finalResult[0] && finalResult[0].bodyTextVarExample && finalResult[0].headerTextVarExample && (finalResult[0].bodyTextVarExample.length > 0 || finalResult[0].headerTextVarExample.length > 0)))
-      finalResult[0].bodyTextCount = finalResult[0].bodyTextVarExample.length || 0
-      finalResult[0].headerTextCount = finalResult[0].headerTextVarExample.length || 0
+      finalResult[0].bodyTextVariableCount = finalResult[0].bodyTextVarExample.length || 0
+      finalResult[0].headerTextVariableCount = finalResult[0].headerTextVarExample.length || 0
       return checksForTemplate(finalResult[0])
     })
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult }))
