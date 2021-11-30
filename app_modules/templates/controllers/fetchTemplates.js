@@ -60,9 +60,6 @@ const getTemplateInfo = (req, res) => {
       __logger.info('data then 2', { data })
       finalResult[0].isTemplateValid = data.complete
       finalResult[0].invalidRemark = data.err && data.err.err ? data.err.err : null
-      finalResult[0] = JSON.stringify(finalResult[0])
-      finalResult[0] = finalResult[0].replace(/{{\d{1,3}}}/g, (match, key) => '<var' + match.slice(2).slice(0, -2) + '>')
-      finalResult[0] = JSON.parse(finalResult[0]) || {}
       finalResult[0].isPersonalised = !!((finalResult[0] && finalResult[0].bodyTextVarExample && finalResult[0].headerTextVarExample && (finalResult[0].bodyTextVarExample.length > 0 || finalResult[0].headerTextVarExample.length > 0)))
       finalResult[0].bodyTextVariableCount = finalResult[0].bodyTextVarExample.length || 0
       finalResult[0].headerTextVariableCount = finalResult[0].headerTextVarExample.length || 0
@@ -94,6 +91,44 @@ const getTemplateButtonTypes = (req, res) => {
   __logger.info('Get Templates Button Type API Called')
 
   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.TEMPLATE_BUTTON_TYPE })
+}
+
+const varMask = (req, res) => {
+  __logger.info('Get Templates Info VarMask API Called', req.params)
+  const ruleEngine = new RuleEngine()
+  let finalResult
+  compareAndUpdateStatus(req.params.templateId, req.user.providerId, req.user.wabaPhoneNumber, req.user.user_id, req.user.maxTpsToProvider, req.query)
+    .then(statusUpdated => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateInfo(), [req.user.user_id, req.params.templateId]))
+    .then(result => {
+      __logger.info('then 1', { result })
+      if (result && result.length === 0) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+      } else {
+        result[0].secondLanguageRequired = result[0].secondLanguageRequired === 1
+        finalResult = result
+        return ruleEngine.getTemplateCompletionStatus(result[0])
+      }
+    })
+    .then(data => {
+      __logger.info('data then 2', { data })
+      finalResult[0].isTemplateValid = data.complete
+      finalResult[0].invalidRemark = data.err && data.err.err ? data.err.err : null
+      finalResult[0] = JSON.stringify(finalResult[0])
+      finalResult[0] = finalResult[0].replace(/{{\d{1,3}}}/g, (match, key) => '<var' + match.slice(2).slice(0, -2) + '>')
+      finalResult[0] = JSON.parse(finalResult[0]) || {}
+      finalResult[0].isPersonalised = !!((finalResult[0] && finalResult[0].bodyTextVarExample && finalResult[0].headerTextVarExample && (finalResult[0].bodyTextVarExample.length > 0 || finalResult[0].headerTextVarExample.length > 0)))
+      finalResult[0].bodyTextVariableCount = finalResult[0].bodyTextVarExample.length || 0
+      finalResult[0].headerTextVariableCount = finalResult[0].headerTextVarExample.length || 0
+      return checksForTemplate(finalResult[0])
+    })
+    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult }))
+    .catch(err => {
+      __logger.error('error in get template info VarMask: ', err)
+      if (err && err.type && err.type.code && err.type.code === __constants.RESPONSE_MESSAGES.ALL_STATUS_NOT_UPDATED.code) {
+        err = { type: err.err[0], data: {} }
+      }
+      return __util.send(res, { type: err.type, err: err.err })
+    })
 }
 
 const checksForTemplate = (templateData) => {
@@ -163,5 +198,6 @@ module.exports = {
   getTemplateTypes,
   getTemplateHeaderTypes,
   getTemplateButtonTypes,
-  getTemplateInfoByUserIdAndTemplateId
+  getTemplateInfoByUserIdAndTemplateId,
+  varMask
 }
