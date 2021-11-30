@@ -73,8 +73,8 @@ class MessgaeHistoryService {
         const queryParam = []
         custom.customOne = dbData.customOne || dataObj.customOne || null
         custom.customTwo = dbData.customTwo || dataObj.customTwo || null
-        custom.customThree = dbData.customThree || dataObj.customOne || null
-        custom.customFour = dbData.customFour || dataObj.customOne || null
+        custom.customThree = dbData.customThree || dataObj.customThree || null
+        custom.customFour = dbData.customFour || dataObj.customFour || null
         const messageHistoryData = {
           messageId: msgId,
           serviceProviderMessageId: dataObj.serviceProviderMessageId,
