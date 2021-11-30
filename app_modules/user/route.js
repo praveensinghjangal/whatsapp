@@ -72,8 +72,8 @@ router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.
 router.patch('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.validateEmailVerificationCode)
 router.post('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.generateSmsVerificationCode)
 router.patch('/verification/sms', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.validateSmsVerificationCode)
-router.post('/otp/email', tokenBasedAuth, verificationController.generateEmailOtpCode)
-router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCode)
+router.post('/otp/email', tokenBasedAuth, verificationController.generateEmailOtpCode) // internally called by /otp
+router.post('/otp/sms', tokenBasedAuth, verificationController.generateSmsOtpCode) // internally called by /otp
 router.post('/otp', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, verificationController.sendOtpCode)
 router.patch('/otp', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, verificationController.validateTFa)
 router.patch('/otp/new', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.validateTempTFa)
