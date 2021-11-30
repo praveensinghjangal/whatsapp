@@ -35,7 +35,7 @@ class MessgaeHistoryService {
       .then(result => {
         __logger.info('Query Result', { result })
         if (result && result.length > 0) {
-          messageHistoryData.resolve({ messageId: result[0].messageId, serviceProviderId: result[0].serviceProviderId, businessNumber: result[0].businessNumber, endConsumerNumber: result[0].endConsumerNumber })
+          messageHistoryData.resolve({ messageId: result[0].messageId, serviceProviderId: result[0].serviceProviderId, businessNumber: result[0].businessNumber, endConsumerNumber: result[0].endConsumerNumber, customOne: result[0].customOne || null, customTwo: result[0].customTwo || null, customThree: result[0].customThree || null, customFour: result[0].customFour || null })
         } else {
           messageHistoryData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
@@ -54,6 +54,7 @@ class MessgaeHistoryService {
     let msgId = ''
     let bnNum = ''
     let ecNum = ''
+    const custom = {}
     __logger.info('Add message history service called', dataObj)
     validate.addMessageHistory(dataObj)
       .then(valres => {
@@ -70,6 +71,10 @@ class MessgaeHistoryService {
         bnNum = dbData.businessNumber ? dbData.businessNumber : dataObj.businessNumber
         ecNum = dbData.endConsumerNumber ? dbData.endConsumerNumber : dataObj.endConsumerNumber
         const queryParam = []
+        custom.customOne = dbData.customOne || dataObj.customOne || null
+        custom.customTwo = dbData.customTwo || dataObj.customTwo || null
+        custom.customThree = dbData.customThree || dataObj.customOne || null
+        custom.customFour = dbData.customFour || dataObj.customOne || null
         const messageHistoryData = {
           messageId: msgId,
           serviceProviderMessageId: dataObj.serviceProviderMessageId,
@@ -79,7 +84,11 @@ class MessgaeHistoryService {
           state: dataObj.state,
           endConsumerNumber: ecNum,
           businessNumber: bnNum,
-          errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]'
+          errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]',
+          customOne: custom.customOne,
+          customTwo: custom.customTwo,
+          customThree: custom.customThree,
+          customFour: custom.customFour
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         return queryParam
@@ -88,7 +97,7 @@ class MessgaeHistoryService {
       .then(result => {
         __logger.info('Add Result then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
-          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum })
+          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum, custom })
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
@@ -102,7 +111,7 @@ class MessgaeHistoryService {
     const messageHistoryDataAdded = q.defer()
     const msgInsertData = []
     _.each(dataObj, (singleMessage, i) => {
-      msgInsertData.push([singleMessage.messageId, null, serviceProviderId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]'])
+      msgInsertData.push([singleMessage.messageId, null, serviceProviderId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
     })
 
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(), [msgInsertData])
