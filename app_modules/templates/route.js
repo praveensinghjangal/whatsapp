@@ -42,6 +42,7 @@ router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy
 router.get('/headerType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateHeaderTypes)
 router.get('/buttonType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateButtonTypes)
 router.get('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateInfo)
+router.get('/varMask/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.varMask)
 router.get('/:templateId/validate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/checkTemplateRulesByTemplateId'))
 router.post('/:templateId/submit', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, templateApprovalController.sendTemplateForApproval)
 router.patch('/:templateId/submit/:evaluationResponse', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, endUserConfigMiddleware, templateApprovalController.sendTemplateForEvaluaion)
