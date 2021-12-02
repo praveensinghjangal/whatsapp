@@ -122,7 +122,8 @@ const getWabaData = () => {
   wi.max_tps_to_provider as "maxTpsToProvider",
   wi.user_id as "userId",
   wi.template_namespace as "namespace",
-  wi.waba_information_id as "wabaInformationId"
+  wi.waba_information_id as "wabaInformationId",
+  wi.is_helo_campaign as "isHeloCampaign"
   from waba_information wi
   join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
   join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1

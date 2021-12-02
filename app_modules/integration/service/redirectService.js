@@ -1,23 +1,48 @@
 const q = require('q')
+const __db = require('../../../lib/db')
+const url = require('../../../lib/util/url')
 const HttpService = require('../../../lib/http_service')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __config = require('../../../config')
 const RedisService = require('../../../lib/redis_service/redisService')
-const url = require('../../../lib/util/url')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 
+const initial = () => {
+  const defer = q.defer()
+  defer.resolve(true)
+  return defer.promise
+}
+
+const queueCall = (payload) => {
+  const defer = q.defer()
+  __logger.info('~ inside redirectservice', payload)
+  if (payload.heloCampaign && __config.heloCampaignStatus.includes(payload.state)) {
+    __logger.info('push to heloCampaign and user queue functionality')
+    initial()
+      .then(() => {
+        return [__db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.user_queue, JSON.stringify(payload)), __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.helo_campaign, JSON.stringify(payload))]
+      })
+      .spread((responseData1, responseData2) => {
+        defer.resolve(true)
+      })
+      .then(responseData => defer.resolve(responseData))
+      .catch(err => defer.reject(err))
+  } else {
+    __logger.info('~ push user queue functionality')
+    __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.user_queue, JSON.stringify(payload))
+      .then(responseData => defer.resolve(true))
+      .catch(err => defer.reject(err))
+  }
+  return defer.promise
+}
 class RedirectService {
   webhookPost (wabaNumber, payload) {
     __logger.info('inside webhook post service', payload)
     const redirected = q.defer()
-    const http = new HttpService(3000)
     const redisService = new RedisService()
     const validPayload = {
       ...payload
-    }
-    const retryCount = {
-      count: payload.retryCount ? payload.retryCount : 0
     }
 
     if (payload.retryCount) {
@@ -29,7 +54,7 @@ class RedirectService {
     }
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        __logger.info('data then 1', { data })
+        __logger.info('~ Got redis data,', data)
         if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
@@ -37,30 +62,23 @@ class RedirectService {
           payload.content = { text: payload.whatsapp.text, contentType: 'text' }
           this.callMessageFlow(data, payload)
         }
-        const headers = {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        }
+        payload.heloCampaign = data.isHeloCampaign
+        payload.webhookPostUrl = data.webhookPostUrl
+        __logger.info('~ data and webhook before sending queue', data, payload)
         if (data && data.webhookPostUrl && url.isValid(data.webhookPostUrl)) {
-          return http.resolvePost(validPayload, 'body', data.webhookPostUrl, headers, data.serviceProviderId)
+          return queueCall(payload)
         } else {
           return { notRedirected: true, type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: null }
         }
       })
-      .then(apiRes => {
-        __logger.info('webhookPost api ressssssssssssssssss then 2', apiRes.statusCode)
-        if (apiRes.notRedirected) {
-          return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
-        }
-        if (apiRes.statusCode && apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
-          return apiRes.body
+      .then(result => {
+        __logger.info('~ response after the queue functionality in redirect Service ', result)
+        if (result.notRedirected) {
+          return redirected.reject({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
         } else {
-          __logger.info('Retry Count In Else', payload)
-          this.sendToRetryMessageSendQueue(payload, retryCount)
-          return 'send for retry'
+          return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
         }
       })
-      .then(data => redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data }))
       .catch(err => redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return redirected.promise
   }
