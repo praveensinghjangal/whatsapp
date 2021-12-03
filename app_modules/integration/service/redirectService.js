@@ -25,8 +25,13 @@ const sendToHeloCampaign = (payload) => {
 }
 
 const sendToUser = (payload) => {
-  if (__constants.SEND_WEBHOOK_ON.includes(payload.state)) {
-    return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.webhookQueue, JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
+  if (payload && payload.webhookPostUrl && __constants.SEND_WEBHOOK_ON.includes(payload.state)) {
+    if (!url.isValid(payload.webhookPostUrl)) {
+      __logger.info('sendToUser ~ invalid webhook URL', payload)
+      return true
+    } else {
+      return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.webhookQueue, JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
+    }
   } else {
     const defer = q.defer()
     defer.resolve(true)
@@ -80,11 +85,7 @@ class RedirectService {
         payload.heloCampaign = data.isHeloCampaign
         payload.webhookPostUrl = data.webhookPostUrl
         __logger.info('~ data and webhook before sending queue', data, payload)
-        if (data && data.webhookPostUrl && url.isValid(data.webhookPostUrl)) {
-          return queueCall(payload)
-        } else {
-          return { notRedirected: true, type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: null }
-        }
+        return queueCall(payload)
       })
       .then(result => {
         __logger.info('~ response after the queue functionality in redirect Service ', result)
