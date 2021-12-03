@@ -18,7 +18,9 @@ const SERVER_SCRIPTS = {
   facebookMessageStatus: './workers/message_consumers/facebookMessageStatus.js',
   retrySendingPayload: './workers/message_consumers/retrySendingPayload.js',
   fetchAndUpdateTemplateStatus: './workers/schedulers/fetchAndUpdateTemplateStatus.js',
-  redisPubSubMechanism: './workers/redisPubSubMechanism.js'
+  redisPubSubMechanism: './workers/redisPubSubMechanism.js',
+  heloCampaign: './workers/message_consumers/heloCampaign.js',
+  userQueue: './workers/message_consumers/userQueue.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

@@ -298,5 +298,6 @@ module.exports = {
   mqObjectKey: process.env.MQ_OBJECT_KEY,
   heloOssToken: process.env.HELO_OSS_TOKEN,
   heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL,
-  heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN
+  heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN,
+  heloCampaignStatus: process.env.HELO_CAMPAIGN_STATUS.split(',')
 }
