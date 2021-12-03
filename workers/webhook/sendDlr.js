@@ -9,7 +9,15 @@ const sendDlr = (message, queueObj, queue, mqData) => {
   __logger.info('inside ~function=sendDlr.', message)
   const messageRouted = q.defer()
   const http = new HttpService(60000)
-  http.Post(message, 'body', message.webhookPostUrl)
+  const webhookPayload = {
+    messageId: message.messageId || '',
+    deliveryChannel: message.deliveryChannel || '',
+    statusTime: message.statusTime || '',
+    state: message.state || '',
+    from: message.from || '',
+    to: message.to || ''
+  }
+  http.Post(webhookPayload, 'body', message.url)
     .then(function (response) {
       __logger.info('sent ~function=sendDlr', response)
       queueObj.channel[queue].ack(mqData)
@@ -38,7 +46,7 @@ class UserQueue {
   }
 
   startServer () {
-    __logger.info('inside ~function=startServer. Starting WORKER=userQueue')
+    __logger.info('inside ~function=startServer. Starting DLR worker', __config.mqObjectKey)
     __db.init()
       .then(result => {
         const queueObj = __constants.MQ[__config.mqObjectKey]

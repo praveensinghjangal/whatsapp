@@ -456,8 +456,9 @@ const MIMETYPE = {
   pdf: 'application/pdf'
 
 }
-
 const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
+const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
+
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
 module.exports.CUSTOM_CONSTANT = CUSTOM_CONSTANT
@@ -553,3 +554,4 @@ module.exports.NAME_SPACE_FB = NAME_SPACE_FB
 module.exports.FACEBOOK_APP_ID = FACEBOOK_APP_ID
 module.exports.MIMETYPE = MIMETYPE
 module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
+module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON

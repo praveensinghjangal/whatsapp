@@ -14,26 +14,41 @@ const initial = () => {
   return defer.promise
 }
 
+const sendToHeloCampaign = (payload) => {
+  if (payload.heloCampaign && __config.heloCampaignStatus.includes(payload.state)) {
+    return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.webhookHeloCampaign, JSON.stringify({ ...payload, url: __config.heloCampaignWebhookUrl }))
+  } else {
+    const defer = q.defer()
+    defer.resolve(true)
+    return defer.promise
+  }
+}
+
+const sendToUser = (payload) => {
+  if (__constants.SEND_WEBHOOK_ON.includes(payload.state)) {
+    return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.webhookQueue, JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
+  } else {
+    const defer = q.defer()
+    defer.resolve(true)
+    return defer.promise
+  }
+}
+
 const queueCall = (payload) => {
   const defer = q.defer()
   __logger.info('~ inside redirectservice', payload)
-  if (payload.heloCampaign && __config.heloCampaignStatus.includes(payload.state)) {
-    __logger.info('push to heloCampaign and user queue functionality')
-    initial()
-      .then(() => {
-        return [__db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.user_queue, JSON.stringify(payload)), __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.helo_campaign, JSON.stringify(payload))]
-      })
-      .spread((responseData1, responseData2) => {
-        defer.resolve(true)
-      })
-      .then(responseData => defer.resolve(responseData))
-      .catch(err => defer.reject(err))
-  } else {
-    __logger.info('~ push user queue functionality')
-    __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.user_queue, JSON.stringify(payload))
-      .then(responseData => defer.resolve(true))
-      .catch(err => defer.reject(err))
-  }
+  initial()
+    .then(() => {
+      return [sendToHeloCampaign(payload), sendToUser(payload)]
+    })
+    .spread((responseData1, responseData2) => {
+      defer.resolve(true)
+    })
+    .then(responseData => defer.resolve(responseData))
+    .catch(err => {
+      console.log('queueCall error ========>', err)
+      defer.reject(err)
+    })
   return defer.promise
 }
 class RedirectService {
