@@ -93,7 +93,11 @@ const saveAndSendMessageStatus = (payload) => {
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.inProcess,
     from: payload.to,
-    to: payload.whatsapp.from
+    to: payload.whatsapp.from,
+    customOne: payload.whatsapp.customOne || null,
+    customTwo: payload.whatsapp.customTwo || null,
+    customThree: payload.whatsapp.customThree || null,
+    customFour: payload.whatsapp.customFour || null
   }
   redirectService.webhookPost(statusData.to, statusData)
     .then(data => statusSent.resolve(data))
