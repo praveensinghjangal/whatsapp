@@ -25,7 +25,6 @@ const sendToMockProviderQueue = (message, queueObj) => {
 class MessageConsumer {
   startServer () {
     const queue = __constants.MQ.mock.q_name
-    let messageData
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
@@ -33,7 +32,7 @@ class MessageConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const mqDataReceived = mqData
-            messageData = JSON.parse(mqData.content.toString())
+            const messageData = JSON.parse(mqData.content.toString())
             __logger.info('mock queue consumeeeeeeeer::received:', { mqData })
             __logger.info('mock queue consumeeeeeeeer:: messageData received:', messageData)
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {

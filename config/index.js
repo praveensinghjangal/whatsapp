@@ -299,5 +299,5 @@ module.exports = {
   heloOssToken: process.env.HELO_OSS_TOKEN,
   heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL,
   heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN,
-  heloCampaignStatus: process.env.HELO_CAMPAIGN_STATUS.split(',')
+  heloCampaignStatus: process.env.HELO_CAMPAIGN_STATUS ? process.env.HELO_CAMPAIGN_STATUS.split(',') : ['delivered', 'seen', 'failed', 'rejected']
 }

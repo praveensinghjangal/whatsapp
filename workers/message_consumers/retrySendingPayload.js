@@ -6,7 +6,6 @@ const RedirectService = require('../../app_modules/integration/service/redirectS
 class MessageConsumer {
   startServer () {
     const queue = __constants.MQ.retry_failed_to_redirect_payload.q_name
-    let messageData
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
@@ -15,7 +14,7 @@ class MessageConsumer {
           try {
             const redirectService = new RedirectService()
             const mqDataReceived = mqData
-            messageData = JSON.parse(mqData.content.toString())
+            const messageData = JSON.parse(mqData.content.toString())
             // __logger.info('retry sending payload queue consumeeeeeeeer::received:', { mqData })
             __logger.info('retry sending payload queue consumeeeeeeeer:: messageData received:', messageData)
             redirectService.webhookPost(messageData.wabaNumber, messageData)

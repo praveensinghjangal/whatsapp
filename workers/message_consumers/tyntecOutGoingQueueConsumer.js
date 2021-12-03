@@ -62,7 +62,6 @@ class MessageConsumer {
     const queueObj = __constants.MQ[__config.mqObjectKey]
     if (queueObj && queueObj.q_name) {
       const queue = queueObj.q_name
-      let messageData
       __db.init()
         .then(result => {
           const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
@@ -70,7 +69,7 @@ class MessageConsumer {
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
               const mqDataReceived = mqData
-              messageData = JSON.parse(mqData.content.toString())
+              const messageData = JSON.parse(mqData.content.toString())
               __logger.info('tynte outgoing queue consumer::received:', { mqData })
               __logger.info('tynte outgoing queue consumer:: messageData received:', messageData)
               if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {

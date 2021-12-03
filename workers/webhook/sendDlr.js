@@ -1,6 +1,7 @@
 const q = require('q')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
+const __config = require('../../config')
 const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
 
@@ -40,7 +41,7 @@ class UserQueue {
     __logger.info('inside ~function=startServer. Starting WORKER=userQueue')
     __db.init()
       .then(result => {
-        const queueObj = __constants.MQ.user_queue
+        const queueObj = __constants.MQ[__config.mqObjectKey]
         if (queueObj && queueObj.q_name) {
           const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
           const queue = queueObj.q_name
