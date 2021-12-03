@@ -10,12 +10,16 @@ const sendDlr = (message, queueObj, queue, mqData) => {
   const messageRouted = q.defer()
   const http = new HttpService(60000)
   const webhookPayload = {
-    messageId: message.messageId || '',
-    deliveryChannel: message.deliveryChannel || '',
-    statusTime: message.statusTime || '',
-    state: message.state || '',
-    from: message.from || '',
-    to: message.to || ''
+    messageId: message.messageId || null,
+    deliveryChannel: message.deliveryChannel || null,
+    statusTime: message.statusTime || null,
+    state: message.state || null,
+    from: message.from || null,
+    to: message.to || null,
+    customOne: message.customOne,
+    customTwo: message.customTwo,
+    customThree: message.customThree,
+    customFour: message.customFour
   }
   http.Post(webhookPayload, 'body', message.url)
     .then(function (response) {
