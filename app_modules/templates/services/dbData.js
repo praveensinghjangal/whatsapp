@@ -114,12 +114,25 @@ class TemplateService {
       firstLocalizationStatus: newData.messageTemplateStatusId || __constants.TEMPLATE_DEFAULT_STATUS,
       updatedBy: userId,
       secondLocalizationStatus: null,
-      bodyTextVarExample: JSON.stringify(newData.bodyTextVarExample),
-      headerTextVarExample: JSON.stringify(newData.headerTextVarExample),
+      bodyTextVarExample: JSON.stringify(newData.bodyTextVarExample) || [],
+      headerTextVarExample: JSON.stringify(newData.headerTextVarExample) || [],
       secondLanguageBodyTextVarExample: JSON.stringify(newData.secondLanguageBodyTextVarExample),
       secondLanguageHeaderTextVarExample: JSON.stringify(newData.secondLanguageHeaderTextVarExample),
       mediaExampleUrl: newData.mediaExampleUrl
     }
+
+    if (newData.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+      if (newData.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && (newData.bodyTextVarExample.length === 0 && newData.headerTextVarExample.length === 0)) {
+        templateData.isPersonalized = 0
+      } else {
+        templateData.isPersonalized = 1
+      }
+    } else if (newData.bodyTextVarExample.length > 0 || newData.headerTextVarExample.length > 0) {
+      templateData.isPersonalized = 1
+    } else {
+      templateData.isPersonalized = 0
+    }
+
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
 
     // Checks
@@ -132,7 +145,6 @@ class TemplateService {
       templateData.secondLanguageHeaderText = null
       templateData.secondLanguageBodyText = null
       templateData.secondLanguageFooterText = null
-      templateData.secondLanguageName = null
     }
 
     if (!templateData.secondLanguageRequired && templateData.buttonData) {
@@ -223,13 +235,25 @@ class TemplateService {
       buttonType: newData.buttonType ? newData.buttonType : (newData.buttonType === null ? null : oldData.buttonType),
       buttonData: newData.buttonType === null ? {} : (newData.buttonData || oldData.buttonData),
       updatedBy: userId,
-      bodyTextVarExample: JSON.stringify(newData.bodyTextVarExample) || JSON.stringify(oldData.bodyTextVarExample),
-      headerTextVarExample: JSON.stringify(newData.headerTextVarExample) || JSON.stringify(oldData.headerTextVarExample),
+      bodyTextVarExample: JSON.stringify(newData.bodyTextVarExample) || JSON.stringify(oldData.bodyTextVarExample) || [],
+      headerTextVarExample: JSON.stringify(newData.headerTextVarExample) || JSON.stringify(oldData.headerTextVarExample) || [],
       secondLanguageBodyTextVarExample: JSON.stringify(newData.secondLanguageBodyTextVarExample) || JSON.stringify(oldData.secondLanguageBodyTextVarExample),
       secondLanguageHeaderTextVarExample: JSON.stringify(newData.secondLanguageHeaderTextVarExample) || JSON.stringify(oldData.secondLanguageHeaderTextVarExample),
       mediaExampleUrl: newData.mediaExampleUrl || oldData.mediaExampleUrl,
+      isPersonalized: 0,
       messageTemplateId: newData.messageTemplateId,
       wabaInformationId: oldData.wabaInformationId
+    }
+    if (newData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
+      if (newData.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && (newData.bodyTextVarExample.length === 0 && newData.headerTextVarExample.length === 0)) {
+        templateData.isPersonalized = 0
+      } else {
+        templateData.isPersonalized = 1
+      }
+    } else if (newData.bodyTextVarExample.length > 0 || newData.headerTextVarExample.length > 0) {
+      templateData.isPersonalized = 1
+    } else {
+      templateData.isPersonalized = 0
     }
     if (templateData.buttonData) templateData.buttonData = JSON.stringify(templateData.buttonData)
     // Checks
@@ -239,7 +263,6 @@ class TemplateService {
       templateData.secondLanguageHeaderText = null
       templateData.secondLanguageBodyText = null
       templateData.secondLanguageFooterText = null
-      templateData.secondLanguageName = null
       templateData.secondLanguageBodyTextVarExample = null
       templateData.secondLanguageHeaderTextVarExample = null
     }

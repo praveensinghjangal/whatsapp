@@ -2,12 +2,12 @@ const __constants = require('../../config/constants')
 const ColumnMapService = require('../../lib/columnMapService/columnMap')
 const columnMapService = new ColumnMapService()
 // Template
-const getTemplateList = (messageTemplateStatusId) => {
+const getTemplateList = (messageTemplateStatusId, isPersonalized) => {
   let query = `
   SELECT mt.message_template_id as "messageTemplateId", mt.template_name as "TemplateName",
   mt.type, mtc.category_name as "categoryName", mts.status_name as "statusName",
   mts.message_template_status_id as "messageTemplateStatusId",mt.media_type as "mediaType",
-  CONCAT_WS(', ', mtl.language_name,mtl2.language_name) as "languageName"
+  CONCAT_WS(', ', mtl.language_name,mtl2.language_name) as "languageName", mt.is_personalized as "isPersonalized"
   FROM message_template mt
     JOIN waba_information wi
       ON wi.is_active = true AND wi.waba_information_id = mt.waba_information_id
@@ -23,6 +23,10 @@ const getTemplateList = (messageTemplateStatusId) => {
 
   if (messageTemplateStatusId) {
     query += ' AND mt.message_template_status_id = ?'
+  }
+
+  if (isPersonalized) {
+    query += ' AND mt.is_personalized = ?'
   }
 
   query += ' order by mt.updated_on desc '
@@ -46,7 +50,8 @@ const getTemplateInfo = () => {
     mtl.language_code as "languageCode", mtl2.language_code as "secondLanguageCode",
     mt.body_text_var_example  as "bodyTextVarExample", mt.header_text_var_example as "headerTextVarExample",
     mt.second_language_body_text_var_example as "secondLanguageBodyTextVarExample", mt.second_language_header_text_var_example as "secondLanguageHeaderTextVarExample",
-    mt.media_example_url as "mediaExampleUrl" 
+    mt.media_example_url as "mediaExampleUrl",
+    mt.is_personalized as "isPersonalized" 
     FROM message_template mt
       JOIN waba_information wi
         ON wi.is_active = true and wi.waba_information_id = mt.waba_information_id
@@ -67,8 +72,8 @@ const addTemplate = () => {
   header_text, footer_text, media_type, second_language_required, second_message_template_language_id,second_language_header_text,
   second_language_body_text ,second_language_footer_text,
   header_type, button_type,button_data, created_by,first_localization_status,updated_by,second_localization_status, body_text_var_example,
-  header_text_var_example, second_language_body_text_var_example, second_language_header_text_var_example, media_example_url, updated_on)
-  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now())`
+  header_text_var_example, second_language_body_text_var_example, second_language_header_text_var_example, media_example_url, updated_on,is_personalized)
+  values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,now(),?)`
 }
 
 const updateTemplate = () => {
@@ -77,7 +82,7 @@ const updateTemplate = () => {
   footer_text =?, media_type =?, second_language_required = ?, second_message_template_language_id = ?,
   second_language_header_text = ?,second_language_body_text = ?,second_language_footer_text = ?,
   header_type = ?, button_type = ?,button_data = ?, updated_by =?, body_text_var_example = ?, header_text_var_example = ?,
-  second_language_body_text_var_example  = ?, second_language_header_text_var_example  = ?, media_example_url = ?, updated_on = now() 
+  second_language_body_text_var_example  = ?, second_language_header_text_var_example  = ?, media_example_url = ?, updated_on = now() ,is_personalized = ?
   where message_template_id = ? and  waba_information_id = ?`
 }
 
@@ -235,7 +240,7 @@ const updateTemplateStatus = () => {
 const getTemplateTableDataByTemplateName = () => {
   return `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
         wi.phone_number as "wabaPhoneNumber",
-        mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
+        mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",mt.is_personalized as "isPersonalized",
         mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
         mt.message_template_language_id as "messageTemplateLanguageId", mt.body_text as "bodyText", mt.header_text as "headerText",
         mt.footer_text as "footerText",mt.media_type as "mediaType" , mt.second_language_required as "secondLanguageRequired",
@@ -259,7 +264,7 @@ const getTemplateTableDataByTemplateName = () => {
 const getTemplateTableDataByTemplateId = () => {
   return `select wi.waba_information_id as "wabaInformationId",wi.templates_allowed as "templatesAllowed", 
     wi.phone_number as "wabaPhoneNumber",
-    mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",
+    mt.message_template_id as "messageTemplateId", mt.template_name as "templateName",mt.is_personalized as "isPersonalized",
     mt.type, mt.message_template_category_id as "messageTemplateCategoryId", mt.message_template_status_id as "messageTemplateStatusId",
     mt.message_template_language_id as "messageTemplateLanguageId", mt.body_text as "bodyText", mt.header_text as "headerText",
     mt.footer_text as "footerText",mt.media_type as "mediaType" , mt.second_language_required as "secondLanguageRequired",
