@@ -15,8 +15,12 @@ const initial = () => {
 }
 
 const sendToHeloCampaign = (payload) => {
+  const userId = payload.userId || null
+  console.log('33333333333333333333333333333333333', payload)
+  delete payload.userId
   if (payload.heloCampaign && __config.heloCampaignStatus.includes(payload.state)) {
-    return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.webhookHeloCampaign, JSON.stringify({ ...payload, url: __config.heloCampaignWebhookUrl }))
+    console.log('88888888888888888888888888')
+    return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ['webhookHeloCampaign_' + userId + '_' + payload.wabaNumber], JSON.stringify({ ...payload, url: __config.heloCampaignWebhookUrl }))
   } else {
     const defer = q.defer()
     defer.resolve(true)
@@ -25,12 +29,16 @@ const sendToHeloCampaign = (payload) => {
 }
 
 const sendToUser = (payload) => {
+  const userId = payload.userId || null
+  console.log('222222222222222222222222222222', userId)
+
+  delete payload.userId
   if (payload && payload.webhookPostUrl && __constants.SEND_WEBHOOK_ON.includes(payload.state)) {
     if (!url.isValid(payload.webhookPostUrl)) {
       __logger.info('sendToUser ~ invalid webhook URL', payload)
       return true
     } else {
-      return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.webhookQueue, JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
+      return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ['webhookQueue_' + userId + '_' + payload.wabaNumber], JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
     }
   } else {
     const defer = q.defer()
@@ -39,12 +47,12 @@ const sendToUser = (payload) => {
   }
 }
 
-const queueCall = (payload) => {
+const queueCall = (payload, userId) => {
   const defer = q.defer()
   __logger.info('~ inside redirectservice', payload)
   initial()
     .then(() => {
-      return [sendToHeloCampaign(payload), sendToUser(payload)]
+      return [sendToHeloCampaign({ ...payload, userId }), sendToUser({ ...payload, userId })]
     })
     .spread((responseData1, responseData2) => {
       defer.resolve(true)
@@ -85,7 +93,7 @@ class RedirectService {
         payload.heloCampaign = data.isHeloCampaign
         payload.webhookPostUrl = data.webhookPostUrl
         __logger.info('~ data and webhook before sending queue', data, payload)
-        return queueCall(payload)
+        return queueCall(payload, data.userId)
       })
       .then(result => {
         __logger.info('~ response after the queue functionality in redirect Service ', result)

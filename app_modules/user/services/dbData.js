@@ -622,6 +622,38 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getUserData () {
+    __logger.info('get getUserData for dynamic per user queue >>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserData())
+      .then(result => {
+        __logger.info('response getUserData for dynamic per user queue >>>>>>>>>>>>>', { result })
+        if (result && result.length === 0) {
+          userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+        } else {
+          const singleNewObject = {}
+          result.forEach(singleObject => {
+            singleNewObject[singleObject.userId] = singleObject
+            __constants.MQ['fbOutgoing_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoing))
+            __constants.MQ['fbOutgoingSync_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoingSync))
+            __constants.MQ['webhookHeloCampaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookHeloCampaign))
+            __constants.MQ['webhookQueue_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookQueue))
+            __constants.MQ['fbOutgoing_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.fbOutgoing.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
+            __constants.MQ['fbOutgoingSync_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.fbOutgoingSync.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
+            __constants.MQ['webhookHeloCampaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.webhookHeloCampaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
+            __constants.MQ['webhookQueue_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.webhookQueue.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
+          })
+          __logger.info('created per user Queue success >>>>>>>>>>>>>')
+          userDetails.resolve(result)
+        }
+      })
+      .catch(err => {
+        __logger.error('error in  getUserData for dynamic per user queue :  ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData
