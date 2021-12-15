@@ -16,10 +16,8 @@ const initial = () => {
 
 const sendToHeloCampaign = (payload) => {
   const userId = payload.userId || null
-  console.log('33333333333333333333333333333333333', payload)
   delete payload.userId
   if (payload.heloCampaign && __config.heloCampaignStatus.includes(payload.state)) {
-    console.log('88888888888888888888888888')
     return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ['webhookHeloCampaign_' + userId + '_' + payload.wabaNumber], JSON.stringify({ ...payload, url: __config.heloCampaignWebhookUrl }))
   } else {
     const defer = q.defer()
@@ -30,8 +28,6 @@ const sendToHeloCampaign = (payload) => {
 
 const sendToUser = (payload) => {
   const userId = payload.userId || null
-  console.log('222222222222222222222222222222', userId)
-
   delete payload.userId
   if (payload && payload.webhookPostUrl && __constants.SEND_WEBHOOK_ON.includes(payload.state)) {
     if (!url.isValid(payload.webhookPostUrl)) {
@@ -59,7 +55,6 @@ const queueCall = (payload, userId) => {
     })
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
-      console.log('queueCall error ========>', err)
       defer.reject(err)
     })
   return defer.promise
