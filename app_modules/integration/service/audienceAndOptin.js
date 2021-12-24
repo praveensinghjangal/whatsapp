@@ -9,7 +9,7 @@ const checkOptinMessage = (content, optinText) => {
   const isOptin = q.defer()
   if (content && content.contentType === 'text' && content.text && optinText) {
     content.text = content.text.trim()
-    if (content.text.length === optinText.length && content.text.toLowerCase() === optinText) {
+    if (content.text.length === optinText.length && content.text.toLowerCase() === optinText.toLowerCase()) {
       isOptin.resolve(true)
     } else {
       isOptin.resolve(false)

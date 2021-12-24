@@ -105,7 +105,7 @@ class RedirectService {
     if (payload && payload.content && payload.content.text) {
       payload.content.text = payload.content.text.trim()
       __logger.info('payload text', payload.content.text, payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText)
-      if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText) {
+      if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText.toLowerCase()) {
         // TODO:
         payload.isVavaOptin = true
       }
