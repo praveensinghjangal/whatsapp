@@ -6,6 +6,7 @@ const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
 
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
+router.post('/message', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
 router.post('/whatsapp/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueueExcel'))
 router.post('/tracking', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/addMessageHistory'))
 router.get('/tracking/:messageId', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, apiHitsAllowedMiddleware, require('./controllers/fetchMessageHistory'))

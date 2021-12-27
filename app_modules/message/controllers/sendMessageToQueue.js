@@ -209,6 +209,13 @@ const controller = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
   let userRedisData
+  if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.MESSAGE) {
+    if (Array.isArray(req.body)) {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
+    } else if (typeof req.body === 'object' && !Array.isArray(req.body) && req.body !== null) {
+      req.body = [req.body]
+    }
+  }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
     .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
