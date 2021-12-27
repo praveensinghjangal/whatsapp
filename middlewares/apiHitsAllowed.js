@@ -11,11 +11,11 @@ const rateLimit = (req, res, next) => {
   let consumekey = req.user.user_id
   if (req.userConfig.tps) {
     const routeUrl = req.originalUrl.split('/')
-    if (routeUrl[routeUrl.length - 1] === __constants.MESSAGES) {
+    if ((routeUrl[routeUrl.length - 1] === __constants.BULK) || (routeUrl[routeUrl.length - 1] === __constants.MESSAGES)) {
       req.userConfig.routeUrl = routeUrl
       req.userConfig.tps = 1
       consumekey += '_mb'
-    } else if (routeUrl[routeUrl.length - 1] === __constants.MESSAGE) {
+    } else if (routeUrl[routeUrl.length - 1] === __constants.SINGLE) {
       req.userConfig.routeUrl = routeUrl
       req.userConfig.tps = 500
       consumekey += '_ms'

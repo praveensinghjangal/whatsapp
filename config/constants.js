@@ -458,7 +458,8 @@ const MIMETYPE = {
 }
 const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
 const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
-const MESSAGE = 'message'
+const SINGLE = 'single'
+const BULK = 'bulk'
 const MESSAGES = 'messages'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
@@ -557,5 +558,6 @@ module.exports.FACEBOOK_APP_ID = FACEBOOK_APP_ID
 module.exports.MIMETYPE = MIMETYPE
 module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
 module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON
-module.exports.MESSAGE = MESSAGE
+module.exports.SINGLE = SINGLE
 module.exports.MESSAGES = MESSAGES
+module.exports.BULK = BULK
