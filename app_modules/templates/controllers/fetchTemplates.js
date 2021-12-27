@@ -19,14 +19,16 @@ const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId,
 
 const getTemplateList = (req, res) => {
   __logger.info('Get Templates List API Called', req.query)
-  const { messageTemplateStatusId } = req.query
+  const { messageTemplateStatusId, isPersonalized } = req.query
   const params = [req.user.user_id]
-
   if (messageTemplateStatusId) {
     params.push(messageTemplateStatusId)
   }
 
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId), params)
+  if (isPersonalized) {
+    params.push(+isPersonalized)
+  }
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateList(messageTemplateStatusId, isPersonalized), params)
     .then(result => {
       if (result && result.length === 0) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
@@ -60,7 +62,6 @@ const getTemplateInfo = (req, res) => {
       __logger.info('data then 2', { data })
       finalResult[0].isTemplateValid = data.complete
       finalResult[0].invalidRemark = data.err && data.err.err ? data.err.err : null
-      finalResult[0].isPersonalised = !!((finalResult[0] && finalResult[0].bodyTextVarExample && finalResult[0].headerTextVarExample && (finalResult[0].bodyTextVarExample.length > 0 || finalResult[0].headerTextVarExample.length > 0)))
       finalResult[0].bodyTextVariableCount = finalResult[0].bodyTextVarExample.length || 0
       finalResult[0].headerTextVariableCount = finalResult[0].headerTextVarExample.length || 0
       return checksForTemplate(finalResult[0])
@@ -116,7 +117,6 @@ const varMask = (req, res) => {
       finalResult[0] = JSON.stringify(finalResult[0])
       finalResult[0] = finalResult[0].replace(/{{\d{1,3}}}/g, (match, key) => '<var' + match.slice(2).slice(0, -2) + '>')
       finalResult[0] = JSON.parse(finalResult[0]) || {}
-      finalResult[0].isPersonalised = !!((finalResult[0] && finalResult[0].bodyTextVarExample && finalResult[0].headerTextVarExample && (finalResult[0].bodyTextVarExample.length > 0 || finalResult[0].headerTextVarExample.length > 0)))
       finalResult[0].bodyTextVariableCount = finalResult[0].bodyTextVarExample.length || 0
       finalResult[0].headerTextVariableCount = finalResult[0].headerTextVarExample.length || 0
       return checksForTemplate(finalResult[0])
