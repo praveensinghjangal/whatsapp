@@ -11,7 +11,7 @@ const rateLimit = (req, res, next) => {
   let consumekey = req.user.user_id
   if (req.userConfig.tps) {
     const routeUrl = req.originalUrl.split('/')
-    if ((routeUrl[routeUrl.length - 1] === __constants.BULK) || (routeUrl[routeUrl.length - 1] === __constants.MESSAGES)) {
+    if (routeUrl[routeUrl.length - 1] === __constants.BULK) {
       req.userConfig.routeUrl = routeUrl
       req.userConfig.tps = 1
       consumekey += '_mb'
@@ -19,6 +19,9 @@ const rateLimit = (req, res, next) => {
       req.userConfig.routeUrl = routeUrl
       req.userConfig.tps = 500
       consumekey += '_ms'
+    } else if (routeUrl[routeUrl.length - 1] === __constants.MESSAGES) {
+      req.userConfig.routeUrl = routeUrl
+      return next()
     }
     this.noOfHitsAllowedConfig = new RateLimiterRedis({
       storeClient: redisConnectionObject,
@@ -28,8 +31,12 @@ const rateLimit = (req, res, next) => {
     })
     this.noOfHitsAllowedConfig.consume(consumekey)
       .then(rate => next())
-      .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: err }))
+      .catch(err => {
+        console.log('error in ratelimitter ->>', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, err)
+        __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: err })
+      })
   } else {
+    console.log('error in ratelimitter !req.userConfig.tps else condition ->>', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
     __util.send(res, { type: __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: {} })
   }
 }
