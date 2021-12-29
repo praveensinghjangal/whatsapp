@@ -7,7 +7,7 @@ const __logger = require('../lib/logger')
 module.exports = (req, res, next) => {
   if (req.user && req.user.providerId && req.user.wabaPhoneNumber && req.user.maxTpsToProvider) return next()
   const http = new HttpService(60000)
-  http.Get(__config.base_url + __constants.INTERNAL_END_POINTS.getServiceProviderDetailsByUserId + '?userId=' + req.user.user_id, { authorization: __config.authTokens[0] })
+  http.Get(__config.base_url + __constants.INTERNAL_END_POINTS.getServiceProviderDetailsByUserId + '?userId=' + req.user.user_id, { authorization: __config.authTokens[0], 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT })
     .then(apiRes => {
       if (apiRes && apiRes.code && apiRes.code !== __constants.RESPONSE_MESSAGES.SUCCESS.code) return next()
       req.user.providerId = apiRes.data && apiRes.data.serviceProviderId ? apiRes.data.serviceProviderId : req.user.providerId

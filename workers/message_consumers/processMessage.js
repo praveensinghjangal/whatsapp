@@ -45,7 +45,8 @@ const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
   __logger.info('inside callApiAndSendToQueue', { messageData, queue })
   const http = new HttpService(60000)
   const headers = {
-    Authorization: __config.authTokens[0]
+    Authorization: __config.authTokens[0],
+    'User-Agent': __constants.INTERNAL_CALL_USER_AGENT
   }
   let url = __config.base_url + __constants.INTERNAL_END_POINTS.getMessageHistory
   url = url.split(':messageId').join(messageData.payload.sendAfterMessageId || '')
@@ -104,7 +105,7 @@ const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
     wabaPhoneNumber: wabaNumber
   }]
   const http = new HttpService(60000)
-  const headers = { Authorization: authToken }
+  const headers = { Authorization: authToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT }
   http.Post(audienceDataToBePosted, 'body', url, headers)
     .then((data) => {
       if (data && data.body && data.body.code === 2000) {

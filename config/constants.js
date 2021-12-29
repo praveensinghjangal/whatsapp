@@ -461,6 +461,7 @@ const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed',
 const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'
+const INTERNAL_CALL_USER_AGENT = '181081ac-9667-441a-9f4c-f198b7339nh1'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -561,3 +562,4 @@ module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON
 module.exports.SINGLE = SINGLE
 module.exports.MESSAGES = MESSAGES
 module.exports.BULK = BULK
+module.exports.INTERNAL_CALL_USER_AGENT = INTERNAL_CALL_USER_AGENT

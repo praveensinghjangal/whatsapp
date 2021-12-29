@@ -29,7 +29,8 @@ const __config = require('../../../config')
 const callApiToGetTps = (userId, authToken) => {
   this.http = new HttpService(60000)
   const headers = {
-    Authorization: authToken
+    Authorization: authToken,
+    'User-Agent': __constants.INTERNAL_CALL_USER_AGENT
   }
   let url = __config.base_url + __constants.INTERNAL_END_POINTS.getTps
   url = url.split(':userId').join(userId || '')
@@ -40,7 +41,8 @@ const callApiToGetTps = (userId, authToken) => {
 const callUpdateServiceProviderDetails = (reqBody, authToken) => {
   this.http = new HttpService(60000)
   const headers = {
-    Authorization: authToken
+    Authorization: authToken,
+    'User-Agent': __constants.INTERNAL_CALL_USER_AGENT
   }
   __logger.info('Calling Update Service Provider Details API')
   return this.http.Patch(reqBody, __config.base_url + __constants.INTERNAL_END_POINTS.updateServiceProvider, headers)
@@ -49,7 +51,9 @@ const callUpdateServiceProviderDetails = (reqBody, authToken) => {
 const callUpdateAccountConfigApi = (reqBody, authToken) => {
   this.http = new HttpService(60000)
   const headers = {
-    Authorization: authToken
+    Authorization: authToken,
+    'User-Agent': __constants.INTERNAL_CALL_USER_AGENT
+
   }
   __logger.info('Calling Update Account Config  API')
   return this.http.Patch(reqBody, __config.base_url + __constants.INTERNAL_END_POINTS.updateAccountConfig, headers)

@@ -56,7 +56,7 @@ function addAudienceAndOptin (inputPayload, redisData) {
       const options = {
         url,
         body: audienceDataToBePosted,
-        headers: { Authorization: apiToken },
+        headers: { Authorization: apiToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT },
         json: true
       }
       __logger.info('addAudienceAndOptin::optionssssssssssssssssssssss', options)
