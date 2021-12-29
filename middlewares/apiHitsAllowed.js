@@ -8,20 +8,18 @@ const __logger = require('../lib/logger')
 const rateLimit = (req, res, next) => {
   __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig)
   if (!req.userConfig) return next()
+  const routeUrl = req.originalUrl.split('/')
+  req.userConfig.routeUrl = routeUrl
   if (__constants.INTERNAL_CALL_USER_AGENTS.includes(req.headers['user-agent'])) return next()
   let consumekey = req.user.user_id
   if (req.userConfig.tps) {
-    const routeUrl = req.originalUrl.split('/')
     if (routeUrl[routeUrl.length - 1] === __constants.BULK) {
-      req.userConfig.routeUrl = routeUrl
       req.userConfig.tps = 1
       consumekey += '_mb'
     } else if (routeUrl[routeUrl.length - 1] === __constants.SINGLE) {
-      req.userConfig.routeUrl = routeUrl
       req.userConfig.tps = 500
       consumekey += '_ms'
     } else if (routeUrl[routeUrl.length - 1] === __constants.MESSAGES) {
-      req.userConfig.routeUrl = routeUrl
       return next()
     }
     this.noOfHitsAllowedConfig = new RateLimiterRedis({
