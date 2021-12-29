@@ -118,12 +118,12 @@ const getBusinessProfile = (req, res) => {
         const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
         return wabaAccountService.getAccountPhoneNoList(req.user.wabaPhoneNumber)
       } else {
-        finalResponse.qulityRating = 'N/A'
+        finalResponse.qualityRating = 'N/A'
         return {}
       }
     })
     .then(phoneNumberDetails => {
-      finalResponse.qulityRating = phoneNumberDetails && phoneNumberDetails.data && phoneNumberDetails.data.quality_score && phoneNumberDetails.data.quality_score.score ? phoneNumberDetails.data.quality_score.score : 'N/A'
+      finalResponse.qualityRating = phoneNumberDetails && phoneNumberDetails.data && phoneNumberDetails.data.quality_score && phoneNumberDetails.data.quality_score.score ? phoneNumberDetails.data.quality_score.score : 'N/A'
       __logger.info('Final Result then 4', finalResponse)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResponse })
     })
