@@ -462,6 +462,7 @@ const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'
 const INTERNAL_CALL_USER_AGENT = '181081ac-9667-441a-9f4c-f198b7339nh1'
+const INTERNAL_CALL_USER_AGENTS = ['181081ac-9667-441a-9f4c-f198b7339nh1', 'd8e25d6b-c7a2-4704-9c52-3ba3654b91c2']
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -563,3 +564,4 @@ module.exports.SINGLE = SINGLE
 module.exports.MESSAGES = MESSAGES
 module.exports.BULK = BULK
 module.exports.INTERNAL_CALL_USER_AGENT = INTERNAL_CALL_USER_AGENT
+module.exports.INTERNAL_CALL_USER_AGENTS = INTERNAL_CALL_USER_AGENTS

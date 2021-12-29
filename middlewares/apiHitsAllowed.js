@@ -8,6 +8,7 @@ const __logger = require('../lib/logger')
 const rateLimit = (req, res, next) => {
   __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig)
   if (!req.userConfig) return next()
+  if (__constants.INTERNAL_CALL_USER_AGENTS.includes(req.headers['user-agent'])) return next()
   let consumekey = req.user.user_id
   if (req.userConfig.tps) {
     const routeUrl = req.originalUrl.split('/')
