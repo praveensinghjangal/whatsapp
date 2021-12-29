@@ -79,6 +79,9 @@ const getBusinessProfile = (req, res) => {
   __logger.info('getBusinessProfile:>>>>>>>>>>>>>')
   let queryResult = []
   const userId = req.user && req.user.user_id ? req.user.user_id : 0
+  let providerId
+  let maxTpsToProvider
+  let finalResponse
   const businessAccountService = new BusinessAccountService()
   businessAccountService.getBusinessProfileInfo(userId)
     .then(results => {
@@ -89,6 +92,8 @@ const getBusinessProfile = (req, res) => {
         results[0].canReceiveVoiceCall = results[0].canReceiveVoiceCall === 1
         results[0].associatedWithIvr = results[0].associatedWithIvr === 1
         results[0].businessManagerVerified = results[0].businessManagerVerified === 1
+        providerId = results[0].serviceProviderId
+        maxTpsToProvider = results[0].maxTpsToProvider
         const checkCompleteStatus = new CheckInfoCompletionService()
         return checkCompleteStatus.validateBusinessProfile(results[0])
       } else {
@@ -107,9 +112,20 @@ const getBusinessProfile = (req, res) => {
       __logger.info('Then 3', { result })
       return formatFinalStatus(queryResult, result)
     })
-    .then(result => {
-      __logger.info('Final Result then 4')
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
+    .then(responseBody => {
+      finalResponse = responseBody
+      if (finalResponse && finalResponse.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
+        const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
+        return wabaAccountService.getAccountPhoneNoList(req.user.wabaPhoneNumber)
+      } else {
+        finalResponse.qulityRating = 'N/A'
+        return {}
+      }
+    })
+    .then(phoneNumberDetails => {
+      finalResponse.qulityRating = phoneNumberDetails && phoneNumberDetails.data && phoneNumberDetails.data.quality_score && phoneNumberDetails.data.quality_score.score ? phoneNumberDetails.data.quality_score.score : 'N/A'
+      __logger.info('Final Result then 4', finalResponse)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResponse })
     })
     .catch(err => {
       __logger.error('error: ', err)

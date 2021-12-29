@@ -259,7 +259,8 @@ const FACEBOOK_ENDPOINTS = {
   sendMessage: '/v1/messages/',
   addTemplate: '/message_templates?access_token=',
   getMedia: '/v1/media/:MediaId',
-  getWaba: 'v12.0/:userAccountIdByProvider?access_token='
+  getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
+  getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token='
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
