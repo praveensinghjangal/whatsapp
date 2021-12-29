@@ -61,6 +61,7 @@ function addAudienceAndOptin (inputPayload, redisData) {
       }
       __logger.info('addAudienceAndOptin::optionssssssssssssssssssssss', options)
       request.post(options, (err, httpResponse, body) => {
+        __logger.info('addAudienceAndOptin::response from api', 'endUserNumber ->', inputPayload.from, 'waba number ->', redisData.id, 'response ->', body, 'error ->', err)
         if (err) {
           audienceData.reject(err)
         } else {
