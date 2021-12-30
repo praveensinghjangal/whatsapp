@@ -4,7 +4,11 @@
         "description": "Helo Whatsapp API documentation",
         "version": "1.0.0",
         "title": "Helo Whatsapp",
-        "termsOfService": ""
+        "termsOfService": "",
+        "contact": {
+            "name": "vivaconnect support",
+            "email": "support@vivaconnect.co"
+         }
     },
     "tags": [
         {
@@ -322,7 +326,7 @@
             "post": {
                 "x-isPublic": true,
                 "x-module": "platform",
-                "description": "This API is used to send mesages using a channel .\nThis API can send single messsages.",
+                "description": "This API is used to send mesage using a channel .\nThis API can send single messsage.",
                 "summary": "Only 500 hits/sec is allowed",
                 "tags": [
                     "message"
@@ -361,7 +365,7 @@
                                     }
                                 }
                             },
-                            "type": "array",
+                            "type": "object",
                             "items": {
                                 "$ref": "#/definitions/sendrequest"
                             }
@@ -17461,7 +17465,7 @@
                     "type": "string"
                 },
                 "mediaExampleUrl": {
-                    "type": "strin"
+                    "type": "string"
                 },
                 "secondLanguageRequired": {
                     "type": "boolean"
