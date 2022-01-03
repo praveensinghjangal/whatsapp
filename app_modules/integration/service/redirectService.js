@@ -7,6 +7,7 @@ const __logger = require('../../../lib/logger')
 const __config = require('../../../config')
 const RedisService = require('../../../lib/redis_service/redisService')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
+const errorToTelegram = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
 
 const initial = () => {
   const defer = q.defer()
@@ -52,6 +53,8 @@ const queueCall = (payload) => {
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
       console.log('queueCall error ========>', err)
+      const telegramErrorMessage = 'redirectService ~ queueCall function ~ sendToHeloCampaign/sendToUser function'
+      errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
     })
   return defer.promise
@@ -95,7 +98,11 @@ class RedirectService {
           return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
         }
       })
-      .catch(err => redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        const telegramErrorMessage = 'redirectService ~ webhookPost function ~ Error While callMessage flow or queueCall function'
+        errorToTelegram.send(err, telegramErrorMessage)
+        redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return redirected.promise
   }
 
@@ -126,6 +133,8 @@ class RedirectService {
           if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
             __logger.info(' Redirected', __constants.RESPONSE_MESSAGES.SUCCESS, apiRes.body)
           } else {
+            const telegramErrorMessage = 'redirectService ~ callMessageFlow function ~ Error Not Redirected'
+            errorToTelegram.send({}, telegramErrorMessage)
             __logger.info('Not Redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, apiRes.body)
           }
         })
@@ -145,7 +154,11 @@ class RedirectService {
     if (message.retryCount && message.retryCount >= 1 && message.retryCount < 6) {
       rabbitmqHeloWhatsapp.sendToQueue(delayQueue, JSON.stringify(message), 0)
         .then(() => messageRouted.resolve(true))
-        .catch(err => messageRouted.reject(err))
+        .catch(err => {
+          const telegramErrorMessage = 'redirectService ~ sendToRetryMessageSendQueue function ~ Error in delay_failed_to_redirect_ sendToQueue'
+          errorToTelegram.send(err, telegramErrorMessage)
+          messageRouted.reject(err)
+        })
     } else {
       messageRouted.resolve({ type: __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: {} })
     }
