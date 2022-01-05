@@ -245,7 +245,7 @@ class TemplateService {
       wabaInformationId: oldData.wabaInformationId
     }
     if (newData.type === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase()) {
-      if (newData.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && (newData.bodyTextVarExample.length === 0 && newData.headerTextVarExample.length === 0)) {
+      if (newData.headerType && newData.headerType.toLowerCase() === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLowerCase() && (newData.bodyTextVarExample.length === 0 && newData.headerTextVarExample.length === 0)) {
         templateData.isPersonalized = 0
       } else {
         templateData.isPersonalized = 1
