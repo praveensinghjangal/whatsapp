@@ -15,7 +15,7 @@ const __db = require('../../../lib/db')
 const getOptinText = authToken => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
-  const headers = { Authorization: authToken }
+  const headers = { Authorization: authToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT }
   __logger.info('calling get business profile', headers)
   http.Get(__config.base_url + __constants.INTERNAL_END_POINTS.businessProfile, headers)
     .then(data => {
@@ -81,7 +81,7 @@ const callSetOptinTextApi = (optinText, authToken) => {
   const inputRequest = {
     optinText: optinText
   }
-  const headers = { Authorization: authToken }
+  const headers = { Authorization: authToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT }
   __logger.info('calling set optin text api', inputRequest, headers)
   http.Post(inputRequest, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.addUpdateOptinText, headers)
     .then(data => {

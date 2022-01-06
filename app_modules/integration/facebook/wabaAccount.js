@@ -1,4 +1,5 @@
 const q = require('q')
+const _ = require('lodash')
 const HttpService = require('../service/httpService')
 const __config = require('../../../config')
 const __constants = require('../../../config/constants')
@@ -163,6 +164,47 @@ class WabaAccount {
       })
       .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return deferred.promise
+  }
+
+  getAccountPhoneNoList (wabaNumber) {
+    __logger.info('wabaNumber----', wabaNumber)
+    const deferred = q.defer()
+    if (wabaNumber) {
+      const authService = new AuthService(this.userId)
+      authService.getFaceBookTokensByWabaNumber(wabaNumber)
+        .then(data => {
+          __logger.info('dataatatatat', data, typeof data)
+          let url = __constants.FACEBOOK_GRAPHURL + __constants.FACEBOOK_ENDPOINTS.getPhoneNumbersByWabaid + data.graphApiKey
+          url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
+          __logger.info('URL====', url)
+          const headers = {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            apikey: data.apiKey
+          }
+          return this.http.Get(url, headers, __config.service_provider_id.facebook)
+        })
+        .then((phoneNumbersData) => {
+          if (phoneNumbersData && phoneNumbersData.data && phoneNumbersData.data.constructor.name.toLowerCase() === 'array' && phoneNumbersData.data.length > 0) {
+            const specificNumberData = _.find(phoneNumbersData.data, singleData => singleData.display_phone_number && singleData.display_phone_number.split(' ').join('').substring(1) === wabaNumber)
+            if (specificNumberData) return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: specificNumberData })
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          } else if (phoneNumbersData && phoneNumbersData.status === 404) {
+            return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+          } else {
+            return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: phoneNumbersData.phoneNumber || phoneNumbersData, data: {} })
+          }
+        })
+        .catch(err => {
+          __logger.error('getAccountPhoneNoList error', err.toString())
+          console.log('getAccountPhoneNoList error', err)
+          deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err.toString() })
+        })
+      return deferred.promise
+    } else {
+      deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
+      return deferred.promise
+    }
   }
 }
 

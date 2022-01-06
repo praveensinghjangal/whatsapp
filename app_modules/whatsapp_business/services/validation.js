@@ -220,7 +220,7 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 300
+          maxLength: 1000
         },
         address: {
           type: 'string',
@@ -352,7 +352,7 @@ class validate {
           type: 'string',
           required: true,
           minLength: 1,
-          maxLength: 300
+          maxLength: 1000
         },
         address: {
           type: 'string',

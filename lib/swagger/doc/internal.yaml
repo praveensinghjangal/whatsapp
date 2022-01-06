@@ -52,7 +52,7 @@ paths:
       description: |-
         This API is used to send mesages using a channel.
         This API can send single as well as bulk messsages.
-      summary: This API is used to send mesages using a channel
+      summary: This api will be deprecated on Jan 15 2022
       tags:
         - message
       operationId: send
@@ -160,6 +160,284 @@ paths:
                   acceptedAt: '2020-07-07T08:33:32.537Z'
                 - messageId: 9fcb694e-312f-4945-bc62-008b7a8bjuip
                   acceptedAt: '2020-07-07T08:33:32.648Z'
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /chat/v1/messages/single:
+    post:
+      x-isPublic: true
+      x-module: platform
+      description: |-
+        This API is used to send mesage using a channel .
+        This API can send single messsage.
+      summary: Only 500 hits/sec is allowed
+      tags:
+        - message
+      operationId: sendSingle
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: Provided by vivaconnect upon signup
+        - name: Body
+          in: body
+          required: true
+          description: Accepts json to send single message
+          schema:
+            example:
+              to: '9112345'
+              channels:
+                - whatsapp
+              countryCode: IN
+              whatsapp:
+                from: '9167890'
+                contentType: location
+                location:
+                  longitude: 7.4954884
+                  latitude: 51.5005765
+            type: object
+            items:
+              $ref: '#/definitions/sendrequest'
+      responses:
+        '200':
+          description: Returns message ID
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2002
+              msg: Request Accepted
+              data:
+                - messageId: a446c20f-774e-4e5d-8bf6-cf408b92462a
+                  to: '9191234'
+                  acceptedAt: '2021-12-30T07:17:52.584Z'
+                  apiReqId: 8e54b283-a969-4bcc-8c8b-50ee9e52c5d9
+                  customOne: customOne
+                  customTwo: customTwo
+                  customThree: three
+                  customFour: customFour
+        '400':
+          description: Returns invalid request error in error array
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: array
+            example:
+              code: 4000
+              msg: Invalid request
+              data: null
+              error:
+                - invalid body error here
+        '401':
+          description: Invalid token in header
+          headers: {}
+          schema:
+            type: string
+            example: Unauthorized
+        '500':
+          description: in case of some exceptional error
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: object
+              error:
+                type: object
+            example:
+              code: 5000
+              msg: Something went wrong. Please try again later.
+              data: {}
+              error: {}
+      security: []
+  /chat/v1/messages/bulk:
+    post:
+      x-isPublic: true
+      x-module: platform
+      description: |-
+        This API is used to send mesages using a channel.
+        This API can send bulk messsages.
+      summary: Only 1 hit/sec is allowed
+      tags:
+        - message
+      operationId: sendBulk
+      deprecated: false
+      produces:
+        - application/json
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          type: string
+          description: Provided by vivaconnect upon signup
+        - name: Body
+          in: body
+          required: true
+          description: Accepts Array of json to send bulk message
+          schema:
+            example:
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                countryCode: IN
+                whatsapp:
+                  from: '9167890'
+                  contentType: location
+                  location:
+                    longitude: 7.4954884
+                    latitude: 51.5005765
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                countryCode: IN
+                whatsapp:
+                  from: '9167890'
+                  contentType: template
+                  template:
+                    templateId: welcome
+                    language:
+                      policy: deterministic
+                      code: en
+                    components:
+                      - type: header
+                        parameters:
+                          - type: text
+                            text: Hi!
+                          - type: media
+                            media:
+                              type: document
+                              url: http://www.africau.edu/images/default/sample.pdf
+                      - type: body
+                        parameters:
+                          - type: text
+                            text: Hi!
+                          - type: media
+                            media:
+                              type: document
+                              url: http://www.africau.edu/images/default/sample.pdf
+                      - type: footer
+                        parameters:
+                          - type: text
+                            text: Hi!
+                          - type: media
+                            media:
+                              type: document
+                              url: http://www.africau.edu/images/default/sample.pdf
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                countryCode: IN
+                whatsapp:
+                  from: '9167890'
+                  contentType: media
+                  media:
+                    type: image
+                    url: https://i.ibb.co/kXgjphY/925869358s.png
+                    caption: viva connect
+              - to: '9112345'
+                channels:
+                  - whatsapp
+                countryCode: IN
+                whatsapp:
+                  from: '9167890'
+                  contentType: text
+                  text: hello
+            type: array
+            items:
+              $ref: '#/definitions/sendrequest'
+      responses:
+        '200':
+          description: Returns message ID
+          headers: {}
+          schema:
+            properties:
+              code:
+                type: number
+              msg:
+                type: string
+              data:
+                type: array
+            example:
+              code: 2002
+              msg: Request Accepted
+              data:
+                - messageId: a446c20f-774e-4e5d-8bf6-cf408b92462a
+                  to: '9191234'
+                  acceptedAt: '2021-12-30T07:17:52.584Z'
+                  apiReqId: 8e54b283-a969-4bcc-8c8b-50ee9e52c5d9
+                  customOne: customOne
+                  customTwo: customTwo
+                  customThree: three
+                  customFour: customFour
+                - messageId: ac706042-b7cd-42d4-9a19-d2178db275d0
+                  to: '9191222'
+                  acceptedAt: '2021-12-30T07:17:52.584Z'
+                  apiReqId: 8e54b283-a969-4bcc-8c8b-50ee9e52c5d9
+                  customOne: customOne
+                  customTwo: customTwo
+                  customThree: three
+                  customFour: customFour
         '400':
           description: Returns invalid request error in error array
           headers: {}
@@ -11685,7 +11963,7 @@ definitions:
       mediaType:
         type: string
       mediaExampleUrl:
-        type: strin
+        type: string
       secondLanguageRequired:
         type: boolean
       secondMessageTemplateLanguageId:

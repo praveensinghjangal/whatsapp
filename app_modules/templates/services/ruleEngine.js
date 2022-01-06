@@ -58,7 +58,7 @@ class InternalClass {
         valid.reject('second language quick reply button data invalid, please makle sure it is string with maximum length of ' + __constants.TEMPLATE_QUICK_REPLY_BUTTON_MAX_LENGTH.singleButtonLength)
         return valid.promise
       }
-      if (td.secondLanguageRequired && td.buttonData.secondLanguageQuickReply.join('').split('').length !== td.buttonData.quickReply.join('').split('').length) {
+      if (td.secondLanguageRequired && _.filter(td.buttonData.secondLanguageQuickReply, _.size).length !== _.filter(td.buttonData.quickReply, _.size).length) { // to remove empty str from array ["","",""] is converted to [] for proper validation
         valid.reject('both language quick reply buttons are not equal')
         return valid.promise
       }

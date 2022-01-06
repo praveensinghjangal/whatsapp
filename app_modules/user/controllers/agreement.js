@@ -23,7 +23,8 @@ const uploadFileFtp = (filePath) => {
   const url = __config.heloOssWrapperUrl + __constants.INTERNAL_END_POINTS.heloOssUpload
   const headers = {
     Authorization: __config.heloOssWrapperToken,
-    'Content-Type': 'multipart/form-data'
+    'Content-Type': 'multipart/form-data',
+    'User-Agent': __constants.INTERNAL_CALL_USER_AGENT
   }
   __logger.info('oss req obj', { url, headers })
   http.Post({ object: fs.createReadStream(filePath) }, 'formData', url, headers)
@@ -83,7 +84,7 @@ const updateAgreementStatus = (reqBody, authToken) => {
   const options = {
     url,
     body: reqBody,
-    headers: { Authorization: authToken },
+    headers: { Authorization: authToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT },
     json: true
   }
   return http.Patch(options.body, options.url, options.headers)

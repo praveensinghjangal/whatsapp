@@ -259,7 +259,8 @@ const FACEBOOK_ENDPOINTS = {
   sendMessage: '/v1/messages/',
   addTemplate: '/message_templates?access_token=',
   getMedia: '/v1/media/:MediaId',
-  getWaba: 'v12.0/:userAccountIdByProvider?access_token='
+  getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
+  getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token='
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -458,8 +459,11 @@ const MIMETYPE = {
 }
 const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
 const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
-const MESSAGE = 'message'
+const SINGLE = 'single'
+const BULK = 'bulk'
 const MESSAGES = 'messages'
+const INTERNAL_CALL_USER_AGENT = '181081ac-9667-441a-9f4c-f198b7339nh1'
+const INTERNAL_CALL_USER_AGENTS = ['181081ac-9667-441a-9f4c-f198b7339nh1', 'd8e25d6b-c7a2-4704-9c52-3ba3654b91c2']
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -557,5 +561,8 @@ module.exports.FACEBOOK_APP_ID = FACEBOOK_APP_ID
 module.exports.MIMETYPE = MIMETYPE
 module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
 module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON
-module.exports.MESSAGE = MESSAGE
+module.exports.SINGLE = SINGLE
 module.exports.MESSAGES = MESSAGES
+module.exports.BULK = BULK
+module.exports.INTERNAL_CALL_USER_AGENT = INTERNAL_CALL_USER_AGENT
+module.exports.INTERNAL_CALL_USER_AGENTS = INTERNAL_CALL_USER_AGENTS

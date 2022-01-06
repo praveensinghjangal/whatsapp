@@ -320,7 +320,7 @@ const sendOtpCode = (req, res) => {
         return outJson
       } else {
         const http = new HttpService(60000)
-        return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0] })
+        return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0], 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT })
       }
     })
     .then(data => res.send(data.body || {}))
@@ -512,7 +512,7 @@ const addTempTfaDataBS = reqBody => {
         return verificationService.generateAuthenticatorQrcode(__constants.TFA_AUTHENTICATOR_LABEL, authenticatorSecret)
       } else {
         const http = new HttpService(60000)
-        return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0] })
+        return http.Post({ userId }, 'body', url, { Authorization: __config.authTokens[0], 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT })
       }
     })
     .then(data => {

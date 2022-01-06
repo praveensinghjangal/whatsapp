@@ -37,7 +37,7 @@ class InternalFunctions {
       chatBotActivated: true
     }
     __logger.info('calling chatbot toggle api', inputRequest, headers, __config.base_url + __constants.INTERNAL_END_POINTS.toggleChatbot)
-    const reqHeaders = { authorization: headers.authorization }
+    const reqHeaders = { authorization: headers.authorization, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT }
     http.Patch(inputRequest, __config.base_url + __constants.INTERNAL_END_POINTS.toggleChatbot, reqHeaders, 'body')
       .then(data => {
         __logger.info('post chatbot toggle apiresponse', data)
