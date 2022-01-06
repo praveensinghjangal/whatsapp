@@ -170,6 +170,8 @@ const INTERNAL_END_POINTS = {
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
+const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
+
 const MESSAGE_STATUS = {
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
@@ -460,6 +462,7 @@ const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
 const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
 const MESSAGE = 'message'
 const MESSAGES = 'messages'
+const DB_NAME_MIS = 'helowhatsappmis'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -559,3 +562,5 @@ module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
 module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON
 module.exports.MESSAGE = MESSAGE
 module.exports.MESSAGES = MESSAGES
+module.exports.DB_NAME_MIS = DB_NAME_MIS
+module.exports.HW_MYSQL_MIS_NAME = HW_MYSQL_MIS_NAME

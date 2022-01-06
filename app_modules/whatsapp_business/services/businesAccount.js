@@ -615,14 +615,22 @@ class businesAccountService {
   getWabaAccountActiveInactiveCount () {
     __logger.info('Inside Get Waba Account Active Inactive Count :: ')
     const dbData = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaAccountActiveInactiveCount(), [])
+    let res
+    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getWabaAccountActiveInactiveCount(), [])
       .then(result => {
         __logger.info(' Get Waba Account Active Inactive resulttttttttttttttttttttttttttt', { result })
         if (result && result.length === 0) {
-          dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
-          dbData.resolve(result)
+          res = result
+          return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTotalUser(), [])
         }
+      })
+      .then((response) => {
+        if (response && response[0] && response[0].totalUsers) {
+          res.push(response[0])
+        }
+        dbData.resolve(res)
       })
       .catch(err => {
         __logger.error('error in Get Waba Account Active Inactive Count: ', err)

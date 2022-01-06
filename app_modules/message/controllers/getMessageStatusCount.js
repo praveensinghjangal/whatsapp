@@ -31,9 +31,9 @@ const getMessageStatusCount = (req, res) => {
   __logger.info('startDate and endDate----->', req.query.startDate, req.query.endDate)
   const validate = new ValidatonService()
   const dbServices = new DbServices()
-  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user && req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   validate.checkstartDateAndendDate(req.query)
-    .then(isvalid => dbServices.getMessageCount(userId, req.query.startDate, req.query.endDate))
+    .then(isvalid => dbServices.getMessageCount(wabaPhoneNumber, req.query.startDate, req.query.endDate))
     .then(data => {
       __logger.info('db count data ----->then 2', { data })
       const dataOut = []

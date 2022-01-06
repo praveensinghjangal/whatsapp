@@ -161,8 +161,9 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from, redisData)
     .then(tempValRes => {
       const uniqueId = new UniqueId()
-      data.messageId = uniqueId.uuid()
       data.redisData = userRedisData.data.redisData || null
+      data.messageId = `${uniqueId.uuid()}-${Buffer.from(`${moment().utc().format('YYMMDD')}`).toString('base64') || ''}`
+      data.date = moment().utc().format('YYMMDD')
       return processSingleMessage.resolve(data)
     })
     .catch(err => {
@@ -231,7 +232,11 @@ const controller = (req, res) => {
       if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
         return null
       } else {
-        return messageHistoryService.addMessageHistoryDataInBulk(processedMessages.resolve, req.user.providerId, req.body.userId, { vivaReqId: req.headers.vivaReqId })
+        const msgInsertData = []
+        _.each(processedMessages.resolve, (singleMessage, i) => {
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+        })
+        return messageHistoryService.addMessageHistoryDataInBulk(msgInsertData, processedMessages.resolve)
       }
     })
     .then(msgAdded => {
@@ -239,6 +244,7 @@ const controller = (req, res) => {
       return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
     .then(sendToQueueRes => {
+      console.log('=================== final final LAst final')
       __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
