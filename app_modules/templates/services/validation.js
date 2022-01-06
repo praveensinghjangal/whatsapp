@@ -126,9 +126,9 @@ class validate {
         },
         bodyTextVarExample: {
           type: 'array',
-          required: !!(request.bodyText && (request.bodyText.match(/{{\d}}/g) || []).length),
-          minItems: request.bodyText ? (request.bodyText.match(/{{\d}}/g) || []).length : 0,
-          maxItems: request.bodyText ? (request.bodyText.match(/{{\d}}/g) || []).length : 200,
+          required: !!(request.bodyText && (request.bodyText.match(/{{\d{1,3}}}/g) || []).length),
+          minItems: request.bodyText ? (request.bodyText.match(/{{\d{1,3}}}/g) || []).length : 0,
+          maxItems: request.bodyText ? (request.bodyText.match(/{{\d{1,3}}}/g) || []).length : 200,
           items: {
             type: 'string'
           }
@@ -141,7 +141,7 @@ class validate {
         },
         headerTextVarExample: {
           type: 'array',
-          required: !!(request.headerText && (request.headerText.match(/{{\d}}/g) || []).length),
+          required: !!(request.headerText && (request.headerText.match(/{{\d{1,3}}}/g) || []).length),
           minItems: 1,
           maxItems: 1,
           items: {
@@ -179,9 +179,9 @@ class validate {
         },
         secondLanguageBodyTextVarExample: {
           type: 'array',
-          required: !!(request.secondLanguageBodyText && (request.secondLanguageBodyText.match(/{{\d}}/g) || []).length),
-          minItems: request.secondLanguageBodyText ? (request.secondLanguageBodyText.match(/{{\d}}/g) || []).length : 0,
-          maxItems: request.secondLanguageBodyText ? (request.secondLanguageBodyText.match(/{{\d}}/g) || []).length : 200,
+          required: !!(request.secondLanguageBodyText && (request.secondLanguageBodyText.match(/{{\d{1,3}}}/g) || []).length),
+          minItems: request.secondLanguageBodyText ? (request.secondLanguageBodyText.match(/{{\d{1,3}}}/g) || []).length : 0,
+          maxItems: request.secondLanguageBodyText ? (request.secondLanguageBodyText.match(/{{\d{1,3}}}/g) || []).length : 200,
           items: {
             type: 'string'
           }
@@ -206,7 +206,7 @@ class validate {
         },
         secondLanguageHeaderTextVarExample: {
           type: 'array',
-          required: !!(request.secondLanguageHeaderText && (request.secondLanguageHeaderText.match(/{{\d}}/g) || []).length),
+          required: !!(request.secondLanguageHeaderText && (request.secondLanguageHeaderText.match(/{{\d{1,3}}}/g) || []).length),
           minItems: 1,
           maxItems: 1,
           items: {
@@ -215,14 +215,14 @@ class validate {
         },
         buttonType: {
           type: typeof request.buttonType === 'string' ? 'string' : null,
-          required: false,
+          required: !!(request.buttonData && request.buttonData !== {}),
           minLength: request.buttonType ? 1 : 0,
           enum: _.map(__constants.TEMPLATE_BUTTON_TYPE, json => json.buttonType ? json.buttonType.toLowerCase() : json.buttonType),
           maxLength: 100
         },
         buttonData: {
           type: 'object',
-          required: false,
+          required: !!(request.buttonType),
           additionalProperties: false,
           properties: {
             quickReply: {
@@ -296,8 +296,26 @@ class validate {
     request.secondLanguageBodyTextVarExample = request.secondLanguageBodyTextVarExample ? request.secondLanguageBodyTextVarExample : []
     if (request.secondLanguageRequired && request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && (schema.properties.headerTextVarExample.required || schema.properties.secondLanguageHeaderTextVarExample.required) && request.headerTextVarExample.length !== request.secondLanguageHeaderTextVarExample.length) formatedError.push('variable count in headerText doesnot match with variable count in secondLanguageHeaderText')
     if (request.secondLanguageRequired && request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && (schema.properties.bodyTextVarExample.required || schema.properties.secondLanguageBodyTextVarExample.required) && request.bodyTextVarExample.length !== request.secondLanguageBodyTextVarExample.length) formatedError.push('variable count in bodyText doesnot match with variable count in secondLanguageBodyText')
-    if (request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && schema.properties.headerText.required && request.headerText && (request.headerText.match(/{{\d}}/g) || []).length > 1) formatedError.push('headerText text can contain only one variable')
-    if (request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && schema.properties.secondLanguageHeaderText.required && request.secondLanguageHeaderText && (request.secondLanguageHeaderText.match(/{{\d}}/g) || []).length > 1) formatedError.push('secondLanguageHeaderText text can contain only one variable')
+    if (request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && schema.properties.headerText.required && request.headerText && (request.headerText.match(/{{\d{1,3}}}/g) || []).length > 1) formatedError.push('headerText text can contain only one variable')
+    if (request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && schema.properties.secondLanguageHeaderText.required && request.secondLanguageHeaderText && (request.secondLanguageHeaderText.match(/{{\d{1,3}}}/g) || []).length > 1) formatedError.push('secondLanguageHeaderText text can contain only one variable')
+    if (request.bodyTextVarExample.length > 0) {
+      const textVariablesArr = request.bodyText.match(/{{\d{1,3}}}/g)
+      const varNotInSequence = _.find(textVariablesArr, (singleVar, i) => singleVar !== '{{' + (i + 1) + '}}')
+      if (varNotInSequence) formatedError.push('variables inside bodyText are not in sequence or they do not start with {{1}}')
+    }
+    if (request.secondLanguageBodyTextVarExample.length > 0) {
+      const textVariablesArr = request.secondLanguageBodyText.match(/{{\d{1,3}}}/g)
+      const varNotInSequence = _.find(textVariablesArr, (singleVar, i) => singleVar !== '{{' + (i + 1) + '}}')
+      if (varNotInSequence) formatedError.push('variables inside secondLanguageBodyText are not in sequence or they do not start with {{1}}')
+    }
+    if (request.headerTextVarExample.length > 0) {
+      const textVariablesArr = request.headerText.match(/{{\d{1,3}}}/g)
+      if (!textVariablesArr || !textVariablesArr[0] || textVariablesArr[0] !== '{{1}}') formatedError.push('variables inside headerText does not start with {{1}}')
+    }
+    if (request.secondLanguageHeaderTextVarExample.length > 0) {
+      const textVariablesArr = request.secondLanguageHeaderText.match(/{{\d{1,3}}}/g)
+      if (!textVariablesArr || !textVariablesArr[0] || textVariablesArr[0] !== '{{1}}') formatedError.push('variables inside secondLanguageHeaderText does not start with {{1}}')
+    }
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {

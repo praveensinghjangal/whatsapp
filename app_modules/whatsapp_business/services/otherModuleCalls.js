@@ -13,7 +13,7 @@ module.exports = (wabaPhoneNumber, wabaInformationId, userId) => {
   const inputRequest = {
     wabaPhoneNumber, wabaInformationId, userId
   }
-  const headers = { Authorization: __config.authTokens[0] }
+  const headers = { Authorization: __config.authTokens[0], 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT }
   this.validate.wabaNoMappingInputCheck(inputRequest)
     .then(() => this.http.Post(inputRequest, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.addUpdateWabNoMapping, headers))
     .then(apiRes => {

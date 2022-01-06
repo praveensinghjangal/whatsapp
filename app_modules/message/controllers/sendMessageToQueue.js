@@ -210,7 +210,7 @@ const controller = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
   let userRedisData
-  if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.MESSAGE) {
+  if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
     } else if (typeof req.body === 'object' && !Array.isArray(req.body) && req.body !== null) {

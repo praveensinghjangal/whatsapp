@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
@@ -7,6 +8,7 @@ const q = require('q')
 const queryProvider = require('../queryProvider')
 const StatusService = require('../services/status')
 const RuleEngine = require('../services/ruleEngine')
+const integrationService = require('../../integration')
 
 const compareAndUpdateStatus = (templateId, providerId, wabaPhoneNumber, userId, maxTpsToProvider, queryParams) => {
   const statusUpdated = q.defer()
@@ -66,9 +68,28 @@ const getTemplateInfo = (req, res) => {
       finalResult[0].headerTextVariableCount = finalResult[0].headerTextVarExample && finalResult[0].headerTextVarExample.length ? finalResult[0].headerTextVarExample.length : 0
       return checksForTemplate(finalResult[0])
     })
-    .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult }))
+    .then(data => {
+      if (data.messageTemplateStatusId === __constants.TEMPLATE_STATUS.approved.statusCode || data.messageTemplateStatusId === __constants.TEMPLATE_STATUS.partiallyApproved.statusCode) {
+        const templateIntegrationService = new integrationService.Template(req.user.providerId, req.user.wabaPhoneNumber, req.user.maxTpsToProvider, req.user.user_id)
+        return templateIntegrationService.getTemplateInfo(req.user.wabaPhoneNumber, data.messageTemplateId, req.query)
+      } else {
+        finalResult[0].firstLocalizationQualityRating = 'N/A'
+        finalResult[0].secondLocalizationQualityRating = 'N/A'
+        return {}
+      }
+    })
+    .then(templateInfoFromFb => {
+      if (templateInfoFromFb && templateInfoFromFb.data && templateInfoFromFb.data.localizations && templateInfoFromFb.data.localizations.length > 0) {
+        const firstLocalizationData = _.find(templateInfoFromFb.data.localizations, singleData => singleData.language && finalResult[0].languageCode && singleData.language.toLowerCase() === finalResult[0].languageCode.toLowerCase())
+        finalResult[0].firstLocalizationQualityRating = firstLocalizationData && firstLocalizationData.qualityScore && firstLocalizationData.qualityScore.score ? firstLocalizationData.qualityScore.score : 'N/A'
+        const secondLocalizationData = _.find(templateInfoFromFb.data.localizations, singleData => singleData.language && finalResult[0].secondLanguageCode && singleData.language.toLowerCase() === finalResult[0].secondLanguageCode.toLowerCase())
+        finalResult[0].secondLocalizationQualityRating = secondLocalizationData && secondLocalizationData.qualityScore && secondLocalizationData.qualityScore.score ? secondLocalizationData.qualityScore.score : 'N/A'
+      }
+      __logger.info('final template info response', finalResult)
+      __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult })
+    })
     .catch(err => {
-      __logger.error('error in create get template info: ', err)
+      __logger.error('error in create get template info: ', err.toString())
       if (err && err.type && err.type.code && err.type.code === __constants.RESPONSE_MESSAGES.ALL_STATUS_NOT_UPDATED.code) {
         err = { type: err.err[0], data: {} }
       }

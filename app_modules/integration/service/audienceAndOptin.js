@@ -9,7 +9,7 @@ const checkOptinMessage = (content, optinText) => {
   const isOptin = q.defer()
   if (content && content.contentType === 'text' && content.text && optinText) {
     content.text = content.text.trim()
-    if (content.text.length === optinText.length && content.text.toLowerCase() === optinText) {
+    if (content.text.length === optinText.length && content.text.toLowerCase() === optinText.toLowerCase()) {
       isOptin.resolve(true)
     } else {
       isOptin.resolve(false)
@@ -56,11 +56,12 @@ function addAudienceAndOptin (inputPayload, redisData) {
       const options = {
         url,
         body: audienceDataToBePosted,
-        headers: { Authorization: apiToken },
+        headers: { Authorization: apiToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT },
         json: true
       }
       __logger.info('addAudienceAndOptin::optionssssssssssssssssssssss', options)
       request.post(options, (err, httpResponse, body) => {
+        __logger.info('addAudienceAndOptin::response from api', 'endUserNumber ->', inputPayload.from, 'waba number ->', redisData.id, 'response ->', body, 'error ->', err)
         if (err) {
           audienceData.reject(err)
         } else {

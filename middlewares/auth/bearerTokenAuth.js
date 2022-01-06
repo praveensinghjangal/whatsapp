@@ -16,7 +16,7 @@ module.exports = (req, res, next) => {
       str = str.split(':')
       const url = __config.base_url + __constants.INTERNAL_END_POINTS.userLogin
       const http = new HttpService(60000)
-      return http.Post({ email: str[0], password: str[1] }, 'body', url, '')
+      return http.Post({ email: str[0], password: str[1] }, 'body', url, { 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT })
         .then((data) => {
           if (data.body.code !== 2000) {
             __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, err: {} })
