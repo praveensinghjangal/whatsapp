@@ -4,6 +4,7 @@ const __constants = require('../../../config/constants')
 const __config = require('../../../config')
 const __logger = require('../../../lib/logger')
 const HttpService = require('../../../lib/http_service')
+const __db = require('../../../lib/db')
 
 class InternalFunctions {
   setWebhookOfProvider (wabaNumber, providerId, maxTpsToProvider, userId) {
@@ -27,6 +28,38 @@ class InternalFunctions {
         webHookApplied.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return webHookApplied.promise
+  }
+
+  createQueuePerUser (userId, phoneNumber) {
+    this.rabbitmqHeloWhatsapp = require('./../../../lib/db/rabbitmq_helo_whatsapp.js')
+    const MQ = {}
+    __constants.MQ['fbOutgoing_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoing))
+    __constants.MQ['fbOutgoingSync_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoingSync))
+    __constants.MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookHeloCampaign))
+    __constants.MQ['webhookQueue_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookQueue))
+    __constants.MQ['fbOutgoing_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoing.q_name + '_' + userId + '_' + phoneNumber
+    __constants.MQ['fbOutgoingSync_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoingSync.q_name + '_' + userId + '_' + phoneNumber
+    __constants.MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookHeloCampaign.q_name + '_' + userId + '_' + phoneNumber
+    __constants.MQ['webhookQueue_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookQueue.q_name + '_' + userId + '_' + phoneNumber
+    MQ['fbOutgoing_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoing))
+    MQ['fbOutgoingSync_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoingSync))
+    MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookHeloCampaign))
+    MQ['webhookQueue_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookQueue))
+    MQ['fbOutgoing_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoing.q_name + '_' + userId + '_' + phoneNumber
+    MQ['fbOutgoingSync_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoingSync.q_name + '_' + userId + '_' + phoneNumber
+    MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookHeloCampaign.q_name + '_' + userId + '_' + phoneNumber
+    MQ['webhookQueue_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookQueue.q_name + '_' + userId + '_' + phoneNumber
+    if (MQ && Object.keys(MQ).length > 0) {
+      for (const queueIndex in MQ) {
+        const queue = MQ[queueIndex]
+        if (queue.createChannel) {
+          __db.rabbitmqHeloWhatsapp.createChannelsForQueue(queue)
+        }
+      }
+      return true
+    } else {
+      throw new Error('queue or exchange not define.')
+    }
   }
 
   activateChatBot (wabaData, headers) {
@@ -66,6 +99,7 @@ module.exports = class Hooks {
     __logger.info('onAccepted called', wabaData, headers)
     this.internalFunctions.setWebhookOfProvider(wabaData.phoneCode + wabaData.phoneNumber, wabaData.serviceProviderId, wabaData.maxTpsToProvider, wabaData.userId)
     this.internalFunctions.activateChatBot(wabaData, headers)
+    this.internalFunctions.createQueuePerUser(wabaData.userId, wabaData.phoneCode + wabaData.phoneNumber)
   }
 
   trigger (wabaData, status, headers) {

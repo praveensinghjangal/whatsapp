@@ -18,7 +18,7 @@ const sendToHeloCampaign = (payload) => {
   const userId = payload.userId || null
   delete payload.userId
   if (payload.heloCampaign && __config.heloCampaignStatus.includes(payload.state)) {
-    return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ['webhookHeloCampaign_' + userId + '_' + payload.wabaNumber], JSON.stringify({ ...payload, url: __config.heloCampaignWebhookUrl }))
+    return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookHeloCampaign', userId, payload.wabaNumber), JSON.stringify({ ...payload, url: __config.heloCampaignWebhookUrl }))
   } else {
     const defer = q.defer()
     defer.resolve(true)
@@ -34,7 +34,7 @@ const sendToUser = (payload) => {
       __logger.info('sendToUser ~ invalid webhook URL', payload)
       return true
     } else {
-      return __db.rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ['webhookQueue_' + userId + '_' + payload.wabaNumber], JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
+      return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookQueue', userId, payload.wabaNumber), JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
     }
   } else {
     const defer = q.defer()

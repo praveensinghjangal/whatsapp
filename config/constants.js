@@ -129,7 +129,8 @@ const MQ = {
   tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   fbOutgoingSync: { type: 'queue', q_name: 'fb_outgoing_sync', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   webhookHeloCampaign: { type: 'queue', q_name: 'webhook_helo_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5,

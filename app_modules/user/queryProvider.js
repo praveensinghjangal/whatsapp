@@ -385,7 +385,7 @@ const getAgreementStatusCount = () => {
 }
 
 const getUserData = () => {
-  return 'select user_id as userId, phone_code as "phoneCode" ,phone_number as phoneNumber from waba_information where is_active = 1 and user_id in ("dba50b76-4f7c-4987-a9c0-a84ced291dbd" ,"158988680814912" )'
+  return `select user_id as userId, phone_code as "phoneCode" ,phone_number as phoneNumber from waba_information where is_active = 1 and waba_profile_setup_status_id = '${__constants.WABA_PROFILE_STATUS.accepted.statusCode}'`
 }
 
 module.exports = {

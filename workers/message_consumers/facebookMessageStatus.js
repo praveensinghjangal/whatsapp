@@ -29,7 +29,7 @@ const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
     .then(data => {
       if (data) {
         __db.redis.key_delete(messageId)
-        queueObj.sendToQueue(__constants.MQ['fbOutgoingSync_' + data.config.userId + '_' + data.payload.whatsapp.from], data)
+        queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoingSync', data.config.userId, data.payload.whatsapp.from), data)
       }
     })
     .catch(err => {
