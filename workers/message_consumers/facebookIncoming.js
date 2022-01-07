@@ -6,6 +6,7 @@ const saveIncomingMessagePayloadService = require('../../app_modules/integration
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const q = require('q')
 const moment = require('moment')
+const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 
 const sendToFacebookIncomingQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -94,11 +95,6 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       },
       contentType: __constants.FACEBOOK_CONTENT_TYPE.location
     }
-  } else if (messageDataFromFacebook.messages[0].button) {
-    messageData.content = {
-      text: messageDataFromFacebook.messages[0].button.text || null,
-      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
-    }
   }
   messageData.retryCount = messageDataFromFacebook.retryCount ? messageDataFromFacebook.retryCount : 0
   return messageData
@@ -133,6 +129,8 @@ class FacebookConsumer {
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
+                const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in facebook incoming message'
+                errorToTelegram.send(err, telegramErrorMessage)
                 __logger.error('ppperrrrrrrrrr', err, retryCount)
                 // __logger.info('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
@@ -147,12 +145,16 @@ class FacebookConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
+            const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in try/catch function'
+            errorToTelegram.send(err, telegramErrorMessage)
             __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
+        const telegramErrorMessage = 'FacebookConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
+        errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })

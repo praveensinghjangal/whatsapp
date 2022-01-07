@@ -384,6 +384,10 @@ const getAgreementStatusCount = () => {
   group by uaf.agreement_status_id`
 }
 
+const getUserData = () => {
+  return `select user_id as userId, phone_code as "phoneCode" ,phone_number as phoneNumber from waba_information where is_active = 1 and waba_profile_setup_status_id = '${__constants.WABA_PROFILE_STATUS.accepted.statusCode}'`
+}
+
 module.exports = {
   getUserDetailsByEmail,
   createUser,
@@ -434,5 +438,6 @@ module.exports = {
   updateAccountConfig,
   getAgreementStatusList,
   getAccountCreatedTodayCount,
-  getAgreementStatusCount
+  getAgreementStatusCount,
+  getUserData
 }

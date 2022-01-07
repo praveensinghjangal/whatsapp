@@ -395,6 +395,7 @@ class validate {
       }
     }
     const formatedError = []
+    require('./../../../lib/util/invalidMessageIdWithDateHandler')(formatedError, request)
     v.addSchema(schema, '/checkMessageIdExist')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {

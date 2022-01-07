@@ -17,6 +17,7 @@ const RedisService = require('../../../lib/redis_service/redisService')
 const qalllib = require('qalllib')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const errorToTelegram = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
 
 /**
  * @namespace -WhatsApp-Message-Controller-SendMessage-
@@ -79,6 +80,8 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
         if (err.type.status_code) delete err.type.status_code
         return bulkTemplateCheck.resolve(err.type)
       }
+      const telegramErrorMessage = 'sendMessageToQueue ~ getBulkTemplates function ~ error in getBulkTemplates while sending message'
+      errorToTelegram.send(err, telegramErrorMessage)
       return bulkTemplateCheck.reject(err)
     })
   return bulkTemplateCheck.promise
@@ -132,7 +135,11 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
     .then(queueResponse => saveAndSendMessageStatus(data))
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour }))
-    .catch(err => messageSent.reject(err))
+    .catch(err => {
+      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
+      errorToTelegram.send(err, telegramErrorMessage)
+      messageSent.reject(err)
+    })
   return messageSent.promise
 }
 
@@ -141,6 +148,8 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
   qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, providerId, userId, maxTpsToProvider, headers)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
+      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
+      errorToTelegram.send(error, telegramErrorMessage)
       return sendSingleMessage.reject(error)
     })
     .done()
@@ -161,8 +170,9 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from, redisData)
     .then(tempValRes => {
       const uniqueId = new UniqueId()
-      data.messageId = uniqueId.uuid()
       data.redisData = userRedisData.data.redisData || null
+      data.messageId = `${uniqueId.uuid()}-${Buffer.from(`${moment().utc().format('YYMMDD')}`).toString('base64') || ''}`
+      data.date = moment().utc().format('YYMMDD')
       return processSingleMessage.resolve(data)
     })
     .catch(err => {
@@ -170,6 +180,8 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
         if (err.type.status_code) delete err.type.status_code
         return processSingleMessage.reject(err.type)
       }
+      const telegramErrorMessage = 'sendMessageToQueue ~ singleRuleCheck function ~ error in checkIfParamsEqual function'
+      errorToTelegram.send(err, telegramErrorMessage)
       return processSingleMessage.reject(err)
     }
     )
@@ -182,6 +194,8 @@ const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
   qalllib.qASyncWithBatch(singleRuleCheck, body, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, wabaPhoneNumber, redisData, userRedisData)
     .then(data => sendSingleMessage.resolve(data))
     .catch(function (error) {
+      const telegramErrorMessage = 'sendMessageToQueue ~ ruleCheck function ~ error in qASyncWithBatch function'
+      errorToTelegram.send(error, telegramErrorMessage)
       return sendSingleMessage.reject(error)
     })
     .done()
@@ -231,7 +245,11 @@ const controller = (req, res) => {
       if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
         return null
       } else {
-        return messageHistoryService.addMessageHistoryDataInBulk(processedMessages.resolve, req.user.providerId, req.body.userId, { vivaReqId: req.headers.vivaReqId })
+        const msgInsertData = []
+        _.each(processedMessages.resolve, (singleMessage, i) => {
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+        })
+        return messageHistoryService.addMessageHistoryDataInBulk(msgInsertData, processedMessages.resolve)
       }
     })
     .then(msgAdded => {
@@ -239,6 +257,7 @@ const controller = (req, res) => {
       return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
     .then(sendToQueueRes => {
+      console.log('=================== final final LAst final')
       __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
@@ -248,6 +267,8 @@ const controller = (req, res) => {
     })
     .catch(err => {
       console.log('send message ctrl error : ', err)
+      const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
+      errorToTelegram.send(err, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {
         delete err.type.status_code
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })

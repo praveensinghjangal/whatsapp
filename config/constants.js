@@ -129,7 +129,8 @@ const MQ = {
   tyntecOutgoingSync: { type: 'queue', q_name: 'tyntec_outgoing_sync', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   fbOutgoingSync: { type: 'queue', q_name: 'fb_outgoing_sync', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   webhookHeloCampaign: { type: 'queue', q_name: 'webhook_helo_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5,
@@ -170,6 +171,8 @@ const INTERNAL_END_POINTS = {
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
+const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
+
 const MESSAGE_STATUS = {
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
@@ -462,8 +465,13 @@ const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed',
 const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'
+const DB_NAME_MIS = 'helowhatsappmis'
 const INTERNAL_CALL_USER_AGENT = '181081ac-9667-441a-9f4c-f198b7339nh1'
 const INTERNAL_CALL_USER_AGENTS = ['181081ac-9667-441a-9f4c-f198b7339nh1', 'd8e25d6b-c7a2-4704-9c52-3ba3654b91c2']
+const TELEGRAM_API = 'https://api.telegram.org/'
+const TELEGRAM_ENDPOINTS = {
+  sendMessage: '/sendMessage'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -563,6 +571,10 @@ module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
 module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON
 module.exports.SINGLE = SINGLE
 module.exports.MESSAGES = MESSAGES
+module.exports.DB_NAME_MIS = DB_NAME_MIS
+module.exports.HW_MYSQL_MIS_NAME = HW_MYSQL_MIS_NAME
 module.exports.BULK = BULK
 module.exports.INTERNAL_CALL_USER_AGENT = INTERNAL_CALL_USER_AGENT
 module.exports.INTERNAL_CALL_USER_AGENTS = INTERNAL_CALL_USER_AGENTS
+module.exports.TELEGRAM_API = TELEGRAM_API
+module.exports.TELEGRAM_ENDPOINTS = TELEGRAM_ENDPOINTS

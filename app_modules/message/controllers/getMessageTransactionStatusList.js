@@ -34,6 +34,7 @@ const getMessageTransactionstatusList = (req, res) => {
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user && req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page field is required with value as number' })
   if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field is required with value as number' })
   const requiredPage = req.query.page ? +req.query.page : 1
@@ -43,7 +44,7 @@ const getMessageTransactionstatusList = (req, res) => {
   const sort = req.query && req.query.sort ? req.query.sort : 'ASC'
   req.query.flag = flag
   validate.transactionValidator(req.query)
-    .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort))
+    .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort, wabaPhoneNumber))
     .then(data => {
       __logger.info('Data------> then 2')
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }

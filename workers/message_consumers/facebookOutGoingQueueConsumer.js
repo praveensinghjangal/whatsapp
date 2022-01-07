@@ -7,6 +7,7 @@ const moment = require('moment')
 const __config = require('../../config')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
+const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 
 const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMessageId) => {
   const statusSent = q.defer()
@@ -24,9 +25,14 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
-    customFour: payload.whatsapp.customFour || null
+    customFour: payload.whatsapp.customFour || null,
+    date: payload.date || null
   }
-  messageHistoryService.addMessageHistoryDataService(statusData)
+  const mappingData = [payload.messageId, serviceProviderMessageId, payload.to, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
+  messageHistoryService.addMessageIdMappingData(mappingData)
+    .then(statusDataAdded => {
+      return messageHistoryService.addMessageHistoryDataService(statusData)
+    })
     .then(statusDataAdded => {
       statusData.to = statusData.businessNumber
       statusData.from = statusData.endConsumerNumber
@@ -45,69 +51,77 @@ const sendToErrorQueue = (message, queueObj) => {
   const messageRouted = q.defer()
   queueObj.sendToQueue(__constants.MQ.fbSendmessageError, JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
-    .catch(err => messageRouted.reject(err))
+    .catch(err => {
+      const telegramErrorMessage = 'FaceBookOutGoingQueue ~ saveAndSendMessageStatus function'
+      errorToTelegram.send(err, telegramErrorMessage)
+      messageRouted.reject(err)
+    })
   return messageRouted.promise
 }
 
 const sendToFacebookOutgoingQueue = (message, queueObj) => {
   const messageRouted = q.defer()
-  queueObj.sendToQueue(__constants.MQ.fbOutgoing, JSON.stringify(message))
+  queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoing', message.config.userId, message.payload.whatsapp.from), JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
-    .catch(err => messageRouted.reject(err))
+    .catch(err => {
+      const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ sendToQueue function error while sending'
+      errorToTelegram.send(err, telegramErrorMessage)
+      messageRouted.reject(err)
+    })
   return messageRouted.promise
 }
 
 class MessageConsumer {
   startServer () {
-    const queueObj = __constants.MQ[__config.mqObjectKey]
-    if (queueObj && queueObj.q_name) {
-      const queue = queueObj.q_name
-      __db.init()
-        .then(result => {
-          const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-          __logger.info('facebook outgoing queue consumer::Waiting for message...')
-          rmqObject.channel[queue].consume(queue, mqData => {
-            try {
-              const mqDataReceived = mqData
-              const messageData = JSON.parse(mqData.content.toString())
-              __logger.info('facebook outgoing queue consumer::received:', { mqData })
-              __logger.info('facebook outgoing queue consumer:: messageData received:', messageData)
-              if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
-                messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.facebook
-              }
-
-              const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
-              messageService.sendMessage(messageData.payload)
-                .then(sendMessageRespose => {
-                  return saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messages[0].id)
-                })
-                .then(data => rmqObject.channel[queue].ack(mqDataReceived))
-                .catch(err => {
-                  __logger.error('facebook outgoing queue consumer::error: ', err)
-                  if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
-                    messageData.payload.retryCount--
-                    sendToFacebookOutgoingQueue(messageData, rmqObject)
-                  } else {
-                    messageData.err = err
-                    sendToErrorQueue(messageData, rmqObject)
-                  }
-                  rmqObject.channel[queue].ack(mqDataReceived)
-                })
-            } catch (err) {
-              __logger.error('facebook queue consumer::error while parsing: ', err)
-              rmqObject.channel[queue].ack(mqData)
+    __db.init()
+      .then(result => {
+        const queueObj = __constants.MQ[__config.mqObjectKey]
+        const queue = queueObj.q_name
+        const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
+        __logger.info('facebook outgoing queue consumer::Waiting for message...')
+        rmqObject.channel[queue].consume(queue, mqData => {
+          try {
+            const mqDataReceived = mqData
+            const messageData = JSON.parse(mqData.content.toString())
+            __logger.info('facebook outgoing queue consumer::received:', { mqData })
+            __logger.info('facebook outgoing queue consumer:: messageData received:', messageData)
+            if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
+              messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.facebook
             }
-          }, { noAck: false })
-        })
-        .catch(err => {
-          __logger.error('facebook outgoing queue consumer::error: ', err)
-          process.exit(1)
-        })
-    } else {
-      __logger.error('facebook outgoing queue consumer::error: no such queue object exists with name', __config.mqObjectKey)
-      process.exit(1)
-    }
 
+            const messageService = new integrationService.Messaage(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+            messageService.sendMessage(messageData.payload)
+              .then(sendMessageRespose => {
+                return saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messages[0].id)
+              })
+              .then(data => rmqObject.channel[queue].ack(mqDataReceived))
+              .catch(err => {
+                const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook outgoing queue consumer::error:'
+                __logger.error('facebook outgoing queue consumer::error: ', err)
+                errorToTelegram.send(err, telegramErrorMessage)
+                if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
+                  messageData.payload.retryCount--
+                  sendToFacebookOutgoingQueue(messageData, rmqObject)
+                } else {
+                  messageData.err = err
+                  sendToErrorQueue(messageData, rmqObject)
+                }
+                rmqObject.channel[queue].ack(mqDataReceived)
+              })
+          } catch (err) {
+            const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook queue::error while parsing: '
+            errorToTelegram.send(err, telegramErrorMessage)
+            __logger.error('facebook queue consumer::error while parsing: ', err)
+            rmqObject.channel[queue].ack(mqData)
+          }
+        }, { noAck: false })
+      })
+      .catch(err => {
+        const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook queue::Main error in catch block'
+        errorToTelegram.send(err, telegramErrorMessage)
+        __logger.error('facebook outgoing queue consumer::error: ', err)
+        process.exit(1)
+      })
     this.stop_gracefully = function () {
       __logger.info('stopping all resources gracefully')
       __db.close(function () {

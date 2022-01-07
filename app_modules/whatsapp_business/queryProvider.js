@@ -258,9 +258,7 @@ const toggleChatbot = () => {
 const getWabaAccountActiveInactiveCount = () => {
   return `select (select count(DISTINCT(business_number)) 
   from message_history mh 
-  where is_active =true and created_on  BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()) as "totalActiveUsers",
-  (select count(1) from users u 
-  where is_active = true and user_role_id != '${__constants.SUPPORT_ROLE_ID}') as "totalUsers"`
+  where is_active =true and created_on  BETWEEN CURRENT_DATE() - INTERVAL 30 DAY AND CURRENT_DATE()) as "totalActiveUsers"`
 }
 
 const getWabaStatusCount = () => {
@@ -302,6 +300,11 @@ const updateWabizApiKeyAndExpireyTime = () => {
   WHERE phone_code= ? and phone_number = ? and is_active = true`
 }
 
+const getTotalUser = () => {
+  return `select count(1) as totalUsers from users u 
+  where is_active = true and user_role_id != '${__constants.SUPPORT_ROLE_ID}'`
+}
+
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -334,5 +337,6 @@ module.exports = {
   insertServiceProviderData,
   updateServiceProviderData,
   getServiceTotalProviderCount,
-  updateWabizApiKeyAndExpireyTime
+  updateWabizApiKeyAndExpireyTime,
+  getTotalUser
 }

@@ -158,6 +158,21 @@ module.exports = {
       timezone: 'utc'
     }
   },
+  helo_whatsapp_mis_mysql: {
+    init: process.env.HW_MYSQL_MIS_INIT === 'true',
+    name: __constants.HW_MYSQL_MIS_NAME,
+    is_slave: process.env.HW_MYSQL_MIS_IS_SLAVE === 'true',
+    options: {
+      connection_limit: +process.env.HW_MYSQL_MIS_OPTIONS_CONNECTION_LIMIT,
+      host: process.env.HW_MYSQL_MIS_OPTIONS_HOST,
+      user: process.env.HW_MYSQL_MIS_OPTIONS_USER,
+      password: process.env.HW_MYSQL_MIS_OPTIONS_PASSWORD,
+      database: process.env.HW_MYSQL_MIS_OPTIONS_DATABASE,
+      acquireTimeout: 0,
+      port: +process.env.HW_MYSQL_MIS_OPTIONS_PORT,
+      timezone: 'utc'
+    }
+  },
   postgresql: {
     init: process.env.PSQL_INIT === 'true',
     name: process.env.PSQL_NAME,
@@ -300,5 +315,7 @@ module.exports = {
   heloOssWrapperUrl: process.env.HELO_OSS_WRAPPER_URL,
   heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN,
   heloCampaignStatus: process.env.HELO_CAMPAIGN_STATUS ? process.env.HELO_CAMPAIGN_STATUS.split(',') : ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected'],
-  heloCampaignWebhookUrl: process.env.HELO_CAMPAIGN_WEBHOOK_URL
+  heloCampaignWebhookUrl: process.env.HELO_CAMPAIGN_WEBHOOK_URL,
+  telegram_chat_id: process.env.TELEGRAM_CHAT_ID,
+  botToken: process.env.BOT_TOKEN
 }
