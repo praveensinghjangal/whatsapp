@@ -4,6 +4,7 @@ const redisConnectionObject = require('../lib/db/redis_local').connection
 const __constants = require('../config/constants')
 const userConfgiMiddleware = require('./setUserConfig').setUserConfig
 const __logger = require('../lib/logger')
+const errorToTelegram = require('../lib/errorHandlingMechanism/sendToTelegram')
 
 const rateLimit = (req, res, next) => {
   __logger.info('Request>>>>>>>>>>>>>>>>>>>>>>>>..', req.userConfig)
@@ -32,6 +33,7 @@ const rateLimit = (req, res, next) => {
       .then(rate => next())
       .catch(err => {
         console.log('error in ratelimitter ->>', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, err)
+        errorToTelegram.send(err, __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
         __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: err })
       })
   } else {

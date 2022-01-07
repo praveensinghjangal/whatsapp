@@ -468,6 +468,10 @@ const MESSAGES = 'messages'
 const DB_NAME_MIS = 'helowhatsappmis'
 const INTERNAL_CALL_USER_AGENT = '181081ac-9667-441a-9f4c-f198b7339nh1'
 const INTERNAL_CALL_USER_AGENTS = ['181081ac-9667-441a-9f4c-f198b7339nh1', 'd8e25d6b-c7a2-4704-9c52-3ba3654b91c2']
+const TELEGRAM_API = 'https://api.telegram.org/'
+const TELEGRAM_ENDPOINTS = {
+  sendMessage: '/sendMessage'
+}
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -572,3 +576,5 @@ module.exports.HW_MYSQL_MIS_NAME = HW_MYSQL_MIS_NAME
 module.exports.BULK = BULK
 module.exports.INTERNAL_CALL_USER_AGENT = INTERNAL_CALL_USER_AGENT
 module.exports.INTERNAL_CALL_USER_AGENTS = INTERNAL_CALL_USER_AGENTS
+module.exports.TELEGRAM_API = TELEGRAM_API
+module.exports.TELEGRAM_ENDPOINTS = TELEGRAM_ENDPOINTS

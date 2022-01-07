@@ -5,6 +5,7 @@ const __db = require('../../lib/db')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
+const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 
 const sendToFacebookMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -101,6 +102,8 @@ class FacebookConsumer {
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
+                const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue function ~ facebook incoming status QueueConsumer::error'
+                errorToTelegram.send(err, telegramErrorMessage)
                 __logger.error('ppperrrrrrrrrr', err, retryCount)
                 // __logger.info('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
@@ -115,12 +118,16 @@ class FacebookConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
+            const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue function ~ facebook message status QueueConsumer::error while parsing: try/catch'
+            errorToTelegram.send(err, telegramErrorMessage)
             __logger.error('facebook message status QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
+        const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue main function ~ facebook message status QueueConsumer::error:'
+        errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook message status QueueConsumer::error: ', err)
         process.exit(1)
       })
