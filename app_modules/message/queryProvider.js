@@ -1,76 +1,71 @@
 const __constants = require('../../config/constants')
 
-const addMessageHistoryData = (messageId) => {
-  return `INSERT INTO message_history
-  (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+const addMessageHistoryData = (date) => {
+  const messageHistory = `message_history_${date}`
+  return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
   end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
-const getMessageTableDataWithId = () => {
+const getMessageTableDataWithId = (date) => {
+  const messageHistory = `message_history_${date}`
   return `SELECT message_id as "messageId",
   delivery_channel as "deliveryChannel",status_time  as "statusTime", state, 
   end_consumer_number as "endConsumerNumber", business_number as  "businessNumber", custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour"
-  FROM message_history
+  FROM ${messageHistory}
   where message_id =? order by id desc`
 }
 
 const getMessageIdByServiceProviderMsgId = () => {
-  return `select message_id as "messageId" , service_provider_id as  "serviceProviderId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber", errors as "errors" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour"
-  from message_history
+  return `select message_id as "messageId" , service_provider_message_id as "serviceProviderMessageId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour", date
+  from message_id_mapping_data
   where is_active = 1 and service_provider_message_id = ? limit 1`
 }
 
 const getMessageStatusCount = () => {
   return `SELECT mh.state, COUNT(1) AS "stateCount"
   FROM message_history mh
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
   WHERE mh.id IN (
     SELECT MAX(mh1.id)
     FROM message_history mh1
-    join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
     where mh1.is_active = 1
-    and wi1.user_id = ?
-    and mh1.created_on BETWEEN ? AND ?
+    and mh1.business_number = ?
+    and mh1.created_on BETWEEN  ? AND ?
     GROUP BY mh1.message_id)
   and mh.is_active = 1
-  and wi.user_id = ?
+    and mh.business_number =  ?
   and mh.created_on BETWEEN ? AND ?
   GROUP BY mh.state`
 }
 
 const getMessageStatusList = () => {
   return `select mh.message_id as "messageId",mh.status_time as time , mh.end_consumer_number as "endConsumerNumber"
-  from message_history mh
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
-  where mh.is_active = 1
-  and lower(mh.state) = ?
-  and mh.id IN (
-    SELECT MAX(mh1.id)
-    FROM message_history mh1
-    join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
-    where mh1.is_active = 1
-    and mh1.created_on BETWEEN ? AND ?
-    and wi1.user_id = ?
-    GROUP BY mh1.message_id)
-  and mh.created_on BETWEEN ? AND ? 
-  and wi.user_id = ?
-  order by mh.created_on desc limit ? offset ?;
-  select count(1) as "totalCount"
-  from message_history mh
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
-  where mh.is_active = 1
-  and lower(mh.state) = ?
-  and mh.id IN (
-    SELECT MAX(mh1.id)
-    FROM message_history mh1
-    join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
-    where mh1.is_active = 1
-    and mh1.created_on BETWEEN ? AND ?
-    and wi1.user_id = ?
-    GROUP BY mh1.message_id)
-  and mh.created_on BETWEEN ? AND ? 
-  and wi.user_id = ?`
+from message_history mh
+where mh.is_active = 1
+and lower(mh.state) = ?
+and mh.id IN (
+  SELECT MAX(mh1.id)
+  FROM message_history mh1
+  where mh1.is_active = 1
+  and mh1.created_on BETWEEN ? AND ?
+  and mh1.business_number = ?
+  GROUP BY mh1.message_id)
+and mh.created_on BETWEEN ? AND ? 
+and mh.business_number = ?
+order by mh.created_on desc limit ? offset ?;
+select count(1) as "totalCount"
+from message_history mh
+where mh.is_active = 1
+and lower(mh.state) = ?
+and mh.id IN (
+  SELECT MAX(mh1.id)
+  FROM message_history mh1
+  where mh1.is_active = 1
+  and mh1.created_on  BETWEEN ? AND ? 
+  and mh1.business_number = ?
+  GROUP BY mh1.message_id)
+and mh.created_on  BETWEEN ? AND ? 
+and mh.business_number = ?`
 }
 
 const getIncomingOutgoingMessageCount = (transactionType) => {
@@ -118,79 +113,72 @@ const getIncomingMessageTransaction = sort => {
 const getOutgoingMessageTransaction = () => {
   return `select mh.message_id as "messageId",mh.status_time as "time"
   from message_history mh 
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
   where mh.is_active = 1
   and mh.id IN (
    SELECT MAX(mh1.id)
    FROM message_history mh1
-   join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
    where mh1.is_active = 1
-   and wi1.user_id = ?
+   and mh1.business_number = ?
    and mh1.created_on BETWEEN ? AND ?
    GROUP BY mh1.message_id)
-  and wi.user_id = ?
+  and mh.business_number = ?
   and mh.created_on BETWEEN ? AND ?
   order by mh.created_on limit ? offset ?;
   select count(1) as "totalCount"
   from message_history mh 
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
   where mh.is_active = 1
   and mh.id IN (
    SELECT MAX(mh1.id)
    FROM message_history mh1
-   join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
    where mh1.is_active = 1
-   and wi1.user_id = ?
+   and mh1.business_number = ?
    and mh1.created_on BETWEEN ? AND ?
    GROUP BY mh1.message_id)
-  and wi.user_id = ?
+  and mh.business_number = ?
   and mh.created_on BETWEEN ? AND ?;`
 }
 
 const getOutgoingTransactionListBySearchFilters = (endUserNumberRequired) => {
-  return `select mh.message_id as "messageId",mh.status_time as "time", mh.state as "status"
-  from message_history mh 
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
-  where mh.is_active = 1
-  and mh.id IN (
-   SELECT MAX(mh1.id)
-   FROM message_history mh1
-   join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
-   where mh1.is_active = 1
-   and wi1.user_id = ?
-   and mh1.created_on BETWEEN ? AND ?
-   ${endUserNumberRequired ? 'and mh1.end_consumer_number = ?' : ''}  
-   GROUP BY mh1.message_id)
-  and wi.user_id = ?
-  and mh.created_on BETWEEN ? AND ?
-  ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''} 
-  order by mh.created_on desc limit ? offset ?;
-  select count(1) as "totalCount"
-  from message_history mh 
-  join waba_information wi on CONCAT(wi.phone_code ,wi.phone_number ) = mh.business_number and wi.is_active = true
-  where mh.is_active = 1
-  and mh.id IN (
-   SELECT MAX(mh1.id)
-   FROM message_history mh1
-   join waba_information wi1 on CONCAT(wi1.phone_code ,wi1.phone_number ) = mh1.business_number and wi1.is_active = true
-   where mh1.is_active = 1
-   and wi1.user_id = ?
-   and mh1.created_on BETWEEN ? AND ?
-   ${endUserNumberRequired ? 'and mh1.end_consumer_number = ?' : ''}  
-   GROUP BY mh1.message_id)
-  and wi.user_id = ?
-  and mh.created_on BETWEEN ? AND ?
-  ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''}  
-  ;`
+  return `  
+  select mh.message_id as "messageId",mh.status_time as "time", mh.state as "status"
+ from message_history mh 
+ where mh.is_active = 1
+ and mh.id IN (
+  SELECT MAX(mh1.id)
+  FROM message_history mh1
+  where mh1.is_active = 1
+  and mh1.business_number = ?
+  and mh1.created_on BETWEEN ? AND ?
+  ${endUserNumberRequired ? 'and mh1.end_consumer_number = ?' : ''}  
+  GROUP BY mh1.message_id)
+ and mh.business_number = ?
+ and mh.created_on BETWEEN ? AND ?
+ ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''} 
+ order by mh.created_on desc limit ? offset ?;
+ select count(1) as "totalCount"
+ from message_history mh 
+ where mh.is_active = 1
+ and mh.id IN (
+  SELECT MAX(mh1.id)
+  FROM message_history mh1
+  where mh1.is_active = 1
+  and mh1.business_number = ?
+  and mh1.created_on BETWEEN ? AND ?
+  ${endUserNumberRequired ? 'and mh1.end_consumer_number = ?' : ''}  
+  GROUP BY mh1.message_id)
+ and mh.business_number = ?
+ and mh.created_on BETWEEN ? AND ?
+ ${endUserNumberRequired ? 'and mh.end_consumer_number = ?' : ''}  
+ ;`
 }
 const getVivaMsgIdByserviceProviderMsgId = () => {
   return `SELECT message_id 
-  FROM helo_whatsapp.message_history where service_provider_message_id = ? and is_active = true limit 1`
+  FROM message_id_mapping_data where service_provider_message_id = ? and is_active = true limit 1`
 }
 
-const addMessageHistoryDataInBulk = () => {
-  return `INSERT INTO message_history
-  (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+const addMessageHistoryDataInBulk = (date) => {
+  const messageHistory = `message_history_${date}`
+  return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
   end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
@@ -208,6 +196,46 @@ const setTemplatesInRedisForWabaPhoneNumber = () => {
   and message_template_status_id in ('${__constants.TEMPLATE_APPROVE_STATUS}','${__constants.TEMPLATE_PARTIAL_APPROVE_STATUS}') and mt.message_template_id in (?)   `
 }
 
+const createMessageHistoryTable = (date) => {
+  const messageHistory = `message_history_${date}`
+  return ` CREATE TABLE ${messageHistory} (
+    id  bigint unsigned NOT NULL AUTO_INCREMENT,
+    message_id  varchar(50) NOT NULL,
+    service_provider_id  varchar(50) NOT NULL,
+    delivery_channel  varchar(50) NOT NULL,
+    status_time  timestamp NOT NULL,
+    state  varchar(100) NOT NULL,
+    end_consumer_number  varchar(50) DEFAULT NULL,
+    business_number  varchar(50) DEFAULT NULL,
+    created_on  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+    is_active  tinyint(1) DEFAULT '1',
+    service_provider_message_id  varchar(250) DEFAULT NULL,
+    errors  json DEFAULT NULL,
+    custom_one  varchar(50) DEFAULT NULL,
+    custom_two  varchar(50) DEFAULT NULL,
+    custom_three  varchar(50) DEFAULT NULL,
+    custom_four  varchar(50) DEFAULT NULL,
+    PRIMARY KEY (id)) `
+}
+
+const addMessageIdMappingData = () => {
+  return `INSERT INTO message_id_mapping_data
+  (message_id, service_provider_message_id, end_consumer_number, business_number, custom_one, custom_two, custom_three, custom_four, date)
+  VALUES (?,?,?,?,?,?,?,?,?)`
+}
+
+const addMessageHistoryDataInMis = () => {
+  return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
+}
+
+const addMessageHistoryDataInBulkInMis = () => {
+  return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  VALUES ? `
+}
+
 module.exports = {
   getMessageTableDataWithId,
   addMessageHistoryData,
@@ -220,5 +248,9 @@ module.exports = {
   getOutgoingTransactionListBySearchFilters,
   getVivaMsgIdByserviceProviderMsgId,
   addMessageHistoryDataInBulk,
-  setTemplatesInRedisForWabaPhoneNumber
+  setTemplatesInRedisForWabaPhoneNumber,
+  createMessageHistoryTable,
+  addMessageIdMappingData,
+  addMessageHistoryDataInMis,
+  addMessageHistoryDataInBulkInMis
 }

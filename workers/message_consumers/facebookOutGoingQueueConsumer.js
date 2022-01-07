@@ -24,9 +24,14 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
-    customFour: payload.whatsapp.customFour || null
+    customFour: payload.whatsapp.customFour || null,
+    date: payload.date || null
   }
-  messageHistoryService.addMessageHistoryDataService(statusData)
+  const mappingData = [payload.messageId, serviceProviderMessageId, payload.to, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
+  messageHistoryService.addMessageIdMappingData(mappingData)
+    .then(statusDataAdded => {
+      return messageHistoryService.addMessageHistoryDataService(statusData)
+    })
     .then(statusDataAdded => {
       statusData.to = statusData.businessNumber
       statusData.from = statusData.endConsumerNumber

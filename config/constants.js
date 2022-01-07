@@ -171,6 +171,8 @@ const INTERNAL_END_POINTS = {
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
+const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
+
 const MESSAGE_STATUS = {
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
@@ -463,6 +465,7 @@ const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed',
 const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'
+const DB_NAME_MIS = 'helowhatsappmis'
 const INTERNAL_CALL_USER_AGENT = '181081ac-9667-441a-9f4c-f198b7339nh1'
 const INTERNAL_CALL_USER_AGENTS = ['181081ac-9667-441a-9f4c-f198b7339nh1', 'd8e25d6b-c7a2-4704-9c52-3ba3654b91c2']
 
@@ -564,6 +567,8 @@ module.exports.BATCH_SIZE_FOR_SEND_TO_QUEUE = BATCH_SIZE_FOR_SEND_TO_QUEUE
 module.exports.SEND_WEBHOOK_ON = SEND_WEBHOOK_ON
 module.exports.SINGLE = SINGLE
 module.exports.MESSAGES = MESSAGES
+module.exports.DB_NAME_MIS = DB_NAME_MIS
+module.exports.HW_MYSQL_MIS_NAME = HW_MYSQL_MIS_NAME
 module.exports.BULK = BULK
 module.exports.INTERNAL_CALL_USER_AGENT = INTERNAL_CALL_USER_AGENT
 module.exports.INTERNAL_CALL_USER_AGENTS = INTERNAL_CALL_USER_AGENTS

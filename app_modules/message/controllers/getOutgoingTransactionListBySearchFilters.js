@@ -33,7 +33,7 @@ module.exports = (req, res) => {
   __logger.info('Get Outgoing Transaction List By Filters API Called:: ', req.query, req.user)
   const dbServices = new DbServices()
   const validate = new ValidatonService()
-  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user && req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page field is required with value as number' })
   if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field is required with value as number' })
   if (+req.query.ItemsPerPage <= 0) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage field value should be greater than zero' })
@@ -41,7 +41,7 @@ module.exports = (req, res) => {
   const ItemsPerPage = +req.query.ItemsPerPage
   const offset = ItemsPerPage * (requiredPage - 1)
   validate.outgoingTransactionValidatorByFilters(req.query)
-    .then(invalid => dbServices.getOutgoingTransactionListBySearchFilters(userId, req.query.startDate, req.query.endDate, ItemsPerPage, offset, req.query.endUserNumber))
+    .then(invalid => dbServices.getOutgoingTransactionListBySearchFilters(wabaPhoneNumber, req.query.startDate, req.query.endDate, ItemsPerPage, offset, req.query.endUserNumber))
     .then(data => {
       __logger.info('Data------> then 2')
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }

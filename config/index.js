@@ -158,6 +158,21 @@ module.exports = {
       timezone: 'utc'
     }
   },
+  helo_whatsapp_mis_mysql: {
+    init: process.env.HW_MYSQL_MIS_INIT === 'true',
+    name: __constants.HW_MYSQL_MIS_NAME,
+    is_slave: process.env.HW_MYSQL_IS_SLAVE === 'true',
+    options: {
+      connection_limit: +process.env.HW_MYSQL_OPTIONS_CONNECTION_LIMIT,
+      host: process.env.HW_MYSQL_OPTIONS_HOST,
+      user: process.env.HW_MYSQL_OPTIONS_USER,
+      password: process.env.HW_MYSQL_OPTIONS_PASSWORD,
+      database: process.env.HW_MYSQL_MIS_OPTIONS_DATABASE,
+      acquireTimeout: 0,
+      port: +process.env.HW_MYSQL_OPTIONS_PORT,
+      timezone: 'utc'
+    }
+  },
   postgresql: {
     init: process.env.PSQL_INIT === 'true',
     name: process.env.PSQL_NAME,

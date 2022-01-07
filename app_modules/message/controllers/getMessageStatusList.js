@@ -34,13 +34,13 @@ const getMessageStatusList = (req, res) => {
   const validate = new ValidatonService()
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page value is required and it should be number' })
   if (isNaN(req.query.ItemsPerPage)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'ItemsPerPage value is required and it should be number' })
-  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user && req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const requiredPage = req.query.page ? +req.query.page : 1
   const ItemsPerPage = +req.query.ItemsPerPage
   const offset = ItemsPerPage * (requiredPage - 1)
   __logger.info('Get Offset value', offset)
   validate.checkstartDateAndendDate(req.query)
-    .then(invalid => dbServices.getMessageStatusList(req.params.status, req.query.startDate, req.query.endDate, ItemsPerPage, offset, userId))
+    .then(invalid => dbServices.getMessageStatusList(req.params.status, req.query.startDate, req.query.endDate, ItemsPerPage, offset, wabaPhoneNumber))
     .then(data => {
       __logger.info('data then 2', { data })
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }

@@ -3,7 +3,6 @@ const __constants = require('../../../config/constants')
 const __util = require('../../../lib/util')
 const MessageHistoryService = require('../services/dbData')
 const ValidatonService = require('../services/validation')
-
 /**
  * @namespace -WhatsApp-Message-Controller-Fetch-Tracking-
  * @description API’s related to whatsapp message.
@@ -29,7 +28,7 @@ const getMessageHistoryRecordById = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   const validate = new ValidatonService()
   validate.checkMessageIdExistService(req.params)
-    .then(data => messageHistoryService.getMessageHistoryTableDataWithId(req.params.messageId))
+    .then(data => messageHistoryService.getMessageHistoryTableDataWithId(req.params.messageId, req.params.date))
     .then(result => {
       __logger.info('then 1', { result })
       if (result) {
@@ -40,7 +39,7 @@ const getMessageHistoryRecordById = (req, res) => {
     })
     .catch(err => {
       __logger.error('error in create user function: ', err)
-      return __util.send(res, { type: err.type, err: err.err })
+      __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }
 
