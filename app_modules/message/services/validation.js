@@ -97,6 +97,7 @@ class validate {
             required: true,
             enum: __constants.COUNTRY_LIST_ALPHA_TWO
           },
+
           whatsapp: {
             type: 'object',
             required: true,
@@ -107,11 +108,93 @@ class validate {
                 required: true,
                 minLength: 1
               },
+              interactive: {
+                type: 'object',
+                required: false,
+                properties: {
+                  type: {
+                    type: 'string',
+                    required: false
+                  },
+                  header: {
+                    type: 'object',
+                    required: false,
+                    properties: {
+                      type: {
+                        type: 'string',
+                        required: false
+
+                      },
+                      text: {
+                        type: 'string',
+                        required: false
+                      }
+                    }
+                  },
+                  body: {
+                    type: 'object',
+                    required: false,
+                    properties: {
+                      text: {
+                        type: 'string',
+                        required: false
+                      }
+                    }
+                  },
+                  footer: {
+                    type: 'object',
+                    required: false,
+                    properties: {
+                      text: {
+                        type: 'string',
+                        required: false
+                      }
+                    }
+                  },
+
+                  action: {
+                    type: 'object',
+                    properties: {
+                      buttons: {
+                        type: 'array',
+                        required: false,
+                        items: {
+                          type: 'object',
+                          required: false,
+                          properties: {
+                            type: {
+                              type: 'string',
+                              required: true
+                            },
+                            reply: {
+                              type: 'object',
+                              required: false,
+                              properties: {
+                                id: {
+                                  type: 'string',
+                                  required: false
+                                },
+                                title: {
+                                  type: 'string',
+                                  required: false
+                                }
+                              }
+
+                            }
+                          }
+                        }
+
+                      }
+                    }
+
+                  }
+                }
+              },
               contentType: {
                 type: 'string',
                 required: true,
                 minLength: 1,
-                enum: ['text', 'media', 'template', 'location']
+                enum: ['text', 'media', 'template', 'location', 'interactive']
               },
               text: {
                 type: 'string',
@@ -329,6 +412,12 @@ class validate {
                   contentType: { const: 'template' }
                 },
                 required: ['template']
+              },
+              {
+                properties: {
+                  contentType: { const: 'interactive' }
+                },
+                required: ['interactive']
               }
             ]
           }

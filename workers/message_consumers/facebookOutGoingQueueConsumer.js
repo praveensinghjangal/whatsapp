@@ -78,7 +78,9 @@ class MessageConsumer {
                 .then(sendMessageRespose => {
                   return saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId, sendMessageRespose.data.messages[0].id)
                 })
-                .then(data => rmqObject.channel[queue].ack(mqDataReceived))
+                .then(data => {
+                  return rmqObject.channel[queue].ack(mqDataReceived)
+                })
                 .catch(err => {
                   __logger.error('facebook outgoing queue consumer::error: ', err)
                   if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {

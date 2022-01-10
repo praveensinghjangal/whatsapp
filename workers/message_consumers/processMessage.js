@@ -79,9 +79,15 @@ const sendToRespectiveProviderQueue = (message, queueObj, queue, mqData) => {
   const messageRouted = q.defer()
   __logger.info('inside sendToRespectiveProviderQueue', { message, queue })
   queueObj.sendToQueue(__constants.MQ[message.config.queueName], JSON.stringify(message))
-    .then(queueResponse => saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false))
-    .then(statusResponse => queueObj.channel[queue].ack(mqData))
-    .then(statusResponse => messageRouted.resolve('done!'))
+    .then(queueResponse => {
+      return saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false)
+    })
+    .then(statusResponse => {
+      return queueObj.channel[queue].ack(mqData)
+    })
+    .then(statusResponse => {
+      return messageRouted.resolve('done!')
+    })
     .catch(err => {
       __logger.error('sendToRespectiveProviderQueue ::error: ', err)
       queueObj.channel[queue].ack(mqData)
@@ -180,7 +186,6 @@ class ProcessQueueConsumer {
                       return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
                     }
                   } else {
-                    console.log('update the status of message to rejected')
                     return updateMessageStatusToRejected(messageData, rmqObject, queue, mqData)
                   }
                 })

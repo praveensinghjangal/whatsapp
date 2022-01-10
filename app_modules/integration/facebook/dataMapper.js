@@ -176,7 +176,44 @@ class InternalService {
         language: td.whatsapp.template.language,
         components: this.mapComponent(td.whatsapp.template.components)
       }
+    } else if (td.whatsapp.contentType === 'interactive') {
+      const buttonData = []
+
+      body.interactive = {
+        type: td.whatsapp.interactive.type,
+        header: {
+          type: td.whatsapp.interactive.header.type,
+          text: td.whatsapp.interactive.header.text
+        },
+        body: {
+          text: td.whatsapp.interactive.body.text
+        },
+        footer: {
+          text: td.whatsapp.interactive.footer.text
+        }
+
+      }
+
+      if (td.whatsapp.interactive.action.buttons.length > 1) {
+        td.whatsapp.interactive.action.buttons.forEach((data) => {
+          buttonData.push(data)
+          body.interactive.action = {
+            buttons: buttonData
+          }
+        })
+      } else {
+        body.interactive.action = {
+          buttons: [{
+            type: td.whatsapp.interactive.action.buttons[0].type,
+            title: {
+              id: td.whatsapp.interactive.action.buttons[0].reply.id,
+              title: td.whatsapp.interactive.action.buttons[0].reply.title
+            }
+          }]
+        }
+      }
     }
+
     return body
   }
 

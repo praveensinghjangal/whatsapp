@@ -205,7 +205,9 @@ const controller = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
   let userRedisData
-  if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+  if (!req.user.providerId || !req.user.wabaPhoneNumber) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+  }
   validate.sendMessageToQueue(req.body)
     .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
     .then(data => {
@@ -236,7 +238,6 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      console.log('send message ctrl error : ', err)
       if (err && err.type && err.type.code && err.type.code === 3021) {
         delete err.type.status_code
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })
