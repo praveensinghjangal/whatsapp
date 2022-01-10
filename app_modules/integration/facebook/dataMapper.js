@@ -132,6 +132,7 @@ class InternalService {
       to: td.to,
       type: td.whatsapp.contentType,
       recipient_type: 'individual'
+
     }
     if (td.whatsapp.contentType === 'text') {
       body.text = {
@@ -177,40 +178,11 @@ class InternalService {
         components: this.mapComponent(td.whatsapp.template.components)
       }
     } else if (td.whatsapp.contentType === 'interactive') {
-      const buttonData = []
-
-      body.interactive = {
-        type: td.whatsapp.interactive.type,
-        header: {
-          type: td.whatsapp.interactive.header.type,
-          text: td.whatsapp.interactive.header.text
-        },
-        body: {
-          text: td.whatsapp.interactive.body.text
-        },
-        footer: {
-          text: td.whatsapp.interactive.footer.text
-        }
-
-      }
-
-      if (td.whatsapp.interactive.action.buttons.length > 1) {
-        td.whatsapp.interactive.action.buttons.forEach((data) => {
-          buttonData.push(data)
-          body.interactive.action = {
-            buttons: buttonData
-          }
-        })
+      if (td.whatsapp.interactive.type === 'list') {
+        body.interactive = td.whatsapp.interactive
+        body.from = td.whatsapp.from
       } else {
-        body.interactive.action = {
-          buttons: [{
-            type: td.whatsapp.interactive.action.buttons[0].type,
-            title: {
-              id: td.whatsapp.interactive.action.buttons[0].reply.id,
-              title: td.whatsapp.interactive.action.buttons[0].reply.title
-            }
-          }]
-        }
+        body.interactive = td.whatsapp.interactive
       }
     }
 
@@ -405,6 +377,7 @@ class DataMapper {
   // }
 
   sendMessage (data, maxTpsToProvider) {
+    console.log('*****************************************')
     const deferred = q.defer()
     const internalService = new InternalService()
     internalService.sendMessageFbBody(data, maxTpsToProvider)

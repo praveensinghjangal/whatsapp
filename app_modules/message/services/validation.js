@@ -151,7 +151,6 @@ class validate {
                       }
                     }
                   },
-
                   action: {
                     type: 'object',
                     properties: {
@@ -160,7 +159,7 @@ class validate {
                         required: false,
                         items: {
                           type: 'object',
-                          required: false,
+                          required: true,
                           properties: {
                             type: {
                               type: 'string',
@@ -168,15 +167,15 @@ class validate {
                             },
                             reply: {
                               type: 'object',
-                              required: false,
+                              required: true,
                               properties: {
                                 id: {
                                   type: 'string',
-                                  required: false
+                                  required: true
                                 },
                                 title: {
                                   type: 'string',
-                                  required: false
+                                  required: true
                                 }
                               }
 
@@ -184,6 +183,46 @@ class validate {
                           }
                         }
 
+                      },
+                      button: {
+                        type: 'string',
+                        required: false
+                      },
+                      sections: {
+                        type: 'array',
+                        required: false,
+                        items: {
+                          type: 'object',
+                          required: true,
+                          properties: {
+                            title: {
+                              type: 'string',
+                              required: true
+                            },
+                            rows: {
+                              type: 'array',
+                              required: true,
+                              items: {
+                                type: 'object',
+                                required: true,
+                                properties: {
+                                  id: {
+                                    type: 'string',
+                                    required: true
+                                  },
+                                  title: {
+                                    type: 'string',
+                                    required: true
+                                  },
+                                  description: {
+                                    type: 'string',
+                                    required: true
+                                  }
+                                }
+                              }
+                            }
+                          }
+                        }
                       }
                     }
 
