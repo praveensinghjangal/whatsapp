@@ -70,7 +70,7 @@ class MessgaeHistoryService {
     return messageHistoryData.promise
   }
 
-  addMessageHistoryDataService (dataObj) {
+  addMessageHistoryDataService (dataObj, isSecondAttemp) { // isSecondAttemp is populated with date on retry
     __logger.info('addMessageHistoryDataService::>>>>>>>>>33>>>', dataObj)
     const messageHistoryDataAdded = q.defer()
     const validate = new ValidatonService()
@@ -113,10 +113,11 @@ class MessgaeHistoryService {
           customOne: custom.customOne,
           customTwo: custom.customTwo,
           customThree: custom.customThree,
-          customFour: custom.customFour
+          customFour: custom.customFour,
+          conversationId: dataObj.conversationId
         }
         _.each(messageHistoryData, val => queryParam.push(val))
-        __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInMis(), queryParam)
+        if (!isSecondAttemp) __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInMis(), queryParam)
         return queryParam
       })
       .then(queryParamArr => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(dataObj.date || tempDate), queryParamArr))

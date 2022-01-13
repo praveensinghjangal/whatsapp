@@ -84,7 +84,8 @@ class FacebookConsumer {
               state: messageData.status,
               errors: messageData.errors,
               endConsumerNumber: messageData.from,
-              businessNumber: messageData.businessNumber
+              businessNumber: messageData.businessNumber,
+              conversationId: messageDataFromFacebook.statuses[0].conversation.id || null
             }
             // todo : error handling to retry adding convo log by pushing to a q, add time check after feature is live by fb
             if (__constants.LOG_CONVERSATION_ON_STATUS.includes(messageData.status) && messageDataFromFacebook.statuses && messageDataFromFacebook.statuses[0] && messageDataFromFacebook.statuses[0].conversation && messageDataFromFacebook.statuses[0].conversation.id) {
@@ -108,6 +109,7 @@ class FacebookConsumer {
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber
                 delete statusData.endConsumerNumber
+                delete statusData.conversationId
                 return redirectService.webhookPost(statusData.to, statusData)
               })
               .then(response => rmqObject.channel[queue].ack(mqData))

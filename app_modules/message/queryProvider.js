@@ -3,8 +3,8 @@ const __constants = require('../../config/constants')
 const addMessageHistoryData = (date) => {
   const messageHistory = `message_history_${date}`
   return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const getMessageTableDataWithId = (date) => {
@@ -215,6 +215,7 @@ const createMessageHistoryTable = (date) => {
     custom_two  varchar(50) DEFAULT NULL,
     custom_three  varchar(50) DEFAULT NULL,
     custom_four  varchar(50) DEFAULT NULL,
+    conversation_id varchar(100) DEFAULT NULL NULL,
     PRIMARY KEY (id)) `
 }
 
@@ -226,8 +227,8 @@ const addMessageIdMappingData = () => {
 
 const addMessageHistoryDataInMis = () => {
   return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {
