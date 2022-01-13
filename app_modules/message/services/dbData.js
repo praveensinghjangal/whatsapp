@@ -70,7 +70,7 @@ class MessgaeHistoryService {
     return messageHistoryData.promise
   }
 
-  addMessageHistoryDataService (dataObj, isSecondAttemp) { // isSecondAttemp is populated with date on retry
+  addMessageHistoryDataService (dataObj, isSecondAttemp = null) { // isSecondAttemp is populated with date on retry
     __logger.info('addMessageHistoryDataService::>>>>>>>>>33>>>', dataObj)
     const messageHistoryDataAdded = q.defer()
     const validate = new ValidatonService()
@@ -151,7 +151,7 @@ class MessgaeHistoryService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createMessageHistoryTable(paramsTwo[0].date), null)
       .then(result => {
         if (result) {
-          return this[func](paramsOne, paramsTwo)
+          return this[func](paramsOne, paramsTwo, true)
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
@@ -173,10 +173,10 @@ class MessgaeHistoryService {
     return messageHistoryDataAdded.promise
   }
 
-  addMessageHistoryDataInBulk (msgInsertData, dataObj) {
+  addMessageHistoryDataInBulk (msgInsertData, dataObj, isSecondAttemp = null) {
     __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>23', dataObj)
     const messageHistoryDataAdded = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInBulkInMis(), [msgInsertData])
+    if (!isSecondAttemp) __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInBulkInMis(), [msgInsertData])
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(dataObj[0].date), [msgInsertData])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
