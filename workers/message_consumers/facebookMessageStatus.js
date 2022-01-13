@@ -6,6 +6,7 @@ const RedirectService = require('../../app_modules/integration/service/redirectS
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
+const LogConversation = require('../../app_modules/message/services/logConversation')
 
 const sendToFacebookMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -84,6 +85,15 @@ class FacebookConsumer {
               errors: messageData.errors,
               endConsumerNumber: messageData.from,
               businessNumber: messageData.businessNumber
+            }
+            // todo : error handling to retry adding convo log by pushing to a q, add time check after feature is live by fb
+            if (__constants.LOG_CONVERSATION_ON_STATUS.includes(messageData.status) && messageDataFromFacebook.statuses && messageDataFromFacebook.statuses[0] && messageDataFromFacebook.statuses[0].conversation && messageDataFromFacebook.statuses[0].conversation.id) {
+              const logConversation = new LogConversation()
+              const conversationExpireyTime = messageDataFromFacebook.statuses[0].conversation.expiration_timestamp ? moment.unix(messageDataFromFacebook.statuses[0].conversation.expiration_timestamp).format('YYYY-MM-DD hh:mm:ss') : '2000-01-01 00:00:01'
+              const conversationType = messageDataFromFacebook.statuses[0].conversation.origin && messageDataFromFacebook.statuses[0].conversation.origin.type ? __constants.LOG_CONVERSATION_ON_TYPE_MAPPING[messageDataFromFacebook.statuses[0].conversation.origin.type.toLowerCase()] : 'na'
+              logConversation.add(messageDataFromFacebook.statuses[0].conversation.id, messageData.businessNumber, messageData.from, conversationExpireyTime, conversationType)
+                .then(logAdded => __logger.info('facebook message status QueueConsumer:: conversation log added'))
+                .catch(err => __logger.error('facebook message status QueueConsumer:: error while adding conversation log', err, err ? err.toString() : '', messageDataFromFacebook))
             }
             messageHistoryService.addMessageHistoryDataService(statusData)
               .then(statusDataAdded => {

@@ -681,6 +681,63 @@ class validate {
     }
     return isvalid.promise
   }
+
+  addConversationLog (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/addConversationLog',
+      type: 'object',
+      required: true,
+      additionalProperties: false,
+      properties: {
+        conversationId: {
+          type: 'string',
+          minLength: 1,
+          required: true
+
+        },
+        from: {
+          type: 'string',
+          minLength: 1,
+          required: true,
+          pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
+        },
+        to: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
+        },
+        expiresOn: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          pattern: __constants.VALIDATOR.timeStamp
+        },
+        type: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          enum: __constants.CONVERSATION_BILLING_CATEGORY
+        }
+
+      }
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/addConversationLog')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
