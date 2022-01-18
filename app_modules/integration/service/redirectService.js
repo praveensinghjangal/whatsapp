@@ -84,8 +84,12 @@ class RedirectService {
         if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
-        if (payload && payload.whatsapp && payload.whatsapp.text && payload.retryCount === 0) {
-          payload.content = { text: payload.whatsapp.text, contentType: 'text' }
+        if (payload && payload.whatsapp && (payload.whatsapp.text || payload.whatsapp.media) && payload.retryCount === 0) {
+          if (payload.whatsapp.media) {
+            payload.content = { media: { type: payload.whatsapp.media.type ? payload.whatsapp.media.type : null, url: payload.whatsapp.media.url ? payload.whatsapp.media.url : null, caption: payload.whatsapp.media.caption ? payload.whatsapp.media.caption : null }, contentType: 'media' }
+          } else {
+            payload.content = { text: payload.whatsapp.text, contentType: 'text' }
+          }
           this.callMessageFlow(data, payload)
         }
         payload.heloCampaign = data.isHeloCampaign
@@ -140,6 +144,11 @@ class RedirectService {
             errorToTelegram.send({}, telegramErrorMessage)
             __logger.info('Not Redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, apiRes.body)
           }
+        })
+        .catch(err => {
+          const telegramErrorMessage = 'redirectService ~ callMessageFlow function ~ error while sending message to chat api'
+          console.log(telegramErrorMessage, err)
+          errorToTelegram.send(err, telegramErrorMessage)
         })
     } else {
       // __logger.info('Nothing to do')

@@ -41,7 +41,8 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       media: {
         url: '',
         type: messageDataFromFacebook.messages[0].type || null,
-        mediaId: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].id || null
+        mediaId: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].id || null,
+        mimeType: messageDataFromFacebook.messages[0][messageDataFromFacebook.messages[0].type].mime_type || null
       },
       contentType: __constants.FACEBOOK_CONTENT_TYPE.media
     }
