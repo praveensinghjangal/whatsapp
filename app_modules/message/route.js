@@ -4,6 +4,7 @@ const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
+const tokenBasedInternalPrivateAuth = require('../../middlewares/auth/tokenBasedInternalPrivateAuth')
 
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
 router.post('/single', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
@@ -16,6 +17,7 @@ router.get('/status/:status/list', authMiddleware.authenticate(authstrategy.jwt.
 router.get('/transaction', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/getMessageIncomingOutgoingCount'))
 router.get('/transaction/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/getMessageTransactionStatusList'))
 router.get('/media/:mediaId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/getMedia'))
+router.get('/media/:mediaId/:phoneNumber', tokenBasedInternalPrivateAuth, require('./controllers/getMediaByPhoneNumber'))
 //! dummy api to check the working on whatsapp's check contact imtegration
 router.get('/checkcontacts', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/checkContacts'))
 router.get('/getprofilepic', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/getProfilePic'))

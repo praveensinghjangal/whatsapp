@@ -316,6 +316,7 @@ module.exports = {
   heloOssWrapperToken: process.env.HELO_OSS_WRAPPER_TOKEN,
   heloCampaignStatus: process.env.HELO_CAMPAIGN_STATUS ? process.env.HELO_CAMPAIGN_STATUS.split(',') : ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected'],
   heloCampaignWebhookUrl: process.env.HELO_CAMPAIGN_WEBHOOK_URL,
-  telegram_chat_id: process.env.TELEGRAM_CHAT_ID,
-  botToken: process.env.BOT_TOKEN
+  telegramChatId: process.env.TELEGRAM_CHAT_ID,
+  botToken: process.env.BOT_TOKEN,
+  privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || []
 }
