@@ -29,9 +29,10 @@ const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
       }
     })
     .then(data => {
-      if (data) {
+      if (data && data.length > 0) {
+        data = JSON.parse(data)
         __db.redis.key_delete(messageId)
-        queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoingSync', data.config.userId, data.payload.whatsapp.from), data)
+        queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoingSync', data.config.userId, data.payload.whatsapp.from), JSON.stringify(data))
       }
     })
     .catch(err => {

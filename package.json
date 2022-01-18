@@ -14,6 +14,7 @@
     "develop-tyntecMessageStatus": "NODE_ENV=development WORKER_TYPE=tyntecMessageStatus MQ_OBJECT_KEY=tyntec_message_status USER_ID=Helo_test node server.js",
     "develop-facebookOutGoingQueueConsumer": "NODE_ENV=development WORKER_TYPE=facebookOutGoingQueueConsumer MQ_OBJECT_KEY=fbOutgoing USER_ID=Helo_test node server.js",
     "develop-facebookOutGoingQueueConsumer_withWaba_917666118833": "NODE_ENV=development WORKER_TYPE=facebookOutGoingQueueConsumer MQ_OBJECT_KEY=fbOutgoing_dba50b76-4f7c-4987-a9c0-a84ced291dbd_917666118833  USER_ID=Helo_test node server.js",
+    "develop-facebookOutGoingQueueConsumerSync_withWaba_917666118833": "NODE_ENV=development WORKER_TYPE=facebookOutGoingQueueConsumer MQ_OBJECT_KEY=fbOutgoingSync_dba50b76-4f7c-4987-a9c0-a84ced291dbd_917666118833  USER_ID=Helo_test node server.js",
     "develop-facebookIncoming": "NODE_ENV=development WORKER_TYPE=facebookIncoming MQ_OBJECT_KEY=fb_incoming USER_ID=Helo_test node server.js",
     "develop-facebookMessageStatus": "NODE_ENV=development WORKER_TYPE=facebookMessageStatus MQ_OBJECT_KEY=fb_message_status USER_ID=Helo_test node server.js",
     "develop-retrySendingPayload": "NODE_ENV=development WORKER_TYPE=retrySendingPayload MQ_OBJECT_KEY=retry_failed_to_redirect_payload USER_ID=Helo_test node server.js",
