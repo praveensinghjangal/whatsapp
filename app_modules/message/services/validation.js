@@ -156,7 +156,10 @@ class validate {
                   },
                   url: {
                     type: 'string',
-                    required: true,
+                    minLength: 1
+                  },
+                  mediaId: {
+                    type: 'string',
                     minLength: 1
                   },
                   caption: {
@@ -170,7 +173,17 @@ class validate {
                     required: false,
                     minLength: 1
                   }
-                }
+                },
+                anyOf: [
+                  {
+                    required:
+                    ['mediaId']
+                  },
+                  {
+                    required:
+                    ['url']
+                  }
+                ]
               },
               location: {
                 type: 'object',
@@ -368,7 +381,11 @@ class validate {
         formatedError.push(formatedErr)
       } else {
         const formatedErr = err.split('.')
-        formatedError.push(formatedErr[formatedErr.length - 1])
+        if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
+          formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
+          formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
+        } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
       }
     })
     if (formatedError.length > 0) {
@@ -732,6 +749,44 @@ class validate {
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+      isvalid.resolve(request)
+    }
+    return isvalid.promise
+  }
+
+  getMediaByPhoneNumber (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getMediaByPhoneNumber',
+      type: 'object',
+      required: true,
+      properties: {
+        mediaId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        phoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getMediaByPhoneNumber')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({
+        type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST,
+        err: formatedError
+      })
     } else {
       trimInput.singleInputTrim(request)
       isvalid.resolve(request)
