@@ -197,7 +197,6 @@ class ProcessQueueConsumer {
                       return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
                     }
                   } else {
-                    console.log('update the status of message to rejected')
                     return updateMessageStatusToRejected(messageData, rmqObject, queue, mqData)
                   }
                 })

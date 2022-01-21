@@ -132,6 +132,7 @@ class InternalService {
       to: td.to,
       type: td.whatsapp.contentType,
       recipient_type: 'individual'
+
     }
     if (td.whatsapp.contentType === 'text') {
       body.text = {
@@ -176,7 +177,15 @@ class InternalService {
         language: td.whatsapp.template.language,
         components: this.mapComponent(td.whatsapp.template.components)
       }
+    } else if (td.whatsapp.contentType === 'interactive') {
+      if (td.whatsapp.interactive.type === 'list') {
+        body.interactive = td.whatsapp.interactive
+        body.from = td.whatsapp.from
+      } else {
+        body.interactive = td.whatsapp.interactive
+      }
     }
+
     return body
   }
 

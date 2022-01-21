@@ -112,7 +112,7 @@ class FacebookConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageDataFromFacebook = JSON.parse(mqData.content.toString())
-            // __logger.info('incoming!!!!!!!!!!!!!!!!!!', messageData)
+            __logger.info('incoming!!!!!!!!!!!!!!!!!! messageDataFromFacebook', messageDataFromFacebook)
             // change the mapping
             const messageData = setTheMappingOfMessageData(messageDataFromFacebook)
             const uniqueId = new UniqueId()
