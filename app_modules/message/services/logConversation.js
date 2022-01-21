@@ -20,7 +20,6 @@ class LogConversationInternalService {
         }
       })
       .catch(err => {
-        console.log('eeeeeeeeeeeeee', err)
         __logger.error('error in insertConversation: ', err, err ? err.toString() : '')
         logAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
@@ -64,7 +63,6 @@ class LogConversation {
       .then(inserted => logAdded.resolve(true))
       .catch(err => {
         __logger.error('error in adding log: ', err, err ? err.toString() : '')
-        console.log('eeeeeeeeeeee', err)
         logAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return logAdded.promise

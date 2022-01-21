@@ -107,6 +107,39 @@ const flow = (req, res) => {
       })
     })
 }
+const sendMessage = (req, res) => {
+  const http = new HttpService(60000)
+  const headers = {
+    Authorization: __config.chatAppToken
+  }
+  __logger.info('calling post sendMessage api of chat api')
+
+  http.Post(req.body, 'body', __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.sendMessage, headers)
+    .then(data => res.send(data.body))
+    .catch(err => {
+      return __util.send(res, {
+        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+        err: err.err || err
+      })
+    })
+}
+
+const invoke = (req, res) => {
+  const http = new HttpService(60000)
+  const headers = {
+    Authorization: __config.chatAppToken
+  }
+  __logger.info('calling post invoke api of chat api')
+
+  http.Post(req.body, 'body', __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.invoke, headers)
+    .then(data => res.send(data.body))
+    .catch(err => {
+      return __util.send(res, {
+        type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+        err: err.err || err
+      })
+    })
+}
 
 const getMenuBasedTemplateList = (req, res) => {
   const http = new HttpService(60000)
@@ -184,8 +217,10 @@ module.exports = {
   deleteEntireFlow,
   deleteIdentifier,
   flow,
+  sendMessage,
   getMenuBasedTemplateList,
   evaluationResult,
   activeTemplate,
-  templateFlowStatus
+  templateFlowStatus,
+  invoke
 }
