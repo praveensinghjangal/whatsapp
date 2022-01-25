@@ -101,6 +101,11 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       text: messageDataFromFacebook.messages[0].button.text || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
+  } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
+    messageData.content = {
+      text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
   }
   messageData.retryCount = messageDataFromFacebook.retryCount ? messageDataFromFacebook.retryCount : 0
   return messageData
