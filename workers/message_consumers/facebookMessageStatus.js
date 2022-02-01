@@ -93,7 +93,7 @@ class FacebookConsumer {
             if (__constants.LOG_CONVERSATION_ON_STATUS.includes(messageData.status) && messageDataFromFacebook.statuses && messageDataFromFacebook.statuses[0] && messageDataFromFacebook.statuses[0].conversation && messageDataFromFacebook.statuses[0].conversation.id) {
               statusData.conversationId = messageDataFromFacebook.statuses[0].conversation.id
               const logConversation = new LogConversation()
-              const conversationExpireyTime = messageDataFromFacebook.statuses[0].conversation.expiration_timestamp ? moment.unix(messageDataFromFacebook.statuses[0].conversation.expiration_timestamp).format('YYYY-MM-DD hh:mm:ss') : '2000-01-01 00:00:01'
+              const conversationExpireyTime = messageDataFromFacebook.statuses[0].conversation.expiration_timestamp ? moment.unix(messageDataFromFacebook.statuses[0].conversation.expiration_timestamp).utc().format('YYYY-MM-DD hh:mm:ss') : '2000-01-01 00:00:01'
               const conversationType = messageDataFromFacebook.statuses[0].conversation.origin && messageDataFromFacebook.statuses[0].conversation.origin.type ? __constants.LOG_CONVERSATION_ON_TYPE_MAPPING[messageDataFromFacebook.statuses[0].conversation.origin.type.toLowerCase()] : 'na'
               logConversation.add(messageDataFromFacebook.statuses[0].conversation.id, messageData.businessNumber, messageData.from, conversationExpireyTime, conversationType)
                 .then(logAdded => __logger.info('facebook message status QueueConsumer:: conversation log added'))
