@@ -66,7 +66,7 @@ class FacebookConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageDataFromFacebook = JSON.parse(mqData.content.toString())
-            console.log('Facebook message status incoming object', messageDataFromFacebook)
+            // console.log('Facebook message status incoming object', messageDataFromFacebook)
             // change the mapping
             const messageData = setTheMappingOfMessageData(messageDataFromFacebook)
             if (__constants.CONTINUE_SENDING_MESSAGE_STATUS_FB.includes(messageData.status.toLowerCase())) {
