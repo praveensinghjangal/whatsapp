@@ -9,6 +9,7 @@ const ValidatonService = require('../services/validation')
 const noTableFoundHandler = require('../../../lib/util/noTableFoundHandler')
 const { Base64 } = require('../../../lib/util/encodeDecode')
 const __config = require('../../../config')
+const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 
 class MessgaeHistoryService {
   getMessageHistoryTableDataWithId (messageId, date) {
@@ -70,7 +71,7 @@ class MessgaeHistoryService {
     return messageHistoryData.promise
   }
 
-  addMessageHistoryDataService (dataObj, isSecondAttemp = null) { // isSecondAttemp is populated with date on retry
+  addMessageHistoryDataService (dataObj, object, isSecondAttemp = null) { // isSecondAttemp is populated with date on retry
     __logger.info('addMessageHistoryDataService::>>>>>>>>>33>>>', dataObj)
     const messageHistoryDataAdded = q.defer()
     const validate = new ValidatonService()
@@ -117,7 +118,19 @@ class MessgaeHistoryService {
           conversationId: dataObj.conversationId
         }
         _.each(messageHistoryData, val => queryParam.push(val))
-        if (!isSecondAttemp) __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInMis(), queryParam)
+        if (!isSecondAttemp) {
+          const uniqueId = new UniqueId()
+          __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInMis(), queryParam)
+          const statusData = {
+            senderPhoneNumber: ecNum,
+            eventType: dataObj.state,
+            eventId: uniqueId.uuid(),
+            messageId: msgId,
+            sendTime: new Date(),
+            serviceProviderMessageId: dataObj.serviceProviderMessageId || ''
+          }
+          this.addStatusToMessage(statusData, msgId)
+        }
         return queryParam
       })
       .then(queryParamArr => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(dataObj.date || tempDate), queryParamArr))
@@ -145,13 +158,13 @@ class MessgaeHistoryService {
     return messageHistoryDataAdded.promise
   }
 
-  retryByCreating (paramsOne, paramsTwo, bulk) {
+  retryByCreating (paramsOne, paramsTwo, bulk, mongoBulkObject) {
     const messageHistoryDataAdded = q.defer()
     const func = bulk ? 'addMessageHistoryDataInBulk' : 'addMessageHistoryDataService'
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.createMessageHistoryTable(paramsTwo[0].date), null)
       .then(result => {
         if (result) {
-          return this[func](paramsOne, paramsTwo, true)
+          return this[func](paramsOne, paramsTwo, true, mongoBulkObject)
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
@@ -159,7 +172,7 @@ class MessgaeHistoryService {
       .then(data => messageHistoryDataAdded.resolve(data))
       .catch((err) => {
         if (err && err.message && typeof err.message === 'string' && err.message.slice(err.message.length - 14) === 'already exists') {
-          this[func](paramsOne, paramsTwo)
+          this[func](paramsOne, paramsTwo, false, mongoBulkObject)
             .then(result => {
               messageHistoryDataAdded.resolve(result)
             })
@@ -173,10 +186,13 @@ class MessgaeHistoryService {
     return messageHistoryDataAdded.promise
   }
 
-  addMessageHistoryDataInBulk (msgInsertData, dataObj, isSecondAttemp = null) {
+  addMessageHistoryDataInBulk (msgInsertData, dataObj, isSecondAttemp = null, mongoBulkObject) {
     __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>23', dataObj)
     const messageHistoryDataAdded = q.defer()
-    if (!isSecondAttemp) __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInBulkInMis(), [msgInsertData])
+    if (!isSecondAttemp) {
+      __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInBulkInMis(), [msgInsertData])
+      this.addBulkMessageStatusData(mongoBulkObject)
+    }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(dataObj[0].date), [msgInsertData])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -187,7 +203,7 @@ class MessgaeHistoryService {
       })
       .catch(err => {
         if (err && err.message && typeof err.message === 'string' && err.message.slice(err.message.length - 13) === "doesn't exist") {
-          this.retryByCreating(msgInsertData, dataObj, true)
+          this.retryByCreating(msgInsertData, dataObj, true, mongoBulkObject)
             .then(result => {
               messageHistoryDataAdded.resolve(result)
             })
@@ -353,6 +369,166 @@ class MessgaeHistoryService {
         messageId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageId.promise
+  }
+
+  getWabaNameByWabaNumber (arrayofWabaNumber) {
+    const promises = q.defer()
+    __logger.info('inside getWabaNameByWabaNumber')
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByWabaNumber(), [arrayofWabaNumber])
+      .then(result => {
+        if (result && result.length > 0) {
+          promises.resolve(result)
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getWabaNameByWabaNumber db call')
+          promises.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getWabaNameByWabaNumber db call:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
+
+  getMisRelatedData (startOfMonth, endOfMonth) {
+    const promises = q.defer()
+    __logger.info('inside getMisRelatedData', startOfMonth, endOfMonth)
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMisRelatedData(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
+      .then(result => {
+        if (result && result.length > 0) {
+          __logger.info('>>>>>>>>> getMisRelatedData db call got array of json', result)
+          promises.resolve(result)
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getMisRelatedData db call')
+          promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getMisRelatedData db call:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
+
+  addUpdateCounts (updateObject) {
+    __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+    const addedUpdated = q.defer()
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
+      .then(data => {
+        __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+        if (data && data.result && data.result.ok > 0) {
+          addedUpdated.resolve(true)
+        } else {
+          addedUpdated.reject({ type: __constants.RESPONSE_MESSAGES.FAILED, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=addUpdateCounts.---->>>>> ', err)
+        addedUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return addedUpdated.promise
+  }
+
+  addStatusToMessage (statusData, messageId) {
+    __logger.info('inside ~function = addStatusToMessage. Updating status of the message', statusData, messageId)
+    const addMessageStatusData = q.defer()
+    __db.mongo.__update_addToSet_and_other_param(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { messageId }, { status: statusData }, { currentStatus: statusData.eventType || '', currentStatusTime: new Date(), serviceProviderMessageId: statusData.serviceProviderMessageId || '' })
+      .then(data => {
+        __logger.info('inside ~function = addStatusToMessage response', data)
+        if (data && data.value && data.value.messageId && data.lastErrorObject && data.lastErrorObject.n && data.lastErrorObject.n > 0) {
+          addMessageStatusData.resolve(statusData)
+        } else {
+          addMessageStatusData.reject({ type: __constants.RESPONSE_MESSAGES.STATUS_ADD_FAILED, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=addStatusToMessage. Updating status of the message: ', err)
+        addMessageStatusData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return addMessageStatusData.promise
+  }
+
+  addBulkMessageStatusData (msgStatusData) {
+    __logger.info('inside ~function=addBulkMessageStatusData ', msgStatusData)
+    const addMessageData = q.defer()
+    __db.mongo.__insertMany(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, msgStatusData)
+      .then(data => {
+        __logger.info('inside ~function=After inserting addBulkMessageStatusData ', data)
+        if (data && data.insertedCount > 0) {
+          addMessageData.resolve(true)
+        } else {
+          addMessageData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=addBulkMessageStatusData function: ', err)
+        addMessageData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return addMessageData.promise
+  }
+
+  messageStatusCountByDate (startDate, endDate) {
+    __logger.info('start ~function=messageStatusCountByDate', startDate, endDate)
+    const messageTemplate = q.defer()
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { date: { $gte: startDate, $lte: endDate } })
+      .then(data => {
+        __logger.info('got data ~function=messageStatusCountByDate', data)
+        if (data && data.length > 0) {
+          messageTemplate.resolve(data || null)
+        } else {
+          messageTemplate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=messageStatusCountByDate function: ', err)
+        messageTemplate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return messageTemplate.promise
+  }
+
+  getAllUserStatusCountPerDay (startDate, endDate) {
+    __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
+    const messageTemplate = q.defer()
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
+      {
+
+        $match: {
+          createdOn: { $gte: startDate + 'T00:00:00.000Z', $lte: endDate + 'T23:59:59.999Z' }
+        }
+      },
+      {
+        $group: {
+          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', day: { $substr: ['$createdOn', 0, 10] } },
+          sc: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day' },
+          total: { $sum: '$sc' },
+          status: {
+            $push: {
+              name: '$_id.currentStatus',
+              count: '$sc'
+            }
+          }
+        }
+      },
+      { $sort: { total: -1 } }
+    ])
+      .then(data => {
+        __logger.info('data ~function=getAllUserStatusCountPerDay', data)
+        if (data && data.length > 0) {
+          messageTemplate.resolve(data || null)
+        } else {
+          messageTemplate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        messageTemplate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return messageTemplate.promise
   }
 }
 

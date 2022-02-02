@@ -395,6 +395,22 @@ class AudienceService {
       })
     return wabaPhoneNumber.promise
   }
+
+  getAllOptOutUser (startDate, endDate) {
+    const audienceData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAllOptOutUser(), [startDate + ' 00:00:00', endDate + ' 23:59:59'])
+      .then(result => {
+        if (result && result.length === 0) {
+          audienceData.resolve([])
+        } else {
+          audienceData.resolve(result)
+        }
+      })
+      .catch(err => {
+        audienceData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return audienceData.promise
+  }
 }
 
 module.exports = AudienceService

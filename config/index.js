@@ -318,5 +318,6 @@ module.exports = {
   heloCampaignWebhookUrl: process.env.HELO_CAMPAIGN_WEBHOOK_URL,
   telegramChatId: process.env.TELEGRAM_CHAT_ID,
   botToken: process.env.BOT_TOKEN,
-  privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || []
+  privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || [],
+  misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : []
 }

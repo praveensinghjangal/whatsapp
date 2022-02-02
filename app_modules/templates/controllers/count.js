@@ -115,7 +115,6 @@ const getAllTemplateCount = (req, res) => {
         _.each(result.statusCount, (item, index) => {
           const recordData = _.find(apiRes.data, obj => obj.statusName ? obj.statusName.toLowerCase() === item.statusName.toLowerCase() : false)
           if (recordData) {
-            console.log('if Condition ', (result.statusCount[index].statusName && result.statusCount[index].statusName === recordData.statusName))
             result.statusCount[index].templateCount = result.statusCount[index].templateCount + ((result.statusCount[index].statusName && result.statusCount[index].statusName === recordData.statusName) ? 0 + recordData.templateCount : 0)
             totalInteractiveTemplate += recordData.templateCount
           }
