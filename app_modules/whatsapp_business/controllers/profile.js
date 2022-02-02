@@ -738,7 +738,6 @@ const addUpdateWabaConfiguration = (req, res) => {
       }
     })
     .then(data => {
-      console.log('template allocated', data)
       const reqBody = {
         userId: req.body.userId,
         serviceProviderId: req.body.serviceProviderId,

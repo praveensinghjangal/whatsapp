@@ -95,7 +95,6 @@ const getWabaNumberFromDb = () => {
   from waba_information wi
   where wi.user_id = ? and wi.is_active=1`
 }
-// Optin Master
 
 const getOptinSourceData = () => {
   return `SELECT optin_source_id as "optinSourceId", optin_source as "optinSource"
@@ -173,6 +172,13 @@ const updateWabaNoMappingData = () => {
   set waba_phone_number =?, updated_on = now(),updated_by=?
   where waba_information_id = ? and is_active=1`
 }
+
+const getAllOptOutUser = () => {
+  return `select a.phone_number as phoneNumber, awnm.waba_phone_number as wabaPhoneNumber from audience a 
+  inner join audience_waba_no_mapping awnm on awnm.aud_mapping_id  = a.waba_phone_number
+  where a.optin = 0 and a.updated_on BETWEEN ? and ?`
+}
+
 module.exports = {
   getAudienceRecordList,
   getAudienceTableDataWithId,
@@ -192,5 +198,6 @@ module.exports = {
   getWabaPhoneNumber,
   getWabaIdFromWabaNoMapping,
   addWabaNoMappingData,
-  updateWabaNoMappingData
+  updateWabaNoMappingData,
+  getAllOptOutUser
 }

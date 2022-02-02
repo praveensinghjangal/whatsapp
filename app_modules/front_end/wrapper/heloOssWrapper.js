@@ -52,7 +52,6 @@ const uploadFile = (req, res) => {
           res.send(response.body)
         })
         .catch(err => {
-          console.log('errrrrrrrrrrrrrr', err)
           res.send(err)
         })
     }

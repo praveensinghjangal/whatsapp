@@ -19,7 +19,10 @@ const SERVER_SCRIPTS = {
   retrySendingPayload: './workers/message_consumers/retrySendingPayload.js',
   fetchAndUpdateTemplateStatus: './workers/schedulers/fetchAndUpdateTemplateStatus.js',
   redisPubSubMechanism: './workers/redisPubSubMechanism.js',
-  sendToWebhook: './workers/webhook/sendDlr.js'
+  sendToWebhook: './workers/webhook/sendDlr.js',
+  processCountScheduler: './workers/schedulers/processCounts',
+  misScheduler: './workers/schedulers/mis',
+  misSchedulerConversation: './workers/schedulers/misOfConversation'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

@@ -245,11 +245,37 @@ const controller = (req, res) => {
       if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
         return null
       } else {
+        const uniqueId = new UniqueId()
         const msgInsertData = []
+        const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => {
           msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+          mongoBulkObject.push({
+            messageId: singleMessage.messageId,
+            serviceProviderMessageId: null,
+            serviceProviderId: req.user.providerId,
+            deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+            senderPhoneNumber: singleMessage.to,
+            wabaPhoneNumber: singleMessage.whatsapp.from,
+            customOne: singleMessage.whatsapp.customOne || null,
+            customTwo: singleMessage.whatsapp.customTwo || null,
+            customThree: singleMessage.whatsapp.customThree || null,
+            customFour: singleMessage.whatsapp.customFour || null,
+            currentStatus: __constants.MESSAGE_STATUS.inProcess,
+            currentStatusTime: new Date(),
+            createdOn: new Date(),
+            status: [
+              {
+                senderPhoneNumber: singleMessage.to,
+                eventType: __constants.MESSAGE_STATUS.inProcess,
+                eventId: uniqueId.uuid(),
+                messageId: singleMessage.messageId,
+                sendTime: new Date()
+              }
+            ]
+          })
         })
-        return messageHistoryService.addMessageHistoryDataInBulk(msgInsertData, processedMessages.resolve)
+        return messageHistoryService.addMessageHistoryDataInBulk(msgInsertData, processedMessages.resolve, false, mongoBulkObject)
       }
     })
     .then(msgAdded => {
