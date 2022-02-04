@@ -7,44 +7,6 @@ const TrimService = require('../../../lib/trimService/trim')
 const trimInput = new TrimService()
 
 class validate {
-  billingConversation (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/getBillingConversationData',
-      type: 'object',
-      required: true,
-      additionalProperties: false,
-      properties: {
-        startDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
-          minLength: 1
-        },
-        endDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
-          minLength: 1
-        }
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/getBillingConversationData')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      trimInput.singleInputTrim(request)
-        .then(data => isvalid.resolve(data))
-    }
-    return isvalid.promise
-  }
-
   checkUserIdService (request) {
     const isvalid = q.defer()
     const schema = {

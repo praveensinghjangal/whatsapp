@@ -11,12 +11,10 @@ const businessProfileController = require('./controllers/profile')
 const businessVerificationController = require('./controllers/verification')
 const businessApprovalController = require('./controllers/senForApproval')
 const businessStatusUpdateController = require('./controllers/updateWabaAccessInfoStatus')
-const billingConversationController = require('./controllers/billingDataCount')
 
 // Routes
 // Business Category
 router.get('/categories', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessCategoryController.getBusinessCategory)
-router.get('/billingconversationcount', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingConversationController.getBillingConversationDataOnBasisOfWabaNumber)
 
 // Service Provider
 router.get('/serviceprovider', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, businessProfileController.getServiceProviderDetails)

@@ -530,6 +530,24 @@ class MessgaeHistoryService {
       })
     return messageTemplate.promise
   }
+
+  billingDataCount (billingData) {
+    const billingConversation = q.defer()
+    const queryParam = []
+    _.each(billingData, (val) => queryParam.push(val))
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDataOnBasisOfWabaNumberFromBillingCoversation(), queryParam)
+      .then(result => {
+        if (result) {
+          billingConversation.resolve(result)
+        } else {
+          billingConversation.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        billingConversation.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return billingConversation.promise
+  }
 }
 
 module.exports = MessgaeHistoryService
