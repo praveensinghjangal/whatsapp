@@ -11,9 +11,9 @@ const DbServices = require('../services/dbData')
 // const q = require('q')
 
 /**
- * @memberof -Whatsapp-Business-Account-(WABA)-Controller-
+ * @memberof -Whatsapp-message-(WABA)-Controller-
  * @name billingDataCount
- * @path {GET} /business/billingconversationcount
+ * @path {GET} /conversation/count
  * @description Bussiness Logic :- Gets list of billing conversation and its count on the basis of conversationCategory.
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  - Response got successfully.
