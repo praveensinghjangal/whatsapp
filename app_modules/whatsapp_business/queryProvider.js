@@ -306,7 +306,6 @@ const getTotalUser = () => {
 }
 
 module.exports = {
-
   getBusinessCategory,
   getBusinessProfile,
   updateBusinessProfileVerificationStatus,
