@@ -39,7 +39,7 @@ const billingDataCount = (billingData) => {
   return billingConversation.promise
 }
 
-const getDataOnBasisOfWabaNumber = (req, res) => {
+const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
   const validate = new ValidatonService()
   validate.billingConversation(req.body)
     .then(data => {
@@ -76,4 +76,4 @@ const getDataOnBasisOfWabaNumber = (req, res) => {
     })
 }
 
-module.exports = { getDataOnBasisOfWabaNumber }
+module.exports = { getBillingConversationDataOnBasisOfWabaNumber }
