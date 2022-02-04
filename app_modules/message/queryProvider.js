@@ -261,7 +261,15 @@ const getWabaNameByWabaNumber = () => {
   return 'select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information wi where phone_number in (?)'
 }
 
+const getDataOnBasisOfWabaNumberFromBillingCoversation = () => {
+  return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory
+  FROM billing_conversation b
+  where b.created_on between ? and ? and b.from = ?
+  GROUP BY b.conversation_category `
+}
+
 module.exports = {
+  getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
   addMessageHistoryData,
   getMessageIdByServiceProviderMsgId,
