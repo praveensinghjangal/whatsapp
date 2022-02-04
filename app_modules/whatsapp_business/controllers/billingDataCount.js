@@ -4,6 +4,7 @@ const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const __util = require('../../../lib/util')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
+const ValidatonService = require('../services/validation')
 const queryProvider = require('../queryProvider')
 const _ = require('lodash')
 const q = require('q')
@@ -39,12 +40,17 @@ const billingDataCount = (billingData) => {
 }
 
 const getDataOnBasisOfWabaNumber = (req, res) => {
-  const billingDataObj = {
-    dateFrom: req.body.datefrom,
-    dateTill: req.body.datetill,
-    wabaPhoneNumber: req.user.wabaPhoneNumber
-  }
-  billingDataCount(billingDataObj)
+  const validate = new ValidatonService()
+  validate.billingConversation(req.body)
+    .then(data => {
+      __logger.info(' then 1', data)
+      const billingDataObj = {
+        dateFrom: req.body.dateFrom,
+        dateTill: req.body.dateTill,
+        wabaPhoneNumber: req.user.wabaPhoneNumber
+      }
+      return billingDataCount(billingDataObj)
+    })
     .then(result => {
       if (result && result.length > 0) {
         let billingDataObj = {}
