@@ -28,12 +28,8 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
   validate.billingConversation(req.query)
     .then(data => {
       __logger.info(' then 1', data)
-      const billingDataObj = {
-        startDate: req.query.dateFrom,
-        endDate: req.query.dateTill,
-        wabaPhoneNumber: req.user.wabaPhoneNumber
-      }
-      return dbServices.billingDataCount(billingDataObj)
+
+      return dbServices.billingDataCount(req.query.startDate, req.query.endDate, req.user.wabaPhoneNumber)
     })
     .then(result => {
       if (result && result.length > 0) {

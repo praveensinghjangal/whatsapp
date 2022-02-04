@@ -531,10 +531,15 @@ class MessgaeHistoryService {
     return messageTemplate.promise
   }
 
-  billingDataCount (billingData) {
+  billingDataCount (startDate, endDate, wabaPhoneNumber) {
+    const billingDataObj = {
+      startDate: startDate || null,
+      endDate: endDate || null,
+      wabaPhoneNumber: wabaPhoneNumber || null
+    }
     const billingConversation = q.defer()
     const queryParam = []
-    _.each(billingData, (val) => queryParam.push(val))
+    _.each(billingDataObj, (val) => queryParam.push(val))
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDataOnBasisOfWabaNumberFromBillingCoversation(), queryParam)
       .then(result => {
         if (result) {
