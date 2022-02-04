@@ -1,14 +1,10 @@
-// const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-// const __db = require('../../../lib/db')
 const __util = require('../../../lib/util')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const ValidatonService = require('../services/validation')
 const DbServices = require('../services/dbData')
-// const queryProvider = require('../queryProvider')
-// const _ = require('lodash')
-// const q = require('q')
+
 
 /**
  * @memberof -Whatsapp-message-(WABA)-Controller-
@@ -26,26 +22,18 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   validate.billingConversation(req.query)
-    .then(data => {
-      __logger.info(' then 1', data)
-
-      return dbServices.billingDataCount(req.query.startDate, req.query.endDate, req.user.wabaPhoneNumber)
-    })
+    .then(data => dbServices.billingDataCount(req.query.startDate, req.query.endDate, req.user.wabaPhoneNumber))
     .then(result => {
       if (result && result.length > 0) {
-        let billingDataObj = {}
         const filterData = result.reduce((resultData, itm) => {
           resultData[itm.conversationCategory] = resultData[itm.conversationCategory] + 1 || 1
           return resultData
         }, {})
         const billingDataArr = []
         for (const [key, value] of Object.entries(filterData)) {
-          billingDataObj = {
-            conversationCategory: key, conversationCategoryCount: value
-          }
-          billingDataArr.push(billingDataObj)
+          billingDataArr.push({ conversationCategory: key, conversationCategoryCount: value})
         }
-        __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: billingDataArr })
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: billingDataArr })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
       }
