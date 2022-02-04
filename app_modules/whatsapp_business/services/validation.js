@@ -15,17 +15,17 @@ class validate {
       required: true,
       additionalProperties: false,
       properties: {
-        dateFrom: {
+        startDate: {
           type: 'string',
           required: true,
-          minLength: 1,
-          maxLength: 100
+          pattern: __constants.VALIDATOR.timeStamp,
+          minLength: 1
         },
-        dateTill: {
+        endDate: {
           type: 'string',
           required: true,
-          minLength: 1,
-          maxLength: 80
+          pattern: __constants.VALIDATOR.timeStamp,
+          minLength: 1
         }
       }
     }

@@ -41,12 +41,12 @@ const billingDataCount = (billingData) => {
 
 const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
   const validate = new ValidatonService()
-  validate.billingConversation(req.body)
+  validate.billingConversation(req.query)
     .then(data => {
       __logger.info(' then 1', data)
       const billingDataObj = {
-        dateFrom: req.body.dateFrom,
-        dateTill: req.body.dateTill,
+        startDate: req.query.dateFrom,
+        endDate: req.query.dateTill,
         wabaPhoneNumber: req.user.wabaPhoneNumber
       }
       return billingDataCount(billingDataObj)
