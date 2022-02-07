@@ -35,7 +35,7 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
           billingDataArr.push({ conversationCategory: key, conversationCategoryCount: value })
         }
 
-        _.each(__constants.CONVERSATION_CATEGORY_BILLING_CONVERSATION, singleStatus => {
+        _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => {
           const filterData1 = _.find(billingDataArr, obj => {
             if (obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase()) {
               return true
