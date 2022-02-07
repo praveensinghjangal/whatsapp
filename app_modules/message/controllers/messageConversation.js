@@ -1,7 +1,6 @@
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __util = require('../../../lib/util')
-const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const ValidatonService = require('../services/validation')
 const DbServices = require('../services/dbData')
 const _ = require('lodash')
@@ -24,21 +23,8 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
   validate.billingConversation(req.query)
     .then(data => dbServices.billingDataCount(req.query.startDate, req.query.endDate, req.user.wabaPhoneNumber))
     .then(result => {
-      if (result && result.length > 0) {
-        const filterData = result.reduce((resultData, itm) => {
-          resultData[itm.conversationCategory] = resultData[itm.conversationCategory] + 1 || 1
-          return resultData
-        }, {})
-        const billingDataArr = []
-
-        for (const [key, value] of Object.entries(filterData)) {
-          billingDataArr.push({ conversationCategory: key, conversationCategoryCount: value })
-        }
-        _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => {if (!_.find(billingDataArr, obj => obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase())) billingDataArr.push({ conversationCategory: singleStatus, stateCount: 0 })})
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: billingDataArr })
-      } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
-      }
+      _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => { if (!_.find(result, obj => obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase())) result.push({ conversationCategory: singleStatus, stateCount: 0 }) })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
       __logger.error('error: ', err)

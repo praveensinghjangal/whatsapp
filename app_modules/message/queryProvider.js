@@ -265,7 +265,7 @@ const getDataOnBasisOfWabaNumberFromBillingCoversation = () => {
   return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory
   FROM billing_conversation b
   where b.created_on between ? and ? and b.from = ?
-  GROUP BY b.conversation_category `
+  GROUP BY b.conversation_category`
 }
 
 module.exports = {
