@@ -583,13 +583,28 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
+      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      formatedError.push(regexPatternPreetyMessage)
     })
     if (formatedError.length > 0) {
+      __logger.info('Catched', formatedError)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      trimInput.singleInputTrim(request)
-        .then(data => isvalid.resolve(data))
+      if (request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        __logger.info('Catched', formatedError)
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
     }
     return isvalid.promise
   }
