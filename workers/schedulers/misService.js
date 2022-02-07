@@ -6,6 +6,7 @@ const DbService = require('../../app_modules/message/services/dbData')
 const AudienceService = require('../../app_modules/audience/services/dbData')
 const EmailService = require('../../lib/sendNotifications/email')
 const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
+const conversationMisService = require('./misServiceOfConversation')
 const moment = require('moment')
 const _ = require('lodash')
 
@@ -21,6 +22,7 @@ const messageStatusOnMail = () => {
   const attachments = []
   let passingObjectToMailer = {}
   const userIdToUserName = {}
+  let messageCountTemplate = ''
 
   dbService.messageStatusCountByDate(startOfMonth, endOfMonth)
     .then(allUserData => {
@@ -161,9 +163,20 @@ const messageStatusOnMail = () => {
         attachmentObj.content = attachmentObj.content.trim()
         attachments.push(attachmentObj)
       })
+      return emailTemplates.misTemplates(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, userIdToUserName)
+    })
+    .then(msgCountTemp => {
+      __logger.info('msgCountTemp got msg count data~function=messageStatusOnMail', msgCountTemp)
+      messageCountTemplate = msgCountTemp
+      return conversationMisService()
+    })
+    .then(messageConvoData => {
+      __logger.info('messageConvoData got convo data~function=messageStatusOnMail', messageConvoData)
       const emailService = new EmailService(__config.emailProvider)
-      const subject = __constants.WHATSAPP_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split('[').join(date).split(']').join(date)
-      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.misTemplates(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, userIdToUserName), attachments)
+      const subject = __constants.WHATSAPP_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split(')').join(messageConvoData.lastDayCount).split('[').join(date).split(']').join(date)
+      let FormedEmailTemplate = emailTemplates.convoAndMessageMisContaioner()
+      FormedEmailTemplate = FormedEmailTemplate.split('{{MIS_MESSAGE}}').join(messageCountTemplate).split('{{MIS_CONVERSATION}}').join(messageConvoData.template)
+      return emailService.sendEmail(__config.misEmailList, subject, FormedEmailTemplate, attachments)
     })
     .then(isMailSent => {
       __logger.info('MIS mail sent ~function=messageStatusOnMail', isMailSent)

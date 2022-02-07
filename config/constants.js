@@ -484,12 +484,11 @@ const LOG_CONVERSATION_ON_TYPE_MAPPING = {
   business_initiated: CONVERSATION_BILLING_CATEGORY[1],
   referral_conversion: CONVERSATION_BILLING_CATEGORY[2]
 }
-const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Sent: ( | From: [ to ]'
+const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Messages Sent: ( | Total Conversations Created: ) | From: [ to ]'
 const MIS_SCHEDULER_TIME = '00 30 08 * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
-const WHATSAPP_CONVERSATION_SUMMARY_SUBJECT = 'DAILY Whatsapp Conversation MIS | Total Sent: ( | From: [ to ]'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -604,4 +603,3 @@ module.exports.PROCESS_COUNT_SCHEDULER_TIME = PROCESS_COUNT_SCHEDULER_TIME
 module.exports.PROCESS_COUNT_SCHEDULER = PROCESS_COUNT_SCHEDULER
 module.exports.WHATSAPP_SUMMARY_SUBJECT = WHATSAPP_SUMMARY_SUBJECT
 module.exports.MIS_SCHEDULER_TIME_CONVERSATION = MIS_SCHEDULER_TIME_CONVERSATION
-module.exports.WHATSAPP_CONVERSATION_SUMMARY_SUBJECT = WHATSAPP_CONVERSATION_SUMMARY_SUBJECT
