@@ -197,21 +197,6 @@ const MESSAGE_STATUS_FOR_DISPLAY = [
   MESSAGE_STATUS.failed,
   MESSAGE_STATUS.rejected
 ]
-
-const CONVERSATION_CATEGORY = {
-  UI: 'ui',
-  RC: 'rc',
-  BI: 'bi',
-  NA: 'na'
-
-}
-const CONVERSATION_CATEGORY_BILLING_CONVERSATION = [
-  CONVERSATION_CATEGORY.UI,
-  CONVERSATION_CATEGORY.RC,
-  CONVERSATION_CATEGORY.BI,
-  CONVERSATION_CATEGORY.NA
-
-]
 const VALIDATOR = {
   email: '^(([^<>()\\[\\]\\.,;:\\s@"]+(\\.[^<>()\\[\\]\\.,;:\\s@"]+)*)|(".+"))@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$',
   password: '^(?=.*?[A-Z])(?=(.*[a-z]){1,})(?=(.*[\\d]){2,})(?=(.*[\\W]){1,})(?!.*\\s).{8,}$',
@@ -563,7 +548,6 @@ module.exports.FACEBOOK_MESSAGE_EVENTS = FACEBOOK_MESSAGE_EVENTS
 module.exports.WEB_HOOK_END_POINT = WEB_HOOK_END_POINT
 module.exports.MENU_BASED_TEMPLATE_STATUS = MENU_BASED_TEMPLATE_STATUS
 module.exports.HELO_OSS_ENDPOINTS = HELO_OSS_ENDPOINTS
-module.exports.CONVERSATION_CATEGORY_BILLING_CONVERSATION = CONVERSATION_CATEGORY_BILLING_CONVERSATION
 module.exports.MESSAGE_STATUS_FOR_DISPLAY = MESSAGE_STATUS_FOR_DISPLAY
 module.exports.MESSAGE_TYPE = MESSAGE_TYPE
 module.exports.AGREEMENT_STATUS = AGREEMENT_STATUS
