@@ -34,13 +34,7 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
         for (const [key, value] of Object.entries(filterData)) {
           billingDataArr.push({ conversationCategory: key, conversationCategoryCount: value })
         }
-
-        _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => {
-          const filterData1 = _.find(billingDataArr, obj => obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase())
-          if (!filterData1) {
-            billingDataArr.push({ conversationCategory: singleStatus, stateCount: 0 })
-          }
-        })
+        _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => {if (!_.find(billingDataArr, obj => obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase())) billingDataArr.push({ conversationCategory: singleStatus, stateCount: 0 })})
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: billingDataArr })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
