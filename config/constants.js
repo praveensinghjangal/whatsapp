@@ -484,7 +484,7 @@ const LOG_CONVERSATION_ON_TYPE_MAPPING = {
   business_initiated: CONVERSATION_BILLING_CATEGORY[1],
   referral_conversion: CONVERSATION_BILLING_CATEGORY[2]
 }
-const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS & Opt-Out Data | Total Sent: ( | From: [ to ]'
+const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Sent: ( | From: [ to ]'
 const MIS_SCHEDULER_TIME = '00 30 08 * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
