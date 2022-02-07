@@ -4,7 +4,7 @@ const __util = require('../../../lib/util')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const ValidatonService = require('../services/validation')
 const DbServices = require('../services/dbData')
-
+const _ = require('lodash')
 
 /**
  * @memberof -Whatsapp-message-(WABA)-Controller-
@@ -30,9 +30,21 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
           return resultData
         }, {})
         const billingDataArr = []
+
         for (const [key, value] of Object.entries(filterData)) {
-          billingDataArr.push({ conversationCategory: key, conversationCategoryCount: value})
+          billingDataArr.push({ conversationCategory: key, conversationCategoryCount: value })
         }
+
+        _.each(__constants.CONVERSATION_CATEGORY_BILLING_CONVERSATION, singleStatus => {
+          const filterData1 = _.find(billingDataArr, obj => {
+            if (obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase()) {
+              return true
+            }
+          })
+          if (!filterData1) {
+            billingDataArr.push({ conversationCategory: singleStatus, stateCount: 0 })
+          }
+        })
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: billingDataArr })
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
