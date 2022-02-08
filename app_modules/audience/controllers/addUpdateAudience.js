@@ -13,6 +13,7 @@ const _ = require('lodash')
 const qalllib = require('qalllib')
 const RedisService = require('../../../lib/redis_service/redisService')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
+const validUrl = require('../../../lib/util/url')
 // const { template } = require('lodash')
 
 /**
@@ -219,7 +220,11 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       addUpdateData = responseData
       data.audienceWebhookUrl = audienceWebhookUrl
       let planPriority
-      return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.audience_webhook, JSON.stringify(data), planPriority)
+      if (!validUrl.isValid(audienceWebhookUrl)) {
+        return true
+      } else {
+        return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.audience_webhook, JSON.stringify(data), planPriority)
+      }
     })
     .then(data => {
       return dataSaved.resolve(addUpdateData)
