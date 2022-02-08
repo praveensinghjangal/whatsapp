@@ -112,6 +112,7 @@ const TEMPLATE_BUTTON_TYPE = [{
 }]
 const PREFETCH_COUNT = +process.env.QUEUE_PREFETCH_COUNT || 25
 const MQ = {
+  audience_webhook: { type: 'queue', q_name: 'audience_webhook', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },

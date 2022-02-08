@@ -7,6 +7,7 @@ if (process.env.NODE_ENV === 'development') require('dotenv').config({ path: pro
 // LOAD ENV FILE END ====================================================
 
 const SERVER_SCRIPTS = {
+  audienceWebhook: './workers/message_consumers/audienceWebhook.js',
   http_api: './workers/http_api.js',
   processQueueConsumer: './workers/message_consumers/processMessage.js',
   mockQueueConsumer: './workers/message_consumers/mockQueueConsumer.js',

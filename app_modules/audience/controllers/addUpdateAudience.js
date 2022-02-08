@@ -12,6 +12,7 @@ const integrationService = require('../../../app_modules/integration')
 const _ = require('lodash')
 const qalllib = require('qalllib')
 const RedisService = require('../../../lib/redis_service/redisService')
+const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 // const { template } = require('lodash')
 
 /**
@@ -64,9 +65,9 @@ const addUpdateAudienceData = (req, res) => {
     })
     .then(({ newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences }) => {
       if (verifiedAudiences.length) {
-        return processInBulkAndSendSuccessOptin(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, req.user.wabaPhoneNumber, optinTemplateId)
+        return processInBulkAndSendSuccessOptin(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, req.user.wabaPhoneNumber, optinTemplateId, req.userConfig.audienceWebhookUrl)
       } else {
-        return processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
+        return processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, req.userConfig.audienceWebhookUrl)
       }
     })
     .then(data => {
@@ -79,10 +80,10 @@ const addUpdateAudienceData = (req, res) => {
     })
 }
 
-function processInBulkAndSendSuccessOptin (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, wabaPhoneNumber, optinTemplateId) {
+function processInBulkAndSendSuccessOptin (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, verifiedAudiences, authToken, wabaPhoneNumber, optinTemplateId, audienceWebhookUrl) {
   const deferred = q.defer()
   __logger.info('Inside processInBulkAndSendSuccessOptin')
-  processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber)
+  processRecordInBulk(userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, audienceWebhookUrl)
     .then(processResponse => {
       // processResponse is an array of audiences that got updated.
       return sendOptinSuccessMessageToVerifiedAudiences(verifiedAudiences, processResponse, newDataOfAudiences, authToken, wabaPhoneNumber, optinTemplateId)
@@ -189,9 +190,10 @@ function updateAudienceData (inputData, oldAudienceData) {
   return audienceData.promise
 }
 
-const singleRecordProcess = (data, userId, oldData = null) => {
+const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) => {
   __logger.info('Inside singleRecordProcess :: ', { data }, userId)
   const dataSaved = q.defer()
+  let addUpdateData
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
   validate.addAudience(data)
@@ -213,7 +215,15 @@ const singleRecordProcess = (data, userId, oldData = null) => {
         return audienceService.addAudienceDataService(data, audienceData)
       }
     })
-    .then(data => dataSaved.resolve(data))
+    .then(responseData => {
+      addUpdateData = responseData
+      data.audienceWebhookUrl = audienceWebhookUrl
+      let planPriority
+      return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.audience_webhook, JSON.stringify(data), planPriority)
+    })
+    .then(data => {
+      return dataSaved.resolve(addUpdateData)
+    })
     .catch(err => {
       __logger.info('Err', err)
       dataSaved.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
@@ -221,7 +231,7 @@ const singleRecordProcess = (data, userId, oldData = null) => {
   return dataSaved.promise
 }
 
-const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
+const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataBasedOnPhoneNumber, audienceWebhookUrl) => {
   const p = q.defer()
   __logger.info('Inside processRecordInBulk')
   if (!newDataOfAudiences.length) {
@@ -230,7 +240,7 @@ const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataB
   }
 
   // qalllib
-  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, mappingOfOldAndNewDataBasedOnPhoneNumber)
+  qalllib.qASyncWithBatch(singleRecordProcessForQalllib, newDataOfAudiences, __constants.BATCH_SIZE_FOR_ADD_UPDATE_AUDIENCES, userId, mappingOfOldAndNewDataBasedOnPhoneNumber, audienceWebhookUrl)
     .then(data => {
       if (data.reject.length) {
         return p.reject(data.reject)
@@ -243,9 +253,9 @@ const processRecordInBulk = (userId, newDataOfAudiences, mappingOfOldAndNewDataB
   return p.promise
 }
 
-const singleRecordProcessForQalllib = (singleObject, userId, mappingOfOldAndNewDataBasedOnPhoneNumber) => {
+const singleRecordProcessForQalllib = (singleObject, userId, mappingOfOldAndNewDataBasedOnPhoneNumber, audienceWebhookUrl) => {
   const oldData = mappingOfOldAndNewDataBasedOnPhoneNumber[singleObject.phoneNumber].old
-  return singleRecordProcess(singleObject, userId, oldData)
+  return singleRecordProcess(singleObject, userId, oldData, audienceWebhookUrl)
 }
 
 /**
@@ -272,6 +282,7 @@ const singleRecordProcessForQalllib = (singleObject, userId, mappingOfOldAndNewD
  */
 
 const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
+  const audienceWebhookUrl = req.userConfig.audienceWebhookUrl
   const wabaPhoneNumber = req.user.wabaPhoneNumber
   __logger.info('inside markOptinByPhoneNumberAndAddOptinSource', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -342,7 +353,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
         return sendOptinMessage(listOfBodies, authToken)
       }
     })
-    .then(data => singleRecordProcess(input, userId, oldAudienceData))
+    .then(data => singleRecordProcess(input, userId, oldAudienceData, audienceWebhookUrl))
     .then(data => {
       __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
       for (var key in data) {

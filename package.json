@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./bin/www",
     "develop": "nodemon server.js",
+    "develop-audienceWebhook": "NODE_ENV=development WORKER_TYPE=audienceWebhook MQ_OBJECT_KEY=audience_webhook USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-u": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookQueue USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-h": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookHeloCampaign USER_ID=Helo_test node server.js",
     "develop-processQueueConsumer": "NODE_ENV=development WORKER_TYPE=processQueueConsumer MQ_OBJECT_KEY=process_message USER_ID=Helo_test node server.js",
