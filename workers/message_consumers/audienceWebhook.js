@@ -21,11 +21,15 @@ class AudienceWebookConsumer {
             const headers = {
               'Content-Type': 'application/json'
             }
-
             delete (dataConsumedFromQueue.userId)
-
             __logger.info('calling post flow api of chat api')
-            http.Post(dataConsumedFromQueue, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
+            const postObj = {
+              phoneNumber: dataConsumedFromQueue.phoneNumber,
+              optin: dataConsumedFromQueue.optin === true,
+              optinSourceId: dataConsumedFromQueue.optinSourceId || ''
+            }
+
+            http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
               .then(data => {
                 if (data.statusCode === 200) {
                   return data.body
