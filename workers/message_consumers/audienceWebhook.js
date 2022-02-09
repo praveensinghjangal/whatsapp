@@ -6,7 +6,7 @@ const HttpService = require('../../lib/http_service')
 const __util = require('../../lib/util')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 
-class FacebookConsumer {
+class AudienceWebookConsumer {
   startServer () {
     const queue = __constants.MQ.audience_webhook.q_name
     __db.init()
@@ -16,14 +16,16 @@ class FacebookConsumer {
         __logger.info('Audience webhook worker QueueConsumerr started')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
-            const dataFromFacebook = JSON.parse(mqData.content.toString())
-            const http = new HttpService(120000)
+            const dataConsumedFromQueue = JSON.parse(mqData.content.toString())
+            const http = new HttpService(2000)
             const headers = {
-              'Content-Type': 'application/json',
-              Authorization: ''
+              'Content-Type': 'application/json'
             }
+
+            delete (dataConsumedFromQueue.userId)
+
             __logger.info('calling post flow api of chat api')
-            http.Post(dataFromFacebook, 'body', dataFromFacebook.audienceWebhookUrl, headers)
+            http.Post(dataConsumedFromQueue, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
               .then(data => {
                 if (data.statusCode === 200) {
                   return data.body
@@ -68,7 +70,7 @@ class FacebookConsumer {
   }
 }
 
-class Worker extends FacebookConsumer {
+class Worker extends AudienceWebookConsumer {
   start () {
     __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()

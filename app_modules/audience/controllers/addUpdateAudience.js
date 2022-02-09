@@ -220,6 +220,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       addUpdateData = responseData
       data.audienceWebhookUrl = audienceWebhookUrl
       let planPriority
+
       if (!validUrl.isValid(audienceWebhookUrl)) {
         return true
       } else {
@@ -287,7 +288,6 @@ const singleRecordProcessForQalllib = (singleObject, userId, mappingOfOldAndNewD
  */
 
 const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
-  const audienceWebhookUrl = req.userConfig.audienceWebhookUrl
   const wabaPhoneNumber = req.user.wabaPhoneNumber
   __logger.info('inside markOptinByPhoneNumberAndAddOptinSource', req.body)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -358,7 +358,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
         return sendOptinMessage(listOfBodies, authToken)
       }
     })
-    .then(data => singleRecordProcess(input, userId, oldAudienceData, audienceWebhookUrl))
+    .then(data => singleRecordProcess(input, userId, oldAudienceData, req.userConfig.audienceWebhookUrl))
     .then(data => {
       __logger.info('markOptinByPhoneNumberAndAddOptinSource then 2')
       for (var key in data) {
@@ -384,7 +384,7 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
     .then(audiencesData => {
       // audiencesData => data that needs to be updated (ie. they're already present in db)
       oldAudiencesData = []
-      // // adding the new data(to be added in db) in oldAudiencesData
+      // adding the new data(to be added in db) in oldAudiencesData
       const reqBodyArray = [...audiences]
       // input body
       reqBodyArray.forEach(bodyAud => {
@@ -505,6 +505,7 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
 
 const markOptOutByPhoneNumber = (req, res) => {
   __logger.info('inside markOptOutByPhoneNumber')
+
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const input = req.body
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
@@ -512,7 +513,10 @@ const markOptOutByPhoneNumber = (req, res) => {
 
   const validate = new ValidatonService()
   validate.checkPhoneNumberExistService(input)
-    .then(data => singleRecordProcess(input, userId))
+    .then(data => {
+      let oldData
+      return singleRecordProcess(input, userId, oldData, req.userConfig.audienceWebhookUrl)
+    })
     .then(data => {
       __logger.info('markOptOutByPhoneNumber then 2')
       for (var key in data) {
@@ -522,7 +526,9 @@ const markOptOutByPhoneNumber = (req, res) => {
       }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
-    .catch(err => __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => {
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
 }
 
 module.exports = {
