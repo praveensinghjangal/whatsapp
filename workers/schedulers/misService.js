@@ -22,7 +22,6 @@ const messageStatusOnMail = () => {
   const attachments = []
   let passingObjectToMailer = {}
   const userIdToUserName = {}
-  let messageCountTemplate = ''
 
   dbService.messageStatusCountByDate(startOfMonth, endOfMonth)
     .then(allUserData => {
@@ -163,20 +162,13 @@ const messageStatusOnMail = () => {
         attachmentObj.content = attachmentObj.content.trim()
         attachments.push(attachmentObj)
       })
-      return emailTemplates.misTemplates(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, userIdToUserName)
-    })
-    .then(msgCountTemp => {
-      __logger.info('msgCountTemp got msg count data~function=messageStatusOnMail', msgCountTemp)
-      messageCountTemplate = msgCountTemp
       return conversationMisService()
     })
     .then(messageConvoData => {
       __logger.info('messageConvoData got convo data~function=messageStatusOnMail', messageConvoData)
       const emailService = new EmailService(__config.emailProvider)
       const subject = __constants.WHATSAPP_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split(')').join(messageConvoData.lastDayCount).split('[').join(date).split(']').join(date)
-      let FormedEmailTemplate = emailTemplates.convoAndMessageMisContaioner()
-      FormedEmailTemplate = FormedEmailTemplate.split('{{MIS_MESSAGE}}').join(messageCountTemplate).split('{{MIS_CONVERSATION}}').join(messageConvoData.template)
-      return emailService.sendEmail(__config.misEmailList, subject, FormedEmailTemplate, attachments)
+      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMis(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, messageConvoData.statusData, messageConvoData.totalStatusCount, messageConvoData.totalMessageCount, messageConvoData.mtdStatusCount, messageConvoData.mtdTotalStatusCount, messageConvoData.mtdTotalMessageCount, userIdToUserName, messageConvoData.userIdToUserNameConvo), attachments)
     })
     .then(isMailSent => {
       __logger.info('MIS mail sent ~function=messageStatusOnMail', isMailSent)

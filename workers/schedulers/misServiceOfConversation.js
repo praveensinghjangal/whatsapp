@@ -2,7 +2,6 @@ const q = require('q')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
-const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 const moment = require('moment')
 const _ = require('lodash')
 
@@ -102,7 +101,16 @@ const messageStatusOnMailForConversation = () => {
       for (let i = 0; i < dbresponse.length; i++) {
         userIdToUserName[dbresponse[i].wabaPhoneNumber] = dbresponse[i].businessName
       }
-      return conversationMis.resolve({ template: emailTemplates.misTemplatesWithConversation(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, userIdToUserName), lastDayCount: passingObjectToMailer.lastDayTotalMessageCount })
+      return conversationMis.resolve({
+        statusData: passingObjectToMailer.lastDayAllUserCount,
+        totalStatusCount: passingObjectToMailer.lastDayTotalStatusCount,
+        totalMessageCount: passingObjectToMailer.lastDayTotalMessageCount,
+        mtdStatusCount: passingObjectToMailer.mtdAllUserCount,
+        mtdTotalStatusCount: passingObjectToMailer.mtdTotalStatusCount,
+        mtdTotalMessageCount: passingObjectToMailer.mtdTotalMessageCount,
+        lastDayCount: passingObjectToMailer.lastDayTotalMessageCount,
+        userIdToUserNameConvo: userIdToUserName
+      })
     })
     .catch((error) => {
       console.log('error in sending mis ~function=messageStatusOnMailForConversation', error)
