@@ -7,7 +7,7 @@ const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessi
 const tokenBasedInternalPrivateAuth = require('../../middlewares/auth/tokenBasedInternalPrivateAuth')
 const messageConversationController = require('./controllers/messageConversation')
 
-router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
+// router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
 router.post('/single', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
 router.post('/bulk', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
 router.post('/whatsapp/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueueExcel'))
