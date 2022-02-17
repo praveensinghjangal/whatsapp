@@ -27,7 +27,7 @@ const messageStatusOnMail = () => {
     .then(allUserData => {
       __logger.info('data fetched from DB ~function=messageStatusOnMail', allUserData)
       const arrayofWabanumber = []
-      const lastDayData = _.filter(allUserData, { date: date }) // → [1, 2]
+      const lastDayData = _.filter(allUserData, { date: date + 'T00:00:00.000Z' }) // → [1, 2]
       const lastDayAllUserCount = []
       let lastDayTotalMessageCount = 0
       const lastDayTotalStatusCount = {
