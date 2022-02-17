@@ -8,7 +8,7 @@
         "contact": {
             "name": "vivaconnect support",
             "email": "support@vivaconnect.co"
-         }
+        }
     },
     "tags": [
         {
@@ -80,7 +80,7 @@
             "post": {
                 "x-isPublic": true,
                 "x-module": "platform",
-                "description": "This API is used to send mesage using a channel .\nThis API can send single messsage.",
+                "description": "This API is used to send mesage.\nThis API only send's single messsage.",
                 "summary": "Only 500 hits/sec is allowed",
                 "tags": [
                     "message"
@@ -102,32 +102,36 @@
                         "name": "Body",
                         "in": "body",
                         "required": true,
-                        "description": "Accepts json to send single message",
+                        "description": "Accepts json to send message (Array is used in below sample body just to display various possible input's)",
                         "schema": {
                             "example": [
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "location",
                                         "location": {
                                             "longitude": 7.4954884,
                                             "latitude": 51.5005765
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "template",
                                         "template": {
                                             "templateId": "welcome",
@@ -185,39 +189,51 @@
                                                     ]
                                                 }
                                             ]
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "media",
                                         "media": {
                                             "type": "image",
                                             "url": "https://i.ibb.co/kXgjphY/925869358s.png",
                                             "caption": "viva connect"
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "text",
-                                        "text": "hello"
+                                        "text": "hello",
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 }
                             ],
-                            "type": "object",
+                            "type": "array",
                             "items": {
                                 "$ref": "#/definitions/sendrequest"
                             }
@@ -354,28 +370,32 @@
                         "schema": {
                             "example": [
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "location",
                                         "location": {
                                             "longitude": 7.4954884,
                                             "latitude": 51.5005765
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "template",
                                         "template": {
                                             "templateId": "welcome",
@@ -433,35 +453,47 @@
                                                     ]
                                                 }
                                             ]
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "media",
                                         "media": {
                                             "type": "image",
                                             "url": "https://i.ibb.co/kXgjphY/925869358s.png",
                                             "caption": "viva connect"
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "text",
-                                        "text": "hello"
+                                        "text": "hello",
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 }
                             ],
@@ -16474,6 +16506,18 @@
                 },
                 "template": {
                     "$ref": "#/definitions/Template"
+                },
+                "customOne": {
+                    "type": "string"
+                },
+                "customTwo": {
+                    "type": "string"
+                },
+                "customThree": {
+                    "type": "string"
+                },
+                "customFour": {
+                    "type": "string"
                 }
             },
             "required": [

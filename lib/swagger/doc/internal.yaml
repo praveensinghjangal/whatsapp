@@ -50,8 +50,8 @@ paths:
       x-isPublic: true
       x-module: platform
       description: |-
-        This API is used to send mesage using a channel .
-        This API can send single messsage.
+        This API is used to send mesage.
+        This API only send's single messsage.
       summary: Only 500 hits/sec is allowed
       tags:
       - message
@@ -68,20 +68,93 @@ paths:
       - name: Body
         in: body
         required: true
-        description: Accepts json to send single message
+        description: Accepts json to send message (Array is used in below sample body
+          just to display various possible input's)
         schema:
           example:
-            to: '9112345'
+          - to: '911234567890'
             channels:
             - whatsapp
             countryCode: IN
             whatsapp:
-              from: '9167890'
+              from: '916789012345'
               contentType: location
               location:
                 longitude: 7.4954884
                 latitude: 51.5005765
-          type: object
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          - to: '911234567890'
+            channels:
+            - whatsapp
+            countryCode: IN
+            whatsapp:
+              from: '916789012345'
+              contentType: template
+              template:
+                templateId: welcome
+                language:
+                  policy: deterministic
+                  code: en
+                components:
+                - type: header
+                  parameters:
+                  - type: text
+                    text: Hi!
+                  - type: media
+                    media:
+                      type: document
+                      url: http://www.africau.edu/images/default/sample.pdf
+                - type: body
+                  parameters:
+                  - type: text
+                    text: Hi!
+                  - type: media
+                    media:
+                      type: document
+                      url: http://www.africau.edu/images/default/sample.pdf
+                - type: footer
+                  parameters:
+                  - type: text
+                    text: Hi!
+                  - type: media
+                    media:
+                      type: document
+                      url: http://www.africau.edu/images/default/sample.pdf
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          - to: '911234567890'
+            channels:
+            - whatsapp
+            countryCode: IN
+            whatsapp:
+              from: '916789012345'
+              contentType: media
+              media:
+                type: image
+                url: https://i.ibb.co/kXgjphY/925869358s.png
+                caption: viva connect
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          - to: '911234567890'
+            channels:
+            - whatsapp
+            countryCode: IN
+            whatsapp:
+              from: '916789012345'
+              contentType: text
+              text: hello
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          type: array
           items:
             "$ref": "#/definitions/sendrequest"
       responses:
@@ -178,22 +251,26 @@ paths:
         description: Accepts Array of json to send bulk message
         schema:
           example:
-          - to: '9112345'
+          - to: '911234567890'
             channels:
             - whatsapp
             countryCode: IN
             whatsapp:
-              from: '9167890'
+              from: '916789012345'
               contentType: location
               location:
                 longitude: 7.4954884
                 latitude: 51.5005765
-          - to: '9112345'
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          - to: '911234567890'
             channels:
             - whatsapp
             countryCode: IN
             whatsapp:
-              from: '9167890'
+              from: '916789012345'
               contentType: template
               template:
                 templateId: welcome
@@ -225,25 +302,37 @@ paths:
                     media:
                       type: document
                       url: http://www.africau.edu/images/default/sample.pdf
-          - to: '9112345'
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          - to: '911234567890'
             channels:
             - whatsapp
             countryCode: IN
             whatsapp:
-              from: '9167890'
+              from: '916789012345'
               contentType: media
               media:
                 type: image
                 url: https://i.ibb.co/kXgjphY/925869358s.png
                 caption: viva connect
-          - to: '9112345'
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
+          - to: '911234567890'
             channels:
             - whatsapp
             countryCode: IN
             whatsapp:
-              from: '9167890'
+              from: '916789012345'
               contentType: text
               text: hello
+              customOne: customOne
+              customTwo: customTwo
+              customThree: three
+              customFour: customFour
           type: array
           items:
             "$ref": "#/definitions/sendrequest"
@@ -11264,28 +11353,6 @@ paths:
 definitions:
   sendrequest:
     title: sendrequest
-    example:
-      to: '919860245659'
-      channels:
-      - whatsapp
-      isOptin: true
-      whatsapp:
-        from: '918080800808'
-        contentType: template
-        template:
-          templateId: opt_1
-          language:
-            policy: deterministic
-            code: hi
-          components:
-          - type: body
-            parameters:
-            - type: text
-              text: VivaConnect
-            - type: text
-              text: '007'
-            - type: text
-              text: '2022'
     type: object
     properties:
       to:
@@ -11329,6 +11396,14 @@ definitions:
         type: string
       template:
         "$ref": "#/definitions/Template"
+      customOne:
+        type: string
+      customTwo:
+        type: string
+      customThree:
+        type: string
+      customFour:
+        type: string
     required:
     - from
     - contentType
