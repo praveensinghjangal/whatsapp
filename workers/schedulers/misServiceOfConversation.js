@@ -1,9 +1,7 @@
+const q = require('q')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
-const __config = require('../../config')
 const DbService = require('../../app_modules/message/services/dbData')
-const EmailService = require('../../lib/sendNotifications/email')
-const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 const moment = require('moment')
 const _ = require('lodash')
 
@@ -21,6 +19,7 @@ const bodyCreator = (array) => {
 
 // handle no record for mis data as of now mis stops in case of no data but if there is 0 campagin the opt out data should go
 const messageStatusOnMailForConversation = () => {
+  const conversationMis = q.defer()
   const dbService = new DbService()
   const date = moment().utc().subtract(1, 'days').format('YYYY-MM-DD')
   const dateWithTime = moment().utc().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ssZ')
@@ -102,16 +101,22 @@ const messageStatusOnMailForConversation = () => {
       for (let i = 0; i < dbresponse.length; i++) {
         userIdToUserName[dbresponse[i].wabaPhoneNumber] = dbresponse[i].businessName
       }
-      const emailService = new EmailService(__config.emailProvider)
-      const subject = __constants.WHATSAPP_CONVERSATION_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split('[').join(date).split(']').join(date)
-      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.misTemplatesWithConversation(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, userIdToUserName))
-    })
-    .then(isMailSent => {
-      __logger.info('MIS mail sent ~function=messageStatusOnMailForConversation', isMailSent)
+      return conversationMis.resolve({
+        statusData: passingObjectToMailer.lastDayAllUserCount,
+        totalStatusCount: passingObjectToMailer.lastDayTotalStatusCount,
+        totalMessageCount: passingObjectToMailer.lastDayTotalMessageCount,
+        mtdStatusCount: passingObjectToMailer.mtdAllUserCount,
+        mtdTotalStatusCount: passingObjectToMailer.mtdTotalStatusCount,
+        mtdTotalMessageCount: passingObjectToMailer.mtdTotalMessageCount,
+        lastDayCount: passingObjectToMailer.lastDayTotalMessageCount,
+        userIdToUserNameConvo: userIdToUserName
+      })
     })
     .catch((error) => {
       console.log('error in sending mis ~function=messageStatusOnMailForConversation', error)
       __logger.error('error in sending mis ~function=messageStatusOnMailForConversation', { err: typeof error === 'object' ? error : { error: error.toString() } })
+      conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
     })
+  return conversationMis.promise
 }
 module.exports = messageStatusOnMailForConversation

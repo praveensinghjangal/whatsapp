@@ -21,7 +21,7 @@ const callSendToQueueApi = (formattedBody, authToken) => {
   const options = {
     url,
     body: formattedBody,
-    headers: { Authorization: authToken },
+    headers: { Authorization: authToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT },
     json: true
   }
   // Calling another api for sending messages

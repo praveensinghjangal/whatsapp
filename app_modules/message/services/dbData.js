@@ -470,7 +470,7 @@ class MessgaeHistoryService {
   messageStatusCountByDate (startDate, endDate) {
     __logger.info('start ~function=messageStatusCountByDate', startDate, endDate)
     const messageTemplate = q.defer()
-    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { date: { $gte: startDate, $lte: endDate } })
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { date: { $gte: new Date(startDate), $lte: new Date(endDate) } })
       .then(data => {
         __logger.info('got data ~function=messageStatusCountByDate', data)
         if (data && data.length > 0) {
@@ -493,7 +493,7 @@ class MessgaeHistoryService {
       {
 
         $match: {
-          createdOn: { $gte: startDate + 'T00:00:00.000Z', $lte: endDate + 'T23:59:59.999Z' }
+          createdOn: { $gte: new Date(startDate + 'T00:00:00.000Z'), $lte: new Date(endDate + 'T23:59:59.999Z') }
         }
       },
       {
