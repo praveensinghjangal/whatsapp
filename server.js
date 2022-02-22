@@ -21,7 +21,9 @@ const SERVER_SCRIPTS = {
   redisPubSubMechanism: './workers/redisPubSubMechanism.js',
   sendToWebhook: './workers/webhook/sendDlr.js',
   processCountScheduler: './workers/schedulers/processCounts',
-  misScheduler: './workers/schedulers/mis'
+  misScheduler: './workers/schedulers/mis',
+  misSchedulerConversation: './workers/schedulers/misOfConversation',
+  audienceWebhook: './workers/message_consumers/audienceWebhook.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {
