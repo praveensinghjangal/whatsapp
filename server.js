@@ -7,7 +7,6 @@ if (process.env.NODE_ENV === 'development') require('dotenv').config({ path: pro
 // LOAD ENV FILE END ====================================================
 
 const SERVER_SCRIPTS = {
-  audienceWebhook: './workers/message_consumers/audienceWebhook.js',
   http_api: './workers/http_api.js',
   processQueueConsumer: './workers/message_consumers/processMessage.js',
   mockQueueConsumer: './workers/message_consumers/mockQueueConsumer.js',
@@ -23,7 +22,8 @@ const SERVER_SCRIPTS = {
   sendToWebhook: './workers/webhook/sendDlr.js',
   processCountScheduler: './workers/schedulers/processCounts',
   misScheduler: './workers/schedulers/mis',
-  misSchedulerConversation: './workers/schedulers/misOfConversation'
+  misSchedulerConversation: './workers/schedulers/misOfConversation',
+  audienceWebhook: './workers/message_consumers/audienceWebhook.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

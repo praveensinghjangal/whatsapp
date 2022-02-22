@@ -31,7 +31,7 @@ class AudienceWebookConsumer {
 
             http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
               .then(data => {
-                if (data.statusCode === 200) {
+                if (data && data.statusCode === 200) {
                   return data.body
                 } else {
                   return __util.send({
@@ -43,10 +43,9 @@ class AudienceWebookConsumer {
                 return rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                return __util.send({
-                  type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
-                  err: err.err || err
-                })
+                const telegramErrorMessage = '~ Audience webhook  QueueConsumer::error while parsing: try/catch'
+                errorToTelegram.send(err, telegramErrorMessage)
+                __logger.error('Audience webhook QueueConsumer::error : ', err.toString())
               })
           } catch (err) {
             const telegramErrorMessage = 'Audience webhook ~ fetchFromQueue function ~ Audience webhook  QueueConsumer::error while parsing: try/catch'

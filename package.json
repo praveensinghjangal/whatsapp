@@ -6,7 +6,6 @@
   "scripts": {
     "start": "node ./bin/www",
     "develop": "nodemon server.js",
-    "develop-audienceWebhook": "NODE_ENV=development WORKER_TYPE=audienceWebhook MQ_OBJECT_KEY=audience_webhook USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-u": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookQueue USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-h": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookHeloCampaign USER_ID=Helo_test node server.js",
     "develop-processQueueConsumer": "NODE_ENV=development WORKER_TYPE=processQueueConsumer MQ_OBJECT_KEY=process_message USER_ID=Helo_test node server.js",
@@ -24,6 +23,7 @@
     "develop-s-processCount": "NODE_ENV=development WORKER_TYPE=processCountScheduler node server.js",
     "develop-s-mis": "NODE_ENV=development WORKER_TYPE=misScheduler node server.js",
     "develop-s-mis-conversation": "NODE_ENV=development WORKER_TYPE=misSchedulerConversation node server.js",
+    "develop-audienceWebhook": "NODE_ENV=development WORKER_TYPE=audienceWebhook MQ_OBJECT_KEY=audience_webhook USER_ID=Helo_test node server.js",
     "jsodoc": "./node_modules/.bin/jsdoc -c jsdoc.conf -d public/js-docs",
     "debug": "nodemon --inspect=9231 server.js",
     "develop-redis-pubsub": "NODE_ENV=development WORKER_TYPE=redisPubSubMechanism node server.js",
