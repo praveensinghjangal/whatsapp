@@ -265,6 +265,8 @@ const addUpdateBusinessProfile = (req, res) => {
   let wabaProfileData = {}
   let profileData = {}
   let providerId
+  if (req && req.body && req.body.audienceWebhookUrl && !url.isValid(req.body.audienceWebhookUrl)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_URL, err: {}, data: {} })
+
   validate.addUpdateBusinessInfo(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {

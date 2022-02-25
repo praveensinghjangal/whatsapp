@@ -288,6 +288,11 @@ class validate {
           required: false,
           maxLength: 300
         },
+        audienceWebhookUrl: {
+          type: 'string',
+          required: false,
+          maxLength: 300
+        },
         optinText: {
           type: 'string',
           required: false,
