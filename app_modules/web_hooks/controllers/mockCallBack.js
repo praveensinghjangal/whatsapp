@@ -26,7 +26,7 @@ const controller = (req, res) => {
     const options = {
       url,
       body: inputData,
-      headers: { Authorization: __config.mockWebHook.authorization },
+      headers: { Authorization: __config.mockWebHook.authorization, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT },
       json: true
     }
     // Calling another api for sending messages

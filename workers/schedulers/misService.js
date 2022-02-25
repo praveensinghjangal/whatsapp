@@ -6,6 +6,7 @@ const DbService = require('../../app_modules/message/services/dbData')
 const AudienceService = require('../../app_modules/audience/services/dbData')
 const EmailService = require('../../lib/sendNotifications/email')
 const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
+const conversationMisService = require('./misServiceOfConversation')
 const moment = require('moment')
 const _ = require('lodash')
 
@@ -26,7 +27,7 @@ const messageStatusOnMail = () => {
     .then(allUserData => {
       __logger.info('data fetched from DB ~function=messageStatusOnMail', allUserData)
       const arrayofWabanumber = []
-      const lastDayData = _.filter(allUserData, { date: date }) // → [1, 2]
+      const lastDayData = _.filter(allUserData, { date: date + 'T00:00:00.000Z' }) // → [1, 2]
       const lastDayAllUserCount = []
       let lastDayTotalMessageCount = 0
       const lastDayTotalStatusCount = {
@@ -161,9 +162,13 @@ const messageStatusOnMail = () => {
         attachmentObj.content = attachmentObj.content.trim()
         attachments.push(attachmentObj)
       })
+      return conversationMisService()
+    })
+    .then(messageConvoData => {
+      __logger.info('messageConvoData got convo data~function=messageStatusOnMail', messageConvoData)
       const emailService = new EmailService(__config.emailProvider)
-      const subject = __constants.WHATSAPP_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split('[').join(date).split(']').join(date)
-      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.misTemplates(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, userIdToUserName), attachments)
+      const subject = __constants.WHATSAPP_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split(')').join(messageConvoData.lastDayCount).split('[').join(date).split(']').join(date)
+      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMis(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, messageConvoData.statusData, messageConvoData.totalStatusCount, messageConvoData.totalMessageCount, messageConvoData.mtdStatusCount, messageConvoData.mtdTotalStatusCount, messageConvoData.mtdTotalMessageCount, userIdToUserName, messageConvoData.userIdToUserNameConvo), attachments)
     })
     .then(isMailSent => {
       __logger.info('MIS mail sent ~function=messageStatusOnMail', isMailSent)

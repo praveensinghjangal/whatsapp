@@ -21,7 +21,8 @@ const rateLimit = (req, res, next) => {
       req.userConfig.tps = 500
       consumekey += '_ms'
     } else if (routeUrl[routeUrl.length - 1] === __constants.MESSAGES) {
-      return next()
+      req.userConfig.tps = 0
+      consumekey += '_mss'
     }
     this.noOfHitsAllowedConfig = new RateLimiterRedis({
       storeClient: redisConnectionObject,

@@ -10,7 +10,7 @@ const upsertCounts = singleUserDayStatusData => {
   const dbService = new DbService()
   const dataObject = {
     wabaPhoneNumber: singleUserDayStatusData._id.wabaPhoneNumber,
-    date: singleUserDayStatusData._id.day,
+    date: new Date(singleUserDayStatusData._id.day),
     inProcess: 0,
     resourceAllocated: 0,
     forwarded: 0,

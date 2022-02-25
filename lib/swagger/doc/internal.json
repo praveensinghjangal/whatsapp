@@ -8,7 +8,7 @@
         "contact": {
             "name": "vivaconnect support",
             "email": "support@vivaconnect.co"
-         }
+        }
     },
     "tags": [
         {
@@ -76,16 +76,16 @@
         "http"
     ],
     "paths": {
-        "/chat/v1/messages": {
+        "/chat/v1/messages/single": {
             "post": {
                 "x-isPublic": true,
                 "x-module": "platform",
-                "description": "This API is used to send mesages using a channel.\nThis API can send single as well as bulk messsages.",
-                "summary": "This api will be deprecated on Jan 15 2022",
+                "description": "This API is used to send mesage.\nThis API only send's single messsage.",
+                "summary": "Only 500 hits/sec is allowed",
                 "tags": [
                     "message"
                 ],
-                "operationId": "send",
+                "operationId": "sendSingle",
                 "deprecated": false,
                 "produces": [
                     "application/json"
@@ -102,32 +102,36 @@
                         "name": "Body",
                         "in": "body",
                         "required": true,
-                        "description": "Accepts Array of json to send bulk message",
+                        "description": "Accepts json to send message (Array is used in below sample body just to display various possible input's)",
                         "schema": {
                             "example": [
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "location",
                                         "location": {
                                             "longitude": 7.4954884,
                                             "latitude": 51.5005765
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "template",
                                         "template": {
                                             "templateId": "welcome",
@@ -185,187 +189,51 @@
                                                     ]
                                                 }
                                             ]
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "media",
                                         "media": {
                                             "type": "image",
                                             "url": "https://i.ibb.co/kXgjphY/925869358s.png",
                                             "caption": "viva connect"
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "text",
-                                        "text": "hello"
+                                        "text": "hello",
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 }
                             ],
                             "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/sendrequest"
-                            }
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Returns message ID",
-                        "headers": {},
-                        "schema": {
-                            "properties": {
-                                "code": {
-                                    "type": "number"
-                                },
-                                "msg": {
-                                    "type": "string"
-                                },
-                                "data": {
-                                    "type": "array"
-                                }
-                            },
-                            "example": {
-                                "code": 2002,
-                                "msg": "Request Accepted",
-                                "data": [
-                                    {
-                                        "messageId": "9fcb694e-312f-4945-bc62-008b7a8b376f",
-                                        "acceptedAt": "2020-07-07T08:33:32.537Z"
-                                    },
-                                    {
-                                        "messageId": "9fcb694e-312f-4945-bc62-008b7a8bjuip",
-                                        "acceptedAt": "2020-07-07T08:33:32.648Z"
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Returns invalid request error in error array",
-                        "headers": {},
-                        "schema": {
-                            "properties": {
-                                "code": {
-                                    "type": "number"
-                                },
-                                "msg": {
-                                    "type": "string"
-                                },
-                                "data": {
-                                    "type": "object"
-                                },
-                                "error": {
-                                    "type": "array"
-                                }
-                            },
-                            "example": {
-                                "code": 4000,
-                                "msg": "Invalid request",
-                                "data": null,
-                                "error": [
-                                    "invalid body error here"
-                                ]
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Invalid token in header",
-                        "headers": {},
-                        "schema": {
-                            "type": "string",
-                            "example": "Unauthorized"
-                        }
-                    },
-                    "500": {
-                        "description": "in case of some exceptional error",
-                        "headers": {},
-                        "schema": {
-                            "properties": {
-                                "code": {
-                                    "type": "number"
-                                },
-                                "msg": {
-                                    "type": "string"
-                                },
-                                "data": {
-                                    "type": "object"
-                                },
-                                "error": {
-                                    "type": "object"
-                                }
-                            },
-                            "example": {
-                                "code": 5000,
-                                "msg": "Something went wrong. Please try again later.",
-                                "data": {},
-                                "error": {}
-                            }
-                        }
-                    }
-                },
-                "security": []
-            }
-        },
-        "/chat/v1/messages/single": {
-            "post": {
-                "x-isPublic": true,
-                "x-module": "platform",
-                "description": "This API is used to send mesage using a channel .\nThis API can send single messsage.",
-                "summary": "Only 500 hits/sec is allowed",
-                "tags": [
-                    "message"
-                ],
-                "operationId": "sendSingle",
-                "deprecated": false,
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true,
-                        "type": "string",
-                        "description": "Provided by vivaconnect upon signup"
-                    },
-                    {
-                        "name": "Body",
-                        "in": "body",
-                        "required": true,
-                        "description": "Accepts json to send single message",
-                        "schema": {
-                            "example": {
-                                "to": "9112345",
-                                "channels": [
-                                    "whatsapp"
-                                ],
-                                "countryCode": "IN",
-                                "whatsapp": {
-                                    "from": "9167890",
-                                    "contentType": "location",
-                                    "location": {
-                                        "longitude": 7.4954884,
-                                        "latitude": 51.5005765
-                                    }
-                                }
-                            },
-                            "type": "object",
                             "items": {
                                 "$ref": "#/definitions/sendrequest"
                             }
@@ -502,28 +370,32 @@
                         "schema": {
                             "example": [
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "location",
                                         "location": {
                                             "longitude": 7.4954884,
                                             "latitude": 51.5005765
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "template",
                                         "template": {
                                             "templateId": "welcome",
@@ -581,35 +453,47 @@
                                                     ]
                                                 }
                                             ]
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "media",
                                         "media": {
                                             "type": "image",
                                             "url": "https://i.ibb.co/kXgjphY/925869358s.png",
                                             "caption": "viva connect"
-                                        }
+                                        },
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 },
                                 {
-                                    "to": "9112345",
+                                    "to": "911234567890",
                                     "channels": [
                                         "whatsapp"
                                     ],
                                     "countryCode": "IN",
                                     "whatsapp": {
-                                        "from": "9167890",
+                                        "from": "916789012345",
                                         "contentType": "text",
-                                        "text": "hello"
+                                        "text": "hello",
+                                        "customOne": "customOne",
+                                        "customTwo": "customTwo",
+                                        "customThree": "three",
+                                        "customFour": "customFour"
                                     }
                                 }
                             ],
@@ -16556,43 +16440,6 @@
     "definitions": {
         "sendrequest": {
             "title": "sendrequest",
-            "example": {
-                "to": "919860245659",
-                "channels": [
-                    "whatsapp"
-                ],
-                "isOptin": true,
-                "whatsapp": {
-                    "from": "918080800808",
-                    "contentType": "template",
-                    "template": {
-                        "templateId": "opt_1",
-                        "language": {
-                            "policy": "deterministic",
-                            "code": "hi"
-                        },
-                        "components": [
-                            {
-                                "type": "body",
-                                "parameters": [
-                                    {
-                                        "type": "text",
-                                        "text": "VivaConnect"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": "007"
-                                    },
-                                    {
-                                        "type": "text",
-                                        "text": "2022"
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                }
-            },
             "type": "object",
             "properties": {
                 "to": {
@@ -16659,6 +16506,18 @@
                 },
                 "template": {
                     "$ref": "#/definitions/Template"
+                },
+                "customOne": {
+                    "type": "string"
+                },
+                "customTwo": {
+                    "type": "string"
+                },
+                "customThree": {
+                    "type": "string"
+                },
+                "customFour": {
+                    "type": "string"
                 }
             },
             "required": [

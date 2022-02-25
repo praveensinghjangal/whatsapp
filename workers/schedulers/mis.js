@@ -17,6 +17,7 @@ class MisScheduler {
     __logger.info('inside ~function=startServer. Starting WORKER=misScheduler')
     __db.init()
       .then(async (start) => {
+        // messageStatusOnMail()
         task.one.start()
       })
       .catch(err => {
