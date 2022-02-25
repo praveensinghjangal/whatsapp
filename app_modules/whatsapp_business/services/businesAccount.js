@@ -223,11 +223,17 @@ class businesAccountService {
       this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.update)
         .then(() => this.updateWabaNumberAndPhoneCode(businessOldData.userId, businessData.phoneCode, businessData.phoneNumber, businessOldData.wabaProfileSetupStatusId, businessOldData.wabaInformationId))
         .then(() => this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData, recordUpdatingUserId))
-        .then(data => businessDataUpdated.resolve(data))
+        .then(data => {
+          __db.redis.key_delete(businessOldData.userId)
+          businessDataUpdated.resolve(data)
+        })
         .catch(err => businessDataUpdated.reject(err))
     } else {
       this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData, recordUpdatingUserId)
-        .then(data => businessDataUpdated.resolve(data))
+        .then(data => {
+          __db.redis.key_delete(businessOldData.userId)
+          return businessDataUpdated.resolve(data)
+        })
         .catch(err => businessDataUpdated.reject(err))
     }
     return businessDataUpdated.promise

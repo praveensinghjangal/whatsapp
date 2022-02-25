@@ -17,7 +17,7 @@ class AudienceWebookConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const dataConsumedFromQueue = JSON.parse(mqData.content.toString())
-            const http = new HttpService(2000)
+            const http = new HttpService(5000)
             const headers = {
               'Content-Type': 'application/json'
             }
@@ -25,8 +25,7 @@ class AudienceWebookConsumer {
             __logger.info('calling post flow api of chat api')
             const postObj = {
               phoneNumber: dataConsumedFromQueue.phoneNumber,
-              optin: dataConsumedFromQueue.optin === true,
-              optinSourceId: dataConsumedFromQueue.optinSourceId || ''
+              optin: dataConsumedFromQueue.optin === true
             }
 
             http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)

@@ -286,7 +286,7 @@ class validate {
         webhookPostUrl: {
           type: 'string',
           required: false,
-          maxLength: 2058,
+          maxLength: 2048,
           pattern: __constants.VALIDATOR.url
         },
         audienceWebhookUrl: {

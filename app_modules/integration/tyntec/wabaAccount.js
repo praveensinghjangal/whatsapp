@@ -153,7 +153,7 @@ class WabaAccount {
   }
 
   updateProfile (wabaNumber, wabaData) {
-    __logger.info('inside update profile', wabaNumber, wabaData)
+    // __logger.info('inside update profile', wabaNumber, wabaData)
     const deferred = q.defer()
     if (wabaNumber && wabaData) {
       let headers = {}
