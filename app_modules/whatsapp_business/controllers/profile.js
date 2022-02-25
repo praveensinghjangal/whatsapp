@@ -265,7 +265,6 @@ const addUpdateBusinessProfile = (req, res) => {
   let wabaProfileData = {}
   let profileData = {}
   let providerId
-
   validate.addUpdateBusinessInfo(req.body)
     .then(data => businessAccountService.checkUserIdExist(userId))
     .then(data => {
