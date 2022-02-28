@@ -278,7 +278,7 @@ const addUpdateBusinessProfile = (req, res) => {
     })
     .then(websiteLimitByProvider => {
       __logger.info('addUpdateBusinessProfile::apiREsponse', websiteLimitByProvider)
-      __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
+      // __logger.info('addUpdateBusinessProfile::exists ----------------->', profileData)
       const maxWebsiteAlwd = websiteLimitByProvider && websiteLimitByProvider[0] && websiteLimitByProvider[0].maxWebsiteAllowed ? websiteLimitByProvider[0].maxWebsiteAllowed : 0
       if (req.body.websites && req.body.websites !== [] && req.body.websites.length > maxWebsiteAlwd) {
         __logger.info('addUpdateBusinessProfile::maxWebsiteAllowed', maxWebsiteAlwd)
@@ -295,7 +295,7 @@ const addUpdateBusinessProfile = (req, res) => {
     // call integration here in .then
     .then(data => {
       wabaProfileData = data
-      __logger.info('addUpdateBusinessProfile::ddddd----', data)
+      // __logger.info('addUpdateBusinessProfile::ddddd----', data)
       if (wabaProfileData && wabaProfileData.wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode) {
         __logger.info('addUpdateBusinessProfile::called tyntec api to update profile data---')
         const wabaAccountService = new integrationService.WabaAccount(providerId, maxTpsToProvider, userId)
