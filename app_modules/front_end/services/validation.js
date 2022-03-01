@@ -32,17 +32,35 @@ class validate {
           minLength: 1,
           maxLength: 499
         },
+        chatDefaultMessageCta: {
+          type: 'array',
+          required: false,
+          maxLength: 3
+        },
         serviceFulfillmentMessage: {
           type: 'string',
           required: true,
           minLength: 1,
           maxLength: 499
         },
+        serviceFulfillmentMessageCta: {
+          type: 'array',
+          required: false,
+          maxLength: 3
+        },
         continuationTransactionMessage: {
           type: 'string',
           required: true,
           minLength: 1,
           maxLength: 499
+        },
+        continuationTransactionMessageCta: {
+          type: 'array',
+          required: false,
+          items: {
+            type: 'string',
+            enum: ['yes', 'no']
+          }
         }
       }
     }
