@@ -287,7 +287,7 @@ class validate {
           type: 'string',
           required: false,
           maxLength: 2048,
-          pattern: __constants.VALIDATOR.url
+          pattern: request.audienceWebhookUrl === '' ? __constants.VALIDATOR.empty : __constants.VALIDATOR.url
         },
         audienceWebhookUrl: {
           type: 'string',
