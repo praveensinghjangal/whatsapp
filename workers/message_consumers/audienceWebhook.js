@@ -3,7 +3,6 @@ const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
-const __util = require('../../lib/util')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 
 class AudienceWebookConsumer {
@@ -30,12 +29,10 @@ class AudienceWebookConsumer {
 
             http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
               .then(data => {
-                if (data && data.statusCode === 200) {
+                if (data && data.statusCode >= 200 && data.statusCode <= 299) {
                   return data.body
                 } else {
-                  return __util.send({
-                    type: __constants.RESPONSE_MESSAGES.SERVER_ERROR
-                  })
+                  return ''
                 }
               })
               .then(response => {
