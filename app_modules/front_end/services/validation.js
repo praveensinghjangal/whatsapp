@@ -57,10 +57,15 @@ class validate {
         continuationTransactionMessageCta: {
           type: 'array',
           required: false,
+          maxLength: 2,
           items: {
             type: 'string',
             enum: ['yes', 'no']
           }
+        },
+        sessionTimeOut: {
+          type: 'number',
+          required: false
         }
       }
     }
@@ -71,6 +76,8 @@ class validate {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
+    if (request.continuationTransactionMessageCta.includes('yes') && !request.continuationTransactionMessageCta.includes('no')) formatedError.push("please enter both enumm vales i.e 'yes' and 'no'")
+    if (request.continuationTransactionMessageCta.includes('no') && !request.continuationTransactionMessageCta.includes('yes')) formatedError.push("please enter both enumm vales i.e 'yes' and 'no'")
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
