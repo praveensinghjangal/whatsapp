@@ -130,9 +130,9 @@ const getOptinAndTemplate = (req, res) => {
       resData.serviceFulfillmentMessage = metaData.data.serviceFulfillmentMessage || null
       resData.continuationTransactionMessage = metaData.data.continuationTransactionMessage || null
       resData.defaultMessageCta = metaData.data.defaultMessageCta
-      resData.serviceFulfillmentMessageCta = metaData.data.serviceFulfillmentMessageCta
-      resData.continuationTransactionMessageCta = metaData.data.continuationTransactionMessageCta
-
+      resData.serviceFulfillmentMessageCta = metaData.data.serviceFulfillmentMessageCta || null
+      resData.continuationTransactionMessageCta = metaData.data.continuationTransactionMessageCta || null
+      resData.sessionTimeoutMins = metaData.data.sessionTimeoutMins
       return getOptinText(req.headers.authorization)
     })
     .then(optinText => {
