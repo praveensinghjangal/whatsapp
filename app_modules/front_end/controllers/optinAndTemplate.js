@@ -122,7 +122,6 @@ const callSetOptinTextApi = (optinText, authToken) => {
 const getOptinAndTemplate = (req, res) => {
   __logger.info('Get Optin And Template API called', req.body)
   const resData = {}
-  var templateData
 
   getTemplateIdData(req.headers.authorization)
     .then(metaData => {
@@ -130,13 +129,16 @@ const getOptinAndTemplate = (req, res) => {
       resData.templateId = metaData.data.optinTemplateId
       resData.serviceFulfillmentMessage = metaData.data.serviceFulfillmentMessage || null
       resData.continuationTransactionMessage = metaData.data.continuationTransactionMessage || null
-      templateData = metaData
+      resData.defaultMessageCta = metaData.data.defaultMessageCta
+      resData.serviceFulfillmentMessageCta = metaData.data.serviceFulfillmentMessageCta
+      resData.continuationTransactionMessageCta = metaData.data.continuationTransactionMessageCta
+
       return getOptinText(req.headers.authorization)
     })
     .then(optinText => {
       __logger.info('optinText then 2', { optinText })
       resData.optinText = optinText
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: resData })
     })
     .catch(err => {
       __logger.error('error: ', err)
