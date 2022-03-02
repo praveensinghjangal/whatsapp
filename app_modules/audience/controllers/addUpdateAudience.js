@@ -200,11 +200,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
   let sendWebhook = false
   validate.addAudience(data)
     .then(data => {
-      if (oldData) {
-        const old = q.defer()
-        old.resolve([oldData])
-        return old.promise
-      }
+      if (oldData) return [oldData]
       return audienceService.getAudienceTableDataByPhoneNumber([data.phoneNumber], userId, data.wabaPhoneNumber)
     })
     .then(audiencesData => {
@@ -212,7 +208,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       __logger.info('audienceData:: then 2', { audienceData })
       data.userId = userId
       if (audienceData.audienceId) {
-        if (data && data.optin === true) sendWebhook = true
+        if (oldData && oldData.reqBodyOptin === true) sendWebhook = true
         return updateAudienceData(data, audienceData)
       } else {
         sendWebhook = true
@@ -223,7 +219,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       addUpdateData = responseData
       data.audienceWebhookUrl = audienceWebhookUrl
       let planPriority
-
+      if (data.sendWebhook === true) sendWebhook = true // added check so that when mark optout api calls this functions it notifies user on optout of audience
       if (!validUrl.isValid(audienceWebhookUrl) || !sendWebhook) {
         return true
       } else {
@@ -324,6 +320,7 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
       const phoneNumbersToBeVerified = []
 
       oldAudienceData = audiencesData[0]
+      oldAudienceData.reqBodyOptin = input.optin // if in future we need to make changes in api to add audience and set optin true then remove this flag and add new flag input.sendWebhook = true and in that case oldAudienceData will be req body data to avoid db call in single record
       if (oldAudienceData.isFacebookVerified || oldAudienceData.isFacebookVerified === 1) {
       } else {
         phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
@@ -402,23 +399,23 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
             if (isDbDataPresent) {
               if (found.isFacebookVerified || found.isFacebookVerified === 1) {
                 // do nothing, since its already verified
-                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true })
               } else {
                 // verfy it
-                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true })
                 phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
               }
               // not present in db and needs optin
             } else {
-              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true })
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true })
               phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
             }
             // audience doesnt want to optin / want to remove optin
           } else {
             if (isDbDataPresent) {
-              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false })
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
             } else {
-              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
             }
           }
           // "optin" key is not present in the body. So check db data.
@@ -427,20 +424,20 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
           if (isDbDataPresent) {
             if (found.optin) {
               if (found.isFacebookVerified || found.isFacebookVerified === 1) {
-                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true })
               } else {
                 // db optin is true and is not verified yet, then send a message
-                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true })
                 phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
               }
             } else {
               // if optin in db is false, do nothing.
-              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false })
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
             }
           } else {
             // if db data is not present, push it into array. optin=> set to false because optin not sepecified in body and aud is new.
             // oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
-            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
+            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
             // phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
           }
         }
@@ -513,6 +510,7 @@ const markOptOutByPhoneNumber = (req, res) => {
   const input = req.body
   input.channel = __constants.DELIVERY_CHANNEL.whatsapp
   input.optin = false
+  input.sendWebhook = true
 
   const validate = new ValidatonService()
   validate.checkPhoneNumberExistService(input)
