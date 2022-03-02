@@ -197,6 +197,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
   let addUpdateData
   const validate = new ValidatonService()
   const audienceService = new AudienceService()
+  let sendWebhook = false
   validate.addAudience(data)
     .then(data => {
       if (oldData) {
@@ -211,8 +212,10 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       __logger.info('audienceData:: then 2', { audienceData })
       data.userId = userId
       if (audienceData.audienceId) {
+        if (data && data.optin === true) sendWebhook = true
         return updateAudienceData(data, audienceData)
       } else {
+        sendWebhook = true
         return audienceService.addAudienceDataService(data, audienceData)
       }
     })
@@ -221,7 +224,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       data.audienceWebhookUrl = audienceWebhookUrl
       let planPriority
 
-      if (!validUrl.isValid(audienceWebhookUrl)) {
+      if (!validUrl.isValid(audienceWebhookUrl) || !sendWebhook) {
         return true
       } else {
         return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.audience_webhook, JSON.stringify(data), planPriority)
