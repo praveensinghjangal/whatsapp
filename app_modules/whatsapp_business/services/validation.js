@@ -287,13 +287,13 @@ class validate {
           type: 'string',
           required: false,
           maxLength: 2048,
-          pattern: request.webhookPostUrl === '' ? __constants.VALIDATOR.empty : __constants.VALIDATOR.url
+          pattern: request.webhookPostUrl === '' ? '' : __constants.VALIDATOR.url
         },
         audienceWebhookUrl: {
           type: 'string',
           required: false,
           maxLength: 2048,
-          pattern: request.audienceWebhookUrl === '' ? __constants.VALIDATOR.empty : __constants.VALIDATOR.url
+          pattern: request.audienceWebhookUrl === '' ? '' : __constants.VALIDATOR.url
         },
         optinText: {
           type: 'string',
@@ -315,14 +315,15 @@ class validate {
         }
       }
     }
-    if (request.webhookPostUrl) schema.properties.webhookPostUrl.pattern = __constants.VALIDATOR.url
     const formatedError = []
     v.addSchema(schema, '/addUpdateBusinessInfo')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
       if (err.split('instance.webhookPostUrl does not match pattern').length > 1) {
-        formatedError.push(__constants.RESPONSE_MESSAGES.INVALID_URL.message)
+        formatedError.push(__constants.RESPONSE_MESSAGES.INVALID_URL.message + '- webhookPostUrl')
+      } else if (err.split('instance.audienceWebhookUrl does not match pattern').length > 1) {
+        formatedError.push(__constants.RESPONSE_MESSAGES.INVALID_URL.message + '- audienceWebhookUrl')
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
       }
