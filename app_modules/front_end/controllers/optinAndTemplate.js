@@ -166,7 +166,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinTextApi(req.body.optinText, req.headers.authorization))
-    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeOut))
+    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins))
     .then(data => __db.redis.key_delete(__constants.REDIS_OPTIN_TEMPLATE_DATA_KEY + req.user.wabaPhoneNumber))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {

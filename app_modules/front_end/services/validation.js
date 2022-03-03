@@ -63,7 +63,7 @@ class validate {
             enum: ['yes', 'no']
           }
         },
-        sessionTimeOut: {
+        sessionTimeoutMins: {
           type: 'number',
           required: false
         }
