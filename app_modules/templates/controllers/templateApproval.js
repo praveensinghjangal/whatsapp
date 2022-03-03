@@ -11,6 +11,7 @@ const ValidatonService = require('../services/validation')
 const request = require('request')
 const q = require('q')
 const userService = require('../../user/controllers/accoutProfile')
+const telegramMessage = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
 
 const updateTemplateStatus = (reqBody, authToken) => {
   __logger.info('updateTemplateStatus called ::>>>>>>>>>>>>>>>>>.')
@@ -87,7 +88,11 @@ const sendTemplateForApproval = (req, res) => {
       return statusService.support(userId, oldTemplateData.templateName, userRoleData)
     })
     .then(data => {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
+      const telegramMessageToSend = 'Hi Team '
+      return telegramMessage.send(data, telegramMessageToSend)
+      // return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
+    }).then(teledata => {
+      console.log('9999', teledata)
     })
     .catch(err => {
       __logger.error('error sendTemplateForApproval: ', err)
