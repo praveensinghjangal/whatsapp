@@ -83,7 +83,6 @@ const sendTemplateForApproval = (req, res) => {
       return userService.getUserRoleData()
     })
     .then(userRoleData => {
-      console.log('999999999999999999999999999999999999999999', userRoleData)
       const statusService = new StatusService()
       return statusService.support(userId, oldTemplateData.templateName, userRoleData)
     })
