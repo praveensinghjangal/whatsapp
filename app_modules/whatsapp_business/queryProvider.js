@@ -46,7 +46,7 @@ const getWabaTableDataByUserId = () => {
   webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated", websites,
   user_account_id_by_provider as "serviceProviderUserAccountId", img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed",
-  max_tps_to_provider as "maxTpsToProvider",wi.audience_webhook_url as "audienceWebhookUrl"
+  max_tps_to_provider as "maxTpsToProvider",wabainfo.audience_webhook_url as "audienceWebhookUrl"
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
