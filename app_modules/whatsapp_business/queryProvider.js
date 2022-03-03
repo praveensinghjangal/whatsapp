@@ -46,7 +46,7 @@ const getWabaTableDataByUserId = () => {
   webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated", websites,
   user_account_id_by_provider as "serviceProviderUserAccountId", img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed",
-  max_tps_to_provider as "maxTpsToProvider"
+  max_tps_to_provider as "maxTpsToProvider",wi.audience_webhook_url as "audienceWebhookUrl"
   FROM waba_information wabainfo
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
@@ -219,7 +219,7 @@ const getProfileByWabaId = () => {
   postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
   user_account_id_by_provider as "serviceProviderUserAccountId",
   service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
-  webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
+  webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",wabainfo.audience_webhook_url as "audienceWebhookUrl"
   access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
   wabainfo.user_id as "userId",wabainfo.max_tps_to_provider as "maxTpsToProvider",wabainfo.templates_allowed as "templateAllowed"
   FROM waba_information wabainfo
