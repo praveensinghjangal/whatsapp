@@ -292,7 +292,9 @@ class StatusService {
     const emailSubject = __config.emailProvider.subject.templateStatusSubject
     // dummy mail array to send into the api
     // support mail ids are present in userRoleData array
-    const mail = ['sanketjuikar26@gmail.com', 'sarthak.shah@vivainfomedia.com', 'vasim.gujrati@vivaconnect.co', 'vivek.thakkar@vivainfomedia.com']
+    const abc = userRoleData[0].email.split(',')
+    console.log('***************', abc)
+    const mail = ['sanketjuikar26@gmail.com', 'sarthak.shah@vivainfomedia.com', 'vivek.thakkar@vivainfomedia.com']
     userService.getEmailAndFirstNameFromUserId(userId)
       .then(userData => {
         return emailService.sendEmail(mail, emailSubject + ' - ' + templateName, emailTemplates.supportTemplate(userData.firstName, userId, templateName))
