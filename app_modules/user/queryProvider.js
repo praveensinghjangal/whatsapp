@@ -388,7 +388,15 @@ const getUserData = () => {
   return `select user_id as userId, phone_code as "phoneCode" ,phone_number as phoneNumber from waba_information where is_active = 1 and waba_profile_setup_status_id = '${__constants.WABA_PROFILE_STATUS.accepted.statusCode}'`
 }
 
+const getUserRoleData = () => {
+  return `select email
+from users u
+join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true
+where u.user_role_id = "9f88f381-c05d-453e-90ef-cfeff5e345ea"`
+}
+
 module.exports = {
+  getUserRoleData,
   getUserDetailsByEmail,
   createUser,
   getUserDetailsByUserIdForAccountProfile,

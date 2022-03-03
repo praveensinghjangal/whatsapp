@@ -284,6 +284,30 @@ class StatusService {
     return notificationSent.promise
   }
 
+  support (userId, templateName, userRoleData) {
+    __logger.info('notify', { userRoleData, templateName })
+    const notificationSent = q.defer()
+    const emailService = new EmailService(__config.emailProvider)
+    const userService = new UserService()
+    const emailSubject = __config.emailProvider.subject.templateStatusSubject
+    // dummy mail array to send into the api
+    // support mail ids are present in userRoleData array
+    const mail = ['sanketjuikar26@gmail.com', 'sarthak.shah@vivainfomedia.com', 'vasim.gujrati@vivaconnect.co', 'vivek.thakkar@vivainfomedia.com']
+    userService.getEmailAndFirstNameFromUserId(userId)
+      .then(userData => {
+        return emailService.sendEmail(mail, emailSubject + ' - ' + templateName, emailTemplates.supportTemplate(userData.firstName, userId, templateName))
+      })
+      .then(data => {
+        notificationSent.resolve(data)
+      })
+      .catch(err => {
+        __logger.error('validateAndUpdateStatus::error: ', err)
+        return notificationSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+
+    return notificationSent.promise
+  }
+
   changeStatusToComplete (templateId, oldStatusId, userId, wabaInformationId, secondLanguageRequired) {
     __logger.info('changeStatusToComplete::', { templateId, oldStatusId, userId, wabaInformationId, secondLanguageRequired })
     const statusChanged = q.defer()

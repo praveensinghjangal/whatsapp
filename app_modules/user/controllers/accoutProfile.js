@@ -10,6 +10,7 @@ const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const _ = require('lodash')
+const q = require('q')
 
 /**
  * @namespace -Profile-Account-Controller-
@@ -307,6 +308,25 @@ const updateAccountManagerName = (req, res) => {
     })
 }
 
+// api specific to get email id of support user
+const getUserRoleData = (req, res) => {
+  const userDetails = q.defer()
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [__constants.SUPPORT_ROLE_ID])
+    .then(results => {
+      __logger.info('results Then 1')
+      if (results && results.length > 0) {
+        userDetails.resolve(results)
+      } else {
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+      }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+  return userDetails.promise
+}
+
 module.exports = {
   getAcountProfile,
   updateAcountProfile,
@@ -314,5 +334,6 @@ module.exports = {
   generateAndUpdateTokenKey,
   getAccountProfileByUserId,
   getAccountProfileList,
-  updateAccountManagerName
+  updateAccountManagerName,
+  getUserRoleData
 }
