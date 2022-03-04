@@ -41,8 +41,8 @@ const callSetTemplateId = (templateId, defaultmessageData, serviceFulfillmentMes
     continuationTransactionMessage,
     defaultmessageDataCta: defaultmessageDataCta || null,
     serviceFulfillmentMessageCta: serviceFulfillmentMessageCta || null,
-    continuationTransactionMessageCta: continuationTransactionMessageCta || null
-
+    continuationTransactionMessageCta: continuationTransactionMessageCta || null,
+    sessionTimeoutMins: sessionTimeOut || null
   }
 
   const headers = { Authorization: authToken }
@@ -162,6 +162,7 @@ const getOptinAndTemplate = (req, res) => {
  */
 
 const addUpdateOptinAndTemplate = (req, res) => {
+  console.log('&&&&&&&&&&&&&&&&&&&&&', req.body.sessionTimeoutMins)
   __logger.info('Add Update Optin And Template API called', req.body)
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
