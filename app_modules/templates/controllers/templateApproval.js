@@ -11,6 +11,7 @@ const ValidatonService = require('../services/validation')
 const request = require('request')
 const q = require('q')
 const userService = require('../../user/controllers/accoutProfile')
+const UserServiceDB = require('../../user/services/dbData')
 const telegramMessage = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
 
 const updateTemplateStatus = (reqBody, authToken) => {
@@ -49,6 +50,7 @@ const sendTemplateForApproval = (req, res) => {
   const userId = req.user ? req.user.user_id : ''
   const templateId = req.params ? req.params.templateId : null
   let oldTemplateData
+
   const ruleEngine = new RuleEngine()
   const templateService = new TemplateService()
   templateService.getTemplateInfo(userId, templateId)
@@ -87,12 +89,15 @@ const sendTemplateForApproval = (req, res) => {
       const statusService = new StatusService()
       return statusService.support(userId, oldTemplateData.templateName, userRoleData)
     })
-    .then(data => {
-      const telegramMessageToSend = 'Hi Team '
-      return telegramMessage.send(data, telegramMessageToSend)
-      // return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
+    .then(supportData => {
+      const userServiceDb = new UserServiceDB()
+      return userServiceDb.getEmailAndFirstNameFromUserId(userId)
+    })
+    .then(userData => {
+      const telegramMessageToSend = `Hi team ${userData.firstName} ${userId} has send teamplate with template name ${oldTemplateData.templateName} for approval`
+      return telegramMessage.sendTelegramMessage(telegramMessageToSend)
     }).then(teledata => {
-      console.log('9999', teledata)
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
     })
     .catch(err => {
       __logger.error('error sendTemplateForApproval: ', err)
