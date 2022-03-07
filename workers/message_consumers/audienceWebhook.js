@@ -24,7 +24,7 @@ class AudienceWebookConsumer {
             __logger.info('calling post flow api of chat api')
             const postObj = {
               phoneNumber: dataConsumedFromQueue.phoneNumber,
-              optin: dataConsumedFromQueue.optin === true
+              optin: !!(dataConsumedFromQueue.optin === 1 || dataConsumedFromQueue.optin === true)
             }
 
             http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)

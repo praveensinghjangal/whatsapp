@@ -208,14 +208,15 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
       __logger.info('audienceData:: then 2', { audienceData })
       data.userId = userId
       if (audienceData.audienceId) {
-        if (oldData && oldData.reqBodyOptin === true) sendWebhook = true
         return updateAudienceData(data, audienceData)
       } else {
-        sendWebhook = true
+        // sendWebhook = true // commented ad now we are not sending webhook when audience is added
         return audienceService.addAudienceDataService(data, audienceData)
       }
     })
     .then(responseData => {
+      // we only send webhook when number opts in for the first time
+      if (oldData && oldData.reqBodyOptin === true && oldData.duplicateOptin === false) sendWebhook = true
       addUpdateData = responseData
       data.audienceWebhookUrl = audienceWebhookUrl
       let planPriority
@@ -399,23 +400,24 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
             if (isDbDataPresent) {
               if (found.isFacebookVerified || found.isFacebookVerified === 1) {
                 // do nothing, since its already verified
-                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true })
+                // reqbodyOptin & duplicate optin is added to handle webhook (in case of resending optin true for a number which is already opted in we do not send webhook)
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) }) // if null then it will send false thats why === ture
               } else {
                 // verfy it
-                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
                 phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
               }
               // not present in db and needs optin
             } else {
-              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true })
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
               phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
             }
             // audience doesnt want to optin / want to remove optin
           } else {
             if (isDbDataPresent) {
-              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
             } else {
-              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
             }
           }
           // "optin" key is not present in the body. So check db data.
@@ -424,20 +426,20 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
           if (isDbDataPresent) {
             if (found.optin) {
               if (found.isFacebookVerified || found.isFacebookVerified === 1) {
-                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true })
               } else {
                 // db optin is true and is not verified yet, then send a message
-                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true })
                 phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
               }
             } else {
               // if optin in db is false, do nothing.
-              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: false })
             }
           } else {
             // if db data is not present, push it into array. optin=> set to false because optin not sepecified in body and aud is new.
             // oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
-            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true })
+            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: false })
             // phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
           }
         }
