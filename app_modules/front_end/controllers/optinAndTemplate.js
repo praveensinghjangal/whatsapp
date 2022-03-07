@@ -84,7 +84,7 @@ const getTemplateIdData = authToken => {
   return apiCalled.promise
 }
 
-const callSetOptinTextApi = (optinText, optoutText, authToken) => {
+const callSetOptinAndOptoutTextApi = (optinText, optoutText, authToken) => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
   const inputRequest = {
@@ -170,7 +170,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   __logger.info('Add Update Optin And Template API called', req.body)
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
-    .then(data => callSetOptinTextApi(req.body.optinText, req.body.optoutText, req.headers.authorization))
+    .then(data => callSetOptinAndOptoutTextApi(req.body.optinText, req.body.optoutText, req.headers.authorization))
     .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins))
     .then(data => __db.redis.key_delete(__constants.REDIS_OPTIN_TEMPLATE_DATA_KEY + req.user.wabaPhoneNumber))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
