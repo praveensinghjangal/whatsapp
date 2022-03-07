@@ -216,7 +216,7 @@ const singleRecordProcess = (data, userId, oldData = null, audienceWebhookUrl) =
     })
     .then(responseData => {
       // we only send webhook when number opts in for the first time
-      if (oldData && oldData.reqBodyOptin === true && oldData.duplicateOptin === false) sendWebhook = true
+      if (oldData && ((oldData.reqBodyOptin === true && oldData.duplicateOptin === false) || (oldData.reqBodyOptin === false && oldData.duplicateOptout === false))) sendWebhook = true
       addUpdateData = responseData
       data.audienceWebhookUrl = audienceWebhookUrl
       let planPriority
@@ -322,6 +322,8 @@ const markOptinByPhoneNumberAndAddOptinSource = (req, res) => {
 
       oldAudienceData = audiencesData[0]
       oldAudienceData.reqBodyOptin = input.optin // if in future we need to make changes in api to add audience and set optin true then remove this flag and add new flag input.sendWebhook = true and in that case oldAudienceData will be req body data to avoid db call in single record
+      oldAudienceData.duplicateOptin = !!(oldAudienceData && oldAudienceData.optin === 1)
+      oldAudienceData.duplicateOptout = true // to avoid optout webhook from this only optin api
       if (oldAudienceData.isFacebookVerified || oldAudienceData.isFacebookVerified === 1) {
       } else {
         phoneNumbersToBeVerified.push(`+${oldAudienceData.phoneNumber}`)
@@ -401,45 +403,45 @@ const markFacebookVerifiedOfValidNumbers = (audiences, userId, wabaPhoneNumber, 
               if (found.isFacebookVerified || found.isFacebookVerified === 1) {
                 // do nothing, since its already verified
                 // reqbodyOptin & duplicate optin is added to handle webhook (in case of resending optin true for a number which is already opted in we do not send webhook)
-                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) }) // if null then it will send false thats why === ture
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1), duplicateOptout: false }) // reqBodyOptin if null then it will send false thats why === ture. duplicate optout false as this is block for optin = ture in req body so no chance for optout being duplicate
               } else {
                 // verfy it
-                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1), duplicateOptout: false }) // reqBodyOptin if null then it will send false thats why === ture. duplicate optout false as this is block for optin = ture in req body so no chance for optout being duplicate
                 phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
               }
               // not present in db and needs optin
             } else {
-              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1), duplicateOptout: false }) // duplicate false as api req is for optin and not optout so no need to check duplicate optout
               phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
             }
             // audience doesnt want to optin / want to remove optin
           } else {
             if (isDbDataPresent) {
-              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1), duplicateOptout: !!(found && found.optin === 0) })
             } else {
-              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1) })
+              oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: !!(found && found.optin === 1), duplicateOptout: !!(found && found.optin === 0) })
             }
           }
           // "optin" key is not present in the body. So check db data.
         } else {
           // aud is already present in db.
+          // both duplicate optin & optout true as this body does not have optin key so optin optout will not happen and webhook wil also not go
           if (isDbDataPresent) {
             if (found.optin) {
               if (found.isFacebookVerified || found.isFacebookVerified === 1) {
-                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: true, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true, duplicateOptout: true })
               } else {
                 // db optin is true and is not verified yet, then send a message
-                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true })
+                oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: true, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true, duplicateOptout: true })
                 phoneNumbersToBeVerified.push(`+${found.phoneNumber}`)
               }
             } else {
-              // if optin in db is false, do nothing.
-              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: false })
+              oldAudiencesData.push({ ...found, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true, duplicateOptout: true })
             }
           } else {
             // if db data is not present, push it into array. optin=> set to false because optin not sepecified in body and aud is new.
             // oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false })
-            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: false })
+            oldAudiencesData.push({ ...bodyAud, isFacebookVerified: false, optin: false, reqBodyOptin: bodyAud.optin === true, duplicateOptin: true, duplicateOptout: true })
             // phoneNumbersToBeVerified.push(`+${bodyAud.phoneNumber}`)
           }
         }

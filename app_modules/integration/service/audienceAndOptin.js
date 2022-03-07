@@ -20,6 +20,22 @@ const checkOptinMessage = (content, optinText) => {
   return isOptin.promise
 }
 
+let isOptoutMessage = () => false
+
+const checkOptoutMessage = (content, optoutText) => {
+  __logger.info('checkOptinMessage::>>>>>>>>>>>>>..')
+  if (content && content.contentType === 'text' && content.text && optoutText) {
+    content.text = content.text.trim()
+    if (content.text.length === optoutText.length && content.text.toLowerCase() === optoutText.toLowerCase()) {
+      return true
+    } else {
+      return false
+    }
+  } else {
+    return false
+  }
+}
+
 let isOptinMessage = () => {
   const isOptin = q.defer()
   isOptin.resolve(false)
@@ -41,18 +57,20 @@ function addAudienceAndOptin (inputPayload, redisData) {
   const providers = ['tyntec', 'facebook']
   if (providers.indexOf(__config.provider_config[redisData.serviceProviderId].name) !== -1) {
     isOptinMessage = checkOptinMessage
+    isOptoutMessage = checkOptoutMessage
   }
   isOptinMessage(inputPayload.content, redisData.optinText)
     .then(isoptin => {
       if (isoptin) {
         audienceDataToBePosted[0].optin = true
         audienceDataToBePosted[0].optinSourceId = __config.optinSource.message
+      } else if (isOptoutMessage(inputPayload.content, redisData.optoutText)) {
+        audienceDataToBePosted[0].optin = false
       }
-      // const authService = new SetUserConfig()
       return setUserConfig.getUserData(redisData.userId)
-    }).then(data => {
+    })
+    .then(data => {
       const apiToken = data.authToken
-
       const options = {
         url,
         body: audienceDataToBePosted,
