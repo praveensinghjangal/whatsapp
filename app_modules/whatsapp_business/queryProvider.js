@@ -43,7 +43,7 @@ const getWabaTableDataByUserId = () => {
   business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified",city,postal_code as "postalCode",
   service_provider_id as "serviceProviderId",api_key as "apiKey",
-  webhook_post_url as "webhookPostUrl",optin_text as "optinText",optout_text as "optoutText,chatbot_activated as "chatBotActivated", websites,
+  webhook_post_url as "webhookPostUrl",optin_text as "optinText",optout_text as "optoutText",chatbot_activated as "chatBotActivated", websites,
   user_account_id_by_provider as "serviceProviderUserAccountId", img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed",
   max_tps_to_provider as "maxTpsToProvider",wabainfo.audience_webhook_url as "audienceWebhookUrl"
