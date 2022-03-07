@@ -34,7 +34,7 @@ const getOptinText = authToken => {
   return apiCalled.promise
 }
 
-const callSetTemplateId = (templateId, defaultmessageData, serviceFulfillmentMessage, continuationTransactionMessage, authToken, defaultmessageDataCta, serviceFulfillmentMessageCta, continuationTransactionMessageCta, sessionTimeOut) => {
+const callSetTemplateId = (templateId, optoutTemplateId, defaultmessageData, serviceFulfillmentMessage, continuationTransactionMessage, authToken, defaultmessageDataCta, serviceFulfillmentMessageCta, continuationTransactionMessageCta, sessionTimeOut) => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
   const inputRequest = {
@@ -45,12 +45,13 @@ const callSetTemplateId = (templateId, defaultmessageData, serviceFulfillmentMes
     defaultmessageDataCta: defaultmessageDataCta || null,
     serviceFulfillmentMessageCta: serviceFulfillmentMessageCta || null,
     continuationTransactionMessageCta: continuationTransactionMessageCta || null,
-    sessionTimeoutMins: sessionTimeOut || null
+    sessionTimeoutMins: sessionTimeOut || null,
+    optoutTemplateId: optoutTemplateId
   }
 
   const headers = { Authorization: authToken }
   __logger.info('calling set metadata api', inputRequest, headers)
-
+  console.log('****************************************', inputRequest)
   http.Post(inputRequest, 'body', __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.metadata, headers)
     .then(data => {
       __logger.info('post metadata api response', data)
@@ -171,7 +172,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinAndOptoutTextApi(req.body.optinText, req.body.optoutText, req.headers.authorization))
-    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins))
+    .then(data => callSetTemplateId(req.body.templateId, req.body.optoutTemplateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins))
     .then(data => __db.redis.key_delete(__constants.REDIS_OPTIN_TEMPLATE_DATA_KEY + req.user.wabaPhoneNumber))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {

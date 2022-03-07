@@ -26,6 +26,12 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
+        optoutTemplateId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
         chatDefaultMessage: {
           type: 'string',
           required: true,
