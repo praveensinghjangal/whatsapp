@@ -21,8 +21,11 @@ const getOptinText = authToken => {
     .then(data => {
       __logger.info('get business profile api response', data)
       data = data.body || data
+      const optData = {}
       if (data && data.code && data.code === 2000) {
-        apiCalled.resolve(data.data.optinText || '')
+        optData.optinText = data.data.optinText || ''
+        optData.optoutText = data.data.optoutText || ''
+        apiCalled.resolve(optData)
       } else {
         apiCalled.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ACCOUNT_NOT_EXISTS, err: data.error })
       }
@@ -136,9 +139,10 @@ const getOptinAndTemplate = (req, res) => {
       resData.sessionTimeoutMins = metaData.data.sessionTimeoutMins
       return getOptinText(req.headers.authorization)
     })
-    .then(optinText => {
-      __logger.info('optinText then 2', { optinText })
-      resData.optinText = optinText
+    .then(optinData => {
+      __logger.info('optinText then 2', { optinData })
+      resData.optinText = optinData.optinText
+      resData.optoutText = optinData.optoutText
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: resData })
     })
     .catch(err => {
@@ -163,12 +167,11 @@ const getOptinAndTemplate = (req, res) => {
  */
 
 const addUpdateOptinAndTemplate = (req, res) => {
-  console.log('&&&&&&&&&&&&&&&&&&&&&', req.body.sessionTimeoutMins)
   __logger.info('Add Update Optin And Template API called', req.body)
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinTextApi(req.body.optinText, req.body.optoutText, req.headers.authorization))
-    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeOut))
+    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins))
     .then(data => __db.redis.key_delete(__constants.REDIS_OPTIN_TEMPLATE_DATA_KEY + req.user.wabaPhoneNumber))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {

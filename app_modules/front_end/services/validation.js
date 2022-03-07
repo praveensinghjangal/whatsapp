@@ -66,6 +66,12 @@ class validate {
         sessionTimeoutMins: {
           type: 'number',
           required: false
+        },
+        optoutText: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 20
         }
       }
     }
