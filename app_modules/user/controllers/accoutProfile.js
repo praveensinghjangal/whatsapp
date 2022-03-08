@@ -309,7 +309,7 @@ const updateAccountManagerName = (req, res) => {
 }
 
 // api specific to get email id of support user
-const getUserRoleData = (req, res) => {
+const getUserRoleArrayDataForEmail = (req, res) => {
   const userDetails = q.defer()
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [__constants.SUPPORT_ROLE_ID])
     .then(results => {
@@ -335,5 +335,5 @@ module.exports = {
   getAccountProfileByUserId,
   getAccountProfileList,
   updateAccountManagerName,
-  getUserRoleData
+  getUserRoleArrayDataForEmail
 }

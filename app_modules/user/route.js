@@ -100,6 +100,4 @@ router.patch('/account/config', authMiddleware.authenticate(authstrategy.jwt.nam
 // Count
 router.get('/account/created/today', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, countController.getAccountCreatedTodayCount)
 
-// api to get email and user data from user and user role table
-router.get('/userroledata', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.getUserRoleData)
 module.exports = router
