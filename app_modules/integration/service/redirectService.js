@@ -123,9 +123,12 @@ class RedirectService {
         // TODO:
         payload.isVavaOptin = true
       }
+      if (payload.content.text.length === redisData.optoutText.length && payload.content.text.toLowerCase() === redisData.optoutText.toLowerCase()) {
+        payload.isVavaOptout = true
+      }
     }
     __logger.info('2nd check ', payload)
-    if ((redisData && redisData.chatbotActivated) || payload.isVavaOptin === true) {
+    if ((redisData && redisData.chatbotActivated) || payload.isVavaOptin === true || payload.isVavaOptout === true) {
       __logger.info('Inside to send req to chatbot')
       const http = new HttpService(3000)
       const apiUrl = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.chatFlow

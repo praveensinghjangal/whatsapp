@@ -17905,7 +17905,8 @@
                     "senderName": "Danish"
                 },
                 "timestamp": "2020-08-06T14:07:14Z",
-                "isVavaOptin": true
+                "isVavaOptin": true,
+                "isVavaOptout": false
             },
             "type": "object",
             "properties": {
@@ -17978,6 +17979,9 @@
                     "type": "string"
                 },
                 "isVavaOptin": {
+                    "type": "boolean"
+                },
+                "isVavaOptout": {
                     "type": "boolean"
                 }
             },
