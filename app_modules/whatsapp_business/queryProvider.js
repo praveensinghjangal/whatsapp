@@ -20,7 +20,7 @@ const getBusinessProfile = () => {
   postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
   user_account_id_by_provider as "serviceProviderUserAccountId",
   service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
-  webhook_post_url as "webhookPostUrl",  audience_webhook_url as "audienceWebhookUrl",optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
+  webhook_post_url as "webhookPostUrl",  audience_webhook_url as "audienceWebhookUrl",optin_text as "optinText",optout_text as "optoutText" ,chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
   wabainfo.user_id as "userId",wabainfo.max_tps_to_provider as "maxTpsToProvider"
   FROM waba_information wabainfo
@@ -43,7 +43,7 @@ const getWabaTableDataByUserId = () => {
   business_manager_verified as "businessManagerVerified", 
   phone_verified as "phoneVerified",city,postal_code as "postalCode",
   service_provider_id as "serviceProviderId",api_key as "apiKey",
-  webhook_post_url as "webhookPostUrl",optin_text as "optinText",chatbot_activated as "chatBotActivated", websites,
+  webhook_post_url as "webhookPostUrl",optin_text as "optinText",optout_text as "optoutText",chatbot_activated as "chatBotActivated", websites,
   user_account_id_by_provider as "serviceProviderUserAccountId", img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",templates_allowed as "templatesAllowed",
   max_tps_to_provider as "maxTpsToProvider",wabainfo.audience_webhook_url as "audienceWebhookUrl"
@@ -77,8 +77,8 @@ const addWabaTableData = () => {
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
   country, email, business_category_id , waba_profile_setup_status_id ,business_manager_verified,
   phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,audience_webhook_url
-  optin_text,chatbot_activated,user_account_id_by_provider,websites,access_info_rejection_reason)
-  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  optin_text, optout_text,chatbot_activated,user_account_id_by_provider,websites,access_info_rejection_reason)
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateWabaTableData = () => {
@@ -87,7 +87,8 @@ const updateWabaTableData = () => {
   ,address=?,country=?, email=?, business_category_id =?,
   waba_profile_setup_status_id =?,business_manager_verified=?,phone_verified =?,waba_information_id=?,
   updated_by=?,updated_on=now(),user_id=?,city=?,postal_code =?, facebook_manager_id=?, 
-  service_provider_id=?,api_key=?,webhook_post_url=?,audience_webhook_url=?,optin_text=?,chatbot_activated=?,
+  service_provider_id=?,api_key=?,webhook_post_url=?,audience_webhook_url=?,optin_text=?,optout_text=?,
+  chatbot_activated=?,
   user_account_id_by_provider=? ,websites=?,img_data=?, access_info_rejection_reason =?,
   templates_allowed=?,max_tps_to_provider=?
   where waba_information_id=? and user_id=?`
@@ -112,6 +113,7 @@ const getWabaData = () => {
   wi.webhook_post_url as "webhookPostUrl",
   wi.audience_webhook_url as "audienceWebhookUrl",
   wi.optin_text as "optinText",
+  wi.optout_text as "optoutText",
   pd.plan_priority as "planPriority",
   wi.chatbot_activated as "chatbotActivated",
   wi.user_account_id_by_provider as "userAccountIdByProvider",
@@ -162,7 +164,8 @@ const getUserIdAndTokenKeyByWabaNumber = () => {
 
 const getWabaNumberAndOptinTextFromUserId = () => {
   return `SELECT CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
-  optin_text as "optinText"
+  optin_text as "optinText",
+  optout_text as "optoutText
   FROM waba_information wi
   where wi.user_id = ? and wi.is_active = true`
 }
@@ -220,7 +223,7 @@ const getProfileByWabaId = () => {
   postal_code as "postalCode",wabainfo.service_provider_id as "serviceProviderId", 
   user_account_id_by_provider as "serviceProviderUserAccountId",
   service_provider_name as "serviceProviderName", api_key as "apiKey",IFNULL(sp.max_website_allowed, 1) as "maxWebsiteAllowed",
-  webhook_post_url as "webhookPostUrl", optin_text as "optinText", chatbot_activated as "chatBotActivated", websites, img_data as "imageData",wabainfo.audience_webhook_url as "audienceWebhookUrl"
+  webhook_post_url as "webhookPostUrl", optin_text as "optinText", optout_text as "optoutText",chatbot_activated as "chatBotActivated", websites, img_data as "imageData",
   access_info_rejection_reason as "accessInfoRejectionReason",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
   wabainfo.user_id as "userId",wabainfo.max_tps_to_provider as "maxTpsToProvider",wabainfo.templates_allowed as "templateAllowed"
   FROM waba_information wabainfo

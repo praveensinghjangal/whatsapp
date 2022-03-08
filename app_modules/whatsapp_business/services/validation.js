@@ -301,6 +301,12 @@ class validate {
           minLength: 1,
           maxLength: 20
         },
+        optoutText: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 20
+        },
         chatBotActivated: {
           type: 'boolean',
           required: false
@@ -537,6 +543,11 @@ class validate {
         optinText: {
           type: 'string',
           required: true,
+          minLength: 1
+        },
+        optoutText: {
+          type: 'string',
+          required: false,
           minLength: 1
         }
       }

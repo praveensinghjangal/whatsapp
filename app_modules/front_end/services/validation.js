@@ -26,6 +26,12 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
+        optoutTemplateId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
         chatDefaultMessage: {
           type: 'string',
           required: true,
@@ -66,6 +72,12 @@ class validate {
         sessionTimeoutMins: {
           type: 'number',
           required: false
+        },
+        optoutText: {
+          type: 'string',
+          required: false,
+          minLength: 1,
+          maxLength: 20
         }
       }
     }
