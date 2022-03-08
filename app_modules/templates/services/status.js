@@ -301,7 +301,8 @@ class StatusService {
         return emailService.sendEmail(supportEmail, emailSubject + ' - ' + templateName, emailTemplates.supportTemplate(reqireTelegramData.firstName, userId, templateName))
       })
       .then(data => {
-        return telegramMessage.sendMessage(telegramTemplate.emailTemplate(reqireTelegramData.firstName, userId, templateName))
+        const messageTemplate = telegramTemplate.emailTemplate(reqireTelegramData.firstName, userId, templateName)
+        return telegramMessage.sendMessage(messageTemplate, __config.botToken, __config.telegramChatId)
       }).then(telegramData => {
         notificationSent.resolve(telegramData)
       })
