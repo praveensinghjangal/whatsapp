@@ -547,7 +547,7 @@ class validate {
         },
         optoutText: {
           type: 'string',
-          required: true,
+          required: false,
           minLength: 1
         }
       }

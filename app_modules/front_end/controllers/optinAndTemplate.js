@@ -51,7 +51,6 @@ const callSetTemplateId = (templateId, optoutTemplateId, defaultmessageData, ser
 
   const headers = { Authorization: authToken }
   __logger.info('calling set metadata api', inputRequest, headers)
-  console.log('****************************************', inputRequest)
   http.Post(inputRequest, 'body', __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.metadata, headers)
     .then(data => {
       __logger.info('post metadata api response', data)
