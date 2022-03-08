@@ -99,4 +99,5 @@ router.get('/account/config/:userId', authMiddleware.authenticate(authstrategy.j
 router.patch('/account/config', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.updateAccountConfig)
 // Count
 router.get('/account/created/today', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, countController.getAccountCreatedTodayCount)
+
 module.exports = router

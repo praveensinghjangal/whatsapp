@@ -10,6 +10,7 @@ const StatusService = require('../../templates/services/status')
 const ValidatonService = require('../services/validation')
 const request = require('request')
 const q = require('q')
+const userService = require('../../user/controllers/accoutProfile')
 
 const updateTemplateStatus = (reqBody, authToken) => {
   __logger.info('updateTemplateStatus called ::>>>>>>>>>>>>>>>>>.')
@@ -47,6 +48,7 @@ const sendTemplateForApproval = (req, res) => {
   const userId = req.user ? req.user.user_id : ''
   const templateId = req.params ? req.params.templateId : null
   let oldTemplateData
+
   const ruleEngine = new RuleEngine()
   const templateService = new TemplateService()
   templateService.getTemplateInfo(userId, templateId)
@@ -79,7 +81,15 @@ const sendTemplateForApproval = (req, res) => {
     })
     .then(data => {
       __logger.info('updateTemplateStatus result then 4', { data })
-      res.send(data)
+      return userService.getUserRoleArrayDataForEmail()
+    })
+    .then(userRoleData => {
+      const statusService = new StatusService()
+
+      return statusService.notifySupport(userId, oldTemplateData.templateName, userRoleData)
+    })
+    .then(teledata => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
     })
     .catch(err => {
       __logger.error('error sendTemplateForApproval: ', err)

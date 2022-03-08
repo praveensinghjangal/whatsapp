@@ -13,6 +13,8 @@ const RedisService = require('../../../lib/redis_service/redisService')
 const emailTemplates = require('../../../lib/sendNotifications/emailTemplates')
 const EmailService = require('../../../lib/sendNotifications/email')
 const integrationService = require('../../integration')
+const telegramMessage = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
+const telegramTemplate = require('../../../lib/sendNotifications/telegramTemplate')
 
 class StatusService {
   canUpdateStatus (newStatusId, oldStatusId) {
@@ -275,6 +277,33 @@ class StatusService {
       .then(data => {
         // __logger.info('Email Contents>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', { data })
         notificationSent.resolve(data)
+      })
+      .catch(err => {
+        __logger.error('validateAndUpdateStatus::error: ', err)
+        return notificationSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+
+    return notificationSent.promise
+  }
+
+  notifySupport (userId, templateName, userRoleData) {
+    __logger.info('notify', { userRoleData, templateName })
+    const notificationSent = q.defer()
+    const emailService = new EmailService(__config.emailProvider)
+    const userService = new UserService()
+    const emailSubject = __config.emailProvider.subject.templateStatusSubject
+    // support mail ids are present in userRoleData array
+    const supportEmail = userRoleData[0].email.split(',')
+    let reqireTelegramData
+    userService.getEmailAndFirstNameFromUserId(userId)
+      .then(userData => {
+        reqireTelegramData = userData
+        return emailService.sendEmail(supportEmail, emailSubject + ' - ' + templateName, emailTemplates.supportTemplate(reqireTelegramData.firstName, userId, templateName))
+      })
+      .then(data => {
+        return telegramMessage.sendMessage(telegramTemplate.emailTemplate(reqireTelegramData.firstName, userId, templateName))
+      }).then(telegramData => {
+        notificationSent.resolve(telegramData)
       })
       .catch(err => {
         __logger.error('validateAndUpdateStatus::error: ', err)
