@@ -113,7 +113,6 @@ const getWabaData = () => {
   wi.webhook_post_url as "webhookPostUrl",
   wi.audience_webhook_url as "audienceWebhookUrl",
   wi.optin_text as "optinText",
-  wi.optout_text as "optoutText",
   pd.plan_priority as "planPriority",
   wi.chatbot_activated as "chatbotActivated",
   wi.user_account_id_by_provider as "userAccountIdByProvider",
@@ -165,7 +164,7 @@ const getUserIdAndTokenKeyByWabaNumber = () => {
 const getWabaNumberAndOptinTextFromUserId = () => {
   return `SELECT CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
   optin_text as "optinText",
-  optout_text as "optoutText
+  optout_text as "optoutText"
   FROM waba_information wi
   where wi.user_id = ? and wi.is_active = true`
 }
