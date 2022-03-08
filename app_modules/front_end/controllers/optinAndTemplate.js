@@ -137,6 +137,7 @@ const getOptinAndTemplate = (req, res) => {
       resData.serviceFulfillmentMessageCta = metaData.data.serviceFulfillmentMessageCta || null
       resData.continuationTransactionMessageCta = metaData.data.continuationTransactionMessageCta || null
       resData.sessionTimeoutMins = metaData.data.sessionTimeoutMins
+      resData.optoutTemplateId = metaData.data.optoutTemplateId
       return getOptinText(req.headers.authorization)
     })
     .then(optinData => {
