@@ -77,7 +77,7 @@ const addWabaTableData = () => {
   can_receive_voice_call, associated_with_ivr,business_name , state,whatsapp_status , description,address,
   country, email, business_category_id , waba_profile_setup_status_id ,business_manager_verified,
   phone_verified ,waba_information_id,created_by, user_id,city,postal_code, service_provider_id,api_key,webhook_post_url,audience_webhook_url
-  optin_text, optout_text,chatbot_activated,user_account_id_by_provider,websites,access_info_rejection_reason)
+  ,optin_text,optout_text,chatbot_activated,user_account_id_by_provider,websites,access_info_rejection_reason)
   VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
