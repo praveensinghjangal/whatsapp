@@ -869,7 +869,7 @@
         },
         "/chat/v1/messages/tracking/{messageId}": {
             "get": {
-                "x-isPublic": false,
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Get Message Journey",
                 "description": "Use this API to get complete journey of a message\nYou need to pass messageId in path",
@@ -1104,6 +1104,7 @@
         },
         "/chat/v1/messages/status/count": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Get Message Count",
                 "description": "Use this API to get message status count",
@@ -1231,6 +1232,7 @@
         },
         "/chat/v1/messages/status/{messageStatus}/list": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Get Message List",
                 "description": "Use this API to get message status list",
@@ -1381,6 +1383,7 @@
         },
         "/chat/v1/messages/transaction": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Get Incoming, Outgoing and Total Message Transaction Count",
                 "description": "Use this API to get incoming, outgoing and total message transaction\ncount",
@@ -6246,6 +6249,7 @@
         },
         "/business/profile": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "Gets business profile data",
                 "summary": "Get business profile",
@@ -6352,6 +6356,7 @@
                 "security": []
             },
             "post": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "API to add or update business profile",
                 "summary": "add or update business profile",
@@ -7605,6 +7610,7 @@
         },
         "/business/profile/logo": {
             "put": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "upload profile photo",
                 "description": "upload profile photo",
@@ -7740,6 +7746,7 @@
         },
         "/business/profile/submit": {
             "put": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Submit the business access info in submitted status for support team approval",
                 "description": "Submit the business access info in submitted status for support team approval",
@@ -8727,7 +8734,6 @@
         },
         "/business/profile/list": {
             "get": {
-                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "This api returns list of waba based on following filters:",
                 "summary": "Get waba account list",
@@ -8924,7 +8930,7 @@
         },
         "/templates": {
             "get": {
-                "x-isPublic": false,
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "This api returns list of templates based on filters\nfollowing are the list of template status :\nApproved\nDELETE_PENDING\nRequest Initiated\nSUBMITTED\nRejected\nREQUESTED\nPENDING",
                 "summary": "Get template list",
@@ -9031,7 +9037,7 @@
                 "security": []
             },
             "post": {
-                "x-isPublic": false,
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "API to add or update template\nTo add template do not pass templateID to update template pass template ID along with parameters to update",
                 "summary": "Add update template",
@@ -9174,6 +9180,7 @@
         },
         "/templates/count": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "This api returns templates count",
                 "summary": "Get template count",
@@ -9305,6 +9312,7 @@
         },
         "/templates/{templateId}": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Get template Info",
                 "description": "Use this API to get information of a template",
@@ -9435,6 +9443,7 @@
                 "security": []
             },
             "delete": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Delete Template",
                 "description": "Use this API to delete a template",
@@ -9701,6 +9710,7 @@
         },
         "/templates/{templateId}/submit": {
             "post": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "API to send template for approval",
                 "summary": "API to send template for approval",
@@ -13139,6 +13149,7 @@
         },
         "/message-history/{messageId}": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "platform",
                 "description": "get info of a message history by message id",
                 "summary": "get message history info",
@@ -14882,6 +14893,7 @@
         },
         "/flowmessage/flow/{flowTopicId}": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "chatApp",
                 "summary": "Get entire flow",
                 "description": "Use to get the flow according to user id",
@@ -14990,6 +15002,7 @@
                 "security": []
             },
             "delete": {
+                "x-isPublic": true,
                 "x-module": "chatApp",
                 "summary": "Delete flowTopicId",
                 "description": "Use this API to delete a flowTopicId",
@@ -15101,6 +15114,7 @@
         },
         "/flowmessage/flow/{flowTopicId}/{identifierText}": {
             "get": {
+                "x-isPublic": true,
                 "x-module": "chatApp",
                 "summary": "Get identifier of the flow",
                 "description": "This API is used to get the identifier of the flow",
@@ -15216,6 +15230,7 @@
                 "security": []
             },
             "delete": {
+                "x-isPublic": true,
                 "x-module": "chatApp",
                 "summary": "Delete flowIdentifierText",
                 "description": "Use this API to delete a flowIdentifierText",
@@ -15334,6 +15349,7 @@
         },
         "/flowmessage/flow": {
             "post": {
+                "x-isPublic": true,
                 "x-module": "chatApp",
                 "summary": "This API is used to add and update the flow",
                 "description": "Use this api to add/update the flow of chat app as per the userId",
@@ -15471,6 +15487,7 @@
                 }
             },
             "get": {
+                "x-isPublic": true,
                 "x-module": "chatApp",
                 "summary": "Get Menu Based Template List",
                 "description": "Use this API to get menu based template list",
