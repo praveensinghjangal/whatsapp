@@ -20,10 +20,10 @@ const _ = require('lodash')
 const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
   const dbServices = new DbServices()
   const validate = new ValidatonService()
-  validate.billingConversation(req.query)
+  validate.checkstartDateAndendDate(req.query)
     .then(data => dbServices.billingDataCount(req.query.startDate, req.query.endDate, req.user.wabaPhoneNumber))
     .then(result => {
-      _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => { if (!_.find(result, obj => obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase())) result.push({ conversationCategory: singleStatus, stateCount: 0 }) })
+      _.each(__constants.CONVERSATION_BILLING_CATEGORY, singleStatus => { if (!_.find(result, obj => obj.conversationCategory.toLowerCase() === singleStatus.toLowerCase())) result.push({ conversationCategory: singleStatus, conversationCategoryCount: 0 }) })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
