@@ -13,7 +13,7 @@ const ValidatonService = require('../services/validation')
  * @memberof -WhatsApp-Message-Controller-Transaction-Status-
  * @name GetMessageTransactionstatusList
  * @path {GET} /chat/v1/messages/transaction/list
- * @description Bussiness Logic :- Use this API to get message transaction type list.
+ * @description Bussiness Logic :- Use this API to get message transaction type list - list of messages based on incoming or outging messages.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message-history/getMessageTransactionTypeList|GetMessageTransactionstatusList}
  * @param {string}  startDate - startDate needs to be entered here.

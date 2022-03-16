@@ -24,11 +24,12 @@ const errorToTelegram = require('./../../../lib/errorHandlingMechanism/sendToTel
  * @description API’s related to whatsapp message.
  */
 
+// function to get bulk templates from redis and if not in redis then from DB
 const getBulkTemplates = async (messages, wabaPhoneNumber) => {
   const bulkTemplateCheck = q.defer()
   const templateIdArr = []
   const map = new Map()
-  for (const item of messages) {
+  for (const item of messages) { // loop to pluck unique template id from message aaray to serch
     if (item.whatsapp && item.whatsapp.template && item.whatsapp.template.templateId) {
       if (!map.has(item.whatsapp.template.templateId)) {
         map.set(item.whatsapp.template.templateId, true)
@@ -39,7 +40,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
       }
     }
   }
-  const uniqueTemplateIdAndNotInGlobal = []
+  const uniqueTemplateIdAndNotInGlobal = [] // not in redis arr so that it can be queryed in db
   const templateDataObj = {}
   for (let i = 0; i < templateIdArr.length; i++) {
     const templateData = await __db.redis.get(templateIdArr[i].templateId + '___' + templateIdArr[i].from)
@@ -57,7 +58,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [wabaPhoneNumber.substring(2), onlyTemplateId])
     .then(dbData => {
       _.each(dbData, singleObj => {
-        if (singleObj && singleObj.message_template_id) {
+        if (singleObj && singleObj.message_template_id) { // block to push template data in templateDataObj and redis
           const dataObject = {
             templateId: singleObj.message_template_id,
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
@@ -87,6 +88,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
   return bulkTemplateCheck.promise
 }
 
+// function to send webhook to user for message status
 const saveAndSendMessageStatus = (payload) => {
   const statusSent = q.defer()
   const redirectService = new RedirectService()
@@ -143,7 +145,7 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   return messageSent.promise
 }
 
-const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) => {
+const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) => { // function to push to queue in bulk
   const sendSingleMessage = q.defer()
   qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, providerId, userId, maxTpsToProvider, headers)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
@@ -159,7 +161,7 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
 const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   const processSingleMessage = q.defer()
   __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
-  if (data.whatsapp.from !== wabaPhoneNumber) {
+  if (data.whatsapp.from !== wabaPhoneNumber) { // comparing api req number(data.whatsapp.from) with number fetched from jwt token(wabaPhoneNumber)
     const modifiedRejectPromise = { ...__constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS }
 
     delete modifiedRejectPromise.status_code
@@ -188,6 +190,7 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   return processSingleMessage.promise
 }
 
+// function to check various rules like waba num and template variable params etc
 const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
   const sendSingleMessage = q.defer()
 
@@ -206,7 +209,7 @@ const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
  * @memberof -WhatsApp-Message-Controller-SendMessage-
  * @name SendMessageInQueue
  * @path {POST} /chat/v1/messages
- * @description Bussiness Logic :- This API is used to send mesages using a channel. This API can send single as well as bulk messsages.
+ * @description Bussiness Logic :- This API is used to send mesages on whatsapp. This API can send single as well as bulk messsages. There are total 3 routes in top of this controller - one for single message which has tps of 500 another for bulk message max 500 messages per call with tps of 1 and one for internal call with same input as bulk but without tps for internal use among helo products and platforms. tps is managed on router layer
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
  <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message/send|SendMessageInQueue}
  * @body {Array}  Array0fJson - This below Object is a sample Object for request body <br/>[ { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "location", "location": { "longitude": 7.4954884, "latitude": 51.5005765 } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "template", "template": { "templateId": "welcome", "language": { "policy": "deterministic", "code": "en" }, "components": [ { "type": "header", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] }, { "type": "body", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] }, { "type": "footer", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] } ] } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "media", "media": { "type": "image", "url": "https://i.ibb.co/kXgjphY/925869358s.png", "caption": "viva connect" } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "text", "text": "hello" } } ]
@@ -223,6 +226,7 @@ const controller = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
   let userRedisData
+  // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
@@ -244,11 +248,11 @@ const controller = (req, res) => {
       }
       if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
         return null
-      } else {
+      } else { // when message is not rejected in rule check
         const uniqueId = new UniqueId()
         const msgInsertData = []
         const mongoBulkObject = []
-        _.each(processedMessages.resolve, (singleMessage, i) => {
+        _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
           msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,

@@ -13,7 +13,7 @@ const DbServices = require('../services/dbData')
  * @memberof -WhatsApp-Message-Controller-Transaction-Message-List-Status-
  * @name GetMessageStatusList
  * @path {GET} /chat/v1/messages/status/{messageStatus}/list
- * @description Bussiness Logic :- Use this API to get message status list
+ * @description Bussiness Logic :- Use this API to get message status list - list of messages in a status
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
   <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message-history/getMessageList|GetMessageStatusList}
  * @param {string}  startDate - startDate needs to be entered here.

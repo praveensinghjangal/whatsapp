@@ -190,7 +190,7 @@ const convertToJson = (file) => {
 }
 
 const filter = function (req, file, cb) {
-  var filetypes = /^(xls[x]?)$/
+  var filetypes = /^(xls[x]?)$/ // regex to check file is xlx or xlxs
   let fileExt = file.originalname.split('.')
   fileExt = fileExt[fileExt.length - 1]
   var extname = filetypes.test(fileExt.toLowerCase())
@@ -208,7 +208,7 @@ const filter = function (req, file, cb) {
  * @memberof -WhatsApp-Message-Controller-ExcelFile-
  * @name UploadWhatsAppMessageExcel
  * @path {POST} /chat/v1/messages/whatsapp/excel
- * @description Bussiness Logic :- This API is used to send bulk template message using excel. <br/>
+ * @description Bussiness Logic :- This API is used to send bulk template message using excel, it will only convert excel into json and call send message API <br/>
  * Excel file with template parameters download sample file using
    this link https://drive.google.com/file/d/1453P-r7xcay4XEUSQPOD5BddspNKYqTK/view?usp=sharing
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).

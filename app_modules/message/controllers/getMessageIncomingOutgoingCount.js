@@ -13,7 +13,7 @@ const ValidatonService = require('../services/validation')
  * @memberof -WhatsApp-Message-Controller-Transaction-Message-
  * @name GetIncomingOutgoingMessageCount
  * @path {GET} /chat/v1/messages/transaction
- * @description Bussiness Logic :- Use this API to get incoming, outgoing and total message transaction count.
+ * @description Bussiness Logic :- Use this API to get incoming, outgoing and total message transaction count in provided date range.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
    <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message-history/getMessageTransactionCount|GetIncomingOutgoingMessageCount}
  * @param {string}  startDate - startDate needs to be entered here.

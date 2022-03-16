@@ -13,7 +13,7 @@ const __logger = require('../../../lib/logger')
  * @memberof -WhatsApp-Message-Controller-Add-Tracking-
  * @name Add-Tracking
  * @path {POST} /chat/v1/messages/tracking
- * @description Bussiness Logic :- This API is used to store message status.
+ * @description Bussiness Logic :- This API is used to store message status in per day table, reporting db & MIS db.
  * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
    <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message/save%20message%20status|Add-Tracking}
  * @body {string}  messageId=f194da3d-0b62-405e-a512-95797f4bcf41 - Please provide the valid messageId.

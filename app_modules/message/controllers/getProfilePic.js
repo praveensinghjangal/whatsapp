@@ -4,6 +4,7 @@ const __util = require('../../../lib/util')
 const integrationService = require('../../../app_modules/integration')
 const __constants = require('../../../config/constants')
 
+// not required, delete after verifying
 const getProfilePic = (req, res) => {
   __logger.info('Get Media API Called', req.params)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'

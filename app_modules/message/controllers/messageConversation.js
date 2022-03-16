@@ -9,7 +9,7 @@ const _ = require('lodash')
  * @memberof -Whatsapp-message-(WABA)-Controller-
  * @name billingDataCount
  * @path {GET} /conversation/count
- * @description Bussiness Logic :- Gets list of billing conversation and its count on the basis of conversationCategory.
+ * @description Bussiness Logic :- Get count of conversation in each category based on prvided date range.
  * @response {string} ContentType=application/json - Response content type.
  * @response {string} metadata.msg=Success  - Response got successfully.
  * @code {200} if the msg is success than return Gets list of billing conversation and its count on the basis of conversationCategory.
