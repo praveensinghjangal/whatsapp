@@ -163,7 +163,7 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
 
 const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
   const messageStatus = q.defer()
-  saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false, 'rejected')
+  saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false, __constants.MESSAGE_STATUS.rejected)
     .then(statusResponse => queueObj.channel[queue].ack(mqData))
     .then(statusResponse => messageStatus.resolve('done!'))
     .catch(err => {
