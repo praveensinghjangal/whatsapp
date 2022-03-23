@@ -87,7 +87,7 @@ const sendTemplateForApproval = (req, res) => {
           const statusService = new StatusService()
           statusService.notifySupport(userId, oldTemplateData.templateName, userRoleData)
         })
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
+      res.send(data)
     })
     .catch(err => {
       __logger.error('error sendTemplateForApproval: ', err)
