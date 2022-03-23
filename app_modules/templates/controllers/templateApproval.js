@@ -81,14 +81,12 @@ const sendTemplateForApproval = (req, res) => {
     })
     .then(data => {
       __logger.info('updateTemplateStatus result then 4', { data })
-      return userService.getUserRoleArrayDataForEmail()
-    })
-    .then(userRoleData => {
-      const statusService = new StatusService()
-
-      return statusService.notifySupport(userId, oldTemplateData.templateName, userRoleData)
-    })
-    .then(teledata => {
+      userService.getUserRoleArrayDataForEmail()
+        .then(userRoleData => {
+          __logger.info('support data ------------->', { data })
+          const statusService = new StatusService()
+          statusService.notifySupport(userId, oldTemplateData.templateName, userRoleData)
+        })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS })
     })
     .catch(err => {

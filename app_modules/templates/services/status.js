@@ -303,7 +303,8 @@ class StatusService {
       .then(data => {
         const messageTemplate = telegramTemplate.emailTemplate(reqireTelegramData.firstName, userId, templateName)
         return telegramMessage.sendMessage(messageTemplate, __config.botToken, __config.telegramChatId)
-      }).then(telegramData => {
+      })
+      .then(telegramData => {
         notificationSent.resolve(telegramData)
       })
       .catch(err => {
