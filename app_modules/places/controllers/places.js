@@ -26,8 +26,7 @@ const csc = require('country-state-city').default
 const getAllCountries = (req, res) => {
   __logger.info('Inside Get All countries')
   try {
-    const countries = []
-    countries.push(csc.getAllCountries()[100])
+    const countries = csc.getAllCountries()
     if (countries && countries.length > 0) {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: countries })
     } else {

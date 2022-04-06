@@ -102,15 +102,15 @@ class validate {
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 2,
-          maxLength: 2,
+          minLength: 1,
+          maxLength: 4,
           pattern: __constants.VALIDATOR.number
         },
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 10,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         }
       }
@@ -155,15 +155,15 @@ class validate {
         phoneCode: {
           type: 'string',
           required: false,
-          minLength: 2,
-          maxLength: 2,
+          minLength: 1,
+          maxLength: 4,
           pattern: __constants.VALIDATOR.number
         },
         phoneNumber: {
           type: 'string',
           required: false,
-          minLength: 10,
-          maxLength: 10,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         canReceiveSms: {
@@ -453,15 +453,15 @@ class validate {
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 2,
-          maxLength: 2,
+          minLength: 1,
+          maxLength: 4,
           pattern: __constants.VALIDATOR.number
         },
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 10,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         canReceiveSms: {
