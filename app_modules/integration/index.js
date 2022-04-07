@@ -71,4 +71,13 @@ class Audience {
   saveOptin (wabaNumber, payload) { return this.audience.saveOptin(wabaNumber, payload) }
 }
 
-module.exports = { Messaage, Template, WabaAccount, Authentication, Audience }
+class EmbeddedSignup {
+  constructor (providerId, authorizationToken) {
+    this.providerName = 'facebook'
+    this.embeddedSignup = new providers[this.providerName].EmbeddedSignup(providerId, authorizationToken)
+  }
+
+  getWabaOfClient (params) { return this.embeddedSignup.getWabaOfClient(params) }
+}
+
+module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }

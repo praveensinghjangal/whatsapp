@@ -321,5 +321,6 @@ module.exports = {
   supportBotToken: process.env.SUPPORT_BOT_TOKEN,
   supportTelegramChatId: process.env.SUPPORT_TELEGRAM_CHAT_ID,
   privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || [],
-  misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : []
+  misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : [],
+  authorization: process.env.AUTHORIZATION
 }
