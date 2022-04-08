@@ -1,20 +1,39 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
-const __config = require('../../../config')
+// const __config = require('../../../config')
 const __constants = require('../../../config/constants')
+const AuthService = require('./authService')
 // const __logger = require('../../../lib/logger')
 // const qalllib = require('qalllib')
 // const _ = require('lodash')
+
+const getAuthorizationToken = (userId, authorizationToken, wabaNumber) => {
+  const getToken = q.defer()
+  if (authorizationToken) {
+    getToken.resolve(authorizationToken)
+  } else {
+    const authService = new AuthService(userId)
+    authService.getFaceBookTokensByWabaNumber(wabaNumber)
+      .then(data => {
+        getToken.resolve(data.graphApiKeyToken) // return the graphApiKeyToken. Will be used in Authorization with Bearer
+      })
+  }
+  return getToken.promise
+}
 class EmbeddedSignup {
-  constructor (providerId, authorizationToken) {
+  constructor (providerId, userId, authorizationToken) {
     this.providerId = providerId
+    this.userId = userId
     this.authorizationToken = authorizationToken
   }
 
-  getWabaOfClient (params) {
+  getWabaOfClient (params, wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
-    http.Get(__constants.FACEBOOK.getWabaOfCleint, { Authorization: __config.authorization }, this.providerId)
+    getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
+      .then(token => {
+        return http.Get(__constants.FACEBOOK.getWabaOfCleint, { Authorization: token }, this.providerId)
+      })
       .then(data => {
         if (data) {
           console.log('33333333333333333333333333333333333333333333333333333333333333333333', data)

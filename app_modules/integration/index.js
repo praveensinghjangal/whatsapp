@@ -72,12 +72,12 @@ class Audience {
 }
 
 class EmbeddedSignup {
-  constructor (providerId, authorizationToken) {
+  constructor (providerId, userId, authorizationToken) {
     this.providerName = 'facebook'
-    this.embeddedSignup = new providers[this.providerName].EmbeddedSignup(providerId, authorizationToken)
+    this.embeddedSignup = new providers[this.providerName].EmbeddedSignup(providerId, userId, authorizationToken)
   }
 
-  getWabaOfClient (params) { return this.embeddedSignup.getWabaOfClient(params) }
+  getWabaOfClient (params, wabaNumber) { return this.embeddedSignup.getWabaOfClient(params, wabaNumber) }
 }
 
 module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }
