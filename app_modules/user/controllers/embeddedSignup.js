@@ -37,14 +37,14 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAKQlT2SZBxYgljZBFTrdLEMac1YUO31IJo9gBUGCHc3QwjDArrhgx3bkWJg17WZAPeXb4ykXBk8ZBeERZAlMqZAFwd15bGzcRQiZAJkk0v1hsWZB6zYSsrq2Iv4j2YiyuHACVETkzpZAHGsfUqo9TrKFjy3xr87XnoUpXorOOAsnYxCZBERU6UBZCLtZBC5WiHC1OLXZA4ic9H9JJ'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAEphj6jWxBbnAqZBZADtjggNafOrdGdqlR7udUBFgsaYjScnGLA6BZAdxpLnab8TavpYLZCc8bIvAZBCjpDkCH87rqi9mMHj8euVd8lBQ1pYQ89r5F0F0w3AZBYUuzk9AFVpAiZCncddNVGZCZCt9Pse4w7yeTdl0foKEbypliH5YwM104FynuZAIB7qAMTCKnjGLIwsyqJgfG'
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
-    .then(data => {
-      const granularScopes = data.granular_scopes
+    .then(debugData => {
+      const granularScopes = debugData.granular_scopes
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
       const wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
-      return wabaIdOfClient
+      return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
       __logger.info('Then 3', { data })

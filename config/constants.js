@@ -271,7 +271,8 @@ const FACEBOOK_ENDPOINTS = {
   getMedia: '/v1/media/:MediaId',
   getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
   getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
-  debugToken: 'https://graph.facebook.com/v12.0/debug_token?input_token='
+  debugToken: '/debug_token?input_token=',
+  getWabaDetails: '/:wabaId'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {

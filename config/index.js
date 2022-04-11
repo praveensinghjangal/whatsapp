@@ -322,5 +322,6 @@ module.exports = {
   supportTelegramChatId: process.env.SUPPORT_TELEGRAM_CHAT_ID,
   privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || [],
   misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : [],
+  facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL,
   authorization: process.env.AUTHORIZATION
 }
