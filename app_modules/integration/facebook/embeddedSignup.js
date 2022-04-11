@@ -1,6 +1,6 @@
 const q = require('q')
 const HttpService = require('../service/httpService')
-// const __config = require('../../../config')
+const __config = require('../../../config')
 const __constants = require('../../../config/constants')
 const AuthService = require('./authService')
 // const __logger = require('../../../lib/logger')
@@ -46,5 +46,36 @@ class EmbeddedSignup {
       })
     return apiCall.promise
   }
+
+  getBSPsSystemUserIds (inputToken, wabaNumber) {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
+      .then(token => {
+        let url = `${__constants.FACEBOOK_ENDPOINTS.getBSPsSystemUserIds}`
+        url = url.split('{{Business-ID}}').join(__config.Business_ID)
+        console.log('uuuuuuuuuuuuuuuuuuurrrrrrrrrrrrrrrrrrrrrrrllllllllllllllll',url)
+        return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
+      })
+      .then(data => {
+        console.log('daaaaaaaaaaaaaaaaaaaaaaaatatatatatatatatatatatatattata',data)
+         if (data) {
+        // if (data && data.data && data.data.is_valid) {
+          apiCall.resolve(data)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error || data.data.error] })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
+
+
+
+
+
+
 }
 module.exports = EmbeddedSignup

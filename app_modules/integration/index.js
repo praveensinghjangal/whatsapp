@@ -78,6 +78,7 @@ class EmbeddedSignup {
   }
 
   getWabaOfClient (inputToken, wabaNumber) { return this.embeddedSignup.getWabaOfClient(inputToken, wabaNumber) }
+  getBSPsSystemUserIds(inputToken,wabaNumber) { return this.embeddedSignup.getBSPsSystemUserIds(inputToken, wabaNumber) }
 }
 
 module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }
