@@ -32,7 +32,7 @@ class EmbeddedSignup {
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        return http.Get(__constants.FACEBOOK.getWabaOfCleint + inputToken, { Authorization: `Bearer ${token}` }, this.providerId)
+        return http.Get(__constants.FACEBOOK_ENDPOINTS.debugToken + inputToken, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
         if (data && data.data && data.data.is_valid) {

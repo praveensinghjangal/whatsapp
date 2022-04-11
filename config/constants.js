@@ -270,7 +270,8 @@ const FACEBOOK_ENDPOINTS = {
   addTemplate: '/message_templates?access_token=',
   getMedia: '/v1/media/:MediaId',
   getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
-  getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token='
+  getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
+  debugToken: 'https://graph.facebook.com/v12.0/debug_token?input_token='
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -479,10 +480,6 @@ const TELEGRAM_API = 'https://api.telegram.org/'
 const TELEGRAM_ENDPOINTS = {
   sendMessage: '/sendMessage'
 }
-const FACEBOOK = {
-  getWabaOfCleint: 'https://graph.facebook.com/v12.0/debug_token?input_token='
-}
-
 const CONVERSATION_BILLING_CATEGORY = ['ui', 'bi', 'rc', 'na']
 const LOG_CONVERSATION_ON_STATUS = [MESSAGE_STATUS.accepted, MESSAGE_STATUS.delivered, MESSAGE_STATUS.seen]
 const LOG_CONVERSATION_ON_TYPE_MAPPING = {
@@ -609,4 +606,3 @@ module.exports.PROCESS_COUNT_SCHEDULER_TIME = PROCESS_COUNT_SCHEDULER_TIME
 module.exports.PROCESS_COUNT_SCHEDULER = PROCESS_COUNT_SCHEDULER
 module.exports.WHATSAPP_SUMMARY_SUBJECT = WHATSAPP_SUMMARY_SUBJECT
 module.exports.MIS_SCHEDULER_TIME_CONVERSATION = MIS_SCHEDULER_TIME_CONVERSATION
-module.exports.FACEBOOK = FACEBOOK
