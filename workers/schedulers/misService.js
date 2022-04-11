@@ -9,6 +9,7 @@ const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 const conversationMisService = require('./misServiceOfConversation')
 const moment = require('moment')
 const _ = require('lodash')
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 
 // handle no record for mis data as of now mis stops in case of no data but if there is 0 campagin the opt out data should go
 const messageStatusOnMail = () => {
@@ -97,7 +98,7 @@ const messageStatusOnMail = () => {
       _.each(allUserGrouped, (singleUserData, key) => {
         const UserAllDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], 0]
         singleUserData.forEach(userCountData => {
-          const removePhoneCodeFromWaba = userCountData.wabaPhoneNumber.substring(2, userCountData.wabaPhoneNumber.length)
+          const removePhoneCodeFromWaba = phoneCodeAndPhoneSeprator(userCountData.wabaPhoneNumber).phoneNumber
           if (arrayofWabanumber.indexOf(removePhoneCodeFromWaba) === -1) arrayofWabanumber.push(removePhoneCodeFromWaba)
           mtdTotalMessageCount = mtdTotalMessageCount + userCountData.total
           mtdTotalStatusCount.inProcess = mtdTotalStatusCount.inProcess + userCountData.inProcess
