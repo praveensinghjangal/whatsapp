@@ -32,14 +32,13 @@ class EmbeddedSignup {
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        return http.Get(__constants.FACEBOOK.getWabaOfCleint, { Authorization: token }, this.providerId)
+        return http.Get(__constants.FACEBOOK.getWabaOfCleint, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
-        if (data) {
-          console.log('33333333333333333333333333333333333333333333333333333333333333333333', data)
-          apiCall.resolve(data)
+        if (data && data.data) {
+          apiCall.resolve(data.data)
         } else {
-          console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr')
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
         }
       })
       .catch(err => {
