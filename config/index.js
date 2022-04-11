@@ -323,6 +323,6 @@ module.exports = {
   privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || [],
   misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : [],
   authorization: process.env.AUTHORIZATION,
-  Business_ID : process.env.Business_ID
+  Business_ID: process.env.Business_ID
 
 }

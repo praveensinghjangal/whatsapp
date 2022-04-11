@@ -54,12 +54,10 @@ class EmbeddedSignup {
       .then(token => {
         let url = `${__constants.FACEBOOK_ENDPOINTS.getBSPsSystemUserIds}`
         url = url.split('{{Business-ID}}').join(__config.Business_ID)
-        console.log('uuuuuuuuuuuuuuuuuuurrrrrrrrrrrrrrrrrrrrrrrllllllllllllllll',url)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
-        console.log('daaaaaaaaaaaaaaaaaaaaaaaatatatatatatatatatatatatattata',data)
-         if (data) {
+        if (data) {
         // if (data && data.data && data.data.is_valid) {
           apiCall.resolve(data)
         } else {
@@ -71,11 +69,5 @@ class EmbeddedSignup {
       })
     return apiCall.promise
   }
-
-
-
-
-
-
 }
 module.exports = EmbeddedSignup
