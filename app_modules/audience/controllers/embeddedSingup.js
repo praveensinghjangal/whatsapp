@@ -6,9 +6,9 @@ const integrationService = require('../../integration')
 
 const embeddedSignUp = (req, res) => {
   const embeddedSignup = new integrationService.EmbeddedSignup('a4f03720-3a33-4b94-b88a-e10453492183', 'userId', __config.authorization)
-  embeddedSignup.getWabaOfClient('params', 'wabaNumber')
+  const inputToken = 'EAAG0ZAQUaL3wBABKH7r0xjgd026YJU0ks7NmT6kPH92ZAOhkxeQchT7xurBtqtYFwo1xV0qLCJbe4FYuiuMROhKaAvI7mBlZASqOWTksmUqJ9mFgXLvfGVpbnSWO3bxZBqZArraFtGm0oZBvGiAM6pTKy99EXXROdtV7jUGsT2z1spLJGOXBd13ipsrKTU3MxHZCaBWyaPnpXjGjxCJnGe'
+  embeddedSignup.getWabaOfClient(inputToken, 'wabaNumber')
     .then(data => {
-      console.log('daaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
     .catch(err => {

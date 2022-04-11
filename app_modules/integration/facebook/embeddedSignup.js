@@ -27,18 +27,18 @@ class EmbeddedSignup {
     this.authorizationToken = authorizationToken
   }
 
-  getWabaOfClient (params, wabaNumber) {
+  getWabaOfClient (inputToken, wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        return http.Get(__constants.FACEBOOK.getWabaOfCleint, { Authorization: `Bearer ${token}` }, this.providerId)
+        return http.Get(__constants.FACEBOOK.getWabaOfCleint + inputToken, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
-        if (data && data.data) {
+        if (data && data.data && data.data.is_valid) {
           apiCall.resolve(data.data)
         } else {
-          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error || data.data.error] })
         }
       })
       .catch(err => {

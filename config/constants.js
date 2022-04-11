@@ -480,7 +480,7 @@ const TELEGRAM_ENDPOINTS = {
   sendMessage: '/sendMessage'
 }
 const FACEBOOK = {
-  getWabaOfCleint: 'https://graph.facebook.com/v12.0/debug_token?input_token=EAAG0ZAQUaL3wBABKH7r0xjgd026YJU0ks7UNmT6kPH92ZAOhkxeQchT7xurBtqtYFwo1xV0qLCJbe4FYuiuMROhKaAvI7mBlZASqOWTksmUqJ9mFgXLvfGVpbnSWO3bxZBqZArraFtGm0oZBvGiAM6pTKy99EXXROdtV7jUGsT2z1spLJGOXBd13ipsrKTU3MxHZCaBWyaPnpXjGjxCJnGe'
+  getWabaOfCleint: 'https://graph.facebook.com/v12.0/debug_token?input_token='
 }
 
 const CONVERSATION_BILLING_CATEGORY = ['ui', 'bi', 'rc', 'na']
