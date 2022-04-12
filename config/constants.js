@@ -273,7 +273,8 @@ const FACEBOOK_ENDPOINTS = {
   getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
   getBSPsSystemUserIds: 'https://graph.facebook.com/v12.0/{{Business-ID}}/system_users',
   debugToken: '/debug_token?input_token=',
-  getWabaDetails: '/:wabaId'
+  getWabaDetails: '/:wabaId',
+  addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']"
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {

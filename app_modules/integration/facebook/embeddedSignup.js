@@ -103,5 +103,33 @@ class EmbeddedSignup {
       })
     return apiCall.promise
   }
+
+  addSystemUserToWabaOfClient (systemUserId, wabaId, wabaNumber) {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
+      .then(token => {
+        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.addSystemUser}`
+        url = url.split(':wabaId').join(wabaId || '')
+        url = url.split('{{User-ID}}').join(systemUserId || '')
+        const headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+        return http.Post({}, 'body', url, headers, this.providerId)
+      })
+      .then(data => {
+        if (data && !data.error) {
+          apiCall.resolve(data.body)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
 }
 module.exports = EmbeddedSignup

@@ -83,6 +83,8 @@ class EmbeddedSignup {
   getBSPsSystemUserIds (wabaNumber) { return this.embeddedSignup.getBSPsSystemUserIds(wabaNumber) }
 
   getWabaDetailsByWabaId (wabaId, wabaNumber) { return this.embeddedSignup.getWabaDetailsByWabaId(wabaId, wabaNumber) }
+
+  addSystemUserToWabaOfClient (systemUserIdBSP, wabaIdOfClient, wabaNumber) { return this.embeddedSignup.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, wabaNumber) }
 }
 
 module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }

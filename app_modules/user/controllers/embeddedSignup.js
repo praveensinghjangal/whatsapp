@@ -32,7 +32,8 @@ const integrationService = require('../../../app_modules/integration')
 const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
-  // const systemUserIdBSP = __config.systemUserIdBSP
+  const systemUserIdBSP = __config.systemUserIdBSP
+  let wabaIdOfClient
   //   const userService = new UserService()
   req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
@@ -45,7 +46,7 @@ const controller = (req, res) => {
     .then(debugData => {
       const granularScopes = debugData.granular_scopes
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
-      const wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
+      wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
       // get waba information by waba id. This data will be used to call inhouse-whatsapp-api
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
@@ -55,7 +56,7 @@ const controller = (req, res) => {
     // })
     .then(data => {
       // add system user to client's waba
-      return data
+      return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
       __logger.info('Then 3', { data })
