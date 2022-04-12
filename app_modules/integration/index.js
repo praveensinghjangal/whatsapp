@@ -78,6 +78,8 @@ class EmbeddedSignup {
   }
 
   getWabaOfClient (inputToken, wabaNumber) { return this.embeddedSignup.getWabaOfClient(inputToken, wabaNumber) }
+
+  //! we wont be using this, as we will put the system user id in env
   getBSPsSystemUserIds (wabaNumber) { return this.embeddedSignup.getBSPsSystemUserIds(wabaNumber) }
 
   getWabaDetailsByWabaId (wabaId, wabaNumber) { return this.embeddedSignup.getWabaDetailsByWabaId(wabaId, wabaNumber) }

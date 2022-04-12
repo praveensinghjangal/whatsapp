@@ -324,5 +324,6 @@ module.exports = {
   misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : [],
   authorization: process.env.AUTHORIZATION,
   Business_ID: process.env.Business_ID,
-  facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL
+  facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL,
+  systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP
 }

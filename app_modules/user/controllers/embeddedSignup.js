@@ -32,12 +32,13 @@ const integrationService = require('../../../app_modules/integration')
 const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
+  // const systemUserIdBSP = __config.systemUserIdBSP
   //   const userService = new UserService()
   req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBANkksVqiyj0Do25QnwRKD8JKLOJZC9KDNZBDtX2UKAVk53qt0yXiexrMcReIe72MW3WZBj2PhmfxWU8KowuMJ9UAI4nrgqZC1lwV84yLi0iUtbJ6jilJFLZCqQcvfS3EeZCVvaFSncuP8sS8GrdDb67ntV2rWK1Xf7lZBRwCRsngIDdp5GqI9cLvXbsKZAmna1BSLbHEuSjt'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAOZAjcO3BcCC0VZAZBiZCkHCaDlx60MQesC9xcQQI6WVTzcQJvryeul5kjT71zTDgnDPxOrInVL9amso4iwX4U3a87kI9DZByko7YrtzXJ26RGxa0DnSmc2FmSiMT18aWCnsqFQPjLNheRaVPV6lvq7Qjc9miz0L7LG3CBdCZApoeAWWmflbwdwXXFmV2Eif25FdkZBuKPV'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -48,8 +49,13 @@ const controller = (req, res) => {
       // get waba information by waba id. This data will be used to call inhouse-whatsapp-api
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
+    // .then(data => {
+    //   // get the list of system users linked to the bsp's waba
+    //   return embeddedSignupService.getBSPsSystemUserIds('wabaNumber')
+    // })
     .then(data => {
-      return embeddedSignupService.getBSPsSystemUserIds('wabaNumber')
+      // add system user to client's waba
+      return data
     })
     .then(data => {
       __logger.info('Then 3', { data })
