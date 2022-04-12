@@ -59,6 +59,26 @@ const controller = (req, res) => {
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
+      // fetch assigned users to waba
+      return data
+    })
+    .then(data => {
+      // get id of business credit line of bsp
+      return data
+    })
+    .then(data => {
+      // attach business credit line id to client's waba
+      return data
+    })
+    .then(data => {
+      // verify that the line of credit was shared correctly
+      return data
+    })
+    .then(data => {
+      // subscribe app to client's waba
+      return data
+    })
+    .then(data => {
       __logger.info('Then 3', { data })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
