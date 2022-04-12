@@ -53,7 +53,7 @@ class EmbeddedSignup {
     return apiCall.promise
   }
 
-  getBSPsSystemUserIds (inputToken, wabaNumber) {
+  getBSPsSystemUserIds (wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
@@ -63,9 +63,9 @@ class EmbeddedSignup {
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
-        if (data) {
+        if (data && data.data) {
           // if (data && data.data && data.data.is_valid) {
-          apiCall.resolve(data)
+          apiCall.resolve(data.data)
         } else {
           apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error || data.data.error] })
         }
@@ -83,6 +83,7 @@ class EmbeddedSignup {
       .then(token => {
         let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.getWabaDetails}`
         url = url.split(':wabaId').join(wabaId || '')
+        url += '?fields=account_review_status,id,name,message_template_namespace,currency,on_behalf_of_business_info,primary_funding_id,purchase_order_number,timezone_id,owner_business_info'
         const headers = {
           'Content-Type': 'application/json',
           Accept: 'application/json',
