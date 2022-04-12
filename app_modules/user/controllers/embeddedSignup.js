@@ -39,7 +39,7 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAOZAjcO3BcCC0VZAZBiZCkHCaDlx60MQesC9xcQQI6WVTzcQJvryeul5kjT71zTDgnDPxOrInVL9amso4iwX4U3a87kI9DZByko7YrtzXJ26RGxa0DnSmc2FmSiMT18aWCnsqFQPjLNheRaVPV6lvq7Qjc9miz0L7LG3CBdCZApoeAWWmflbwdwXXFmV2Eif25FdkZBuKPV'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAOSZCyw7nl0gBNXfF74lNEwEI1qhmgP1RHv6MZCdk0wiewX6lZCLa6TVjfpmUHSMgubGRX5dwDOh3sUSYixr5qNeKxvugU5erpkC0MWUN0r5PyIslnB7e9dZAVfooOKKPisZAELf97cPs6jrApkYeYG4Kw3pBaKNpJZB6rZBEh6e11ijE0IZAsJVjxZBuLgjnquK5KShTcfJV'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -50,33 +50,42 @@ const controller = (req, res) => {
       // get waba information by waba id. This data will be used to call inhouse-whatsapp-api
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
-    // .then(data => {
-    //   // get the list of system users linked to the bsp's waba
-    //   return embeddedSignupService.getBSPsSystemUserIds('wabaNumber')
-    // })
+    .then(data => {
+      // todo: get phone numbers linked to client's waba id
+    })
+    .then(data => {
+      // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
+    })
     .then(data => {
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      // fetch assigned users to waba
+      // todo: fetch assigned users to waba
       return data
     })
     .then(data => {
+      //! dont do this. Put the id in env
       // get id of business credit line of bsp
       return data
     })
     .then(data => {
-      // attach business credit line id to client's waba
+      // todo: attach business credit line id to client's waba
       return data
     })
     .then(data => {
-      // verify that the line of credit was shared correctly
+      // todo: verify that the line of credit was shared correctly
       return data
     })
     .then(data => {
-      // subscribe app to client's waba
+      // todo: subscribe app to client's waba
       return data
+    })
+    .then(data => {
+      // todo: spawn new containers and call whatsapp apis to link container with client's waba. There can be many api calls here
+    })
+    .then(data => {
+      // todo: call in-house whatsapp api => required fields => business_id of client's waba, business name, waba number of client.
     })
     .then(data => {
       __logger.info('Then 3', { data })
