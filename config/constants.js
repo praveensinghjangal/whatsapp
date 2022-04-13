@@ -274,7 +274,8 @@ const FACEBOOK_ENDPOINTS = {
   getBSPsSystemUserIds: 'https://graph.facebook.com/v12.0/{{Business-ID}}/system_users',
   debugToken: '/debug_token?input_token=',
   getWabaDetails: '/:wabaId',
-  addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']"
+  addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']",
+  subscribeAppToWaba: '/:wabaId/subscribed_apps'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
