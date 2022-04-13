@@ -33,7 +33,7 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient
+  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked
   //   const userService = new UserService()
   req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
@@ -47,14 +47,18 @@ const controller = (req, res) => {
       const granularScopes = debugData.granular_scopes
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
       wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
+      const businessManagement = _.find(granularScopes, { scope: 'business_management' })
+      businessIdOfClient = businessManagement.target_ids[0]
       // get waba information by waba id. This data will be used to call inhouse-whatsapp-api
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
-    .then(data => {
+    .then(wabaDetails => {
+      businessName = wabaDetails.name
       // todo: get phone numbers linked to client's waba id
     })
     .then(data => {
       // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
+      wabaNumberThatNeedsToBeLinked = ''
     })
     .then(data => {
       // add system user to client's waba
@@ -85,7 +89,8 @@ const controller = (req, res) => {
       // todo: spawn new containers and call whatsapp apis to link container with client's waba. There can be many api calls here
     })
     .then(data => {
-      // todo: call in-house whatsapp api => required fields => business_id of client's waba, business name, waba number of client.
+      // todo: call in-house whatsapp api => required fields => business_id of client's waba (businessIdOfClient), business name (businessName), waba number of client (wabaNumberThatNeedsToBeLinked).
+      console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
     })
     .then(data => {
       __logger.info('Then 3', { data })
