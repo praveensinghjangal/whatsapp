@@ -323,7 +323,7 @@ module.exports = {
   privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || [],
   misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : [],
   authorization: process.env.AUTHORIZATION,
-  Business_ID: process.env.Business_ID,
+  businessId: process.env.BUSINESS_ID,
   facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL,
   systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP
 }

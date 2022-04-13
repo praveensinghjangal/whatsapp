@@ -61,7 +61,7 @@ const controller = (req, res) => {
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      // todo: fetch assigned users to waba
+      // todo: fetch assigned system users to waba
       return data
     })
     .then(data => {

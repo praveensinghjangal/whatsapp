@@ -59,7 +59,7 @@ class EmbeddedSignup {
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
         let url = `${__constants.FACEBOOK_ENDPOINTS.getBSPsSystemUserIds}`
-        url = url.split('{{Business-ID}}').join(__config.Business_ID)
+        url = url.split('{{Business-ID}}').join(__config.businessId)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
