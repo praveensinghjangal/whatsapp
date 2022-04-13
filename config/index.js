@@ -325,5 +325,6 @@ module.exports = {
   authorization: process.env.AUTHORIZATION,
   businessId: process.env.BUSINESS_ID,
   facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL,
-  systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP
+  systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP,
+  creditLineIdBSP: process.env.CREDIT_LINE_ID_BSP
 }
