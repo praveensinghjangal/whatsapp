@@ -17,4 +17,41 @@ const embeddedSignUp = (req, res) => {
     })
 }
 
-module.exports = { embeddedSignUp }
+const getBussinessIdLineOfCredit = (req, res) => {
+  console.log(' embedded check..........................')
+  const embeddedSignup = new integrationService.EmbeddedSignup('a4f03720-3a33-4b94-b88a-e10453492183', 'userId', __config.authorization)
+  embeddedSignup.getBussinessIdLineOfCredit()
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
+const attachCreditLineClientWaba = (req, res) => {
+  const embeddedSignup = new integrationService.EmbeddedSignup('a4f03720-3a33-4b94-b88a-e10453492183', 'userId', __config.authorization)
+  embeddedSignup.attachCreditLineClientWaba()
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
+const verifyLineOfCredit = (req, res) => {
+  const embeddedSignup = new integrationService.EmbeddedSignup('a4f03720-3a33-4b94-b88a-e10453492183', 'userId', __config.authorization)
+  embeddedSignup.verifyLineOfCredit()
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+}
+
+module.exports = { embeddedSignUp, getBussinessIdLineOfCredit, attachCreditLineClientWaba, verifyLineOfCredit }

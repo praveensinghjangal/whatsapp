@@ -326,5 +326,8 @@ module.exports = {
   businessId: process.env.BUSINESS_ID,
   facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL,
   systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP,
-  creditLineIdBSP: process.env.CREDIT_LINE_ID_BSP
+  creditLineIdBSP: process.env.CREDIT_LINE_ID_BSP,
+  assignedWabaId: process.env.ASSIGNED_WABA_ID,
+  wabaCurrency: process.env.WABA_CURRENCY,
+  allocationConfigId: process.env.ALLOCATION_CONFIG_ID
 }

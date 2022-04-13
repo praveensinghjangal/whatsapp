@@ -17,6 +17,9 @@ const getAuthorizationToken = (userId, authorizationToken, wabaNumber) => {
       .then(data => {
         getToken.resolve(data.graphApiKeyToken) // return the graphApiKeyToken. Will be used in Authorization with Bearer
       })
+      .catch(err => {
+        getToken.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
   }
   return getToken.promise
 }
@@ -122,6 +125,82 @@ class EmbeddedSignup {
       .then(data => {
         if (data && !data.error) {
           apiCall.resolve(data.body)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
+
+  getBussinessIdLineOfCredit () {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    const wabaNumber = 'wabaNumber'
+    getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
+      .then(token => {
+        let url = `${__constants.FACEBOOK_ENDPOINTS.getBussinessIdLineOfCredit}`
+        url = url.split('{{Business-ID}}').join(__config.businessId)
+        return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
+      })
+      .then(data => {
+        if (data && data.data) {
+          apiCall.resolve(data.data)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
+
+  attachCreditLineClientWaba () {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    const wabaNumber = 'wabaNumber'
+    getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
+      .then(token => {
+        let url = `${__constants.FACEBOOK_ENDPOINTS.attachCreditLineClientWaba}`
+        url = url.split('{{Credit-Line-ID}}').join(__config.creditLineIdBSP)
+        url = url.split('{{Assigned-WABA-ID}}').join(__config.assignedWabaId)
+        url = url.split('{{WABA-Currency}}').join(__config.wabaCurrency)
+        const headers = {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        }
+        return http.Post({}, 'body', url, headers, this.providerId)
+      })
+      .then(data => {
+        if (data && !data.error) {
+          apiCall.resolve(data.body)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
+
+  verifyLineOfCredit () {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    const wabaNumber = 'wabaNumber'
+    getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
+      .then(token => {
+        let url = `${__constants.FACEBOOK_ENDPOINTS.verifyLineOfCredit}`
+        url = url.split('{{Allocation-Config-ID}}').join(__config.allocationConfigId)
+        return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
+      })
+      .then(data => {
+        if (data) {
+          apiCall.resolve(data)
         } else {
           apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.error] })
         }
