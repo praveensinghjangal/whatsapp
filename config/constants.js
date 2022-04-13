@@ -275,7 +275,8 @@ const FACEBOOK_ENDPOINTS = {
   debugToken: '/debug_token?input_token=',
   getWabaDetails: '/:wabaId',
   addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']",
-  subscribeAppToWaba: '/:wabaId/subscribed_apps'
+  subscribeAppToWaba: '/:wabaId/subscribed_apps',
+  fetchAssignedUsersOfWaba:'/:wabaId/assigned_users?business='
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
