@@ -87,10 +87,16 @@ const controller = (req, res) => {
     })
     .then(data => {
       // todo: spawn new containers and call whatsapp apis to link container with client's waba. There can be many api calls here
+      // todo: after spawning, we will get wabizusername, wabizpassword, wabizurl(fb containers are deployed on this), graphapikey
     })
     .then(data => {
       // todo: call in-house whatsapp api => required fields => business_id of client's waba (businessIdOfClient), business name (businessName), waba number of client (wabaNumberThatNeedsToBeLinked).
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
+      // Save (whatsapp) => 1. /profile/accessInformation, 2. /profile/markManagerVerified
+      // Send For Approval (whatsapp) => 1. PUT /profile/submit
+      // Waba config (support) => 1. PUT /profile/status with pending for approval status
+      // same as above => 1. PUT /profile/status with accepted status
+      // Waba config => 1. PATCH /profile/configure
     })
     .then(data => {
       __logger.info('Then 3', { data })
