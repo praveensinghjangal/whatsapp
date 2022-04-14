@@ -42,7 +42,7 @@ const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber,
 }
 
 const markManagerVerified = (authTokenOfWhatsapp) => {
-  const getAccessInfo = q.defer()
+  const markedVerified = q.defer()
   const http = new HttpService(60000)
   const headers = {
     'Content-Type': 'application/json',
@@ -54,12 +54,34 @@ const markManagerVerified = (authTokenOfWhatsapp) => {
   }
   http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.markManagerVerified, headers)
     .then(data => {
-      getAccessInfo.resolve(data)
+      markedVerified.resolve(data)
     })
     .catch(err => {
-      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      markedVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
-  return getAccessInfo.promise
+  return markedVerified.promise
+}
+
+const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
+  const sentForApproval = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    businessManagerVerified: true
+  }
+  // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, false, serviceProviderId)
+    .then(data => {
+      sentForApproval.resolve(data)
+    })
+    .catch(err => {
+      sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return sentForApproval.promise
 }
 
 /**
@@ -154,6 +176,9 @@ const controller = (req, res) => {
     })
     .then(data => {
       return markManagerVerified(authTokenOfWhatsapp)
+    })
+    .then(data => {
+      return sendBusinessForApproval(authTokenOfWhatsapp, req.user.providerId)
     })
     .then(data => {
       __logger.info('Then 3', { data })
