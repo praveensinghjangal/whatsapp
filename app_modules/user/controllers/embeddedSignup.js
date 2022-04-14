@@ -41,6 +41,27 @@ const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber,
   return getAccessInfo.promise
 }
 
+const markManagerVerified = (authTokenOfWhatsapp) => {
+  const getAccessInfo = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    businessManagerVerified: true
+  }
+  http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.markManagerVerified, headers)
+    .then(data => {
+      getAccessInfo.resolve(data)
+    })
+    .catch(err => {
+      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return getAccessInfo.promise
+}
+
 /**
  * @memberof -Embedded-SignUp-Controller-
  * @name Embedded-SignUp
@@ -130,6 +151,9 @@ const controller = (req, res) => {
     })
     .then(data => {
       return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
+    })
+    .then(data => {
+      return markManagerVerified(authTokenOfWhatsapp)
     })
     .then(data => {
       __logger.info('Then 3', { data })

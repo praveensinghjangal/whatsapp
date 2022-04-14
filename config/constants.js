@@ -174,7 +174,8 @@ const INTERNAL_END_POINTS = {
   getTemplateListWithStatusId: '/helowhatsapp/api/templates?messageTemplateStatusId=',
   templateInfo: '/helowhatsapp/api/templates/:userId/:templateId',
   toggleChatbot: '/helowhatsapp/api/business/profile/chatbot',
-  accessInformation: '/helowhatsapp/api/business/profile/accessInformation'
+  accessInformation: '/helowhatsapp/api/business/profile/accessInformation',
+  markManagerVerified: '/helowhatsapp/api/business/profile/markManagerVerified'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
