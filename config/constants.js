@@ -278,7 +278,10 @@ const FACEBOOK_ENDPOINTS = {
   addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']",
   getBussinessIdLineOfCredit: 'https://graph.facebook.com/v12.0/{{Business-ID}}/extendedcredits?fields=id,legal_entity_name',
   attachCreditLineClientWaba: 'https://graph.facebook.com/v12.0/{{Credit-Line-ID}}/whatsapp_credit_sharing_and_attach?waba_id={{Assigned-WABA-ID}}&waba_currency={{WABA-Currency}}',
-  verifyLineOfCredit: 'https://graph.facebook.com/v12.0/{{Allocation-Config-ID}}?fields=receiving_credential{id}'
+  verifyLineOfCredit: 'https://graph.facebook.com/v12.0/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
+  subscribeAppToWaba: '/:wabaId/subscribed_apps',
+  fetchAssignedUsersOfWaba:'/:wabaId/assigned_users?business=',
+  getPhoneNumberOfWabaId:'/:wabaId/phone_numbers'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {

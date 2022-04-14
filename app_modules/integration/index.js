@@ -91,6 +91,9 @@ class EmbeddedSignup {
   attachCreditLineClientWaba () { return this.embeddedSignup.attachCreditLineClientWaba() }
 
   verifyLineOfCredit () { return this.embeddedSignup.verifyLineOfCredit() }
+  subscribeAppToWaba (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.subscribeAppToWaba(wabaIdOfClient, wabaNumber) }
+  fetchAssignedUsersOfWaba (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.fetchAssignedUsersOfWaba(wabaIdOfClient, wabaNumber) }
+  getPhoneNumberOfWabaId (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.getPhoneNumberOfWabaId(wabaIdOfClient, wabaNumber) }
 }
 
 module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }
