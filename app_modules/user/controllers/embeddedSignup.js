@@ -1,3 +1,4 @@
+const q = require('q')
 const _ = require('lodash')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
@@ -6,11 +7,39 @@ const __constants = require('../../../config/constants')
 const __config = require('../../../config')
 // const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
+const HttpService = require('../../../lib/http_service')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
  * @description Embedded SignUp API.
  */
+
+const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp) => {
+  const getAccessInfo = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    associatedWithIvr: false,
+    businessName: businessName,
+    canReceiveSms: true,
+    canReceiveVoiceCall: true,
+    facebookManagerId: wabaIdOfClient,
+    phoneCode: phoneCode,
+    phoneNumber: phoneNumber
+  }
+  http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.accessInformation, headers)
+    .then(data => {
+      getAccessInfo.resolve(data)
+    })
+    .catch(err => {
+      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return getAccessInfo.promise
+}
 
 /**
  * @memberof -Embedded-SignUp-Controller-
@@ -33,7 +62,8 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked
+  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber
+  const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
   req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
@@ -97,6 +127,9 @@ const controller = (req, res) => {
       // Waba config (support) => 1. PUT /profile/status with pending for approval status
       // same as above => 1. PUT /profile/status with accepted status
       // Waba config => 1. PATCH /profile/configure
+    })
+    .then(data => {
+      return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
     })
     .then(data => {
       __logger.info('Then 3', { data })
