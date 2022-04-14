@@ -141,7 +141,7 @@ class EmbeddedSignup {
     const wabaNumber = 'wabaNumber'
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        let url = `${__constants.FACEBOOK_ENDPOINTS.getBussinessIdLineOfCredit}`
+        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.getBussinessIdLineOfCredit}`
         url = url.split('{{Business-ID}}').join(__config.businessId)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
@@ -193,7 +193,7 @@ class EmbeddedSignup {
     const wabaNumber = 'wabaNumber'
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        let url = `${__constants.FACEBOOK_ENDPOINTS.attachCreditLineClientWaba}`
+        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.attachCreditLineClientWaba}`
         url = url.split('{{Credit-Line-ID}}').join(__config.creditLineIdBSP)
         url = url.split('{{Assigned-WABA-ID}}').join(__config.assignedWabaId)
         url = url.split('{{WABA-Currency}}').join(__config.wabaCurrency)
@@ -216,9 +216,9 @@ class EmbeddedSignup {
       })
     return apiCall.promise
   }
-  
+
   //
-  fetchAssignedUsersOfWaba(wabaId, wabaNumber){
+  fetchAssignedUsersOfWaba (wabaId, wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
@@ -251,7 +251,7 @@ class EmbeddedSignup {
     const wabaNumber = 'wabaNumber'
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        let url = `${__constants.FACEBOOK_ENDPOINTS.verifyLineOfCredit}`
+        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.verifyLineOfCredit}`
         url = url.split('{{Allocation-Config-ID}}').join(__config.allocationConfigId)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
@@ -266,11 +266,10 @@ class EmbeddedSignup {
         apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiCall.promise
-
   }
 
   //
-  getPhoneNumberOfWabaId(wabaId, wabaNumber){
+  getPhoneNumberOfWabaId (wabaId, wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
@@ -295,7 +294,6 @@ class EmbeddedSignup {
         apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiCall.promise
-
   }
 }
 module.exports = EmbeddedSignup
