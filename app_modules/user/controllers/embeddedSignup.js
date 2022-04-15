@@ -266,8 +266,9 @@ const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) =>
     .then((data) => {
       if (phoneNumbers.length > 0) {
         data = phoneNumbers.filter(val => !data.includes(val))
+        apiCall.resolve(data)
       }
-      apiCall.resolve(data)
+      apiCall.resolve([])
     })
     .catch((err) => {
       console.log('err', err)
