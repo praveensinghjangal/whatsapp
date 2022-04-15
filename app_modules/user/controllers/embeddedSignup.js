@@ -1,5 +1,5 @@
-const _ = require('lodash')
 const q = require('q')
+const _ = require('lodash')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
@@ -7,11 +7,105 @@ const __constants = require('../../../config/constants')
 const __config = require('../../../config')
 const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
+const HttpService = require('../../../lib/http_service')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
  * @description Embedded SignUp API.
  */
+
+const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp) => {
+  const getAccessInfo = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    associatedWithIvr: false,
+    businessName: businessName,
+    canReceiveSms: true,
+    canReceiveVoiceCall: true,
+    facebookManagerId: wabaIdOfClient,
+    phoneCode: phoneCode,
+    phoneNumber: phoneNumber
+  }
+  http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.accessInformation, headers)
+    .then(data => {
+      getAccessInfo.resolve(data)
+    })
+    .catch(err => {
+      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return getAccessInfo.promise
+}
+
+const markManagerVerified = (authTokenOfWhatsapp) => {
+  const markedVerified = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    businessManagerVerified: true
+  }
+  http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.markManagerVerified, headers)
+    .then(data => {
+      markedVerified.resolve(data)
+    })
+    .catch(err => {
+      markedVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return markedVerified.promise
+}
+
+const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
+  const sentForApproval = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    businessManagerVerified: true
+  }
+  // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, false, serviceProviderId)
+    .then(data => {
+      sentForApproval.resolve(data)
+    })
+    .catch(err => {
+      sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return sentForApproval.promise
+}
+
+const setPendingForApprovalStatus = (authTokenOfWhatsapp, userId, serviceProviderId) => {
+  const sentForApproval = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    userId: userId,
+    wabaProfileSetupStatusId: __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode
+  }
+  // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.setProfileStatus, headers, false, serviceProviderId)
+    .then(data => {
+      sentForApproval.resolve(data)
+    })
+    .catch(err => {
+      sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return sentForApproval.promise
+}
 
 /**
  * @memberof -Embedded-SignUp-Controller-
@@ -34,13 +128,14 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked
+  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber
+  const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
   req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = "EAAG0ZAQUaL3wBAEmiMjOGKTmYyOzgjfsdiMn2VoQ8lr2baCM5jhUbEqGyvphz1tQF04fLuY46OQZCEABGpqQ2rMUenyoBGav6a6TMfSpWSMzW9DpU8EWolyGnavi82lex2KNOiluQM2mZCVpqHgLYmNU0yc8VDPZCnS7HDmhQAd7MJkaTEvuBZBhA9MsCHPtZBabIjBryWfPe7vYMsYdUy"
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAEmiMjOGKTmYyOzgjfsdiMn2VoQ8lr2baCM5jhUbEqGyvphz1tQF04fLuY46OQZCEABGpqQ2rMUenyoBGav6a6TMfSpWSMzW9DpU8EWolyGnavi82lex2KNOiluQM2mZCVpqHgLYmNU0yc8VDPZCnS7HDmhQAd7MJkaTEvuBZBhA9MsCHPtZBabIjBryWfPe7vYMsYdUy'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -59,17 +154,16 @@ const controller = (req, res) => {
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      let phoneNumbersOfGivenWabaId = []
+      const phoneNumbersOfGivenWabaId = []
       data.map((a, b) => {
         phoneNumbersOfGivenWabaId.push(a.display_phone_number)
-
       })
       return phoneNumberBasedOnWabaId(wabaIdOfClient, phoneNumbersOfGivenWabaId)
       // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
-      // wabaNumberThatNeedsToBeLinked = ''  
+      // wabaNumberThatNeedsToBeLinked = ''
     })
     .then(data => {
-      console.log("dta of data of datatata", data);
+      console.log('dta of data of datatata', data)
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
@@ -96,10 +190,29 @@ const controller = (req, res) => {
     })
     .then(data => {
       // todo: spawn new containers and call whatsapp apis to link container with client's waba. There can be many api calls here
+      // todo: after spawning, we will get wabizusername, wabizpassword, wabizurl(fb containers are deployed on this), graphapikey
     })
     .then(data => {
       // todo: call in-house whatsapp api => required fields => business_id of client's waba (businessIdOfClient), business name (businessName), waba number of client (wabaNumberThatNeedsToBeLinked).
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
+      // Save (whatsapp) => 1. /profile/accessInformation, 2. /profile/markManagerVerified
+      // Send For Approval (whatsapp) => 1. PUT /profile/submit
+      // Waba config (support) => 1. PUT /profile/status with pending for approval status
+      // same as above => 1. PUT /profile/status with accepted status
+      // Waba config => 1. PATCH /profile/configure
+    })
+    .then(data => {
+      return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
+    })
+    .then(data => {
+      return markManagerVerified(authTokenOfWhatsapp)
+    })
+    .then(data => {
+      return sendBusinessForApproval(authTokenOfWhatsapp, req.user.providerId)
+    })
+    .then(data => {
+      // put status "pending for approval"
+      return setPendingForApprovalStatus(authTokenOfWhatsapp, req.user.userId, req.user.providerId)
     })
     .then(data => {
       __logger.info('Then 3', { data })
@@ -112,11 +225,11 @@ const controller = (req, res) => {
 }
 
 const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) => {
-  let apiCall = q.defer()
+  const apiCall = q.defer()
   const userService = new UserService()
-  let phoneNumbers = []
+  const phoneNumbers = []
   phoneNumbersOfGivenWabaIds.map((a) => {
-    if (a.charAt(0) === "+") {
+    if (a.charAt(0) === '+') {
       phoneNumbers.push(a.split(' ').join('').split('-').join('').substring(1))
     } else {
       phoneNumbers.push(a.split(' ').join('').split('-').join(''))
@@ -125,20 +238,16 @@ const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) =>
   userService.getPhoneNumbersFromWabaId(wabaIdOfClient)
     .then((data) => {
       if (phoneNumbers.length > 0) {
-
-        data = phoneNumbers.filter(val => !data.includes(val));
+        data = phoneNumbers.filter(val => !data.includes(val))
       }
       apiCall.resolve(data)
     })
     .catch((err) => {
-      console.log("err", err);
+      console.log('err', err)
       apiCall.reject({ type: err.type, err: err })
-
-
     })
 
   return apiCall.promise
-
 }
 
 module.exports = controller

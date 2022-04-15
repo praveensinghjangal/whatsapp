@@ -662,7 +662,7 @@ class UserData {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPhoneNumbersFromWabaId(), [wabaIdOfClient])
       .then(result => {
         __logger.info('getPhoneNumbersFromWabaId>>>>>>>>>>>>>', { result })
-          userDetails.resolve(result)
+        userDetails.resolve(result)
       })
       .catch(err => {
         __logger.error('error in getPhoneNumbersFromWabaId: ', err)
@@ -670,7 +670,6 @@ class UserData {
       })
     return userDetails.promise
   }
-
 }
 
 module.exports = UserData
