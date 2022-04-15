@@ -75,7 +75,7 @@ const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
     businessManagerVerified: true
   }
   // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
-  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, false, serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, true)
     .then(data => {
       sentForApproval.resolve(data)
     })
@@ -85,7 +85,7 @@ const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
   return sentForApproval.promise
 }
 
-const setPendingForApprovalStatus = (authTokenOfWhatsapp, userId, serviceProviderId, wabaProfileSetupStatusId) => {
+const setProfileStatus = (authTokenOfWhatsapp, userId, serviceProviderId, wabaProfileSetupStatusId) => {
   const sentForApproval = q.defer()
   const http = new HttpService(60000)
   const headers = {
@@ -98,7 +98,7 @@ const setPendingForApprovalStatus = (authTokenOfWhatsapp, userId, serviceProvide
     wabaProfileSetupStatusId: wabaProfileSetupStatusId
   }
   // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
-  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.setProfileStatus, headers, false, serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.setProfileStatus, headers, true)
     .then(data => {
       sentForApproval.resolve(data)
     })
@@ -159,7 +159,7 @@ const controller = (req, res) => {
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber
   const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
-  req.user.providerId = process.env.SERVICE_PROVIDER_ID_FB
+  req.user.providerId = __config.serviceProviderIdFb
   // req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.user_id, __config.authorization)
   validate.embeddedSignup(req.body)
@@ -289,16 +289,16 @@ const controller = (req, res) => {
     .then(data => {
       console.log('888888888888888888888888888888888888888888888888888888', data)
       // put status "pending for approval"
-      return setPendingForApprovalStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
+      return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
     })
     .then(data => {
       // put status "pending for approval"
       console.log('777777777777777777777777777777777777777777777777777', data)
-      return setPendingForApprovalStatus(authTokenOfWhatsapp, req.user.userId, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
+      return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
     })
     .then(data => {
       console.log('66666666666666666666666666666666666666666666666666666', data)
-      return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.userId, __config.serviceProviderIdFb)
+      return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.serviceProviderIdFb)
     })
     .then(data => {
       console.log('5555555555555555555555555555555555555555555555555555555', data)
