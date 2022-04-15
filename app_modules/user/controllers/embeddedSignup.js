@@ -136,7 +136,7 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAGZCqa7ZAkseCciRMxLNGJhmcDT39ZATA7J0FJiLutz1EXOcERJAEGnDnTXuxbOdSDIy19o8ru3sd3ID6z4r5jV2OkOgBrAeoSYQgJFlyO5eJpEXMoXLkEUD8ocldRQXjz5haeo1PacxlSkxkVDAwYyOnUFxtoQRllXKouHjjoDqVNUvnmZB9CxwB4ZBkywu1yrZChkFhu'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAAc60ZCWLUYZCmhrqvZAFTBJR6NhLaCb6J9cpRwZBb4oPts88cdFrZCIQakW2c4AJtDcL4k7loxQoxSsG2cZCpR9IOi8JfQfhiWutUkFVPZBoplgxZAEoLp6AxeIqpZBoRzYmwRtLcSGGFADmQCBD672ZB2OwUTVEMUoD8zu0F2RATKQC5oOPTCfaZBQS7H93eDP1ZAwpEKvzkeB'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -167,7 +167,7 @@ const controller = (req, res) => {
       console.log('dta of data of datatata', data)
       // there will always be only 1 phone number that will not be present in the db. since that number has not been onboarded yet
       wabaNumberThatNeedsToBeLinked = data[0]
-      const obj = phoneCodeAndPhoneSeprator[wabaNumberThatNeedsToBeLinked]
+      const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
       phoneCode = obj.phoneCode
       phoneNumber = obj.phoneNumber
       // .then(wabaDetails => {
@@ -244,6 +244,10 @@ const controller = (req, res) => {
       return setPendingForApprovalStatus(authTokenOfWhatsapp, req.user.userId, req.user.providerId)
     })
     .then(data => {
+      // put status "pending for approval"
+      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
+    })
+    .then(data => {
       console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
 
@@ -281,6 +285,17 @@ const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) =>
     })
 
   return apiCall.promise
+}
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
+  const apicall = q.defer()
+  const userService = new UserService()
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
+    .then((data) => {
+      console.log('data from updateWabizInformation ', data)
+    }).catch((err) => {
+      console.log('err', err)
+      apicall.reject({ type: err.type, err: err })
+    })
 }
 
 module.exports = controller

@@ -670,6 +670,25 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  updateWabizInformation (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) {
+    __logger.info('updateWabizInformation>>>>>>>>>>>>>')
+    const apiCall = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizInformation(), [wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber])
+      .then(result => {
+        __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          apiCall.resolve(result)
+        } else {
+          apiCall.resolve({ data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in updateWabizInformation: ', err)
+        apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return apiCall.promise
+  }
 }
 
 module.exports = UserData

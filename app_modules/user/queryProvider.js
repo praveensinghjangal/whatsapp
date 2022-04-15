@@ -401,6 +401,11 @@ const getPhoneNumbersFromWabaId = () => {
   user_account_id_by_provider = ?  and is_active=true`
 }
 
+const updateWabizInformation = () => {
+  return `update waba_information set wabiz_username=?,wabiz_password=?,wabiz_base_url=?,graph_api_key=?,updated_on=now()
+  where phone_number=? and is_active=true`
+}
+
 module.exports = {
   getUserRoleData,
   getUserDetailsByEmail,
@@ -454,5 +459,6 @@ module.exports = {
   getAccountCreatedTodayCount,
   getAgreementStatusCount,
   getUserData,
-  getPhoneNumbersFromWabaId
+  getPhoneNumbersFromWabaId,
+  updateWabizInformation
 }
