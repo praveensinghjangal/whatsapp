@@ -39,11 +39,12 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAOSZCyw7nl0gBNXfF74lNEwEI1qhmgP1RHv6MZCdk0wiewX6lZCLa6TVjfpmUHSMgubGRX5dwDOh3sUSYixr5qNeKxvugU5erpkC0MWUN0r5PyIslnB7e9dZAVfooOKKPisZAELf97cPs6jrApkYeYG4Kw3pBaKNpJZB6rZBEh6e11ijE0IZAsJVjxZBuLgjnquK5KShTcfJV'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAMgW2Ej5APcOx9gnMOBrRNkwqimBjk7l01m8rURZAJ1SyhppOn6dCNGuzpGDNjC6b09475lZB1NaIbfbmBtwhWZCcU1jdD6AyYdamIyudUzDKnB5n0kL91mdvHvC77KYfvDuWQ6n4eWNjU07IhYpkoL4OD1fY68V8VAuJrTK9NvIhfCGN6olvv173A1FOKCl4VFmRb8'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
     .then(debugData => {
+      console.log('1111111111111111111111111111111111111111111111111111111', debugData)
       const granularScopes = debugData.granular_scopes
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
       wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
@@ -52,47 +53,56 @@ const controller = (req, res) => {
       // get waba information by waba id. This data will be used to call inhouse-whatsapp-api
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
-    .then(wabaDetails => {
-      businessName = wabaDetails.name
-      // todo: get phone numbers linked to client's waba id
-    })
+    // .then(wabaDetails => {
+    //   businessName = wabaDetails.name
+    //   // todo: get phone numbers linked to client's waba id
+    // })
+    // .then(data => {
+    //   // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
+    //   wabaNumberThatNeedsToBeLinked = ''
+    // })
     .then(data => {
-      // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
-      wabaNumberThatNeedsToBeLinked = ''
-    })
-    .then(data => {
+      console.log('222222222222222222222222222222222222222222222222222222222', data)
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
+      console.log('333333333333333333333333333333333333333333333333333333333', data)
       // todo: fetch assigned system users to waba
-      return data
+      return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, 'wabaNumber')
     })
+    // .then(data => {
+    //   //! dont do this. Put the id in env
+    //   // get id of business credit line of bsp
+
+    //   return embeddedSignupService.getBussinessIdLineOfCredit()
+    // })
     .then(data => {
-      //! dont do this. Put the id in env
-      // get id of business credit line of bsp
-      return data
-    })
-    .then(data => {
+      console.log('444444444444444444444444444444444444444444444444', data)
       // todo: attach business credit line id to client's waba
-      return data
+      return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient)
     })
     .then(data => {
+      console.log('55555555555555555555555555555555555555555555555', data)
       // todo: verify that the line of credit was shared correctly
-      return data
+      return embeddedSignupService.verifyLineOfCredit(data.allocation_config_id)
     })
     .then(data => {
+      console.log('666666666666666666666666666666666666666666666666', data)
       // todo: subscribe app to client's waba
-      return data
+      return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
     })
+    // .then(data => {
+    //   // todo: spawn new containers and call whatsapp apis to link container with client's waba. There can be many api calls here
+    // })
+    // .then(data => {
+    //   // todo: call in-house whatsapp api => required fields => business_id of client's waba (businessIdOfClient), business name (businessName), waba number of client (wabaNumberThatNeedsToBeLinked).
+    //   console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
+    // })
     .then(data => {
-      // todo: spawn new containers and call whatsapp apis to link container with client's waba. There can be many api calls here
-    })
-    .then(data => {
-      // todo: call in-house whatsapp api => required fields => business_id of client's waba (businessIdOfClient), business name (businessName), waba number of client (wabaNumberThatNeedsToBeLinked).
+      console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
-    })
-    .then(data => {
+
       __logger.info('Then 3', { data })
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
