@@ -302,6 +302,11 @@ const controller = (req, res) => {
     })
     .then(data => {
       console.log('5555555555555555555555555555555555555555555555555555555', data)
+      // put status "pending for approval"
+      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
+    })
+    .then(data => {
+      console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
@@ -335,6 +340,17 @@ const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) =>
     })
 
   return apiCall.promise
+}
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
+  const apicall = q.defer()
+  const userService = new UserService()
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
+    .then((data) => {
+      console.log('data from updateWabizInformation ', data)
+    }).catch((err) => {
+      console.log('err', err)
+      apicall.reject({ type: err.type, err: err })
+    })
 }
 
 module.exports = controller
