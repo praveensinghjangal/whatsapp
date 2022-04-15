@@ -1,6 +1,13 @@
 
 const APP_NAME = 'helowhatsapp'
 const DB_NAME = 'helowhatsapp'
+const UPDATE_PROFILE_CONFIGURE_DATA = {
+  API_KEY: 'APIKEY@123',
+  MAX_TPA_TO_PROVIDER: 15,
+  TEMPLATESAllOWED: 2,
+  TPS: 10
+
+}
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
   PROD_ENV: 'production',
@@ -177,7 +184,8 @@ const INTERNAL_END_POINTS = {
   accessInformation: '/helowhatsapp/api/business/profile/accessInformation',
   markManagerVerified: '/helowhatsapp/api/business/profile/markManagerVerified',
   sendBusinessForApproval: '/helowhatsapp/api/business/profile/submit',
-  setProfileStatus: '/helosupport/api/whatsapp/profile/status'
+  setProfileStatus: '/helosupport/api/whatsapp/profile/status',
+  updateProfileConfigure: '/helosupport/api/whatsapp/profile/configure'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
@@ -620,3 +628,4 @@ module.exports.PROCESS_COUNT_SCHEDULER_TIME = PROCESS_COUNT_SCHEDULER_TIME
 module.exports.PROCESS_COUNT_SCHEDULER = PROCESS_COUNT_SCHEDULER
 module.exports.WHATSAPP_SUMMARY_SUBJECT = WHATSAPP_SUMMARY_SUBJECT
 module.exports.MIS_SCHEDULER_TIME_CONVERSATION = MIS_SCHEDULER_TIME_CONVERSATION
+module.exports.UPDATE_PROFILE_CONFIGURE_DATA = UPDATE_PROFILE_CONFIGURE_DATA
