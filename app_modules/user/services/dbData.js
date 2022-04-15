@@ -654,6 +654,23 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getPhoneNumbersFromWabaId (wabaIdOfClient) {
+    // wabaIdOfClient="b6210d2f-acb3-4dfa-8b52-0972c8045706"
+    __logger.info('getPhoneNumbersFromWabaIde>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPhoneNumbersFromWabaId(), [wabaIdOfClient])
+      .then(result => {
+        __logger.info('getPhoneNumbersFromWabaId>>>>>>>>>>>>>', { result })
+          userDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getPhoneNumbersFromWabaId: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
+
 }
 
 module.exports = UserData

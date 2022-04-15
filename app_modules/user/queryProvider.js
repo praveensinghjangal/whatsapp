@@ -395,6 +395,12 @@ join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true
 where u.user_role_id = "9f88f381-c05d-453e-90ef-cfeff5e345ea"`
 }
 
+const getPhoneNumbersFromWabaId = () => {
+  return `SELECT CONCAT(phone_code,phone_number ) AS phoneNumber  from 
+  waba_information wi where 
+  user_account_id_by_provider = ?`
+}
+
 module.exports = {
   getUserRoleData,
   getUserDetailsByEmail,
@@ -447,5 +453,6 @@ module.exports = {
   getAgreementStatusList,
   getAccountCreatedTodayCount,
   getAgreementStatusCount,
-  getUserData
+  getUserData,
+  getPhoneNumbersFromWabaId
 }

@@ -1,10 +1,11 @@
 const _ = require('lodash')
+const q = require('q')
 const ValidatonService = require('../services/validation')
 const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
 const __constants = require('../../../config/constants')
 const __config = require('../../../config')
-// const UserService = require('../services/dbData')
+const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
 
 /**
@@ -39,7 +40,7 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAOSZCyw7nl0gBNXfF74lNEwEI1qhmgP1RHv6MZCdk0wiewX6lZCLa6TVjfpmUHSMgubGRX5dwDOh3sUSYixr5qNeKxvugU5erpkC0MWUN0r5PyIslnB7e9dZAVfooOKKPisZAELf97cPs6jrApkYeYG4Kw3pBaKNpJZB6rZBEh6e11ijE0IZAsJVjxZBuLgjnquK5KShTcfJV'
+      req.body.inputToken = "EAAG0ZAQUaL3wBAEmiMjOGKTmYyOzgjfsdiMn2VoQ8lr2baCM5jhUbEqGyvphz1tQF04fLuY46OQZCEABGpqQ2rMUenyoBGav6a6TMfSpWSMzW9DpU8EWolyGnavi82lex2KNOiluQM2mZCVpqHgLYmNU0yc8VDPZCnS7HDmhQAd7MJkaTEvuBZBhA9MsCHPtZBabIjBryWfPe7vYMsYdUy"
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -55,12 +56,20 @@ const controller = (req, res) => {
     .then(wabaDetails => {
       businessName = wabaDetails.name
       // todo: get phone numbers linked to client's waba id
+      return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
+      let phoneNumbersOfGivenWabaId = []
+      data.map((a, b) => {
+        phoneNumbersOfGivenWabaId.push(a.display_phone_number)
+
+      })
+      return phoneNumberBasedOnWabaId(wabaIdOfClient, phoneNumbersOfGivenWabaId)
       // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
-      wabaNumberThatNeedsToBeLinked = ''
+      // wabaNumberThatNeedsToBeLinked = ''  
     })
     .then(data => {
+      console.log("dta of data of datatata", data);
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
@@ -100,6 +109,36 @@ const controller = (req, res) => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
+}
+
+const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) => {
+  let apiCall = q.defer()
+  const userService = new UserService()
+  let phoneNumbers = []
+  phoneNumbersOfGivenWabaIds.map((a) => {
+    if (a.charAt(0) === "+") {
+      phoneNumbers.push(a.split(' ').join('').split('-').join('').substring(1))
+    } else {
+      phoneNumbers.push(a.split(' ').join('').split('-').join(''))
+    }
+  })
+  userService.getPhoneNumbersFromWabaId(wabaIdOfClient)
+    .then((data) => {
+      if (phoneNumbers.length > 0) {
+
+        data = phoneNumbers.filter(val => !data.includes(val));
+      }
+      apiCall.resolve(data)
+    })
+    .catch((err) => {
+      console.log("err", err);
+      apiCall.reject({ type: err.type, err: err })
+
+
+    })
+
+  return apiCall.promise
+
 }
 
 module.exports = controller
