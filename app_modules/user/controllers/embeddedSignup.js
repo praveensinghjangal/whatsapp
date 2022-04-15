@@ -8,6 +8,7 @@ const __config = require('../../../config')
 const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
+const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -135,7 +136,7 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAMgW2Ej5APcOx9gnMOBrRNkwqimBjk7l01m8rURZAJ1SyhppOn6dCNGuzpGDNjC6b09475lZB1NaIbfbmBtwhWZCcU1jdD6AyYdamIyudUzDKnB5n0kL91mdvHvC77KYfvDuWQ6n4eWNjU07IhYpkoL4OD1fY68V8VAuJrTK9NvIhfCGN6olvv173A1FOKCl4VFmRb8'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAGZCqa7ZAkseCciRMxLNGJhmcDT39ZATA7J0FJiLutz1EXOcERJAEGnDnTXuxbOdSDIy19o8ru3sd3ID6z4r5jV2OkOgBrAeoSYQgJFlyO5eJpEXMoXLkEUD8ocldRQXjz5haeo1PacxlSkxkVDAwYyOnUFxtoQRllXKouHjjoDqVNUvnmZB9CxwB4ZBkywu1yrZChkFhu'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -155,16 +156,20 @@ const controller = (req, res) => {
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
+      // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
       const phoneNumbersOfGivenWabaId = []
       data.map((a, b) => {
         phoneNumbersOfGivenWabaId.push(a.display_phone_number)
       })
       return phoneNumberBasedOnWabaId(wabaIdOfClient, phoneNumbersOfGivenWabaId)
-      // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
-      // wabaNumberThatNeedsToBeLinked = ''
     })
     .then(data => {
       console.log('dta of data of datatata', data)
+      // there will always be only 1 phone number that will not be present in the db. since that number has not been onboarded yet
+      wabaNumberThatNeedsToBeLinked = data[0]
+      const obj = phoneCodeAndPhoneSeprator[wabaNumberThatNeedsToBeLinked]
+      phoneCode = obj.phoneCode
+      phoneNumber = obj.phoneNumber
       // .then(wabaDetails => {
       //   businessName = wabaDetails.name
       //   // todo: get phone numbers linked to client's waba id
