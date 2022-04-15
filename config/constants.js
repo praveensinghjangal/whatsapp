@@ -285,7 +285,7 @@ const FACEBOOK_ENDPOINTS = {
   verifyLineOfCredit: '/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
   subscribeAppToWaba: '/:wabaId/subscribed_apps',
   fetchAssignedUsersOfWaba: '/:wabaId/assigned_users?business=',
-  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers'
+  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers?fields=verified_name,code_verification_status,quality_rating,id,display_phone_number,certificate,name_status,new_certificate,new_name_status'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {

@@ -162,8 +162,8 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: false,
-          minLength: 10,
-          maxLength: 10,
+          minLength: 7,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         canReceiveSms: {
