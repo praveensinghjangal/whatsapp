@@ -88,9 +88,9 @@ class EmbeddedSignup {
 
   getBussinessIdLineOfCredit () { return this.embeddedSignup.getBussinessIdLineOfCredit() }
 
-  attachCreditLineClientWaba () { return this.embeddedSignup.attachCreditLineClientWaba() }
+  attachCreditLineClientWaba (assignedWabaId) { return this.embeddedSignup.attachCreditLineClientWaba(assignedWabaId) }
 
-  verifyLineOfCredit () { return this.embeddedSignup.verifyLineOfCredit() }
+  verifyLineOfCredit (allocationConfigId) { return this.embeddedSignup.verifyLineOfCredit(allocationConfigId) }
   subscribeAppToWaba (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.subscribeAppToWaba(wabaIdOfClient, wabaNumber) }
   fetchAssignedUsersOfWaba (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.fetchAssignedUsersOfWaba(wabaIdOfClient, wabaNumber) }
   getPhoneNumberOfWabaId (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.getPhoneNumberOfWabaId(wabaIdOfClient, wabaNumber) }

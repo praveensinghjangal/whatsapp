@@ -282,7 +282,7 @@ const FACEBOOK_ENDPOINTS = {
   addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']",
   getBussinessIdLineOfCredit: '/{{Business-ID}}/extendedcredits?fields=id,legal_entity_name',
   attachCreditLineClientWaba: '/{{Credit-Line-ID}}/whatsapp_credit_sharing_and_attach?waba_id={{Assigned-WABA-ID}}&waba_currency={{WABA-Currency}}',
-  verifyLineOfCredit: '/v12.0/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
+  verifyLineOfCredit: '/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
   subscribeAppToWaba: '/:wabaId/subscribed_apps',
   fetchAssignedUsersOfWaba: '/:wabaId/assigned_users?business=',
   getPhoneNumberOfWabaId: '/:wabaId/phone_numbers'

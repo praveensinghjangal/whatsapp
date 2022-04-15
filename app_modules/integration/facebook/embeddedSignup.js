@@ -187,7 +187,7 @@ class EmbeddedSignup {
     return apiCall.promise
   }
 
-  attachCreditLineClientWaba () {
+  attachCreditLineClientWaba (assignedWabaId) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     const wabaNumber = 'wabaNumber'
@@ -195,7 +195,7 @@ class EmbeddedSignup {
       .then(token => {
         let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.attachCreditLineClientWaba}`
         url = url.split('{{Credit-Line-ID}}').join(__config.creditLineIdBSP)
-        url = url.split('{{Assigned-WABA-ID}}').join(__config.assignedWabaId)
+        url = url.split('{{Assigned-WABA-ID}}').join(assignedWabaId)
         url = url.split('{{WABA-Currency}}').join(__config.wabaCurrency)
         const headers = {
           'Content-Type': 'application/json',
@@ -245,14 +245,14 @@ class EmbeddedSignup {
     return apiCall.promise
   }
 
-  verifyLineOfCredit () {
+  verifyLineOfCredit (allocationConfigId) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     const wabaNumber = 'wabaNumber'
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
         let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.verifyLineOfCredit}`
-        url = url.split('{{Allocation-Config-ID}}').join(__config.allocationConfigId)
+        url = url.split('{{Allocation-Config-ID}}').join(allocationConfigId)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
