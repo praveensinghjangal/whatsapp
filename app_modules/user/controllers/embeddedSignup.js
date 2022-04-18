@@ -8,6 +8,7 @@ const __config = require('../../../config')
 const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
+const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -74,7 +75,7 @@ const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
     businessManagerVerified: true
   }
   // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
-  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, false, serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, true)
     .then(data => {
       sentForApproval.resolve(data)
     })
@@ -84,7 +85,7 @@ const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
   return sentForApproval.promise
 }
 
-const setPendingForApprovalStatus = (authTokenOfWhatsapp, userId, serviceProviderId, wabaProfileSetupStatusId) => {
+const setProfileStatus = (authTokenOfWhatsapp, userId, serviceProviderId, wabaProfileSetupStatusId) => {
   const sentForApproval = q.defer()
   const http = new HttpService(60000)
   const headers = {
@@ -97,7 +98,7 @@ const setPendingForApprovalStatus = (authTokenOfWhatsapp, userId, serviceProvide
     wabaProfileSetupStatusId: wabaProfileSetupStatusId
   }
   // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
-  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.setProfileStatus, headers, false, serviceProviderId)
+  http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.setProfileStatus, headers, true)
     .then(data => {
       sentForApproval.resolve(data)
     })
@@ -158,16 +159,18 @@ const controller = (req, res) => {
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber
   const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
-  req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
-  const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.userId, __config.authorization)
+  req.user.providerId = __config.serviceProviderIdFb
+  // req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
+  const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.user_id, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAAc60ZCWLUYZCmhrqvZAFTBJR6NhLaCb6J9cpRwZBb4oPts88cdFrZCIQakW2c4AJtDcL4k7loxQoxSsG2cZCpR9IOi8JfQfhiWutUkFVPZBoplgxZAEoLp6AxeIqpZBoRzYmwRtLcSGGFADmQCBD672ZB2OwUTVEMUoD8zu0F2RATKQC5oOPTCfaZBQS7H93eDP1ZAwpEKvzkeB'
+      console.log('Step 1', valResponse)
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAL1vAm18cPc7XZBypvLP14ReQFIcgM0RKGgq1B0zODZBW2iUHyak7N5GiZA33006C6L9zLlG7dZCCtNJOOM3JTAOoI9aZCSnTg3ZCinpSWFR4jf8z8s2kPkgJcJZCx1509JetN68w7JxZBX1fkU3EOpMgOMMZAMe0QHhz0qnLCm0WmBPQkISUzQurbGcU5fsHa85J7DNz156ZC'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
     .then(debugData => {
-      console.log('1111111111111111111111111111111111111111111111111111111', debugData)
+      console.log('Step 2', debugData)
       const granularScopes = debugData.granular_scopes
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
       wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
@@ -177,13 +180,13 @@ const controller = (req, res) => {
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(wabaDetails => {
-      console.log('2222222222222222222222222222222222222222222222222', wabaDetails)
+      console.log('Step 3', wabaDetails)
       businessName = wabaDetails.name
       // todo: get phone numbers linked to client's waba id
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      console.log('3333333333333333333333333333333333333333333333333', data)
+      console.log('Step 4', data)
       // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
       const phoneNumbersOfGivenWabaId = []
       data.map((a, b) => {
@@ -204,12 +207,29 @@ const controller = (req, res) => {
     //   // })
     // })
     .then(data => {
-      console.log('4444444444444444444444444444444444444444444444444444', data)
+      console.log('Step 5', data)
+      // there will always be only 1 phone number that will not be present in the db. since that number has not been onboarded yet
+      wabaNumberThatNeedsToBeLinked = data[0]
+      wabaNumberThatNeedsToBeLinked = '917666004488'
+      const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
+      phoneCode = obj.phoneCode
+      phoneNumber = obj.phoneNumber
+      // .then(wabaDetails => {
+      //   businessName = wabaDetails.name
+      //   // todo: get phone numbers linked to client's waba id
+      // })
+      // .then(data => {
+      //   // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
+      //   wabaNumberThatNeedsToBeLinked = ''
+      // })
+    })
+    .then(data => {
+      console.log('Step 6', data)
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      console.log('5555555555555555555555555555555555555555555555555555555', data)
+      console.log('Step 7', data)
       // todo: fetch assigned system users to waba
       return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, 'wabaNumber')
     })
@@ -220,17 +240,17 @@ const controller = (req, res) => {
     //   return embeddedSignupService.getBussinessIdLineOfCredit()
     // })
     .then(data => {
-      console.log('6666666666666666666666666666666666666666666666666666666666', data)
+      console.log('Step 8', data)
       // todo: attach business credit line id to client's waba
       return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient)
     })
     .then(data => {
-      console.log('77777777777777777777777777777777777777777777777777777777777', data)
+      console.log('Step 9', data)
       // todo: verify that the line of credit was shared correctly
       return embeddedSignupService.verifyLineOfCredit(data.allocation_config_id)
     })
     .then(data => {
-      console.log('88888888888888888888888888888888888888888888888888888888888', data)
+      console.log('Step 10', data)
       // todo: subscribe app to client's waba
       return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
     })
@@ -269,19 +289,39 @@ const controller = (req, res) => {
     .then(data => {
       console.log('888888888888888888888888888888888888888888888888888888', data)
       // put status "pending for approval"
-      return setPendingForApprovalStatus(authTokenOfWhatsapp, req.user.userId, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
+      return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
     })
     .then(data => {
-      // put status "pending for approval"
+      // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey
+    })
+    .then(data => {
+      // todo: call login admin api and set the password (wabizPassword) of the admin of the container
+    })
+    .then(data => {
+      // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
+    })
+    .then(data => {
+      // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
+    })
+    .then(data => {
+      // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
+    })
+    .then(data => {
+      console.log('5555555555555555555555555555555555555555555555555555555', data)
+      // set wabiz username, password, url, graphApiKey in our db
+      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
+    })
+    .then(data => {
+      // put status "accepted"
       console.log('777777777777777777777777777777777777777777777777777', data)
-      return setPendingForApprovalStatus(authTokenOfWhatsapp, req.user.userId, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
+      return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
     })
     .then(data => {
       console.log('66666666666666666666666666666666666666666666666666666', data)
       return updateProfileConfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.userId, __config.serviceProviderIdFb)
     })
     .then(data => {
-      console.log('5555555555555555555555555555555555555555555555555555555', data)
+      console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
     })
@@ -315,6 +355,17 @@ const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) =>
     })
 
   return apiCall.promise
+}
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
+  const apicall = q.defer()
+  const userService = new UserService()
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
+    .then((data) => {
+      console.log('data from updateWabizInformation ', data)
+    }).catch((err) => {
+      console.log('err', err)
+      apicall.reject({ type: err.type, err: err })
+    })
 }
 
 module.exports = controller

@@ -184,8 +184,8 @@ const INTERNAL_END_POINTS = {
   accessInformation: '/helowhatsapp/api/business/profile/accessInformation',
   markManagerVerified: '/helowhatsapp/api/business/profile/markManagerVerified',
   sendBusinessForApproval: '/helowhatsapp/api/business/profile/submit',
-  setProfileStatus: '/helosupport/api/whatsapp/profile/status',
-  updateProfileConfigure: '/helosupport/api/whatsapp/profile/configure'
+  setProfileStatus: '/helowhatsapp/api/business/profile/status',
+  updateProfileConfigure: '/helowhatsapp/api/business/profile/configure'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
@@ -293,7 +293,7 @@ const FACEBOOK_ENDPOINTS = {
   verifyLineOfCredit: '/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
   subscribeAppToWaba: '/:wabaId/subscribed_apps',
   fetchAssignedUsersOfWaba: '/:wabaId/assigned_users?business=',
-  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers'
+  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers?fields=verified_name,code_verification_status,quality_rating,id,display_phone_number,certificate,name_status,new_certificate,new_name_status'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
