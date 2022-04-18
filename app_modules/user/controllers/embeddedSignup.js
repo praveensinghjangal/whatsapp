@@ -164,12 +164,13 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.user_id, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
+      console.log('Step 1', valResponse)
       req.body.inputToken = 'EAAG0ZAQUaL3wBAL1vAm18cPc7XZBypvLP14ReQFIcgM0RKGgq1B0zODZBW2iUHyak7N5GiZA33006C6L9zLlG7dZCCtNJOOM3JTAOoI9aZCSnTg3ZCinpSWFR4jf8z8s2kPkgJcJZCx1509JetN68w7JxZBX1fkU3EOpMgOMMZAMe0QHhz0qnLCm0WmBPQkISUzQurbGcU5fsHa85J7DNz156ZC'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
     .then(debugData => {
-      console.log('1111111111111111111111111111111111111111111111111111111', debugData)
+      console.log('Step 2', debugData)
       const granularScopes = debugData.granular_scopes
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
       wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
@@ -179,13 +180,13 @@ const controller = (req, res) => {
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(wabaDetails => {
-      console.log('2222222222222222222222222222222222222222222222222', wabaDetails)
+      console.log('Step 3', wabaDetails)
       businessName = wabaDetails.name
       // todo: get phone numbers linked to client's waba id
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      console.log('3333333333333333333333333333333333333333333333333', data)
+      console.log('Step 4', data)
       // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
       const phoneNumbersOfGivenWabaId = []
       data.map((a, b) => {
@@ -206,7 +207,7 @@ const controller = (req, res) => {
     //   // })
     // })
     .then(data => {
-      console.log('dta of data of datatata', data)
+      console.log('Step 5', data)
       // there will always be only 1 phone number that will not be present in the db. since that number has not been onboarded yet
       wabaNumberThatNeedsToBeLinked = data[0]
       wabaNumberThatNeedsToBeLinked = '917666004488'
@@ -223,13 +224,12 @@ const controller = (req, res) => {
       // })
     })
     .then(data => {
-      console.log('222222222222222222222222222222222222222222222222222222222', data)
-      console.log('4444444444444444444444444444444444444444444444444444', data)
+      console.log('Step 6', data)
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      console.log('5555555555555555555555555555555555555555555555555555555', data)
+      console.log('Step 7', data)
       // todo: fetch assigned system users to waba
       return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, 'wabaNumber')
     })
@@ -240,17 +240,17 @@ const controller = (req, res) => {
     //   return embeddedSignupService.getBussinessIdLineOfCredit()
     // })
     .then(data => {
-      console.log('6666666666666666666666666666666666666666666666666666666666', data)
+      console.log('Step 8', data)
       // todo: attach business credit line id to client's waba
       return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient)
     })
     .then(data => {
-      console.log('77777777777777777777777777777777777777777777777777777777777', data)
+      console.log('Step 9', data)
       // todo: verify that the line of credit was shared correctly
       return embeddedSignupService.verifyLineOfCredit(data.allocation_config_id)
     })
     .then(data => {
-      console.log('88888888888888888888888888888888888888888888888888888888888', data)
+      console.log('Step 10', data)
       // todo: subscribe app to client's waba
       return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
     })
