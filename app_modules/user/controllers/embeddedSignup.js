@@ -164,7 +164,7 @@ const controller = (req, res) => {
   const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.user_id, __config.authorization)
   validate.embeddedSignup(req.body)
     .then(valResponse => {
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAAc60ZCWLUYZCmhrqvZAFTBJR6NhLaCb6J9cpRwZBb4oPts88cdFrZCIQakW2c4AJtDcL4k7loxQoxSsG2cZCpR9IOi8JfQfhiWutUkFVPZBoplgxZAEoLp6AxeIqpZBoRzYmwRtLcSGGFADmQCBD672ZB2OwUTVEMUoD8zu0F2RATKQC5oOPTCfaZBQS7H93eDP1ZAwpEKvzkeB'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAL1vAm18cPc7XZBypvLP14ReQFIcgM0RKGgq1B0zODZBW2iUHyak7N5GiZA33006C6L9zLlG7dZCCtNJOOM3JTAOoI9aZCSnTg3ZCinpSWFR4jf8z8s2kPkgJcJZCx1509JetN68w7JxZBX1fkU3EOpMgOMMZAMe0QHhz0qnLCm0WmBPQkISUzQurbGcU5fsHa85J7DNz156ZC'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -292,18 +292,33 @@ const controller = (req, res) => {
       return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
     })
     .then(data => {
-      // put status "pending for approval"
+      // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey
+    })
+    .then(data => {
+      // todo: call login admin api and set the password (wabizPassword) of the admin of the container
+    })
+    .then(data => {
+      // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
+    })
+    .then(data => {
+      // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
+    })
+    .then(data => {
+      // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
+    })
+    .then(data => {
+      console.log('5555555555555555555555555555555555555555555555555555555', data)
+      // set wabiz username, password, url, graphApiKey in our db
+      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
+    })
+    .then(data => {
+      // put status "accepted"
       console.log('777777777777777777777777777777777777777777777777777', data)
       return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
     })
     .then(data => {
       console.log('66666666666666666666666666666666666666666666666666666', data)
       return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.serviceProviderIdFb)
-    })
-    .then(data => {
-      console.log('5555555555555555555555555555555555555555555555555555555', data)
-      // put status "pending for approval"
-      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
     })
     .then(data => {
       console.log('77777777777777777777777777777777777777777777777777777', data)
