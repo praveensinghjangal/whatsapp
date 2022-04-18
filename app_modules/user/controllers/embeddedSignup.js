@@ -107,7 +107,7 @@ const setPendingForApprovalStatus = (authTokenOfWhatsapp, userId, serviceProvide
   return sentForApproval.promise
 }
 
-const updateProfileconfigure = (authTokenOfWhatsapp, wabaIdOfClient, userId, serviceProviderId) => {
+const updateProfileConfigure = (authTokenOfWhatsapp, wabaIdOfClient, userId, serviceProviderId) => {
   const updateProfileconfigure = q.defer()
   const http = new HttpService(60000)
   const headers = {
@@ -278,7 +278,7 @@ const controller = (req, res) => {
     })
     .then(data => {
       console.log('66666666666666666666666666666666666666666666666666666', data)
-      return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.userId, __config.serviceProviderIdFb)
+      return updateProfileConfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.userId, __config.serviceProviderIdFb)
     })
     .then(data => {
       console.log('5555555555555555555555555555555555555555555555555555555', data)
