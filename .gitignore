@@ -14,3 +14,4 @@ config/.env
 config/.env-stage
 public/js-docs
 public/ossWrapper
+shell_scripts/launch_server/output
