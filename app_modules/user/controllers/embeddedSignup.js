@@ -135,6 +135,43 @@ const updateProfileConfigure = (authTokenOfWhatsapp, wabaIdOfClient, userId, ser
   return updateProfileconfigure.promise
 }
 
+const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) => {
+  const apiCall = q.defer()
+  const userService = new UserService()
+  const phoneNumbers = []
+  phoneNumbersOfGivenWabaIds.map((a) => {
+    if (a.charAt(0) === '+') {
+      phoneNumbers.push(a.split(' ').join('').split('-').join('').substring(1))
+    } else {
+      phoneNumbers.push(a.split(' ').join('').split('-').join(''))
+    }
+  })
+  userService.getPhoneNumbersFromWabaId(wabaIdOfClient)
+    .then((data) => {
+      if (phoneNumbers.length > 0) {
+        data = phoneNumbers.filter(val => !data.includes(val))
+      }
+      apiCall.resolve(data)
+    })
+    .catch((err) => {
+      console.log('err', err)
+      apiCall.reject({ type: err.type, err: err })
+    })
+
+  return apiCall.promise
+}
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
+  const apicall = q.defer()
+  const userService = new UserService()
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
+    .then((data) => {
+      console.log('data from updateWabizInformation ', data)
+    }).catch((err) => {
+      console.log('err', err)
+      apicall.reject({ type: err.type, err: err })
+    })
+}
+
 /**
  * @memberof -Embedded-SignUp-Controller-
  * @name Embedded-SignUp
@@ -328,43 +365,6 @@ const controller = (req, res) => {
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
-    })
-}
-
-const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) => {
-  const apiCall = q.defer()
-  const userService = new UserService()
-  const phoneNumbers = []
-  phoneNumbersOfGivenWabaIds.map((a) => {
-    if (a.charAt(0) === '+') {
-      phoneNumbers.push(a.split(' ').join('').split('-').join('').substring(1))
-    } else {
-      phoneNumbers.push(a.split(' ').join('').split('-').join(''))
-    }
-  })
-  userService.getPhoneNumbersFromWabaId(wabaIdOfClient)
-    .then((data) => {
-      if (phoneNumbers.length > 0) {
-        data = phoneNumbers.filter(val => !data.includes(val))
-      }
-      apiCall.resolve(data)
-    })
-    .catch((err) => {
-      console.log('err', err)
-      apiCall.reject({ type: err.type, err: err })
-    })
-
-  return apiCall.promise
-}
-const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
-  const apicall = q.defer()
-  const userService = new UserService()
-  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
-    .then((data) => {
-      console.log('data from updateWabizInformation ', data)
-    }).catch((err) => {
-      console.log('err', err)
-      apicall.reject({ type: err.type, err: err })
     })
 }
 
