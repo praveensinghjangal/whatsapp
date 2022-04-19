@@ -50,11 +50,17 @@ const messageStatusOnMail = () => {
         acceptedPercent: 0,
         failedPercent: 0,
         pendingPercent: 0,
-        rejectedPercent: 0
+        rejectedPercent: 0,
+        totalDelivered: 0,
+        totalDeliveredPercent: 0,
+        totalUndelivered: 0,
+        totalUndeliveredPercent: 0
       }
       const mtdTotalStatusCount = JSON.parse(JSON.stringify(lastDayTotalStatusCount))
       lastDayData.forEach(userCountData => {
         lastDayTotalMessageCount = lastDayTotalMessageCount + userCountData.total
+        const thisUserTotalDelivered = (userCountData.seen + userCountData.delivered + userCountData.deleted)
+        const thisUserTotalUndelivered = (userCountData.inProcess + userCountData.resourceAllocated + userCountData.forwarded + userCountData.accepted + userCountData.failed + userCountData.pending + userCountData.rejected)
         lastDayAllUserCount.push([
           userCountData.wabaPhoneNumber,
           [userCountData.inProcess, Math.round(((userCountData.inProcess / userCountData.total) * 100 + Number.EPSILON) * 100) / 100],
@@ -67,6 +73,8 @@ const messageStatusOnMail = () => {
           [userCountData.failed, Math.round(((userCountData.failed / userCountData.total) * 100 + Number.EPSILON) * 100) / 100],
           [userCountData.pending, Math.round(((userCountData.pending / userCountData.total) * 100 + Number.EPSILON) * 100) / 100],
           [userCountData.rejected, Math.round(((userCountData.rejected / userCountData.total) * 100 + Number.EPSILON) * 100) / 100],
+          [thisUserTotalDelivered, Math.round(((thisUserTotalDelivered / userCountData.total) * 100 + Number.EPSILON) * 100) / 100], // taking count & % of total delivered
+          [thisUserTotalUndelivered, Math.round(((thisUserTotalUndelivered / userCountData.total) * 100 + Number.EPSILON) * 100) / 100],
           userCountData.total])
         lastDayTotalStatusCount.inProcess = lastDayTotalStatusCount.inProcess + userCountData.inProcess
         lastDayTotalStatusCount.resourceAllocated = lastDayTotalStatusCount.resourceAllocated + userCountData.resourceAllocated
@@ -78,6 +86,9 @@ const messageStatusOnMail = () => {
         lastDayTotalStatusCount.failed = lastDayTotalStatusCount.failed + userCountData.failed
         lastDayTotalStatusCount.pending = lastDayTotalStatusCount.pending + userCountData.pending
         lastDayTotalStatusCount.rejected = lastDayTotalStatusCount.rejected + userCountData.rejected
+        lastDayTotalStatusCount.read = lastDayTotalStatusCount.read + userCountData.read
+        lastDayTotalStatusCount.totalDelivered = lastDayTotalStatusCount.totalDelivered + thisUserTotalDelivered
+        lastDayTotalStatusCount.totalUndelivered = lastDayTotalStatusCount.totalUndelivered + thisUserTotalUndelivered
       })
       lastDayTotalStatusCount.inProcessPercent = Math.round(((lastDayTotalStatusCount.inProcess / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100 || 0
       lastDayTotalStatusCount.resourceAllocatedPercent = Math.round(((lastDayTotalStatusCount.resourceAllocated / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100 || 0
@@ -89,15 +100,19 @@ const messageStatusOnMail = () => {
       lastDayTotalStatusCount.failedPercent = Math.round(((lastDayTotalStatusCount.failed / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100 || 0
       lastDayTotalStatusCount.pendingPercent = Math.round(((lastDayTotalStatusCount.pending / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100 || 0
       lastDayTotalStatusCount.rejectedPercent = Math.round(((lastDayTotalStatusCount.rejected / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100 || 0
+      lastDayTotalStatusCount.totalDeliveredPercent = Math.round(((lastDayTotalStatusCount.totalDelivered / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
+      lastDayTotalStatusCount.totalUndeliveredPercent = Math.round(((lastDayTotalStatusCount.totalUndelivered / lastDayTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
 
       const mtdAllUserCount = []
       let mtdTotalMessageCount = 0
       const allUserGrouped = _.groupBy(allUserData, item => item.wabaPhoneNumber)
       __logger.info('data fetched from DB ~function=messageStatusOnMail---- allUserGrouped', allUserGrouped)
       _.each(allUserGrouped, (singleUserData, key) => {
-        const UserAllDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], 0]
+        const UserAllDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], 0]
         singleUserData.forEach(userCountData => {
           const removePhoneCodeFromWaba = userCountData.wabaPhoneNumber.substring(2, userCountData.wabaPhoneNumber.length)
+          const thisUserTotalDelivered = (userCountData.seen + userCountData.delivered + userCountData.deleted)
+          const thisUserTotalUndelivered = (userCountData.inProcess + userCountData.resourceAllocated + userCountData.forwarded + userCountData.accepted + userCountData.failed + userCountData.pending + userCountData.rejected)
           if (arrayofWabanumber.indexOf(removePhoneCodeFromWaba) === -1) arrayofWabanumber.push(removePhoneCodeFromWaba)
           mtdTotalMessageCount = mtdTotalMessageCount + userCountData.total
           mtdTotalStatusCount.inProcess = mtdTotalStatusCount.inProcess + userCountData.inProcess
@@ -110,6 +125,8 @@ const messageStatusOnMail = () => {
           mtdTotalStatusCount.failed = mtdTotalStatusCount.failed + userCountData.failed
           mtdTotalStatusCount.pending = mtdTotalStatusCount.pending + userCountData.pending
           mtdTotalStatusCount.rejected = mtdTotalStatusCount.rejected + userCountData.rejected
+          mtdTotalStatusCount.totalDelivered = mtdTotalStatusCount.totalDelivered + thisUserTotalDelivered
+          mtdTotalStatusCount.totalUndelivered = mtdTotalStatusCount.totalUndelivered + thisUserTotalUndelivered
 
           UserAllDayDataArr[1][0] = UserAllDayDataArr[1][0] + userCountData.inProcess
           UserAllDayDataArr[2][0] = UserAllDayDataArr[2][0] + userCountData.resourceAllocated
@@ -121,18 +138,22 @@ const messageStatusOnMail = () => {
           UserAllDayDataArr[8][0] = UserAllDayDataArr[8][0] + userCountData.failed
           UserAllDayDataArr[9][0] = UserAllDayDataArr[9][0] + userCountData.pending
           UserAllDayDataArr[10][0] = UserAllDayDataArr[10][0] + userCountData.rejected
-          UserAllDayDataArr[11] = UserAllDayDataArr[11] + userCountData.total
+          UserAllDayDataArr[11][0] = UserAllDayDataArr[11][0] + thisUserTotalDelivered
+          UserAllDayDataArr[12][0] = UserAllDayDataArr[12][0] + thisUserTotalUndelivered
+          UserAllDayDataArr[13] = UserAllDayDataArr[13] + userCountData.total
         })
-        UserAllDayDataArr[1][1] = Math.round(((UserAllDayDataArr[1][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[2][1] = Math.round(((UserAllDayDataArr[2][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[3][1] = Math.round(((UserAllDayDataArr[3][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[4][1] = Math.round(((UserAllDayDataArr[4][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[5][1] = Math.round(((UserAllDayDataArr[5][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[6][1] = Math.round(((UserAllDayDataArr[6][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[7][1] = Math.round(((UserAllDayDataArr[7][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[8][1] = Math.round(((UserAllDayDataArr[8][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[9][1] = Math.round(((UserAllDayDataArr[9][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[10][1] = Math.round(((UserAllDayDataArr[10][0] / UserAllDayDataArr[11]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[1][1] = Math.round(((UserAllDayDataArr[1][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[2][1] = Math.round(((UserAllDayDataArr[2][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[3][1] = Math.round(((UserAllDayDataArr[3][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[4][1] = Math.round(((UserAllDayDataArr[4][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[5][1] = Math.round(((UserAllDayDataArr[5][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[6][1] = Math.round(((UserAllDayDataArr[6][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[7][1] = Math.round(((UserAllDayDataArr[7][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[8][1] = Math.round(((UserAllDayDataArr[8][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[9][1] = Math.round(((UserAllDayDataArr[9][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[10][1] = Math.round(((UserAllDayDataArr[10][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[11][1] = Math.round(((UserAllDayDataArr[11][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[12][1] = Math.round(((UserAllDayDataArr[11][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
         mtdAllUserCount.push(UserAllDayDataArr)
       })
       mtdTotalStatusCount.inProcessPercent = Math.round(((mtdTotalStatusCount.inProcess / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
@@ -145,6 +166,8 @@ const messageStatusOnMail = () => {
       mtdTotalStatusCount.failedPercent = Math.round(((mtdTotalStatusCount.failed / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
       mtdTotalStatusCount.pendingPercent = Math.round(((mtdTotalStatusCount.pending / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
       mtdTotalStatusCount.rejectedPercent = Math.round(((mtdTotalStatusCount.rejected / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
+      mtdTotalStatusCount.totalDeliveredPercent = Math.round(((mtdTotalStatusCount.totalDelivered / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
+      mtdTotalStatusCount.totalUndeliveredPercent = Math.round(((mtdTotalStatusCount.totalUndelivered / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
       passingObjectToMailer = { lastDayAllUserCount, lastDayTotalStatusCount, lastDayTotalMessageCount, mtdAllUserCount, mtdTotalStatusCount, mtdTotalMessageCount }
       return dbService.getWabaNameByWabaNumber(arrayofWabanumber)
     })
