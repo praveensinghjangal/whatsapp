@@ -6,7 +6,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
 const urlValidator = require('../../../lib/util/url')
-const AuthService = require('../facebook/authService')
+const AuthService = require('../facebook/authService').Authentication
 class WabaAccount {
   constructor (maxConcurrent, userId) {
     this.userId = userId

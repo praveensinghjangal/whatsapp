@@ -82,4 +82,4 @@ class Authentication {
   }
 }
 
-module.exports = Authentication
+module.exports = { InternalFunctions, Authentication }
