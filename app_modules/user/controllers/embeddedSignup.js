@@ -11,6 +11,7 @@ const HttpService = require('../../../lib/http_service')
 const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 const shell = require('shelljs')
 const fs = require('fs')
+const AuthInternalFunctionService = require('../../integration/facebook/authService').InternalFunctions
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -196,7 +197,7 @@ const controller = (req, res) => {
   validate.embeddedSignup(req.body)
     .then(valResponse => {
       console.log('Step 1', valResponse)
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAL1vAm18cPc7XZBypvLP14ReQFIcgM0RKGgq1B0zODZBW2iUHyak7N5GiZA33006C6L9zLlG7dZCCtNJOOM3JTAOoI9aZCSnTg3ZCinpSWFR4jf8z8s2kPkgJcJZCx1509JetN68w7JxZBX1fkU3EOpMgOMMZAMe0QHhz0qnLCm0WmBPQkISUzQurbGcU5fsHa85J7DNz156ZC'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAGZCfneQWHi2t0dpxsF0qVKGKZCim3xNw4jzFqRaDttEInQ1Dmd0sY7utG3oUAq6A4VgZBlq88jBHQ4jWkq1X1aFZC6GjZAow7RuTewcK4cdZBV2LD7qpGNqU9qpw1a4IBDL1His09HqD1volBrbkRNsTvXrPNkezf5YBakgi1'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -327,10 +328,14 @@ const controller = (req, res) => {
       return runScriptToSpawnContainersAndGetTheIP(req.user.user_id, phoneCode + phoneNumber)
     })
     .then(data => {
-      wabizurl = data
-      console.log('wabizurl', wabizurl.privateIp)
+      wabizurl = 'https://' + data.privateIp + `:${__config.wabizPort}`
+      console.log('wabizurl', wabizurl)
       console.log('wabizPassword', wabizPassword)
-      // todo: call login admin api and set the password (wabizPassword) of the admin of the container
+      // call login admin api and set the password (wabizPassword) of the admin of the container
+      const authInternalFunctionService = new AuthInternalFunctionService()
+      const username = 'admin'
+      const password = 'Pass@123' //! todo: it will be "secret"
+      return authInternalFunctionService.WabaLoginApi(username, password, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
     })
     .then(data => {
       // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
