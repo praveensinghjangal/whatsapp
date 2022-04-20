@@ -292,7 +292,7 @@ const controller = (req, res) => {
       return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
     })
     .then(data => {
-      // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey
+      // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey. We will get wabizurl after running the bash script
     })
     .then(data => {
       // todo: call login admin api and set the password (wabizPassword) of the admin of the container
@@ -307,6 +307,7 @@ const controller = (req, res) => {
       // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
     })
     .then(data => {
+      // wabizusername will be "admin", wabizpassword => hardcoded,
       console.log('5555555555555555555555555555555555555555555555555555555', data)
       // set wabiz username, password, url, graphApiKey in our db
       return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
