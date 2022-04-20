@@ -9,6 +9,8 @@ const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
 const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
+const shell = require('shelljs')
+const fs = require('fs')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -135,6 +137,34 @@ const updateProfileconfigure = (authTokenOfWhatsapp, wabaIdOfClient, userId, ser
   return updateProfileconfigure.promise
 }
 
+const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber) => {
+  const getIp = q.defer()
+  const version = '2.37.2'
+  // const command = 'bash shell_scripts/launch_server/launch.bash 2.37.2 917666004488 helo_test_917666004488'
+  const command = `bash shell_scripts/launch_server/launch.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
+  // return new Promise((resolve, reject) => {
+  shell.exec(command, async (code, stdout, stderr) => {
+    if (!code) {
+      const filePath = `shell_scripts/launch_server/output/${userId}_${wabaNumber}.txt`
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          console.log('error while reading', err)
+          return getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [err] })
+        }
+        console.log('success while reading')
+        let text = data.replace(/ /g, '') // removes white spaces from string
+        text = text.replace(/(\r\n|\n|\r)/gm, '') // removes all line breaks (new lines) from string
+        text = text.split('=')[1]
+        getIp.resolve({ privateIp: text })
+      })
+    } else {
+      getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [stderr] })
+    }
+  })
+  // })
+  return getIp.promise
+}
+
 /**
  * @memberof -Embedded-SignUp-Controller-
  * @name Embedded-SignUp
@@ -156,7 +186,7 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber
+  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl
   const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
   req.user.providerId = __config.serviceProviderIdFb
@@ -293,8 +323,11 @@ const controller = (req, res) => {
     })
     .then(data => {
       // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey. We will get wabizurl after running the bash script
+      return runScriptToSpawnContainersAndGetTheIP(req.user.user_id, phoneCode + phoneNumber)
     })
     .then(data => {
+      wabizurl = data
+      console.log('wabizurl', wabizurl.privateIp)
       // todo: call login admin api and set the password (wabizPassword) of the admin of the container
     })
     .then(data => {
