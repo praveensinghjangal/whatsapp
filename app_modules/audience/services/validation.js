@@ -49,8 +49,8 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 25,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         }
       }
@@ -82,8 +82,8 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 25,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         channel: {
@@ -175,8 +175,8 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 25,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         channel: {
@@ -268,8 +268,8 @@ class validate {
         phoneNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 25,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         optinSourceId: {

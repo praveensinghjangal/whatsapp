@@ -18,7 +18,7 @@ const qalllib = require('qalllib')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const errorToTelegram = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
-
+const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 /**
  * @namespace -WhatsApp-Message-Controller-SendMessage-
  * @description API’s related to whatsapp message.
@@ -51,11 +51,12 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     }
   }
   if (uniqueTemplateIdAndNotInGlobal.length === 0) {
+    console.log('only redissssssssssssssss')
     bulkTemplateCheck.resolve(templateDataObj)
     return bulkTemplateCheck.promise
   }
   const onlyTemplateId = uniqueTemplateIdAndNotInGlobal.map(templateIdArr => templateIdArr.templateId)
-  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [wabaPhoneNumber.substring(2), onlyTemplateId])
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, onlyTemplateId])
     .then(dbData => {
       _.each(dbData, singleObj => {
         if (singleObj && singleObj.message_template_id) { // block to push template data in templateDataObj and redis

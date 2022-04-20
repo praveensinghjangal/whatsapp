@@ -251,8 +251,8 @@ class validate {
             phoneNumber: {
               type: 'string',
               required: false,
-              minLength: 10,
-              maxLength: 10,
+              minLength: 6,
+              maxLength: 15,
               pattern: __constants.VALIDATOR.number
             },
             websiteButtontext: {
@@ -457,8 +457,8 @@ class validate {
             phoneNumber: {
               type: 'string',
               required: false,
-              minLength: 10,
-              maxLength: 10,
+              minLength: 6,
+              maxLength: 15,
               pattern: __constants.VALIDATOR.number
             },
             websiteButtontext: {
@@ -647,8 +647,8 @@ class validate {
         wabaNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 12,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         }
       }

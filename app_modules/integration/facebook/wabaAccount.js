@@ -186,7 +186,7 @@ class WabaAccount {
         })
         .then((phoneNumbersData) => {
           if (phoneNumbersData && phoneNumbersData.data && phoneNumbersData.data.constructor.name.toLowerCase() === 'array' && phoneNumbersData.data.length > 0) {
-            const specificNumberData = _.find(phoneNumbersData.data, singleData => singleData.display_phone_number && singleData.display_phone_number.split(' ').join('').substring(1) === wabaNumber)
+            const specificNumberData = _.find(phoneNumbersData.data, singleData => singleData.display_phone_number && singleData.display_phone_number.split(' ').join('').split('-').join('').substring(1) === wabaNumber)
             if (specificNumberData) return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: specificNumberData })
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
           } else if (phoneNumbersData && phoneNumbersData.status === 404) {

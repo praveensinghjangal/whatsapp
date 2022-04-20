@@ -15,7 +15,7 @@ const EmailService = require('../../../lib/sendNotifications/email')
 const integrationService = require('../../integration')
 const telegramMessage = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
 const telegramTemplate = require('../../../lib/sendNotifications/telegramTemplate')
-
+const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 class StatusService {
   canUpdateStatus (newStatusId, oldStatusId) {
     __logger.info('canUpdateStatus::', oldStatusId, { TEMPLATE_STATUS_MAPPING: __constants.TEMPLATE_STATUS_MAPPING[oldStatusId], newStatusId })
@@ -176,7 +176,7 @@ class StatusService {
       .then(result => {
         __logger.info('compareAndUpdateStatus::After bulk process', { result })
         const redisService = new RedisService()
-        redisService.setTemplatesInRedisForWabaPhoneNumber(wabaNumber.substring(2, wabaNumber.length))
+        redisService.setTemplatesInRedisForWabaPhoneNumber(phoneCodeAndPhoneSeprator(wabaNumber).phoneNumber)
         const invalidReq = _.filter(result, { valid: false })
         if (invalidReq.length > 0) {
           return comparedAndUpdated.reject({ type: __constants.RESPONSE_MESSAGES.ALL_STATUS_NOT_UPDATED, err: _.map(invalidReq, 'err') })

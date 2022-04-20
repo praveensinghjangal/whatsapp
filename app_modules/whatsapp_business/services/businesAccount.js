@@ -14,6 +14,8 @@ const __constants = require('../../../config/constants')
 const saveHistoryData = require('../../../lib/util/saveDataHistory')
 const RedisService = require('../../../lib/redis_service/redisService')
 const _ = require('lodash')
+const e164 = require('e164')
+const csc = require('country-state-city').default
 
 class businesAccountService {
   constructor () {
@@ -297,15 +299,11 @@ class businesAccountService {
 
   getUserIdFromWabaNumber (wabaNumber) {
     __logger.info('getUserIdFromWabaNumber')
-    let phoneCode
-    if (wabaNumber.includes('91')) {
-      phoneCode = wabaNumber.substring(0, 2)
-      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
-    }
-    if (wabaNumber.includes('+91')) {
-      phoneCode = wabaNumber.substring(0, 3)
-      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
-    }
+    const countryNumDetails = e164.lookup(wabaNumber)
+    const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
+    const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
+    wabaNumber = wabaNumber.substring(phoneCode.length, wabaNumber.length)
+    console.log('phoneSplittedData ==============>', phoneCode, wabaNumber)
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
@@ -428,15 +426,20 @@ class businesAccountService {
 
   getUserIdAndTokenKeyByWabaNumber (wabaNumber) {
     __logger.info('getUserIdAndTokenKeyByWabaNumber::>>>>>>>>>>>>>.')
-    let phoneCode
-    if (wabaNumber.includes('91')) {
-      phoneCode = wabaNumber.substring(0, 2)
-      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
-    }
-    if (wabaNumber.includes('+91')) {
-      phoneCode = wabaNumber.substring(0, 3)
-      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
-    }
+    // let phoneCode
+    // if (wabaNumber.includes('91')) {
+    //   phoneCode = wabaNumber.substring(0, 2)
+    //   wabaNumber = wabaNumber.substring(2, wabaNumber.length)
+    // }
+    // if (wabaNumber.includes('+91')) {
+    //   phoneCode = wabaNumber.substring(0, 3)
+    //   wabaNumber = wabaNumber.substring(3, wabaNumber.length)
+    // }
+    const countryNumDetails = e164.lookup(wabaNumber)
+    const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
+    const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
+    wabaNumber = wabaNumber.substring(phoneCode.length, wabaNumber.length)
+    console.log('phoneSplittedData ==============>', phoneCode, wabaNumber)
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdAndTokenKeyByWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
@@ -760,15 +763,20 @@ class businesAccountService {
   updateWabizApiKeyAndExpireyTime (wabaNumber, apiKey, expireyTime, userId) {
     __logger.info('updateServiceProviderDetails', wabaNumber, expireyTime)
     const dataUpdated = q.defer()
-    let phoneCode = ''
-    if (wabaNumber.includes('91')) {
-      phoneCode = wabaNumber.substring(0, 2)
-      wabaNumber = wabaNumber.substring(2, wabaNumber.length)
-    }
-    if (wabaNumber.includes('+91')) {
-      phoneCode = wabaNumber.substring(0, 3)
-      wabaNumber = wabaNumber.substring(3, wabaNumber.length)
-    }
+    // let phoneCode = ''
+    // if (wabaNumber.includes('91')) {
+    //   phoneCode = wabaNumber.substring(0, 2)
+    //   wabaNumber = wabaNumber.substring(2, wabaNumber.length)
+    // }
+    // if (wabaNumber.includes('+91')) {
+    //   phoneCode = wabaNumber.substring(0, 3)
+    //   wabaNumber = wabaNumber.substring(3, wabaNumber.length)
+    // }
+    const countryNumDetails = e164.lookup(wabaNumber)
+    const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
+    const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
+    wabaNumber = wabaNumber.substring(phoneCode.length, wabaNumber.length)
+    console.log('phoneSplittedData ==============>', phoneCode, wabaNumber)
     const wabizData = { apiKey, expireyTime, phoneCode, wabaNumber }
     const queryParam = []
     _.each(wabizData, (val) => queryParam.push(val))

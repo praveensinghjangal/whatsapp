@@ -4,6 +4,7 @@ const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
 const _ = require('lodash')
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 
 const bodyCreator = (array) => {
   const merged = array.reduce((r, { wabaPhoneNumber, createdOn, ...rest }) => {
@@ -70,7 +71,7 @@ const messageStatusOnMailForConversation = () => {
       _.each(allUserGrouped, (singleUserData, key) => {
         const UserAllDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], 0]
         singleUserData.forEach(userCountData => {
-          const removePhoneCodeFromWaba = userCountData.wabaPhoneNumber.substring(2, userCountData.wabaPhoneNumber.length)
+          const removePhoneCodeFromWaba = phoneCodeAndPhoneSeprator(userCountData.wabaPhoneNumber).phoneNumber
           if (arrayofWabanumber.indexOf(removePhoneCodeFromWaba) === -1) arrayofWabanumber.push(removePhoneCodeFromWaba)
           mtdTotalMessageCount = mtdTotalMessageCount + userCountData.total
           mtdTotalStatusCount.ui = mtdTotalStatusCount.ui + userCountData.ui
