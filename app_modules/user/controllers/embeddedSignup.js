@@ -186,7 +186,8 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl
+  let wabaIdOfClient; let businessIdOfClient; let businessName; let wabaNumberThatNeedsToBeLinked; let phoneCode; let phoneNumber, wabizurl
+  const wabizPassword = __config.wabizPassword
   const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
   req.user.providerId = __config.serviceProviderIdFb
@@ -328,6 +329,7 @@ const controller = (req, res) => {
     .then(data => {
       wabizurl = data
       console.log('wabizurl', wabizurl.privateIp)
+      console.log('wabizPassword', wabizPassword)
       // todo: call login admin api and set the password (wabizPassword) of the admin of the container
     })
     .then(data => {
