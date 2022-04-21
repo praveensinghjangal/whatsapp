@@ -41,15 +41,15 @@ class checkCompleteIncomplete {
         contactNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 10,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 2,
-          maxLength: 2,
+          minLength: 1,
+          maxLength: 4,
           pattern: __constants.VALIDATOR.number
         },
         postalCode: {
@@ -119,15 +119,15 @@ class checkCompleteIncomplete {
         contactNumber: {
           type: 'string',
           required: true,
-          minLength: 10,
-          maxLength: 10,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         },
         phoneCode: {
           type: 'string',
           required: true,
-          minLength: 2,
-          maxLength: 2,
+          minLength: 1,
+          maxLength: 4,
           pattern: __constants.VALIDATOR.number
         },
         postalCode: {

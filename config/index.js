@@ -328,5 +328,7 @@ module.exports = {
   systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP,
   creditLineIdBSP: process.env.CREDIT_LINE_ID_BSP,
   wabaCurrency: process.env.WABA_CURRENCY,
-  serviceProviderIdFb: process.env.SERVICE_PROVIDER_ID_FB
+  serviceProviderIdFb: process.env.SERVICE_PROVIDER_ID_FB,
+  wabizPassword: process.env.WABIZ_PASSWORD,
+  wabizPort: process.env.WABIZ_PORT
 }

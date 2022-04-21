@@ -4,7 +4,7 @@ const __config = require('../../../config')
 const saveMessageApiLog = require('../service/saveMessageApiLog')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
-const AuthService = require('./authService')
+const AuthService = require('./authService').Authentication
 const DataMapper = require('./dataMapper')
 
 class Message {

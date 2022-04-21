@@ -792,8 +792,8 @@ class validate {
         endUserNumber: {
           type: 'string',
           required: false,
-          minLength: 10,
-          maxLength: 12,
+          minLength: 6,
+          maxLength: 15,
           pattern: __constants.VALIDATOR.number
         }
       }

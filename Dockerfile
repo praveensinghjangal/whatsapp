@@ -8,6 +8,20 @@ WORKDIR /app
 
 RUN apk add git
 
+RUN apk add --no-cache \
+        python3 \
+        py3-pip \
+    && pip3 install --upgrade pip \
+    && pip3 install \
+        awscli \
+    && rm -rf /var/cache/apk/*
+ 
+RUN aws --version 
+
+RUN aws configure set default.region ap-south-1
+
+RUN apk add openssh
+
 RUN npm install --production
 
 RUN apk add --update tzdata && cp /usr/share/zoneinfo/Asia/Kolkata /etc/localtime

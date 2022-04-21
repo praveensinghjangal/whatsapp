@@ -9,6 +9,9 @@ const UserService = require('../services/dbData')
 const integrationService = require('../../../app_modules/integration')
 const HttpService = require('../../../lib/http_service')
 const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
+const shell = require('shelljs')
+const fs = require('fs')
+const AuthInternalFunctionService = require('../../integration/facebook/authService').InternalFunctions
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -172,6 +175,34 @@ const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapi
     })
 }
 
+const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber) => {
+  const getIp = q.defer()
+  const version = '2.37.2'
+  // const command = 'bash shell_scripts/launch_server/launch.bash 2.37.2 917666004488 helo_test_917666004488'
+  const command = `bash shell_scripts/launch_server/launch.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
+  // return new Promise((resolve, reject) => {
+  shell.exec(command, async (code, stdout, stderr) => {
+    if (!code) {
+      const filePath = `shell_scripts/launch_server/output/${userId}_${wabaNumber}.txt`
+      fs.readFile(filePath, 'utf8', (err, data) => {
+        if (err) {
+          console.log('error while reading', err)
+          return getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [err] })
+        }
+        console.log('success while reading')
+        let text = data.replace(/ /g, '') // removes white spaces from string
+        text = text.replace(/(\r\n|\n|\r)/gm, '') // removes all line breaks (new lines) from string
+        text = text.split('=')[1]
+        getIp.resolve({ privateIp: text })
+      })
+    } else {
+      getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [stderr] })
+    }
+  })
+  // })
+  return getIp.promise
+}
+
 /**
  * @memberof -Embedded-SignUp-Controller-
  * @name Embedded-SignUp
@@ -193,7 +224,8 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber
+  let wabaIdOfClient; let businessIdOfClient; let businessName; let wabaNumberThatNeedsToBeLinked; let phoneCode; let phoneNumber, wabizurl
+  const wabizPassword = __config.wabizPassword
   const authTokenOfWhatsapp = req.headers.authorization
   //   const userService = new UserService()
   req.user.providerId = __config.serviceProviderIdFb
@@ -202,7 +234,7 @@ const controller = (req, res) => {
   validate.embeddedSignup(req.body)
     .then(valResponse => {
       console.log('Step 1', valResponse)
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAL1vAm18cPc7XZBypvLP14ReQFIcgM0RKGgq1B0zODZBW2iUHyak7N5GiZA33006C6L9zLlG7dZCCtNJOOM3JTAOoI9aZCSnTg3ZCinpSWFR4jf8z8s2kPkgJcJZCx1509JetN68w7JxZBX1fkU3EOpMgOMMZAMe0QHhz0qnLCm0WmBPQkISUzQurbGcU5fsHa85J7DNz156ZC'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAGZCfneQWHi2t0dpxsF0qVKGKZCim3xNw4jzFqRaDttEInQ1Dmd0sY7utG3oUAq6A4VgZBlq88jBHQ4jWkq1X1aFZC6GjZAow7RuTewcK4cdZBV2LD7qpGNqU9qpw1a4IBDL1His09HqD1volBrbkRNsTvXrPNkezf5YBakgi1'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -329,10 +361,18 @@ const controller = (req, res) => {
       return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
     })
     .then(data => {
-      // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey
+      // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey. We will get wabizurl after running the bash script
+      return runScriptToSpawnContainersAndGetTheIP(req.user.user_id, phoneCode + phoneNumber)
     })
     .then(data => {
-      // todo: call login admin api and set the password (wabizPassword) of the admin of the container
+      wabizurl = 'https://' + data.privateIp + `:${__config.wabizPort}`
+      console.log('wabizurl', wabizurl)
+      console.log('wabizPassword', wabizPassword)
+      // call login admin api and set the password (wabizPassword) of the admin of the container
+      const authInternalFunctionService = new AuthInternalFunctionService()
+      const username = 'admin'
+      const password = 'Pass@123' //! todo: it will be "secret"
+      return authInternalFunctionService.WabaLoginApi(username, password, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
     })
     .then(data => {
       // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
@@ -344,6 +384,7 @@ const controller = (req, res) => {
       // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
     })
     .then(data => {
+      // wabizusername will be "admin", wabizpassword => hardcoded,
       console.log('5555555555555555555555555555555555555555555555555555555', data)
       // set wabiz username, password, url, graphApiKey in our db
       return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
