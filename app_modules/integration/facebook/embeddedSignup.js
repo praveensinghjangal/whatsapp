@@ -295,5 +295,35 @@ class EmbeddedSignup {
       })
     return apiCall.promise
   }
+
+  requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    const url = `${wabizUrl}${__constants.FACEBOOK_ENDPOINTS.requestCode}`
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+    const body = {
+      cc: phoneCode,
+      phone_number: phoneNumber,
+      method: 'voice',
+      cert: phoneCertificate
+      // "pin": "<Two-Step Verification PIN"
+    }
+    http.Post(body, 'body', url, headers, this.providerId)
+      .then(data => {
+        if (data && !(data.body.errors && data.body.errors.length)) {
+          apiCall.resolve(data.body)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.body.errors] })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
 }
 module.exports = EmbeddedSignup
