@@ -227,6 +227,12 @@ const controller = (req, res) => {
       if (data && data.length && data[0].certificate) {
         const phoneObj = data[0]
         wabaNumberThatNeedsToBeLinked = phoneObj.display_phone_number
+        wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.replace(/ /g, '') // removes white spaces from string
+        if (wabaNumberThatNeedsToBeLinked.charAt(0) === '+') {
+          wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('').substring(1)
+        } else {
+          wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('')
+        }
         const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
         phoneCode = obj.phoneCode
         phoneNumber = obj.phoneNumber
