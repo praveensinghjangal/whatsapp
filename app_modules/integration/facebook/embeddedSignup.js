@@ -325,5 +325,28 @@ class EmbeddedSignup {
       })
     return apiCall.promise
   }
+
+  getSettings (wabizUrl, token) {
+    const apiCall = q.defer()
+    const http = new HttpService(60000)
+    const url = `${wabizUrl}${__constants.FACEBOOK_ENDPOINTS.getSettings}`
+    const headers = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      Authorization: `Bearer ${token}`
+    }
+    http.Get(url, headers, this.providerId)
+      .then(data => {
+        if (data && !data.errors) {
+          apiCall.resolve(data.settings)
+        } else {
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: data.errors })
+        }
+      })
+      .catch(err => {
+        apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return apiCall.promise
+  }
 }
 module.exports = EmbeddedSignup

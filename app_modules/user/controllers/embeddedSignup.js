@@ -191,6 +191,7 @@ const controller = (req, res) => {
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate
   const wabizPassword = __config.wabizPassword //! todo: don't hardcode this. instead generate a new random password for each waba container. It is already getting saved in db (in updateWabizInformation)
   const authTokenOfWhatsapp = req.headers.authorization
+  let apiKey = ''
   //   const userService = new UserService()
   req.user.providerId = __config.serviceProviderIdFb
   // req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
@@ -198,7 +199,7 @@ const controller = (req, res) => {
   validate.embeddedSignup(req.body)
     .then(valResponse => {
       console.log('Step 1', valResponse)
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAKFemTn1DebSYuX0gTYjfGHoAZANTWkITZCYy7ZBOvlHvqrEHDkxaStXa1xQezIhXp4zH2lke14JWC7gdYG2c5OtQeqeJAF0eaSO5cP91AQs9gbKhdSAZBrksD8cUWhyeZBgUJkvTR5E95sZCH0E3FilocW1uDK8ViZBJIHiwjetasgzKATf9BecgUn6SdRw7ZCP6FIaEZAtA'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAEhlgs72FAg9AvbTax3eWqRiCZBqU3Gdbb9dOIrsTMHeb0xwZAGvXPWo03DveWItrkRHafk8V8uguaaQSKSgfhVDEuHoDSGXIx1KCmOUwdMiLoOTrISqn68PCfXrBrfeZADAGhk88LPlFmFB2oTq2eaqknWdUNIXWbpiJTg'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -348,15 +349,25 @@ const controller = (req, res) => {
       return authInternalFunctionService.WabaLoginApi(username, password, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
     })
     .then(data => {
+      apiKey = data.apiKey
       // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
       return embeddedSignupService.requestCode(wabizurl, data.apiKey, phoneCode, phoneNumber, phoneCertificate)
     })
     .then(data => {
       // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
+      return embeddedSignupService.getSettings(wabizurl, apiKey)
     })
     .then(data => {
+      if (data && data.application && data.application.wa_id) {
+        // waba number successfully linked to the container
+      } else {
+        // waba number not linked to container. please try again
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['waba number not linked to container. please try again'], data: {} })
+      }
+      // return data
       // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
     })
+    // /**
     .then(data => {
       // wabizusername will be "admin", wabizpassword => hardcoded,
       console.log('5555555555555555555555555555555555555555555555555555555', data)
@@ -372,6 +383,7 @@ const controller = (req, res) => {
       console.log('66666666666666666666666666666666666666666666666666666', data)
       return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.serviceProviderIdFb)
     })
+    //  */
     .then(data => {
       console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
