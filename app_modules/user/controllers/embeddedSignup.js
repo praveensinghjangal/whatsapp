@@ -189,7 +189,7 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate
-  const wabizPassword = __config.wabizPassword //! todo: don't hardcode this. instead generate a new random password for each waba container. It is already getting saved in db (in updateWabizInformation)
+  const wabizPassword = 'Pass@123' //! todo: don't hardcode this. instead generate a new random password for each waba container. It is already getting saved in db (in updateWabizInformation)
   const authTokenOfWhatsapp = req.headers.authorization
   let apiKey = ''
   //   const userService = new UserService()
@@ -199,7 +199,7 @@ const controller = (req, res) => {
   validate.embeddedSignup(req.body)
     .then(valResponse => {
       console.log('Step 1', valResponse)
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAEhlgs72FAg9AvbTax3eWqRiCZBqU3Gdbb9dOIrsTMHeb0xwZAGvXPWo03DveWItrkRHafk8V8uguaaQSKSgfhVDEuHoDSGXIx1KCmOUwdMiLoOTrISqn68PCfXrBrfeZADAGhk88LPlFmFB2oTq2eaqknWdUNIXWbpiJTg'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAC3d57GxbxIAK0jXbal2v5x50cztZAbpUC5wEXNaQPInaYhMtC2nSuYi0ZBqtehUfaFyJlOhLZA907mHxaYiPeV0DPOZCjlPw2ZCLZC92RKukKN4KowyctFFqtFmNSoGWseyzttYbBndeyovd0S0eZBjQETflxK2s8qmqRgoR8vbELOLE6lkJQig2uZBptp9uvGbPqyq5hGA'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
@@ -350,9 +350,7 @@ const controller = (req, res) => {
       console.log('wabizPassword', wabizPassword)
       // todo: call login admin api and set the password (wabizPassword) of the admin of the container
       const authInternalFunctionService = new AuthInternalFunctionService()
-      const username = 'admin'
-      const password = 'Pass@123' //! todo: it will be "secret"
-      return authInternalFunctionService.WabaLoginApi(username, password, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
+      return authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, __constants.WABIZ_DEFAULT_PASSWORD, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
     })
     .then(data => {
       apiKey = data.apiKey
@@ -380,7 +378,7 @@ const controller = (req, res) => {
       // wabizusername will be "admin", wabizpassword => hardcoded,
       console.log('5555555555555555555555555555555555555555555555555555555', data)
       // set wabiz username, password, url, graphApiKey in our db
-      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
+      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, __config.authorization, phoneCode, phoneNumber)
     })
     .then(data => {
       // put status "accepted"
@@ -428,10 +426,10 @@ const controller = (req, res) => {
 
 //   return apiCall.promise
 // }
-const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) => {
   const apicall = q.defer()
   const userService = new UserService()
-  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber)
     .then((data) => {
       console.log('data from updateWabizInformation ', data)
     }).catch((err) => {
