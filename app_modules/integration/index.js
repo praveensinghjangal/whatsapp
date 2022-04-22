@@ -96,6 +96,7 @@ class EmbeddedSignup {
   getPhoneNumberOfWabaId (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.getPhoneNumberOfWabaId(wabaIdOfClient, wabaNumber) }
   requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) { return this.embeddedSignup.requestCode(wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) }
   getSettings (wabizUrl, token) { return this.embeddedSignup.getSettings(wabizUrl, token) }
+  enableTwoStepVerification (wabizUrl, token, tfaPin) { return this.embeddedSignup.enableTwoStepVerification(wabizUrl, token, tfaPin) }
 }
 
 module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }

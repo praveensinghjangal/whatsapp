@@ -366,6 +366,8 @@ const controller = (req, res) => {
     .then(data => {
       if (data && data.application && data.application.wa_id) {
         // waba number successfully linked to the container
+        const tfaPin = '123456'
+        return embeddedSignupService.enableTwoStepVerification(wabizurl, apiKey, tfaPin)
       } else {
         // waba number not linked to container. please try again
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['waba number not linked to container. please try again'], data: {} })
