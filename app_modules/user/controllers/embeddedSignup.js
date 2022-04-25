@@ -13,6 +13,7 @@ const shell = require('shelljs')
 const fs = require('fs')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const AuthInternalFunctionService = require('../../integration/facebook/authService').InternalFunctions
+const passwordGenerator = require('../../../lib/util/passwordGenerator')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -189,7 +190,7 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate
-  const wabizPassword = 'Pass@123' //! todo: don't hardcode this. instead generate a new random password for each waba container. It is already getting saved in db (in updateWabizInformation)
+  const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
   const authTokenOfWhatsapp = req.headers.authorization
   let apiKey = ''
   //   const userService = new UserService()
@@ -219,7 +220,7 @@ const controller = (req, res) => {
     .then(wabaDetails => {
       console.log('Step 3', wabaDetails)
       businessName = wabaDetails.name
-      // todo: get phone numbers linked to client's waba id
+      // get phone numbers linked to client's waba id
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
