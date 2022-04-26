@@ -3,7 +3,7 @@ const ColumnMapService = require('../../lib/columnMapService/columnMap')
 const columnMapService = new ColumnMapService()
 // todo : remove waba dependency
 const getUserDetailsByEmail = () => {
-  return `select u.user_id, hash_password,salt_key, email_verified, u.phone_verified, tnc_accepted,role_name,
+  return `select u.user_id, u.user_role_id, hash_password,salt_key, email_verified, u.phone_verified, tnc_accepted,role_name,
   is_tfa_enabled,ut.tfa_type,wi.service_provider_id, CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
   wi.max_tps_to_provider as "maxTpsToProvider"
   from users u
