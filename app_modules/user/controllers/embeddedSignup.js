@@ -11,7 +11,9 @@ const HttpService = require('../../../lib/http_service')
 const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 const shell = require('shelljs')
 const fs = require('fs')
+const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const AuthInternalFunctionService = require('../../integration/facebook/authService').InternalFunctions
+const passwordGenerator = require('../../../lib/util/passwordGenerator')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -138,43 +140,6 @@ const updateProfileConfigure = (authTokenOfWhatsapp, wabaIdOfClient, userId, ser
   return updateProfileconfigure.promise
 }
 
-const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) => {
-  const apiCall = q.defer()
-  const userService = new UserService()
-  const phoneNumbers = []
-  phoneNumbersOfGivenWabaIds.map((a) => {
-    if (a.charAt(0) === '+') {
-      phoneNumbers.push(a.split(' ').join('').split('-').join('').substring(1))
-    } else {
-      phoneNumbers.push(a.split(' ').join('').split('-').join(''))
-    }
-  })
-  userService.getPhoneNumbersFromWabaId(wabaIdOfClient)
-    .then((data) => {
-      if (phoneNumbers.length > 0) {
-        data = phoneNumbers.filter(val => !data.includes(val))
-      }
-      apiCall.resolve(data)
-    })
-    .catch((err) => {
-      console.log('err', err)
-      apiCall.reject({ type: err.type, err: err })
-    })
-
-  return apiCall.promise
-}
-const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber) => {
-  const apicall = q.defer()
-  const userService = new UserService()
-  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneNumber)
-    .then((data) => {
-      console.log('data from updateWabizInformation ', data)
-    }).catch((err) => {
-      console.log('err', err)
-      apicall.reject({ type: err.type, err: err })
-    })
-}
-
 const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber) => {
   const getIp = q.defer()
   const version = '2.37.2'
@@ -224,9 +189,10 @@ const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
   const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient; let businessIdOfClient; let businessName; let wabaNumberThatNeedsToBeLinked; let phoneCode; let phoneNumber, wabizurl
-  const wabizPassword = __config.wabizPassword
+  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate
+  const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
   const authTokenOfWhatsapp = req.headers.authorization
+  let apiKey = ''
   //   const userService = new UserService()
   req.user.providerId = __config.serviceProviderIdFb
   // req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
@@ -234,36 +200,59 @@ const controller = (req, res) => {
   validate.embeddedSignup(req.body)
     .then(valResponse => {
       console.log('Step 1', valResponse)
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAGZCfneQWHi2t0dpxsF0qVKGKZCim3xNw4jzFqRaDttEInQ1Dmd0sY7utG3oUAq6A4VgZBlq88jBHQ4jWkq1X1aFZC6GjZAow7RuTewcK4cdZBV2LD7qpGNqU9qpw1a4IBDL1His09HqD1volBrbkRNsTvXrPNkezf5YBakgi1'
+      req.body.inputToken = 'EAAG0ZAQUaL3wBAC3d57GxbxIAK0jXbal2v5x50cztZAbpUC5wEXNaQPInaYhMtC2nSuYi0ZBqtehUfaFyJlOhLZA907mHxaYiPeV0DPOZCjlPw2ZCLZC92RKukKN4KowyctFFqtFmNSoGWseyzttYbBndeyovd0S0eZBjQETflxK2s8qmqRgoR8vbELOLE6lkJQig2uZBptp9uvGbPqyq5hGA'
       // get the waba id of client's account using client's inputToken
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
     .then(debugData => {
       console.log('Step 2', debugData)
       const granularScopes = debugData.granular_scopes
+      // todo: check if there's no issue in getting the 0th element of business ids and whatsapp business ids
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
       wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
       const businessManagement = _.find(granularScopes, { scope: 'business_management' })
-      businessIdOfClient = businessManagement.target_ids[0]
+      if (businessManagement) {
+        businessIdOfClient = businessManagement.target_ids[0]
+      }
       // get waba information by waba id. This data will be used to call inhouse-whatsapp-api
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(wabaDetails => {
       console.log('Step 3', wabaDetails)
       businessName = wabaDetails.name
-      // todo: get phone numbers linked to client's waba id
+      // get phone numbers linked to client's waba id
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
       console.log('Step 4', data)
-      // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
-      const phoneNumbersOfGivenWabaId = []
-      data.map((a, b) => {
-        phoneNumbersOfGivenWabaId.push(a.display_phone_number)
-      })
-      return phoneNumberBasedOnWabaId(wabaIdOfClient, phoneNumbersOfGivenWabaId)
-      // wabaNumberThatNeedsToBeLinked = ''
+      if (data && data.length && data[0].certificate) {
+        const phoneObj = data[0]
+        wabaNumberThatNeedsToBeLinked = phoneObj.display_phone_number
+        wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.replace(/ /g, '') // removes white spaces from string
+        if (wabaNumberThatNeedsToBeLinked.charAt(0) === '+') {
+          wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('').substring(1)
+        } else {
+          wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('')
+        }
+        const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
+        phoneCode = obj.phoneCode
+        phoneNumber = obj.phoneNumber
+        phoneCertificate = phoneObj.certificate
+        return wabaNumberThatNeedsToBeLinked
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['Phone number not reflected/ not verified. Please try again after some time.'] })
+      }
     })
+    // .then(data => {
+    //   console.log('Step 4', data)
+    //   // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
+    //   const phoneNumbersOfGivenWabaId = []
+    //   data.map((a, b) => {
+    //     phoneNumbersOfGivenWabaId.push(a.display_phone_number)
+    //   })
+    //   return phoneNumberBasedOnWabaId(wabaIdOfClient, phoneNumbersOfGivenWabaId)
+    //   // wabaNumberThatNeedsToBeLinked = ''
+    // })
     // .then(data => {
     //   console.log('dta of data of datatata', data)
     //   // .then(wabaDetails => {
@@ -275,23 +264,15 @@ const controller = (req, res) => {
     //   //   wabaNumberThatNeedsToBeLinked = ''
     //   // })
     // })
-    .then(data => {
-      console.log('Step 5', data)
-      // there will always be only 1 phone number that will not be present in the db. since that number has not been onboarded yet
-      wabaNumberThatNeedsToBeLinked = data[0]
-      wabaNumberThatNeedsToBeLinked = '917666004488'
-      const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
-      phoneCode = obj.phoneCode
-      phoneNumber = obj.phoneNumber
-      // .then(wabaDetails => {
-      //   businessName = wabaDetails.name
-      //   // todo: get phone numbers linked to client's waba id
-      // })
-      // .then(data => {
-      //   // todo: make a db call to get the new onboarded number out of the list in "data". save the certificate
-      //   wabaNumberThatNeedsToBeLinked = ''
-      // })
-    })
+    // .then(data => {
+    //   console.log('Step 5', data)
+    //   // there will always be only 1 phone number that will not be present in the db. since that number has not been onboarded yet
+    //   wabaNumberThatNeedsToBeLinked = data[0]
+    //   wabaNumberThatNeedsToBeLinked = '917666004488'
+    //   const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
+    //   phoneCode = obj.phoneCode
+    //   phoneNumber = obj.phoneNumber
+    // })
     .then(data => {
       console.log('Step 6', data)
       // add system user to client's waba
@@ -368,26 +349,37 @@ const controller = (req, res) => {
       wabizurl = 'https://' + data.privateIp + `:${__config.wabizPort}`
       console.log('wabizurl', wabizurl)
       console.log('wabizPassword', wabizPassword)
-      // call login admin api and set the password (wabizPassword) of the admin of the container
+      // todo: call login admin api and set the password (wabizPassword) of the admin of the container
       const authInternalFunctionService = new AuthInternalFunctionService()
-      const username = 'admin'
-      const password = 'Pass@123' //! todo: it will be "secret"
-      return authInternalFunctionService.WabaLoginApi(username, password, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
+      return authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, __constants.WABIZ_DEFAULT_PASSWORD, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, false)
     })
     .then(data => {
+      apiKey = data.apiKey
       // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
+      return embeddedSignupService.requestCode(wabizurl, data.apiKey, phoneCode, phoneNumber, phoneCertificate)
     })
     .then(data => {
       // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
+      return embeddedSignupService.getSettings(wabizurl, apiKey)
     })
     .then(data => {
+      if (data && data.application && data.application.wa_id) {
+        // waba number successfully linked to the container
+        const tfaPin = '123456'
+        return embeddedSignupService.enableTwoStepVerification(wabizurl, apiKey, tfaPin)
+      } else {
+        // waba number not linked to container. please try again
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['waba number not linked to container. please try again'], data: {} })
+      }
+      // return data
       // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
     })
+    // /**
     .then(data => {
       // wabizusername will be "admin", wabizpassword => hardcoded,
       console.log('5555555555555555555555555555555555555555555555555555555', data)
       // set wabiz username, password, url, graphApiKey in our db
-      return updateWabizInformation('wabizusername', 'wabizpassword', 'wabizurl', __config.authorization, phoneNumber)
+      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, __config.authorization, phoneCode, phoneNumber)
     })
     .then(data => {
       // put status "accepted"
@@ -398,6 +390,7 @@ const controller = (req, res) => {
       console.log('66666666666666666666666666666666666666666666666666666', data)
       return updateProfileConfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.userId, __config.serviceProviderIdFb)
     })
+    //  */
     .then(data => {
       console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
@@ -406,6 +399,43 @@ const controller = (req, res) => {
     .catch(err => {
       __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+// const phoneNumberBasedOnWabaId = (wabaIdOfClient, phoneNumbersOfGivenWabaIds) => {
+//   const apiCall = q.defer()
+//   const userService = new UserService()
+//   const phoneNumbers = []
+//   phoneNumbersOfGivenWabaIds.map((a) => {
+//     if (a.charAt(0) === '+') {
+//       phoneNumbers.push(a.split(' ').join('').split('-').join('').substring(1))
+//     } else {
+//       phoneNumbers.push(a.split(' ').join('').split('-').join(''))
+//     }
+//   })
+//   userService.getPhoneNumbersFromWabaId(wabaIdOfClient)
+//     .then((data) => {
+//       if (phoneNumbers.length > 0) {
+//         data = phoneNumbers.filter(val => !data.includes(val))
+//       }
+//       apiCall.resolve(data)
+//     })
+//     .catch((err) => {
+//       console.log('err', err)
+//       apiCall.reject({ type: err.type, err: err })
+//     })
+
+//   return apiCall.promise
+// }
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) => {
+  const apicall = q.defer()
+  const userService = new UserService()
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber)
+    .then((data) => {
+      console.log('data from updateWabizInformation ', data)
+    }).catch((err) => {
+      console.log('err', err)
+      apicall.reject({ type: err.type, err: err })
     })
 }
 

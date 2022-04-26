@@ -36,7 +36,9 @@ class InternalFunctions {
         }
       })
       .then(updateRes => apiCalled.resolve(resolveObj))
-      .catch(err => apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return apiCalled.promise
   }
 }

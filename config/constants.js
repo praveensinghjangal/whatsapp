@@ -293,7 +293,10 @@ const FACEBOOK_ENDPOINTS = {
   verifyLineOfCredit: '/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
   subscribeAppToWaba: '/:wabaId/subscribed_apps',
   fetchAssignedUsersOfWaba: '/:wabaId/assigned_users?business=',
-  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers?fields=verified_name,code_verification_status,quality_rating,id,display_phone_number,certificate,name_status,new_certificate,new_name_status'
+  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers?fields=verified_name,code_verification_status,quality_rating,id,display_phone_number,certificate,name_status,new_certificate,new_name_status,status',
+  requestCode: '/v1/account',
+  getSettings: '/v1/settings/application',
+  enableTFA: '/v1/settings/account/two-step'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -517,6 +520,10 @@ const MIS_SCHEDULER_TIME = '00 30 08 * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
+const WABIZ_USERNAME = 'admin'
+// const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
+const WABIZ_DEFAULT_PASSWORD = 'secret'
+const WABIZ_CUSTOM_PASSWORD_LENGTH = 8
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -634,3 +641,6 @@ module.exports.MIS_SCHEDULER_TIME_CONVERSATION = MIS_SCHEDULER_TIME_CONVERSATION
 module.exports.UPDATE_PROFILE_CONFIGURE_DATA = UPDATE_PROFILE_CONFIGURE_DATA
 module.exports.FACEBOOK_MASTERDATA_ID = FACEBOOK_MASTERDATA_ID
 module.exports.MASTERDATA = MASTERDATA
+module.exports.WABIZ_USERNAME = WABIZ_USERNAME
+module.exports.WABIZ_DEFAULT_PASSWORD = WABIZ_DEFAULT_PASSWORD
+module.exports.WABIZ_CUSTOM_PASSWORD_LENGTH = WABIZ_CUSTOM_PASSWORD_LENGTH
