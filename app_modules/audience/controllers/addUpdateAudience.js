@@ -55,8 +55,8 @@ const addUpdateAudienceData = (req, res) => {
   if (!req.body.length) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.AUDIENCE_REQUIRED })
   }
-  const redisService = new RedisService()
-  redisService.getOptinTemplateId(req.user.wabaPhoneNumber, authToken)
+
+  ifIncomingThenGetTheOptinTemplateId(req.user.wabaPhoneNumber, authToken, req.body)
     .then(data => {
       if (data && data.optinTemplateId) {
         optinTemplateId = data.optinTemplateId
@@ -95,6 +95,19 @@ function processInBulkAndSendSuccessOptin (userId, newDataOfAudiences, mappingOf
       deferred.reject(err)
     })
   return deferred.promise
+}
+
+function ifIncomingThenGetTheOptinTemplateId (wabaPhoneNumber, authToken, body) {
+  if (body && body.length === 1 && body[0].isIncomingMessage) {
+    const getId = q.defer()
+    getId.resolve({
+      optinTemplateId: 'not null'
+    })
+    return getId.promise
+  } else {
+    const redisService = new RedisService()
+    return redisService.getOptinTemplateId(wabaPhoneNumber, authToken)
+  }
 }
 
 const getTemplateBodyForOptinMessage = (to, countryCode, from, templateId) => {
