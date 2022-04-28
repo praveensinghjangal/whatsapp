@@ -2,7 +2,7 @@
 const APP_NAME = 'helowhatsapp'
 const DB_NAME = 'helowhatsapp'
 const UPDATE_PROFILE_CONFIGURE_DATA = {
-  API_KEY: 'APIKEY@123',
+  // API_KEY: 'APIKEY@123',
   MAX_TPA_TO_PROVIDER: 15,
   TEMPLATESAllOWED: 2,
   TPS: 10
@@ -520,6 +520,7 @@ const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
 const WABIZ_USERNAME = 'admin'
 // const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
 const WABIZ_DEFAULT_PASSWORD = 'secret'
+// const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
 const WABIZ_CUSTOM_PASSWORD_LENGTH = 8
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')

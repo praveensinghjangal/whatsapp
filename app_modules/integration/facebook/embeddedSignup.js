@@ -311,13 +311,14 @@ class EmbeddedSignup {
       method: 'voice',
       cert: phoneCertificate
       // "pin": "<Two-Step Verification PIN"
+      // pin: '123456'
     }
     http.Post(body, 'body', url, headers, this.providerId)
       .then(data => {
         if (data && !(data.body.errors && data.body.errors.length)) {
           apiCall.resolve(data.body)
         } else {
-          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.body.errors] })
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.body.errors, 'request code'] })
         }
       })
       .catch(err => {
@@ -366,7 +367,7 @@ class EmbeddedSignup {
         if (data && !(data.body.errors && data.body.errors.length)) {
           apiCall.resolve(data.body)
         } else {
-          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.body.errors] })
+          apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.body.errors, '2fa'] })
         }
       })
       .catch(err => {
