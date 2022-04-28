@@ -1,6 +1,6 @@
 const getMaterData = () => {
   return `SELECT master_data_id as masterdDataId , platform_name as platFormName , business_id as businessId , system_user_id as systemUserId ,
-  system_user_token AS systemUserToken From master_data 
+  system_user_token AS systemUserToken, credit_line_id as creditLineId From master_data 
   WHERE master_data_id = ? and is_active = true`
 }
 

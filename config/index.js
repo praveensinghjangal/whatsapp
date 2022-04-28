@@ -322,12 +322,6 @@ module.exports = {
   supportTelegramChatId: process.env.SUPPORT_TELEGRAM_CHAT_ID,
   privateAuthTokens: process.env.PRIVATE_AUTH_TOKENS.split(',') || [],
   misEmailList: process.env.MIS_EMAIL_LIST ? process.env.MIS_EMAIL_LIST.split(',') : [],
-  authorization: process.env.AUTHORIZATION,
-  businessId: process.env.BUSINESS_ID,
-  facebookGraphApiUrl: process.env.FACEBOOK_GRAPH_API_URL,
-  systemUserIdBSP: process.env.SYSTEM_USER_ID_BSP,
-  creditLineIdBSP: process.env.CREDIT_LINE_ID_BSP,
   wabaCurrency: process.env.WABA_CURRENCY,
-  serviceProviderIdFb: process.env.SERVICE_PROVIDER_ID_FB,
   wabizPort: process.env.WABIZ_PORT
 }
