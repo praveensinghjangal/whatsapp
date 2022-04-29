@@ -390,26 +390,28 @@ const controller = (req, res) => {
       console.log('step 20')
       if (data && data.application && data.application.wa_id) {
         // waba number successfully linked to the container
-        // todo: do this after some time
-        return embeddedSignupService.enableTwoStepVerification(wabizurl, apiKey, tfaPin)
+        // put status "accepted"
+        return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
       } else {
         // waba number not linked to container. please try again
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['waba number not linked to container. please try again'], data: {} })
       }
       // return data
-      // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
     })
     // /**
-    .then(data => {
-      console.log('step 21')
-      // put status "accepted"
-      console.log('777777777777777777777777777777777777777777777777777', data)
-      return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.accepted.statusCode)
-    })
+    // .then(data => {
+    //   console.log('step 21')
+    //   console.log('777777777777777777777777777777777777777777777777777', data)
+    // })
     .then(data => {
       console.log('step 22')
       console.log('66666666666666666666666666666666666666666666666666666', data)
       return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.service_provider_id.facebook, apiKey)
+    })
+    .then(data => {
+      // todo: do this after some time
+      // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
+      return embeddedSignupService.enableTwoStepVerification(wabizurl, apiKey, tfaPin)
     })
     //  */
     .then(data => {
