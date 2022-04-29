@@ -14,6 +14,7 @@ const fs = require('fs')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const AuthInternalFunctionService = require('../../integration/facebook/authService').InternalFunctions
 const passwordGenerator = require('../../../lib/util/passwordGenerator')
+const redisFunction = require('../../../lib/commonFunction/redisFunction')
 
 /**
  * @namespace -Embedded-SignUp-Controller-
@@ -188,8 +189,7 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber) => {
 const controller = (req, res) => {
   __logger.info('Inside Sign up')
   const validate = new ValidatonService()
-  const systemUserIdBSP = __config.systemUserIdBSP
-  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate
+  let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP
   const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
   // const wabizPassword = 'Pass@123'
   let tfaPin = Math.floor(100000 + Math.random() * 900000) // this generates a random 6 digit number
@@ -197,15 +197,19 @@ const controller = (req, res) => {
   // tfaPin = '123456'
   const authTokenOfWhatsapp = req.headers.authorization
   let apiKey = ''
-  //   const userService = new UserService()
-  req.user.providerId = __config.serviceProviderIdFb
-  // req.user = { providerId: 'a4f03720-3a33-4b94-b88a-e10453492183', userId: '1234' }
-  const embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.user_id, __config.authorization)
+  req.user.providerId = __config.service_provider_id.facebook
+  let embeddedSignupService
   validate.embeddedSignup(req.body)
+    .then(validateData => {
+      return redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
+    })
     .then(valResponse => {
       console.log('Step 1', valResponse)
-      req.body.inputToken = 'EAAG0ZAQUaL3wBAGzZB1dcSgLcEL8L6lCxjiVSXhQRDNZAJrYVlrjvK2u4fsSO9RuI88r2AG7KjSrELakxR6AlqgfRiAVAUfPbcjAgLAiNw1XQOt6W9fHZA5rS46BZAdMMeKzHoxk20Qn0xYLRN9IVFPZCR4StSxh6t3tDze9989ZBL7QLk46EId0uikIj4LZBhZCzyhhIV6I7Pp3hOlpJVLPN'
-      // get the waba id of client's account using client's inputToken
+      businessId = valResponse.data.businessId
+      systemUserIdBSP = valResponse.data.systemUserId
+      systemUserToken = valResponse.data.systemUserToken
+      creditLineIdBSP = valResponse.data.creditLineId
+      embeddedSignupService = new integrationService.EmbeddedSignup(req.user.providerId, req.user.user_id, systemUserToken)
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
     .then(debugData => {
@@ -288,7 +292,7 @@ const controller = (req, res) => {
     .then(data => {
       console.log('Step 6', data)
       // todo: fetch assigned system users to waba
-      return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, 'wabaNumber')
+      return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, businessId, 'wabaNumber')
     })
     // .then(data => {
     //   //! dont do this. Put the id in env
@@ -297,18 +301,18 @@ const controller = (req, res) => {
     //   return embeddedSignupService.getBussinessIdLineOfCredit()
     // })
     .then(data => {
-      console.log('Step 7', data)
-      // todo: attach business credit line id to client's waba
-      return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient)
+      console.log('Step 8', data)
+      // attach business credit line id to client's waba
+      return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient, creditLineIdBSP)
     })
     .then(data => {
-      console.log('Step 8', data)
-      // todo: verify that the line of credit was shared correctly
+      console.log('Step 9', data)
+      // verify that the line of credit was shared correctly
       return embeddedSignupService.verifyLineOfCredit(data.allocation_config_id)
     })
     .then(data => {
       console.log('Step 10', data)
-      // todo: subscribe app to client's waba
+      // subscribe app to client's waba
       return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
     })
     // .then(data => {
@@ -362,14 +366,13 @@ const controller = (req, res) => {
       console.log('5555555555555555555555555555555555555555555555555555555', data)
       // todo: generate & set 2fa pin as well in db.
       // set wabiz username, password, url, graphApiKey in our db
-      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, __config.authorization, phoneCode, phoneNumber)
+      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, systemUserToken, phoneCode, phoneNumber)
     })
     .then(data => {
       console.log('step 17')
       // todo: call login admin api and set the password (wabizPassword) of the admin of the container
       const authInternalFunctionService = new AuthInternalFunctionService()
-      // save the api token in this api call only. Remove the if else condition on new password
-      return authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, __constants.WABIZ_DEFAULT_PASSWORD, wabizPassword, wabizurl, __config.authorization, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, true)
+      return authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, __constants.WABIZ_DEFAULT_PASSWORD, wabizPassword, wabizurl, systemUserToken, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, true)
     })
     .then(data => {
       console.log('step 18')
@@ -406,7 +409,7 @@ const controller = (req, res) => {
     .then(data => {
       console.log('step 22')
       console.log('66666666666666666666666666666666666666666666666666666', data)
-      return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.serviceProviderIdFb, apiKey)
+      return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.service_provider_id.facebook, apiKey)
     })
     //  */
     .then(data => {

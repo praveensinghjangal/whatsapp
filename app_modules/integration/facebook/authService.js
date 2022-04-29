@@ -35,7 +35,9 @@ class InternalFunctions {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: { } })
         }
       })
-      .then(updateRes => apiCalled.resolve(resolveObj))
+      .then(updateRes => {
+        apiCalled.resolve(resolveObj)
+      })
       .catch(err => {
         apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })

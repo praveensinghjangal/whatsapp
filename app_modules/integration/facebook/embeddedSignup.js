@@ -6,6 +6,7 @@ const AuthService = require('./authService').Authentication
 // const __logger = require('../../../lib/logger')
 // const qalllib = require('qalllib')
 // const _ = require('lodash')
+const UserService = require('../../user/services/dbData')
 
 const getAuthorizationToken = (userId, authorizationToken, wabaNumber) => {
   const getToken = q.defer()
@@ -33,6 +34,7 @@ class EmbeddedSignup {
   getWabaOfClient (inputToken, wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
+    const userService = new UserService()
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
         const url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.debugToken}${inputToken}`
@@ -51,18 +53,19 @@ class EmbeddedSignup {
         }
       })
       .catch(err => {
+        userService.sendMessageToSupport(err)
         apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiCall.promise
   }
 
-  getBSPsSystemUserIds (wabaNumber) {
+  getBSPsSystemUserIds (wabaNumber, businessId) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
         let url = `${__constants.FACEBOOK_ENDPOINTS.getBSPsSystemUserIds}`
-        url = url.split('{{Business-ID}}').join(__config.businessId)
+        url = url.split('{{Business-ID}}').join(businessId)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
@@ -135,14 +138,14 @@ class EmbeddedSignup {
     return apiCall.promise
   }
 
-  getBussinessIdLineOfCredit () {
+  getBussinessIdLineOfCredit (businessId) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     const wabaNumber = 'wabaNumber'
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
         let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.getBussinessIdLineOfCredit}`
-        url = url.split('{{Business-ID}}').join(__config.businessId)
+        url = url.split('{{Business-ID}}').join(businessId)
         return http.Get(url, { Authorization: `Bearer ${token}` }, this.providerId)
       })
       .then(data => {
@@ -187,14 +190,14 @@ class EmbeddedSignup {
     return apiCall.promise
   }
 
-  attachCreditLineClientWaba (assignedWabaId) {
+  attachCreditLineClientWaba (assignedWabaId, creditLineId) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     const wabaNumber = 'wabaNumber'
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
         let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.attachCreditLineClientWaba}`
-        url = url.split('{{Credit-Line-ID}}').join(__config.creditLineIdBSP)
+        url = url.split('{{Credit-Line-ID}}').join(creditLineId)
         url = url.split('{{Assigned-WABA-ID}}').join(assignedWabaId)
         url = url.split('{{WABA-Currency}}').join(__config.wabaCurrency)
         const headers = {
@@ -218,12 +221,12 @@ class EmbeddedSignup {
   }
 
   //
-  fetchAssignedUsersOfWaba (wabaId, wabaNumber) {
+  fetchAssignedUsersOfWaba (wabaId, businessId, wabaNumber) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
-        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.fetchAssignedUsersOfWaba}${__config.businessId}`
+        let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.fetchAssignedUsersOfWaba}${businessId}`
         url = url.split(':wabaId').join(wabaId || '')
         const headers = {
           'Content-Type': 'application/json',

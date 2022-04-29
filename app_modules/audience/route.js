@@ -27,17 +27,17 @@ const addUpdateOptinController = require('./controllers/addUpdateOptinSourceMast
 const addUpdateWabaNoMapping = require('./controllers/addUpdateWabaNoMapping')
 
 // demo of embedded system
-const embeddedSignUp = require('../audience/controllers/embeddedSingup')
+// const embeddedSignUp = require('../audience/controllers/embeddedSingup')
 
 // Routes
 
 // Audience
 
 // demo for embedded signup
-router.get('/embeddedSignUp', embeddedSignUp.embeddedSignUp)
-router.get('/getbussinessidlineofcredit', embeddedSignUp.getBussinessIdLineOfCredit)
-router.post('/attachcreditlineclient', embeddedSignUp.attachCreditLineClientWaba)
-router.get('/verifylineofcredit', embeddedSignUp.verifyLineOfCredit)
+// router.get('/embeddedSignUp', embeddedSignUp.embeddedSignUp)
+// router.get('/getbussinessidlineofcredit', embeddedSignUp.getBussinessIdLineOfCredit)
+// router.post('/attachcreditlineclient', embeddedSignUp.attachCreditLineClientWaba)
+// router.get('/verifylineofcredit', embeddedSignUp.verifyLineOfCredit)
 
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateAudienceController.addUpdateAudienceData)
 router.post('/optin', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateAudienceController.markOptinByPhoneNumberAndAddOptinSource)

@@ -689,6 +689,22 @@ class UserData {
       })
     return apiCall.promise
   }
+
+  sendMessageToSupport (errorMessage) {
+    const supportEmails = q.defer()
+    const agreementStatusService = new AgreementStatusEngine()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [])
+      .then(emails => {
+        return agreementStatusService.sendEmailsToSupports(emails, errorMessage)
+      })
+      .then(result => {
+        supportEmails.resolve(result)
+      })
+      .catch(err => {
+        supportEmails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return supportEmails.promise
+  }
 }
 
 module.exports = UserData
