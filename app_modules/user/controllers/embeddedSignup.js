@@ -191,20 +191,19 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP
   const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
-  // const wabizPassword = 'Pass@123'
   let tfaPin = Math.floor(100000 + Math.random() * 900000) // this generates a random 6 digit number
   tfaPin = tfaPin.toString()
-  // tfaPin = '123456'
   const authTokenOfWhatsapp = req.headers.authorization
   let apiKey = ''
   req.user.providerId = __config.service_provider_id.facebook
   let embeddedSignupService
   validate.embeddedSignup(req.body)
     .then(validateData => {
+      console.log('11111111111111111111111111111111111111111111111111111111', validateData)
       return redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
     })
     .then(valResponse => {
-      console.log('Step 1', valResponse)
+      console.log('22222222222222222222222222222222222222222222222222222222', valResponse)
       businessId = valResponse.data.businessId
       systemUserIdBSP = valResponse.data.systemUserId
       systemUserToken = valResponse.data.systemUserToken
@@ -213,7 +212,7 @@ const controller = (req, res) => {
       return embeddedSignupService.getWabaOfClient(req.body.inputToken, 'wabaNumber')
     })
     .then(debugData => {
-      console.log('Step 2', debugData)
+      console.log('33333333333333333333333333333333333333333333333333333333', debugData)
       const granularScopes = debugData.granular_scopes
       // todo: check if there's no issue in getting the 0th element of business ids and whatsapp business ids
       const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
@@ -226,13 +225,13 @@ const controller = (req, res) => {
       return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(wabaDetails => {
-      console.log('Step 3', wabaDetails)
+      console.log('44444444444444444444444444444444444444444444444444444444', wabaDetails)
       businessName = wabaDetails.name
       // get phone numbers linked to client's waba id
       return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      console.log('Step 4', data)
+      console.log('55555555555555555555555555555555555555555555555555555555', data)
       if (data && data.length && data[0].certificate) {
         const phoneObj = data[0]
         wabaNumberThatNeedsToBeLinked = phoneObj.display_phone_number
@@ -285,12 +284,12 @@ const controller = (req, res) => {
     //   phoneNumber = obj.phoneNumber
     // })
     .then(data => {
-      console.log('Step 5', data)
+      console.log('66666666666666666666666666666666666666666666666666666666666', data)
       // add system user to client's waba
       return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
     })
     .then(data => {
-      console.log('Step 6', data)
+      console.log('77777777777777777777777777777777777777777777777777777777777', data)
       // todo: fetch assigned system users to waba
       return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, businessId, 'wabaNumber')
     })
@@ -301,17 +300,17 @@ const controller = (req, res) => {
     //   return embeddedSignupService.getBussinessIdLineOfCredit()
     // })
     .then(data => {
-      console.log('Step 8', data)
+      console.log('888888888888888888888888888888888888888888888888888888888888', data)
       // attach business credit line id to client's waba
       return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient, creditLineIdBSP)
     })
     .then(data => {
-      console.log('Step 9', data)
+      console.log('999999999999999999999999999999999999999999999999999999999999', data)
       // verify that the line of credit was shared correctly
       return embeddedSignupService.verifyLineOfCredit(data.allocation_config_id)
     })
     .then(data => {
-      console.log('Step 10', data)
+      console.log('101010101010101010101010101010101010101010101010101010101010', data)
       // subscribe app to client's waba
       return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
     })
@@ -335,59 +334,58 @@ const controller = (req, res) => {
     //   // Waba config => 1. PATCH /profile/configure
     // })
     .then(data => {
-      console.log('step 11', data)
+      console.log('11111111111111111111111111111111111111111111111111111', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
       return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
     })
     .then(data => {
-      console.log('step 12', data)
+      console.log('121212121212121212121212121212121212121212121212121212', data)
       return markManagerVerified(authTokenOfWhatsapp)
     })
     .then(data => {
-      console.log('step 13', data)
+      console.log('13131313131313131313131313131313131313131313131313131313', data)
       return sendBusinessForApproval(authTokenOfWhatsapp, req.user.providerId)
     })
     .then(data => {
-      console.log('step 14', data)
+      console.log('1414141414141414141414141414141414141414141414141414141414', data)
       // put status "pending for approval"
       return setProfileStatus(authTokenOfWhatsapp, req.user.user_id, req.user.providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
     })
     .then(data => {
-      console.log('step 15')
+      console.log('15151515151515151515151515151515151515151515151515151515115', data)
       // todo: spawn new containers. We will get wabiz username, password, url, graphApiKey. We will get wabizurl after running the bash script
       return runScriptToSpawnContainersAndGetTheIP(req.user.user_id, phoneCode + phoneNumber)
     })
     .then(data => {
-      console.log('step 16')
+      console.log('1616161616161616161616161616161616161616161616161616161616161616', data)
       wabizurl = 'https://' + data.privateIp + `:${__config.wabizPort}`
       console.log('wabizurl', wabizurl)
       console.log('wabizPassword', wabizPassword)
       // wabizusername will be "admin", wabizpassword => hardcoded,
-      console.log('5555555555555555555555555555555555555555555555555555555', data)
       // todo: generate & set 2fa pin as well in db.
       // set wabiz username, password, url, graphApiKey in our db
-      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, systemUserToken, phoneCode, phoneNumber)
+      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, systemUserToken, phoneCode, phoneNumber, tfaPin)
     })
     .then(data => {
-      console.log('step 17')
+      console.log('171717171717171717171717171717171717171717171717171717171717', data)
       // todo: call login admin api and set the password (wabizPassword) of the admin of the container
       const authInternalFunctionService = new AuthInternalFunctionService()
       return authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, __constants.WABIZ_DEFAULT_PASSWORD, wabizPassword, wabizurl, systemUserToken, wabaIdOfClient, phoneCode + phoneNumber, req.user.user_id, true)
     })
     .then(data => {
-      console.log('step 18')
+      console.log('18181818181818181818181818181818181818181818181818181818118', data)
       apiKey = data.apiKey
       // todo: if we are running this piece of code after 2tfa is set, we will need to pass 2tfa pin as well
       // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
       return embeddedSignupService.requestCode(wabizurl, data.apiKey, phoneCode, phoneNumber, phoneCertificate)
     })
     .then(data => {
-      console.log('step 19')
+      console.log('19191919191919191919191919191919191919191919191919191919', data)
       // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
       return embeddedSignupService.getSettings(wabizurl, apiKey)
     })
     .then(data => {
-      console.log('step 20')
+      console.log('202020202020202020202020202020202020202020202020202020', data)
       if (data && data.application && data.application.wa_id) {
         // waba number successfully linked to the container
         // put status "accepted"
@@ -404,20 +402,32 @@ const controller = (req, res) => {
     //   console.log('777777777777777777777777777777777777777777777777777', data)
     // })
     .then(data => {
-      console.log('step 22')
-      console.log('66666666666666666666666666666666666666666666666666666', data)
+      console.log('212121212121212121212121212121212121212121212121212121212121', data)
       return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, req.user.user_id, __config.service_provider_id.facebook, apiKey)
     })
     .then(data => {
+      console.log('222222222222222222222222222222222222222222222222222222222222', data)
       // todo: do this after some time
       // todo: Now for verified tick mark, enable 2 step verification by setting the pin ( //! Pin will be hardcoded ? ) (to change container of old nummber => pin will be reqiuried in futuire)
       return embeddedSignupService.enableTwoStepVerification(wabizurl, apiKey, tfaPin)
     })
     //  */
     .then(data => {
-      console.log('77777777777777777777777777777777777777777777777777777', data)
+      console.log('232323232323232323232323232323232323232323232323232323232323', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .then(data => {
+      console.log('2424242424242424242424242424242424242424242424242424242424')
+      return redisFunction.deleteMasterDataInRedis(wabaNumberThatNeedsToBeLinked)
+    })
+    .then(data => {
+      console.log('2525252525252525252525252525252525252525252525252525', data)
+      return redisFunction.deletetokenkeyMasterDataInRedis(wabaNumberThatNeedsToBeLinked)
+    })
+    .then(data => {
+      console.log('2626262626262626262626262626262626262626262626262626', data)
+      return redisFunction.deletetokenkeyMasterDataInRedis(wabaNumberThatNeedsToBeLinked)
     })
     .catch(err => {
       __logger.error('error: ', err)
@@ -450,10 +460,10 @@ const controller = (req, res) => {
 
 //   return apiCall.promise
 // }
-const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) => {
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber, tfaPin) => {
   const apicall = q.defer()
   const userService = new UserService()
-  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber)
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber, tfaPin)
     .then((data) => {
       console.log('data from updateWabizInformation ', data)
     }).catch((err) => {
