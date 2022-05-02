@@ -36,7 +36,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
   } else if (messageDataFromFacebook.messages[0].image || messageDataFromFacebook.messages[0].voice || messageDataFromFacebook.messages[0].video || messageDataFromFacebook.messages[0].sticker) {
-    // image, voice, video, sticker
+    // image, voice, video, sticker,interactive-list
     messageData.content = {
       media: {
         url: '',
@@ -47,7 +47,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.media
     }
   } else if (messageDataFromFacebook.messages[0].document) {
-    // document
+    // body for document
     messageData.content = {
       media: {
         url: '',
@@ -58,7 +58,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.media
     }
   } else if (messageDataFromFacebook.messages[0].contacts) {
-    // contacts
+    // body for contacts
     if (messageDataFromFacebook.messages[0].contacts.phones && messageDataFromFacebook.messages[0].contacts.phones.length) {
       messageDataFromFacebook.messages[0].contacts.phones = messageDataFromFacebook.messages[0].contacts.phones.map(phoneObj => {
         return {
@@ -88,7 +88,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.contacts
     }
   } else if (messageDataFromFacebook.messages[0].location) {
-    // location
+    // body for location
     messageData.content = {
       location: {
         latitude: messageDataFromFacebook.messages[0].location.latitude || null,
@@ -97,16 +97,19 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.location
     }
   } else if (messageDataFromFacebook.messages[0].button) {
+    // creates body for button
     messageData.content = {
       text: messageDataFromFacebook.messages[0].button.text || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
+    // creates body for interactive button_reply title
     messageData.content = {
       text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.list_reply && messageDataFromFacebook.messages[0].interactive.list_reply.id) {
+    // for interactive list
     messageData.content = {
       text: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
