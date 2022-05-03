@@ -142,7 +142,9 @@ const MQ = {
   webhookHeloCampaign: { type: 'queue', q_name: 'webhook_helo_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   audience_webhook: { type: 'queue', q_name: 'audience_webhook', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  demoQueue: { type: 'queue', q_name: 'demoQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  demo_queue_10_sec: { type: 'queue', q_name: 'demo_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'demoQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5,
