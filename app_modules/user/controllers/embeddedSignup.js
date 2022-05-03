@@ -415,6 +415,9 @@ const controller = (req, res) => {
     })
     //  */
     .then(data => {
+      return redisFunction.deleteWabaNumberRedisData(phoneCode + phoneNumber, __config.service_provider_id.facebook, req.user.user_id)
+    })
+    .then(data => {
       console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
