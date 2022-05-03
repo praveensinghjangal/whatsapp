@@ -193,7 +193,7 @@ const controller = (req, res) => {
   const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
   // const wabizPassword = 'Pass@123'
   let tfaPin = Math.floor(100000 + Math.random() * 900000) // this generates a random 6 digit number
-  tfaPin = tfaPin.toString()
+  tfaPin = tfaPin.toString() // todo: do this during update wabiz
   // tfaPin = '123456'
   const authTokenOfWhatsapp = req.headers.authorization
   let apiKey = ''

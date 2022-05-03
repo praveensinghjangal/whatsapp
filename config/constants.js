@@ -361,19 +361,22 @@ const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
   [TEMPLATE_STATUS.denied.statusCode]: TEMPLATE_STATUS.pending.statusCode
 }
 const WABA_PROFILE_STATUS = {
+  // wabaSetup: { statusCode: '5a3cb0f2-cab2-11ec-9d64-0242ac120002', displayName: 'Waba Setup' },
   profileIncomplete: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c9b', displayName: 'Profile Incomplete' },
   pendingForSubmission: { statusCode: 'fdfcce74-81a3-4d41-b526-212d256f9a20', displayName: 'Pending For Submission' },
   submitted: { statusCode: '91b6a637-11bb-4f35-ace7-41e959c8fbb7', displayName: 'Submitted' },
   pendingForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' },
+  containerSpawned: { statusCode: '8c8cab06-cab3-11ec-9d64-0242ac120002', displayName: 'Container Spawned' },
   rejected: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c7a', displayName: 'Rejected' },
   accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' }
 }
 const CHAT_APP_BASE_PATH = '/helowhatsappchat/api'
 const WABA_STATUS_MAPPING = {
-  [WABA_PROFILE_STATUS.profileIncomplete.statusCode]: [WABA_PROFILE_STATUS.pendingForSubmission.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
+  // [WABA_PROFILE_STATUS.profileIncomplete.wabaSetup]: [WABA_PROFILE_STATUS.pendingForSubmission.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
   [WABA_PROFILE_STATUS.pendingForSubmission.statusCode]: [WABA_PROFILE_STATUS.submitted.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
   [WABA_PROFILE_STATUS.submitted.statusCode]: [WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.pendingForApproval.statusCode],
-  [WABA_PROFILE_STATUS.pendingForApproval.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode],
+  [WABA_PROFILE_STATUS.pendingForApproval.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.containerSpawned.statusCode], // remove accepted & rejected
+  [WABA_PROFILE_STATUS.containerSpawned.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode],
   [WABA_PROFILE_STATUS.rejected.statusCode]: [WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
   [WABA_PROFILE_STATUS.accepted.statusCode]: []
 }
