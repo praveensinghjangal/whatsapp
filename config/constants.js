@@ -144,7 +144,18 @@ const MQ = {
   audience_webhook: { type: 'queue', q_name: 'audience_webhook', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   demoQueue: { type: 'queue', q_name: 'demoQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  demo_queue_10_sec: { type: 'queue', q_name: 'demo_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'demoQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  demo_queue_10_sec: { type: 'queue', q_name: 'demo_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'demoQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaSetUpConsumerQueue: { type: 'queue', q_name: 'wabaSetUpConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaSetUpConsumer_queue_10_sec: { type: 'queue', q_name: 'wabaSetUpConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaSetUpConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  bussinessDetailsConsumerQueue: { type: 'queue', q_name: 'bussinessDetailsConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  bussinessDetailsConsumer_queue_10_sec: { type: 'queue', q_name: 'bussinessDetailsConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'bussinessDetailsConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  spawningContainerConsumerQueue: { type: 'queue', q_name: 'spawningContainerConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  spawningContainerConsumer_queue_10_sec: { type: 'queue', q_name: 'spawningContainerConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'spawningContainerConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumerQueue: { type: 'queue', q_name: 'wabaContainerBindingConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumer_queue_10_sec: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  embeddedSingupErrorConsumerQueue: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  embeddedSingupErrorConsumer_queue_10_sec: { type: 'queue', q_name: 'embeddedSingupErrorConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'embeddedSingupErrorConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5,
