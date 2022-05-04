@@ -671,10 +671,10 @@ class UserData {
     return userDetails.promise
   }
 
-  updateWabizInformation (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) {
+  updateWabizInformation (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber, tfaPin) {
     __logger.info('updateWabizInformation>>>>>>>>>>>>>')
     const apiCall = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizInformation(), [wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizInformation(), [wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber, tfaPin])
       .then(result => {
         __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {

@@ -23,7 +23,13 @@ const SERVER_SCRIPTS = {
   processCountScheduler: './workers/schedulers/processCounts',
   misScheduler: './workers/schedulers/mis',
   misSchedulerConversation: './workers/schedulers/misOfConversation',
-  audienceWebhook: './workers/message_consumers/audienceWebhook.js'
+  audienceWebhook: './workers/message_consumers/audienceWebhook.js',
+  demoWorker: './workers/embedded_signup_consumers/dummy_consumer.js',
+  wabaSetUpConsumer: './workers/embedded_signup_consumers/wabaSetUpConsumer.js',
+  bussinessDetailsConsumer: './workers/embedded_signup_consumers/bussinessDetailsConsumer.js',
+  spawningContainerConsumer: './workers/embedded_signup_consumers/spawningContainerConsumer.js',
+  wabaContainerBindingConsumer: './workers/embedded_signup_consumers/wabaContainerBindingConsumer.js',
+  embeddedSingupErrorConsumer: './workers/embedded_signup_consumers/embeddedSingupErrorConsumer.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {
