@@ -379,7 +379,7 @@ const WABA_PROFILE_STATUS = {
   pendingForSubmission: { statusCode: 'fdfcce74-81a3-4d41-b526-212d256f9a20', displayName: 'Pending For Submission' },
   submitted: { statusCode: '91b6a637-11bb-4f35-ace7-41e959c8fbb7', displayName: 'Submitted' },
   pendingForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' },
-  containerSpawned: { statusCode: '8c8cab06-cab3-11ec-9d64-0242ac120002', displayName: 'Container Spawned' },
+  containerSpawned: { statusCode: '8c8cab06-cab3-11ec-9d64-0242ac120002', displayName: 'In progress' },
   rejected: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c7a', displayName: 'Rejected' },
   accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' }
 }
