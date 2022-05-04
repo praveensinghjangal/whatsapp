@@ -402,7 +402,7 @@ const getPhoneNumbersFromWabaId = () => {
 }
 
 const updateWabizInformation = () => {
-  return `update waba_information set wabiz_username=?,wabiz_password=?,wabiz_base_url=?,graph_api_key=?,tfa_pin=?,updated_on=now()
+  return `update waba_information set wabiz_username=?,wabiz_password=?,wabiz_base_url=?,graph_api_key=?,updated_on=now()
   where phone_code = ? and phone_number=? and is_active=true`
 }
 
