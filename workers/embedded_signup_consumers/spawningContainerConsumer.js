@@ -7,6 +7,7 @@ const q = require('q')
 const shell = require('shelljs')
 const fs = require('fs')
 const { setProfileStatus } = require('../../lib/commonFunction/commonFunctions')
+const passwordGenerator = require('../../lib/util/passwordGenerator')
 
 const sendToSpawningContainer10secQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -81,7 +82,9 @@ class SpawningContainerConsumer {
           try {
             let wabizurl
             const wabasetUpData = JSON.parse(mqData.content.toString())
-            const { userId, providerId, phoneCode, phoneNumber, wabizPassword, systemUserToken, privateIp, authTokenOfWhatsapp } = wabasetUpData
+            const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
+            const { userId, providerId, phoneCode, phoneNumber, systemUserToken, privateIp, authTokenOfWhatsapp } = wabasetUpData
+            // required fields: userId, providerId, phoneCode, phoneNumber, systemUserToken, authTokenOfWhatsapp
             console.log('messageData===========', wabasetUpData)
             const retryCount = wabasetUpData.retryCount || 0
             console.log('retry count: ', retryCount)
