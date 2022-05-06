@@ -6,6 +6,7 @@ const UserService = require('../../app_modules/user/services/dbData')
 const q = require('q')
 const shell = require('shelljs')
 const fs = require('fs')
+const { setProfileStatus } = require('../../lib/commonFunction/commonFunctions')
 
 const sendToSpawningContainer10secQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -68,12 +69,19 @@ class SpawningContainerConsumer {
     const queue = __constants.MQ.spawningContainerConsumerQueue.q_name
     __db.init()
       .then(result => {
+        // {
+        //   "userId": "5d28169c-767c-44ee-bfcf-8e9955adb9ce",
+        //   "providerId": "a4f03720-3a33-4b94-b88a-e10453492183",
+        //   "phoneCode": "91",
+        //   "phoneNumber": "8097353703",
+        //   "authTokenOfWhatsapp": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiI1ZDI4MTY5Yy03NjdjLTQ0ZWUtYmZjZi04ZTk5NTVhZGI5Y2UiLCJwcm92aWRlcklkIjoiYTRmMDM3MjAtM2EzMy00Yjk0LWI4OGEtZTEwNDUzNDkyMTgzIiwid2FiYVBob25lTnVtYmVyIjoiOTE4MTY5OTc5MzAyIiwibWF4VHBzVG9Qcm92aWRlciI6MTV9LCJpYXQiOjE2NTE4MTcyNDksImV4cCI6MTY1MTkwMzY0OX0.KbTCqGu4rxfY5pdPmswoxBOcrpa4ouVCW9Je-59AV2M"
+        // }
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             let wabizurl
             const wabasetUpData = JSON.parse(mqData.content.toString())
-            const { userId, phoneCode, phoneNumber, wabizPassword, systemUserToken, privateIp } = wabasetUpData
+            const { userId, providerId, phoneCode, phoneNumber, wabizPassword, systemUserToken, privateIp, authTokenOfWhatsapp } = wabasetUpData
             console.log('messageData===========', wabasetUpData)
             const retryCount = wabasetUpData.retryCount || 0
             console.log('retry count: ', retryCount)
@@ -81,6 +89,7 @@ class SpawningContainerConsumer {
             runScriptToSpawnContainersAndGetTheIP(userId, phoneCode + phoneNumber, privateIp)
               .then(data => {
                 console.log('spawned container response: ', data)
+                wabasetUpData.privateIp = data.privateIp
                 wabizurl = 'https://' + data.privateIp + `:${__config.wabizPort}`
                 console.log('wabizurl', wabizurl)
                 console.log('wabizPassword', wabizPassword)
@@ -88,6 +97,10 @@ class SpawningContainerConsumer {
                 // todo: generate & set 2fa pin as well in db.
                 // set wabiz username, password, url, graphApiKey in our db
                 return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, systemUserToken, phoneCode, phoneNumber, data.privateIp)
+              })
+              .then(data => {
+                // set status to container spawned
+                return setProfileStatus(authTokenOfWhatsapp, userId, providerId, __constants.WABA_PROFILE_STATUS.containerSpawned.statusCode)
               })
               // .then(data => {
               //   return getData()
@@ -100,13 +113,15 @@ class SpawningContainerConsumer {
               .catch(err => {
                 console.log('err', err)
                 // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
+                // todo: check for expiry of authTokenOfWhatsapp
                 if (retryCount < 2) {
-                  const oldObj = JSON.parse(mqData.content.toString())
-                  oldObj.retryCount = retryCount + 1
+                  // const oldObj = JSON.parse(mqData.content.toString())
+                  wabasetUpData.retryCount = retryCount + 1
+                  // oldObj.retryCount = retryCount + 1
                   // __logger.info('requeing --->', oldObj)
-                  sendToSpawningContainer10secQueue(oldObj, rmqObject)
+                  sendToSpawningContainer10secQueue(wabasetUpData, rmqObject)
                 } else {
-                  console.log('send to error queue')
+                  console.log('send to error queue', err)
                 }
                 // }
                 rmqObject.channel[queue].ack(mqData)
