@@ -153,6 +153,8 @@ const MQ = {
   spawningContainerConsumer_queue_10_sec: { type: 'queue', q_name: 'spawningContainerConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'spawningContainerConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   wabaContainerBindingConsumerQueue: { type: 'queue', q_name: 'wabaContainerBindingConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   wabaContainerBindingConsumer_queue_10_sec: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  twoFaConsumerQueue: { type: 'queue', q_name: 'twoFaConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  twoFaConsumer_queue_10_sec: { type: 'queue', q_name: 'twoFaConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'twoFaConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   embeddedSingupErrorConsumerQueue: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   embeddedSingupErrorConsumer_queue_10_sec: { type: 'queue', q_name: 'embeddedSingupErrorConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'embeddedSingupErrorConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 

@@ -29,7 +29,8 @@ const SERVER_SCRIPTS = {
   bussinessDetailsConsumer: './workers/embedded_signup_consumers/bussinessDetailsConsumer.js',
   spawningContainerConsumer: './workers/embedded_signup_consumers/spawningContainerConsumer.js',
   wabaContainerBindingConsumer: './workers/embedded_signup_consumers/wabaContainerBindingConsumer.js',
-  embeddedSingupErrorConsumer: './workers/embedded_signup_consumers/embeddedSingupErrorConsumer.js'
+  embeddedSingupErrorConsumer: './workers/embedded_signup_consumers/embeddedSingupErrorConsumer.js',
+  twoFaConsumer: './workers/embedded_signup_consumers/embeddedSingupErrorConsumer.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

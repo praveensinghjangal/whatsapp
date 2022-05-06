@@ -1,7 +1,15 @@
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
+const _ = require('lodash')
 const q = require('q')
+const HttpService = require('../../lib/http_service')
+const __config = require('../../config')
+const redisFunction = require('../../lib/commonFunction/redisFunction')
+const integrationService = require('../../app_modules/integration')
+// const UserService = require('../../app_modules/user/services/dbData')
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
+const rejectionHandler = require('../../lib/util/rejectionHandler')
 
 const sendToWabaSetup10secQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -10,7 +18,33 @@ const sendToWabaSetup10secQueue = (message, queueObj) => {
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise
 }
-
+const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp) => {
+  const getAccessInfo = q.defer()
+  const http = new HttpService(60000)
+  const headers = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+    Authorization: authTokenOfWhatsapp
+  }
+  const body = {
+    associatedWithIvr: false,
+    businessName: businessName,
+    canReceiveSms: true,
+    canReceiveVoiceCall: true,
+    facebookManagerId: wabaIdOfClient,
+    phoneCode: phoneCode,
+    phoneNumber: phoneNumber
+  }
+  http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.accessInformation, headers)
+    .then(data => {
+      getAccessInfo.resolve(data)
+    })
+    .catch(err => {
+      console.log('1111111111111111111111111111111111111111111111', err)
+      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+    })
+  return getAccessInfo.promise
+}
 class WabaSetupConsumer {
   startServer () {
     const queue = __constants.MQ.wabaSetUpConsumerQueue.q_name
@@ -20,40 +54,133 @@ class WabaSetupConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const wabasetUpData = JSON.parse(mqData.content.toString())
-            console.log('messageData===========', wabasetUpData)
+            const { userId, providerId, inputToken, authTokenOfWhatsapp } = wabasetUpData
+            console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
+            console.log('2222222222222222222222', authTokenOfWhatsapp)
+            console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
+            let wabaIdOfClient, businessIdOfClient, businessName, phoneCode, phoneNumber, phoneCertificate, wabaNumberThatNeedsToBeLinked, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP, embeddedSignupService, send
             const retryCount = wabasetUpData.retryCount || 0
-            console.log('retry count: ', retryCount)
-            getData()
-              .then(response => {
+            redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
+              .then(valResponse => {
+                console.log('getMasterRedisDataStatusById-data', valResponse)
+                businessId = valResponse.data.businessId
+                systemUserIdBSP = valResponse.data.systemUserId
+                systemUserToken = valResponse.data.systemUserToken
+                creditLineIdBSP = valResponse.data.creditLineId
+                embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
+                return embeddedSignupService.getWabaOfClient(inputToken, 'wabaNumber')
+              })
+              .then(debugData => {
+                console.log('getWabaOfClient-data', debugData)
+                const granularScopes = debugData.granular_scopes
+                const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
+                wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
+                const businessManagement = _.find(granularScopes, { scope: 'business_management' })
+                if (businessManagement) {
+                  businessIdOfClient = businessManagement.target_ids[0]
+                }
+                return embeddedSignupService.getWabaDetailsByWabaId(wabaIdOfClient, 'wabaNumber')
+              })
+              .then(wabaDetails => {
+                console.log('getWabaDetailsByWabaId-data', wabaDetails)
+                businessName = wabaDetails.name
+                // get phone numbers linked to client's waba id
+                return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
+              })
+              .then(data => {
+                console.log('55555555555555555555555555555555555555555555555555555555', data)
+                if (data && data.length && data[0].certificate && data.length > 100) {
+                  const phoneObj = data[0]
+                  wabaNumberThatNeedsToBeLinked = phoneObj.display_phone_number
+                  wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.replace(/ /g, '') // removes white spaces from string
+                  if (wabaNumberThatNeedsToBeLinked.charAt(0) === '+') {
+                    wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('').substring(1)
+                  } else {
+                    wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('')
+                  }
+                  const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
+                  phoneCode = obj.phoneCode
+                  // phoneCode = '91'
+                  // phoneNumber = obj.phoneNumber
+                  phoneNumber = obj.phoneNumber
+                  // phoneNumber = '7666004488'
+                  phoneCertificate = phoneObj.certificate
+                  // wabaNumberThatNeedsToBeLinked = '917666004488'
+                  return wabaNumberThatNeedsToBeLinked
+                } else {
+                  return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['Phone number not reflected/ not verified. Please try again after some time.'] })
+                }
+              })
+              .then(data => {
+                console.log('getPhoneNumberOfWabaId-data', data)
+                // add system user to client's waba
+                return embeddedSignupService.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, 'wabaNumber')
+              })
+              .then(data => {
+                // todo: fetch assigned system users to waba
+                console.log('addSystemUserToWabaOfClient-data', data)
+                return embeddedSignupService.fetchAssignedUsersOfWaba(wabaIdOfClient, businessId, 'wabaNumber')
+              })
+              .then(data => {
+                console.log('fetchAssignedUsersOfWaba-data', data)
+                // attach business credit line id to client's waba
+                return embeddedSignupService.attachCreditLineClientWaba(wabaIdOfClient, creditLineIdBSP)
+              })
+              .then(data => {
+                console.log('attachCreditLineClientWaba-data', data)
+                // verify that the line of credit was shared correctly
+                return embeddedSignupService.verifyLineOfCredit(data.allocation_config_id)
+              })
+              .then(data => {
+                console.log('verifyLineOfCredit', data)
+                // subscribe app to client's waba
+                return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
+              })
+              .then(data => {
+                console.log('subscribeAppToWaba', data)
+                return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
+              })
+              .then(data => {
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(wabasetUpData))
+                send.authTokenOfWhatsapp = authTokenOfWhatsapp
+                send.providerId = providerId
+                send.userId = userId
+                send.businessIdOfClient = businessIdOfClient
+                send.phoneCertificate = phoneCertificate
+                console.log('send>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', send)
+                rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(send))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                if (retryCount < 2) {
-                  const oldObj = JSON.parse(mqData.content.toString())
-                  oldObj.retryCount = retryCount + 1
-                  // __logger.info('requeing --->', oldObj)
-                  sendToWabaSetup10secQueue(oldObj, rmqObject)
-                } else {
-                  console.log('send to error queue')
+                console.log('errorerroreorororooeroreiiieeorturoeteoyyyoieryuytity', err)
+                console.log('88888888888888888888888888888888888888888888888888888', err.err.include('Phone number not reflected/ not verified. Please try again after some time'))
+                console.log('99999999999999999999999999999999999999999999999999999', err.err.err)
+                console.log('11111111111111111111111111111111111111111111111', err.err[0])
+                // console.log('11111111111111111111111111111111111111111111111', err.err[0].err.includes('Phone number not reflected/ not verified'))
+                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err.err[0].code)
+                if (err) {
+                  if (err.err[0].code === 190 && err.err[0].message.includes('Error validating access token') &&
+                   err.err[0].message.includes('Error validating access token') &&
+                   err.err[0].message.includes('Error validating access token')) {
+                    console.log('send to the error queue commonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn')
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (retryCount < 2) {
+                    const oldObj = JSON.parse(mqData.content.toString())
+                    oldObj.retryCount = retryCount + 1
+                    sendToWabaSetup10secQueue(oldObj, rmqObject)
+                  } else {
+                    // send mail to support that after retry its is not handled
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  }
                 }
-                // }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            // const telegramErrorMessage = 'WabaSetupConsumer ~ startServer function ~ error in try/catch function'
-            // errorToTelegram.send(err, telegramErrorMessage)
-            // __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        // const telegramErrorMessage = 'WabaSetupConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
-        // errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })
@@ -69,11 +196,11 @@ class WabaSetupConsumer {
   }
 }
 
-function getData () {
-  return new Promise((resolve, reject) => {
-    resolve(true)
-  })
-}
+// function getData () {
+//   return new Promise((resolve, reject) => {
+//     resolve(true)
+//   })
+// }
 
 class Worker extends WabaSetupConsumer {
   start () {
