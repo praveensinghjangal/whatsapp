@@ -405,6 +405,10 @@ const updateWabizInformation = () => {
   return `update waba_information set wabiz_username=?,wabiz_password=?,wabiz_base_url=?,graph_api_key=?,tfa_pin=?,updated_on=now()
   where phone_code = ? and phone_number=? and is_active=true`
 }
+const updateTfaPinInformation = () => {
+  return `update waba_information set tfa_pin=?,updated_on=now()
+  where phone_code = ? and phone_number=? and is_active=true`
+}
 
 module.exports = {
   getUserRoleData,
@@ -460,5 +464,6 @@ module.exports = {
   getAgreementStatusCount,
   getUserData,
   getPhoneNumbersFromWabaId,
-  updateWabizInformation
+  updateWabizInformation,
+  updateTfaPinInformation
 }

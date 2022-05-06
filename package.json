@@ -24,6 +24,7 @@
     "develop-spawningContainerConsumer": "NODE_ENV=development WORKER_TYPE=spawningContainerConsumer MQ_OBJECT_KEY=spawningContainerConsumerQueue USER_ID=Helo_test node server.js",
     "develop-wabaContainerBindingConsumer": "NODE_ENV=development WORKER_TYPE=wabaContainerBindingConsumer MQ_OBJECT_KEY=wabaContainerBindingConsumerQueue USER_ID=Helo_test node server.js",
     "develop-embeddedSingupErrorConsumer": "NODE_ENV=development WORKER_TYPE=embeddedSingupErrorConsumer MQ_OBJECT_KEY=embeddedSingupErrorConsumerQueue USER_ID=Helo_test node server.js",
+    "develop-twoFaConsumer": "NODE_ENV=development WORKER_TYPE=twoFaConsumer MQ_OBJECT_KEY=twoFaConsumerQueue USER_ID=Helo_test node server.js",
     "develop-facebookMessageStatus": "NODE_ENV=development WORKER_TYPE=facebookMessageStatus MQ_OBJECT_KEY=fb_message_status USER_ID=Helo_test node server.js",
     "develop-retrySendingPayload": "NODE_ENV=development WORKER_TYPE=retrySendingPayload MQ_OBJECT_KEY=retry_failed_to_redirect_payload USER_ID=Helo_test node server.js",
     "develop-fetchAndUpdateTemplateStatus": "NODE_ENV=development WORKER_TYPE=fetchAndUpdateTemplateStatus MQ_OBJECT_KEY=tyntec_incoming USER_ID=Helo_test node server.js",
