@@ -7,6 +7,9 @@ const HttpService = require('../../lib/http_service')
 const __config = require('../../config')
 const redisFunction = require('../../lib/commonFunction/redisFunction')
 const integrationService = require('../../app_modules/integration')
+// const UserService = require('../../app_modules/user/services/dbData')
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
+const rejectionHandler = require('../../lib/util/rejectionHandler')
 
 const sendToWabaSetup10secQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -37,6 +40,7 @@ const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber,
       getAccessInfo.resolve(data)
     })
     .catch(err => {
+      console.log('1111111111111111111111111111111111111111111111', err)
       getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return getAccessInfo.promise
@@ -54,7 +58,7 @@ class WabaSetupConsumer {
             console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
             console.log('2222222222222222222222', authTokenOfWhatsapp)
             console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
-            let wabaIdOfClient, businessIdOfClient, businessName, phoneCode, phoneNumber, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP, embeddedSignupService, send
+            let wabaIdOfClient, businessIdOfClient, businessName, phoneCode, phoneNumber, phoneCertificate, wabaNumberThatNeedsToBeLinked, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP, embeddedSignupService, send
             const retryCount = wabasetUpData.retryCount || 0
             redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
               .then(valResponse => {
@@ -82,6 +86,30 @@ class WabaSetupConsumer {
                 businessName = wabaDetails.name
                 // get phone numbers linked to client's waba id
                 return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
+              })
+              .then(data => {
+                console.log('55555555555555555555555555555555555555555555555555555555', data)
+                if (data && data.length && data[0].certificate && data.length > 100) {
+                  const phoneObj = data[0]
+                  wabaNumberThatNeedsToBeLinked = phoneObj.display_phone_number
+                  wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.replace(/ /g, '') // removes white spaces from string
+                  if (wabaNumberThatNeedsToBeLinked.charAt(0) === '+') {
+                    wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('').substring(1)
+                  } else {
+                    wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('')
+                  }
+                  const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
+                  phoneCode = obj.phoneCode
+                  // phoneCode = '91'
+                  // phoneNumber = obj.phoneNumber
+                  phoneNumber = obj.phoneNumber
+                  // phoneNumber = '7666004488'
+                  phoneCertificate = phoneObj.certificate
+                  // wabaNumberThatNeedsToBeLinked = '917666004488'
+                  return wabaNumberThatNeedsToBeLinked
+                } else {
+                  return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['Phone number not reflected/ not verified. Please try again after some time.'] })
+                }
               })
               .then(data => {
                 console.log('getPhoneNumberOfWabaId-data', data)
@@ -118,22 +146,33 @@ class WabaSetupConsumer {
                 send.providerId = providerId
                 send.userId = userId
                 send.businessIdOfClient = businessIdOfClient
+                send.phoneCertificate = phoneCertificate
                 console.log('send>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', send)
                 rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(send))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                if (retryCount < 2) {
-                  const oldObj = JSON.parse(mqData.content.toString())
-                  oldObj.retryCount = retryCount + 1
-                  // __logger.info('requeing --->', oldObj)
-                  sendToWabaSetup10secQueue(oldObj, rmqObject)
-                } else {
-                  console.log('send to error queue')
+                console.log('errorerroreorororooeroreiiieeorturoeteoyyyoieryuytity', err)
+                console.log('88888888888888888888888888888888888888888888888888888', err.err.include('Phone number not reflected/ not verified. Please try again after some time'))
+                console.log('99999999999999999999999999999999999999999999999999999', err.err.err)
+                console.log('11111111111111111111111111111111111111111111111', err.err[0])
+                // console.log('11111111111111111111111111111111111111111111111', err.err[0].err.includes('Phone number not reflected/ not verified'))
+                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err.err[0].code)
+                if (err) {
+                  if (err.err[0].code === 190 && err.err[0].message.includes('Error validating access token') &&
+                   err.err[0].message.includes('Error validating access token') &&
+                   err.err[0].message.includes('Error validating access token')) {
+                    console.log('send to the error queue commonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn')
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (retryCount < 2) {
+                    const oldObj = JSON.parse(mqData.content.toString())
+                    oldObj.retryCount = retryCount + 1
+                    sendToWabaSetup10secQueue(oldObj, rmqObject)
+                  } else {
+                    // send mail to support that after retry its is not handled
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  }
                 }
-                // }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
