@@ -154,7 +154,7 @@ const messageStatusOnMail = () => {
         UserAllDayDataArr[9][1] = Math.round(((UserAllDayDataArr[9][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
         UserAllDayDataArr[10][1] = Math.round(((UserAllDayDataArr[10][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
         UserAllDayDataArr[11][1] = Math.round(((UserAllDayDataArr[11][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
-        UserAllDayDataArr[12][1] = Math.round(((UserAllDayDataArr[11][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
+        UserAllDayDataArr[12][1] = Math.round(((UserAllDayDataArr[12][0] / UserAllDayDataArr[13]) * 100 + Number.EPSILON) * 100) / 100
         mtdAllUserCount.push(UserAllDayDataArr)
       })
       mtdTotalStatusCount.inProcessPercent = Math.round(((mtdTotalStatusCount.inProcess / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
