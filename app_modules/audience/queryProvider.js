@@ -179,6 +179,27 @@ const getAllOptOutUser = () => {
   where a.optin = 0 and a.updated_on BETWEEN ? and ?`
 }
 
+const getFacebookVerifiedUser = () => {
+  console.log('getFacebookVerifiedUser')
+  return `select a.phone_number as phoneNumber , a.optin as optin, a.isFacebookVerified, awnm.waba_phone_number as wabaPhoneNumber,a.waba_phone_number as wabaPhoneNumberId from audience a 
+  inner join audience_waba_no_mapping awnm on awnm.aud_mapping_id = a.waba_phone_number where a.is_active = true 
+  and a.phone_number = ? and awnm.waba_phone_number = ?`
+}
+
+const updateAsFaceBookVerified = () => {
+  console.log('updateAsFaceBookVerified')
+  return `update audience  
+  set isFacebookVerified = 1, updated_on = now(),updated_by = ?
+  where waba_phone_number = ? and phone_number = ?  and is_active = 1`
+}
+
+const addAudienceDataToDb = () => {
+  console.log('addAudienceDataToDb')
+  return `INSERT INTO audience 
+  (audience_id, phone_number, channel, created_by,isFacebookVerified,countryCode,waba_phone_number)
+  VALUES(?, ?, ?, ?, ?, ?, ?)`
+}
+
 module.exports = {
   getAudienceRecordList,
   getAudienceTableDataWithId,
@@ -199,5 +220,8 @@ module.exports = {
   getWabaIdFromWabaNoMapping,
   addWabaNoMappingData,
   updateWabaNoMappingData,
-  getAllOptOutUser
+  getAllOptOutUser,
+  getFacebookVerifiedUser,
+  updateAsFaceBookVerified,
+  addAudienceDataToDb
 }
