@@ -151,7 +151,8 @@ class validate {
                       },
                       text: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        maxLength: 60
                       }
                     }
                   },
@@ -171,7 +172,8 @@ class validate {
                     properties: {
                       text: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        maxLength: 60
                       }
                     }
                   },
@@ -210,7 +212,8 @@ class validate {
                       },
                       button: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        maxLength: 20
                       },
                       sections: {
                         type: 'array',
@@ -221,7 +224,8 @@ class validate {
                           properties: {
                             title: {
                               type: 'string',
-                              required: true
+                              required: true,
+                              maxLength: 24
                             },
                             rows: {
                               type: 'array',
@@ -236,11 +240,12 @@ class validate {
                                   },
                                   title: {
                                     type: 'string',
-                                    required: true
+                                    required: true,
+                                    maxLength: 24
                                   },
                                   description: {
                                     type: 'string',
-                                    required: true
+                                    maxLength: 72
                                   }
                                 }
                               }

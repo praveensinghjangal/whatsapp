@@ -192,7 +192,8 @@ const controller = (req, res) => {
   let wabaIdOfClient, businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked, phoneCode, phoneNumber, wabizurl, phoneCertificate, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP
   const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
   let tfaPin = Math.floor(100000 + Math.random() * 900000) // this generates a random 6 digit number
-  tfaPin = tfaPin.toString()
+  tfaPin = tfaPin.toString() // todo: do this during update wabiz
+  // tfaPin = '123456'
   const authTokenOfWhatsapp = req.headers.authorization
   let apiKey = ''
   req.user.providerId = __config.service_provider_id.facebook
@@ -364,7 +365,7 @@ const controller = (req, res) => {
       // wabizusername will be "admin", wabizpassword => hardcoded,
       // todo: generate & set 2fa pin as well in db.
       // set wabiz username, password, url, graphApiKey in our db
-      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, systemUserToken, phoneCode, phoneNumber, tfaPin)
+      return updateWabizInformation(__constants.WABIZ_USERNAME, wabizPassword, wabizurl, systemUserToken, phoneCode, phoneNumber)
     })
     .then(data => {
       console.log('171717171717171717171717171717171717171717171717171717171717', data)
@@ -413,6 +414,10 @@ const controller = (req, res) => {
     })
     //  */
     .then(data => {
+      return redisFunction.deleteWabaNumberRedisData(phoneCode + phoneNumber, __config.service_provider_id.facebook, req.user.user_id)
+    })
+    .then(data => {
+      console.log('77777777777777777777777777777777777777777777777777777', data)
       console.log('232323232323232323232323232323232323232323232323232323232323', data)
       console.log(businessIdOfClient, businessName, wabaNumberThatNeedsToBeLinked)
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
@@ -460,10 +465,10 @@ const controller = (req, res) => {
 
 //   return apiCall.promise
 // }
-const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber, tfaPin) => {
+const updateWabizInformation = (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) => {
   const apicall = q.defer()
   const userService = new UserService()
-  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber, tfaPin)
+  userService.updateWabizInformation(wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber)
     .then((data) => {
       console.log('data from updateWabizInformation ', data)
     }).catch((err) => {
