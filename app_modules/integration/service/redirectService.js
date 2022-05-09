@@ -122,6 +122,7 @@ class RedirectService {
       if (payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText.toLowerCase()) {
         // TODO:
         payload.isVavaOptin = true
+        payload.optinType = __constants.OPTIN_TYPE[1]
       }
       if (payload.content.text.length === redisData.optoutText.length && payload.content.text.toLowerCase() === redisData.optoutText.toLowerCase()) {
         payload.isVavaOptout = true

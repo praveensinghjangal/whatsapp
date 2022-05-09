@@ -26,12 +26,6 @@ class validate {
           minLength: 1,
           maxLength: 50
         },
-        optoutTemplateId: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          maxLength: 50
-        },
         chatDefaultMessage: {
           type: 'string',
           required: true,
@@ -78,6 +72,30 @@ class validate {
           required: false,
           minLength: 1,
           maxLength: 20
+        },
+        optinResponse: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 3078
+        },
+        optinResponseCta: {
+          type: ['array', null],
+          required: false,
+          maxItems: 3,
+          items: { type: 'string', maxLength: 20 }
+        },
+        optoutResponse: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 3078
+        },
+        optoutResponseCta: {
+          type: ['array', null],
+          required: false,
+          maxItems: 3,
+          items: { type: 'string', maxLength: 20 }
         }
       }
     }

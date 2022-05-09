@@ -34,7 +34,7 @@ const getOptinText = authToken => {
   return apiCalled.promise
 }
 
-const callSetTemplateId = (templateId, optoutTemplateId, defaultmessageData, serviceFulfillmentMessage, continuationTransactionMessage, authToken, defaultmessageDataCta, serviceFulfillmentMessageCta, continuationTransactionMessageCta, sessionTimeOut) => {
+const callSetTemplateId = (templateId, defaultmessageData, serviceFulfillmentMessage, continuationTransactionMessage, authToken, defaultmessageDataCta, serviceFulfillmentMessageCta, continuationTransactionMessageCta, sessionTimeOut, optinResponse, optinResponseCta, optoutResponse, optoutResponseCta) => {
   const apiCalled = q.defer()
   const http = new HttpService(60000)
   const inputRequest = {
@@ -46,7 +46,10 @@ const callSetTemplateId = (templateId, optoutTemplateId, defaultmessageData, ser
     serviceFulfillmentMessageCta: serviceFulfillmentMessageCta || null,
     continuationTransactionMessageCta: continuationTransactionMessageCta || null,
     sessionTimeoutMins: sessionTimeOut || null,
-    optoutTemplateId: optoutTemplateId
+    optinResponse,
+    optinResponseCta: optinResponseCta || null,
+    optoutResponse,
+    optoutResponseCta: optoutResponseCta || null
   }
 
   const headers = { Authorization: authToken }
@@ -137,7 +140,10 @@ const getOptinAndTemplate = (req, res) => {
       resData.serviceFulfillmentMessageCta = metaData.data.serviceFulfillmentMessageCta || null
       resData.continuationTransactionMessageCta = metaData.data.continuationTransactionMessageCta || null
       resData.sessionTimeoutMins = metaData.data.sessionTimeoutMins
-      resData.optoutTemplateId = metaData.data.optoutTemplateId
+      resData.optinResponse = metaData.data.optinResponse
+      resData.optinResponseCta = metaData.data.optinResponseCta || null
+      resData.optoutResponse = metaData.data.optoutResponse
+      resData.optoutResponseCta = metaData.data.optoutResponseCta || null
       return getOptinText(req.headers.authorization)
     })
     .then(optinData => {
@@ -172,7 +178,7 @@ const addUpdateOptinAndTemplate = (req, res) => {
   const validate = new ValidatonService()
   validate.addUpdateOptinAndTemplate(req.body)
     .then(data => callSetOptinAndOptoutTextApi(req.body.optinText, req.body.optoutText, req.headers.authorization))
-    .then(data => callSetTemplateId(req.body.templateId, req.body.optoutTemplateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins))
+    .then(data => callSetTemplateId(req.body.templateId, req.body.chatDefaultMessage, req.body.serviceFulfillmentMessage, req.body.continuationTransactionMessage, req.headers.authorization, req.body.chatDefaultMessageCta, req.body.serviceFulfillmentMessageCta, req.body.continuationTransactionMessageCta, req.body.sessionTimeoutMins, req.body.optinResponse, req.body.optinResponseCta, req.body.optoutResponse, req.body.optoutResponseCta))
     .then(data => __db.redis.key_delete(__constants.REDIS_OPTIN_TEMPLATE_DATA_KEY + req.user.wabaPhoneNumber))
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: req.body }))
     .catch(err => {
