@@ -1,22 +1,25 @@
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
-const q = require('q')
+// const UserService = require('../../app_modules/user/services/dbData')
+// const UserService = require('../../user/services/dbData')
+// const q = require('q')
 
-const sendToDemo10secQueue = (message, queueObj) => {
-  const messageRouted = q.defer()
-  queueObj.sendToQueue(__constants.MQ.demo_queue_10_sec, JSON.stringify(message))
-    .then(queueResponse => messageRouted.resolve('done!'))
-    .catch(err => messageRouted.reject(err))
-  return messageRouted.promise
-}
+// const sendToDemo10secQueue = (message, queueObj) => {
+//   const messageRouted = q.defer()
+//   queueObj.sendToQueue(__constants.MQ.demo_queue_10_sec, JSON.stringify(message))
+//     .then(queueResponse => messageRouted.resolve('done!'))
+//     .catch(err => messageRouted.reject(err))
+//   return messageRouted.promise
+// }
 
-class FacebookConsumer {
+class embeddedSingupErrorConsumer {
   startServer () {
-    const queue = __constants.MQ.demoQueue.q_name
+    const queue = __constants.MQ.embeddedSingupErrorConsumerQueue.q_name
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
+        // const userService = new UserService()
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageData = JSON.parse(mqData.content.toString())
@@ -32,7 +35,7 @@ class FacebookConsumer {
                   const oldObj = JSON.parse(mqData.content.toString())
                   oldObj.retryCount = retryCount + 1
                   // __logger.info('requeing --->', oldObj)
-                  sendToDemo10secQueue(oldObj, rmqObject)
+                  // sendToDemo10secQueue(oldObj, rmqObject)
                 } else {
                   console.log('send to error queue')
                 }
@@ -71,7 +74,7 @@ function getData () {
   })
 }
 
-class Worker extends FacebookConsumer {
+class Worker extends embeddedSingupErrorConsumer {
   start () {
     __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
