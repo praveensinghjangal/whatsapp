@@ -37,11 +37,16 @@ const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber,
   }
   http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.accessInformation, headers)
     .then(data => {
-      getAccessInfo.resolve(data)
+      if (data && data.body && data.body.data) {
+        getAccessInfo.resolve(data.body)
+      } else {
+        getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: data.body.error && Object.keys(data.body.error).length ? data.body.error : [data.body.msg] })
+        // getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: data.body.error })
+      }
     })
     .catch(err => {
       console.log('1111111111111111111111111111111111111111111111', err)
-      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return getAccessInfo.promise
 }
@@ -59,8 +64,10 @@ class WabaSetupConsumer {
             console.log('2222222222222222222222', authTokenOfWhatsapp)
             console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
             let wabaIdOfClient, businessIdOfClient, businessName, phoneCode, phoneNumber, phoneCertificate, wabaNumberThatNeedsToBeLinked, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP, embeddedSignupService, send
+            // const wabaIdOfClient = '1234'; let businessIdOfClient; const businessName = 'nameOfBusiness'; const phoneCode = '91'; const phoneNumber = '8097353703'; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; let send
             const retryCount = wabasetUpData.retryCount || 0
             redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
+            // /**
               .then(valResponse => {
                 console.log('getMasterRedisDataStatusById-data', valResponse)
                 businessId = valResponse.data.businessId
@@ -136,6 +143,7 @@ class WabaSetupConsumer {
                 // subscribe app to client's waba
                 return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
               })
+              // */
               .then(data => {
                 console.log('subscribeAppToWaba', data)
                 return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
@@ -165,9 +173,9 @@ class WabaSetupConsumer {
                     console.log('send to the error queue commonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn')
                     rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
                   } else if (retryCount < 2) {
-                    const oldObj = JSON.parse(mqData.content.toString())
-                    oldObj.retryCount = retryCount + 1
-                    sendToWabaSetup10secQueue(oldObj, rmqObject)
+                    // const oldObj = JSON.parse(mqData.content.toString())
+                    wabasetUpData.retryCount = retryCount + 1
+                    sendToWabaSetup10secQueue(wabasetUpData, rmqObject)
                   } else {
                     // send mail to support that after retry its is not handled
                     rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))

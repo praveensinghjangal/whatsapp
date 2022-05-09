@@ -828,6 +828,395 @@ class validate {
     }
     return isvalid.promise
   }
+
+  wabaSetUpConsumerValidator (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/wabaSetUpConsumerValidator',
+      type: 'object',
+      required: true,
+      properties: {
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        providerId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        inputToken: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        authTokenOfWhatsapp: {
+          type: 'string',
+          required: true
+        }
+      }
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/wabaSetUpConsumerValidator')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+
+      if (patternError && formatedErr[1].includes('fullName')) {
+        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+      if (request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  bussinessDetailsConsumerValidator (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/bussinessDetailsConsumerValidator',
+      type: 'object',
+      required: true,
+      properties: {
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        providerId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        authTokenOfWhatsapp: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabaIdOfClient: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        businessIdOfClient: {
+          type: 'string',
+          required: true
+        },
+        businessName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        phoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 6,
+          maxLength: 15,
+          pattern: __constants.VALIDATOR.number
+        },
+        phoneCode: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 4,
+          pattern: __constants.VALIDATOR.number
+        },
+        phoneCertificate: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabaNumberThatNeedsToBeLinked: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        businessId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        systemUserIdBSP: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        systemUserToken: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        creditLineIdBSP: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/bussinessDetailsConsumerValidator')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+
+      if (patternError && formatedErr[1].includes('fullName')) {
+        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+      if (request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  spawningContainerConsumerValidator (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/spawningContainerConsumerValidator',
+      type: 'object',
+      required: true,
+      properties: {
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        providerId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        authTokenOfWhatsapp: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        privateIp: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        phoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 6,
+          maxLength: 15,
+          pattern: __constants.VALIDATOR.number
+        },
+        phoneCode: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 4,
+          pattern: __constants.VALIDATOR.number
+        },
+        systemUserToken: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/spawningContainerConsumerValidator')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+
+      if (patternError && formatedErr[1].includes('fullName')) {
+        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+      if (request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  wabaContainerBindingConsumerValidator (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/wabaContainerBindingConsumerValidator',
+      type: 'object',
+      required: true,
+      properties: {
+        userId: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        providerId: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        authTokenOfWhatsapp: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabaIdOfClient: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        phoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 6,
+          maxLength: 15,
+          pattern: __constants.VALIDATOR.number
+        },
+        phoneCode: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 4,
+          pattern: __constants.VALIDATOR.number
+        },
+        phoneCertificate: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        systemUserToken: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabizPassword: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        wabizurl: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+
+    const formatedError = []
+    v.addSchema(schema, '/wabaContainerBindingConsumerValidator')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
+      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
+
+      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
+        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
+      }
+
+      if (patternError && formatedErr[1].includes('fullName')) {
+        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
+      }
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+      if (request.startDate === request.endDate) {
+        formatedError.push('startDate cannot be equal to endDate!')
+      }
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate

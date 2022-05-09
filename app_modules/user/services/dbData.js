@@ -724,6 +724,21 @@ class UserData {
       })
     return apiCall.promise
   }
+
+  getWabaProfileSetupStatusFromUserId (userId) {
+    __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaProfileSetupStatus(), [userId])
+      .then(result => {
+        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        userDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
 }
 
 module.exports = UserData

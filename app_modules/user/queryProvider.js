@@ -410,6 +410,14 @@ const updateTfaPinInformation = () => {
   where phone_code = ? and phone_number=? and is_active=true`
 }
 
+const getWabaProfileSetupStatus = () => {
+  return `SELECT waba_information_id as "wabaInformationId",wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId",
+  wabainfo.user_id as "userId"
+  FROM waba_information wabainfo
+  LEFT JOIN waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true
+  where wabainfo.user_id = ? and wabainfo.is_active = true`
+}
+
 module.exports = {
   getUserRoleData,
   getUserDetailsByEmail,
@@ -465,5 +473,6 @@ module.exports = {
   getUserData,
   getPhoneNumbersFromWabaId,
   updateWabizInformation,
-  updateTfaPinInformation
+  updateTfaPinInformation,
+  getWabaProfileSetupStatus
 }
