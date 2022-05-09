@@ -18,6 +18,14 @@ const sendToWabaSetup10secQueue = (message, queueObj) => {
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise
 }
+
+const sendToWabaSetup15minQueue = (message, queueObj) => {
+  const messageRouted = q.defer()
+  queueObj.sendToQueue(__constants.MQ.wabaSetUpConsumer_queue_15_min, JSON.stringify(message))
+    .then(queueResponse => messageRouted.resolve('done!'))
+    .catch(err => messageRouted.reject(err))
+  return messageRouted.promise
+}
 const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp) => {
   const getAccessInfo = q.defer()
   const http = new HttpService(60000)
@@ -58,7 +66,7 @@ class WabaSetupConsumer {
             console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
             console.log('2222222222222222222222', authTokenOfWhatsapp)
             console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
-            let wabaIdOfClient, businessIdOfClient, businessName, phoneCode, phoneNumber, phoneCertificate, wabaNumberThatNeedsToBeLinked, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP, embeddedSignupService, send
+            let wabaIdOfClient; let businessIdOfClient; let businessName; let phoneCode; let phoneNumber; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; const send = {}
             const retryCount = wabasetUpData.retryCount || 0
             redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
               .then(valResponse => {
@@ -89,7 +97,7 @@ class WabaSetupConsumer {
               })
               .then(data => {
                 console.log('55555555555555555555555555555555555555555555555555555555', data)
-                if (data && data.length && data[0].certificate && data.length > 100) {
+                if (data && data.length && data[0].certificate) {
                   const phoneObj = data[0]
                   wabaNumberThatNeedsToBeLinked = phoneObj.display_phone_number
                   wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.replace(/ /g, '') // removes white spaces from string
@@ -147,23 +155,32 @@ class WabaSetupConsumer {
                 send.userId = userId
                 send.businessIdOfClient = businessIdOfClient
                 send.phoneCertificate = phoneCertificate
-                console.log('send>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', send)
                 rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(send))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                console.log('errorerroreorororooeroreiiieeorturoeteoyyyoieryuytity', err)
-                console.log('88888888888888888888888888888888888888888888888888888', err.err.include('Phone number not reflected/ not verified. Please try again after some time'))
-                console.log('99999999999999999999999999999999999999999999999999999', err.err.err)
-                console.log('11111111111111111111111111111111111111111111111', err.err[0])
-                // console.log('11111111111111111111111111111111111111111111111', err.err[0].err.includes('Phone number not reflected/ not verified'))
-                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err.err[0].code)
+                // console.log('errorerroreorororooeroreiiieeorturoeteoyyyoieryuytity', err)
+                // console.log('88888888888888888888888888888888888888888888888888888', err.err.include('Phone number not reflected/ not verified. Please try again after some time'))
+                // console.log('99999999999999999999999999999999999999999999999999999', err.err.err)
+                // console.log('11111111111111111111111111111111111111111111111', err.err[0])
+                // // console.log('11111111111111111111111111111111111111111111111', err.err[0].err.includes('Phone number not reflected/ not verified'))
+                // console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err.err[0].code)
                 if (err) {
-                  if (err.err[0].code === 190 && err.err[0].message.includes('Error validating access token') &&
-                   err.err[0].message.includes('Error validating access token') &&
-                   err.err[0].message.includes('Error validating access token')) {
-                    console.log('send to the error queue commonnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn')
+                  if (err.err[0].code === 190 && (err.err[0].message.includes('Error validating access token') || err.err[0].message.includes('The access token could not be decrypted') || err.err[0].message.includes('Malformed access token'))) {
                     rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (err.err[0].code === 100 && (err.err[0].message.includes('Unsupported get request') ||
+                  err.err[0].message.includes('Unsupported post request') ||
+                   err.err[0].message.includes('(#100) Param user is not a valid app-scoped ID. Note:') ||
+                   err.err[0].message.includes('(#100) Param business is not a valid') ||
+                   err.err[0].message.includes('(#100) Param waba_id must be a valid WhatsApp Business Account id') ||
+                   err.err[0].message.includes('(#100) Not a ISO 4217 currency code that is supported by Facebook Payments'))) {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (err.err[0].code === 104 && (err.err[0].message.includes('An access token is required to request'))) {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (err.err[0].code === 4 && (err.err[0].message.includes('(#4) Application request limit reached'))) {
+                    const oldObj = JSON.parse(mqData.content.toString())
+                    oldObj.retryCount = retryCount + 1
+                    sendToWabaSetup15minQueue(oldObj, rmqObject)
                   } else if (retryCount < 2) {
                     const oldObj = JSON.parse(mqData.content.toString())
                     oldObj.retryCount = retryCount + 1
