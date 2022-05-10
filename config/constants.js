@@ -492,6 +492,7 @@ const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
 const OPTIN_TYPE = ['bi', 'ui']
+const OPTOUT_TEXT = 'stop'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -607,3 +608,4 @@ module.exports.PROCESS_COUNT_SCHEDULER = PROCESS_COUNT_SCHEDULER
 module.exports.WHATSAPP_SUMMARY_SUBJECT = WHATSAPP_SUMMARY_SUBJECT
 module.exports.MIS_SCHEDULER_TIME_CONVERSATION = MIS_SCHEDULER_TIME_CONVERSATION
 module.exports.OPTIN_TYPE = OPTIN_TYPE
+module.exports.OPTOUT_TEXT = OPTOUT_TEXT
