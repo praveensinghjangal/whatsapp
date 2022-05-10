@@ -37,29 +37,24 @@ class twoFaConsumer {
               })
               .catch(err => {
                 console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                if (retryCount < 2) {
-                  const oldObj = JSON.parse(mqData.content.toString())
-                  oldObj.retryCount = retryCount + 1
-                  // __logger.info('requeing --->', oldObj)
-                  sendTotwoFaConsumer10secQueue(oldObj, rmqObject)
-                } else {
-                  console.log('send to error queue')
+                if (err) {
+                  if (retryCount < 2) {
+                    const oldObj = JSON.parse(mqData.content.toString())
+                    oldObj.retryCount = retryCount + 1
+                    // __logger.info('requeing --->', oldObj)
+                    sendTotwoFaConsumer10secQueue(oldObj, rmqObject)
+                  } else {
+                    console.log('send to error queue')
+                  }
                 }
-                // }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            // const telegramErrorMessage = 'WabaContainerBindingConsumer ~ startServer function ~ error in try/catch function'
-            // errorToTelegram.send(err, telegramErrorMessage)
-            // __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        // const telegramErrorMessage = 'WabaContainerBindingConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
-        // errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })

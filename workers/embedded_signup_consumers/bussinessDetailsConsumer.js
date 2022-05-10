@@ -107,17 +107,16 @@ class BussinessDetailsConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                if (retryCount < 2) {
-                  const oldObj = JSON.parse(mqData.content.toString())
-                  oldObj.retryCount = retryCount + 1
-                  // __logger.info('requeing --->', oldObj)
-                  sendToBusinessDetails10secQueue(oldObj, rmqObject)
-                } else {
-                  console.log('send to error queue')
+                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err)
+                if (err) {
+                  if (retryCount < 2) {
+                    const oldObj = JSON.parse(mqData.content.toString())
+                    oldObj.retryCount = retryCount + 1
+                    sendToBusinessDetails10secQueue(oldObj, rmqObject)
+                  } else {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  }
                 }
-                // }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {

@@ -66,7 +66,6 @@ class WabaContainerBindingConsumer {
             const authInternalFunctionService = new AuthInternalFunctionService()
             authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, defaultPassword, wabizPassword, wabizurl, systemUserToken, wabaIdOfClient, phoneCode + phoneNumber, userId, true)
               .then(data => {
-                console.log('18181818181818181818181818181818181818181818181818181818118', data)
                 wabaBindingData.isPasswordSet = true
                 apiKey = data.apiKey
                 // todo: if we are running this piece of code after 2tfa is set, we will need to pass 2tfa pin as well
@@ -74,12 +73,10 @@ class WabaContainerBindingConsumer {
                 return embeddedSignupService.requestCode(wabizurl, apiKey, phoneCode, phoneNumber, phoneCertificate)
               })
               .then(data => {
-                console.log('19191919191919191919191919191919191919191919191919191919', data)
                 // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
                 return embeddedSignupService.getSettings(wabizurl, apiKey)
               })
               .then(data => {
-                console.log('202020202020202020202020202020202020202020202020202020', data)
                 if (data && data.application && data.application.wa_id) {
                   // waba number successfully linked to the container
                   // put status "accepted"
@@ -98,41 +95,32 @@ class WabaContainerBindingConsumer {
               })
               .then(data => {
                 wabaBindingData.isProfileStatusAccepted = true
-                console.log('212121212121212121212121212121212121212121212121212121212121', data)
                 return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, userId, __config.service_provider_id.facebook, apiKey)
               })
-              // .then(data => {
-              //   return getData()
-              // })
               .then(response => {
-                console.log('---------success--------', wabaBindingData)
+                rmqObject.sendToQueue(__constants.MQ.twoFaConsumerQueue, JSON.stringify(response))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
                 console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                if (retryCount < 2) {
-                  // const oldObj = JSON.parse(mqData.content.toString())
-                  wabaBindingData.retryCount = retryCount + 1
-                  // __logger.info('requeing --->', oldObj)
-                  sendToWabaContainerBinding10secQueue(wabaBindingData, rmqObject)
-                } else {
-                  console.log('send to error queue')
+                if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
+                  if (retryCount < 2) {
+                    // const oldObj = JSON.parse(mqData.content.toString())
+                    wabaBindingData.retryCount = retryCount + 1
+                    // __logger.info('requeing --->', oldObj)
+                    sendToWabaContainerBinding10secQueue(wabaBindingData, rmqObject)
+                  } else {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  }
                 }
-                // }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            // const telegramErrorMessage = 'WabaContainerBindingConsumer ~ startServer function ~ error in try/catch function'
-            // errorToTelegram.send(err, telegramErrorMessage)
-            // __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        // const telegramErrorMessage = 'WabaContainerBindingConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
-        // errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })
