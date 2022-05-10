@@ -18,6 +18,12 @@ const sendToWabaSetup10secQueue = (message, queueObj) => {
     .catch(err => messageRouted.reject(err))
   return messageRouted.promise
 }
+// const codeErrorRetryMechanism = (queue, queueObj) => {
+//   const codeErrorRetryMechanism = q.defer()
+//     .then(queueResponse => codeErrorRetryMechanism.resolve('done!'))
+//     .catch(err => codeErrorRetryMechanism.reject(err))
+//   return codeErrorRetryMechanism.promise
+// }
 
 const sendToWabaSetup15minQueue = (message, queueObj) => {
   const messageRouted = q.defer()
@@ -63,6 +69,7 @@ class WabaSetupConsumer {
     const queue = __constants.MQ.wabaSetUpConsumerQueue.q_name
     __db.init()
       .then(result => {
+        const retryCount = 0
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
@@ -157,6 +164,7 @@ class WabaSetupConsumer {
                 return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
               })
               .then(data => {
+                console.log('lastttttttttttttttttttttttttttttt', data)
                 // after this worker now in which worker we have send data
                 send.authTokenOfWhatsapp = authTokenOfWhatsapp
                 send.providerId = providerId
@@ -194,13 +202,19 @@ class WabaSetupConsumer {
                     wabasetUpData.retryCount = retryCount + 1
                     sendToWabaSetup10secQueue(wabasetUpData, rmqObject)
                   } else {
-                    // send mail to support that after retry its is not handled
                     rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
                   }
                 }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
+            if (err) {
+              if (retryCount < 2) {
+                const oldObj = JSON.parse(mqData.content.toString())
+                oldObj.retryCount = retryCount + 1
+                sendToWabaSetup10secQueue(oldObj, rmqObject)
+              }
+            }
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
@@ -220,12 +234,6 @@ class WabaSetupConsumer {
     process.on('SIGTERM', this.stop_gracefully)
   }
 }
-
-// function getData () {
-//   return new Promise((resolve, reject) => {
-//     resolve(true)
-//   })
-// }
 
 class Worker extends WabaSetupConsumer {
   start () {

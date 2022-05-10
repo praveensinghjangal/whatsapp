@@ -105,41 +105,32 @@ class SpawningContainerConsumer {
                 // set status to container spawned
                 return setProfileStatus(authTokenOfWhatsapp, userId, providerId, __constants.WABA_PROFILE_STATUS.containerSpawned.statusCode)
               })
-              // .then(data => {
-              //   return getData()
-              // })
               .then(response => {
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumerQueue, JSON.stringify(wabasetUpData))
+                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumerQueue, JSON.stringify(response))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
                 console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
+                if (err) {
                 // todo: check for expiry of authTokenOfWhatsapp
-                if (retryCount < 2) {
-                  // const oldObj = JSON.parse(mqData.content.toString())
-                  wabasetUpData.retryCount = retryCount + 1
-                  // oldObj.retryCount = retryCount + 1
-                  // __logger.info('requeing --->', oldObj)
-                  sendToSpawningContainer10secQueue(wabasetUpData, rmqObject)
-                } else {
-                  console.log('send to error queue', err)
+                  if (retryCount < 2) {
+                    // const oldObj = JSON.parse(mqData.content.toString())
+                    wabasetUpData.retryCount = retryCount + 1
+                    // oldObj.retryCount = retryCount + 1
+                    sendToSpawningContainer10secQueue(wabasetUpData, rmqObject)
+                  } else {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  }
                 }
-                // }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            // const telegramErrorMessage = 'SpawningContainerConsumer ~ startServer function ~ error in try/catch function'
-            // errorToTelegram.send(err, telegramErrorMessage)
-            // __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        // const telegramErrorMessage = 'SpawningContainerConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
-        // errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })
@@ -154,12 +145,6 @@ class SpawningContainerConsumer {
     process.on('SIGTERM', this.stop_gracefully)
   }
 }
-
-// function getData () {
-//   return new Promise((resolve, reject) => {
-//     resolve(true)
-//   })
-// }
 
 class Worker extends SpawningContainerConsumer {
   start () {
