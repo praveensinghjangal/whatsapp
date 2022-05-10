@@ -87,6 +87,7 @@ class BussinessDetailsConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const bussinessDetailsConsumerData = JSON.parse(mqData.content.toString())
+            // userId, providerId, phoneCode, phoneNumber, phoneCertificate, systemUserToken, wabaIdOfClient, authTokenOfWhatsapp
             const { authTokenOfWhatsapp, providerId, userId } = bussinessDetailsConsumerData
             console.log('bussinessDetailsConsumerData-data', authTokenOfWhatsapp, providerId, userId)
             const retryCount = bussinessDetailsConsumerData.retryCount || 0

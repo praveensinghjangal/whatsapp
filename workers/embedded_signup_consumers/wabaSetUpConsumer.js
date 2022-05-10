@@ -74,6 +74,7 @@ class WabaSetupConsumer {
           let retryCount
           try {
             const wabasetUpData = JSON.parse(mqData.content.toString())
+            // userId, providerId, phoneCode, phoneNumber, phoneCertificate, systemUserToken, wabaIdOfClient, authTokenOfWhatsapp
             const { userId, providerId, inputToken, authTokenOfWhatsapp } = wabasetUpData
             console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
             console.log('2222222222222222222222', authTokenOfWhatsapp)
@@ -88,6 +89,7 @@ class WabaSetupConsumer {
                 businessId = valResponse.data.businessId
                 systemUserIdBSP = valResponse.data.systemUserId
                 systemUserToken = valResponse.data.systemUserToken
+                wabasetUpData.systemUserToken = systemUserToken
                 creditLineIdBSP = valResponse.data.creditLineId
                 embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
                 return embeddedSignupService.getWabaOfClient(inputToken, 'wabaNumber')
@@ -96,7 +98,9 @@ class WabaSetupConsumer {
                 console.log('getWabaOfClient-data', debugData)
                 const granularScopes = debugData.granular_scopes
                 const whatsappBusinessManagement = _.find(granularScopes, { scope: 'whatsapp_business_management' })
+                // todo: check if 0th element is proper
                 wabaIdOfClient = whatsappBusinessManagement.target_ids[0]
+                wabasetUpData.wabaIdOfClient = wabaIdOfClient
                 const businessManagement = _.find(granularScopes, { scope: 'business_management' })
                 if (businessManagement) {
                   businessIdOfClient = businessManagement.target_ids[0]
@@ -122,11 +126,14 @@ class WabaSetupConsumer {
                   }
                   const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
                   phoneCode = obj.phoneCode
+                  wabasetUpData.phoneCode = phoneCode
                   // phoneCode = '91'
                   // phoneNumber = obj.phoneNumber
                   phoneNumber = obj.phoneNumber
+                  wabasetUpData.phoneNumber = phoneNumber
                   // phoneNumber = '7666004488'
                   phoneCertificate = phoneObj.certificate
+                  wabasetUpData.phoneCertificate = phoneCertificate
                   // wabaNumberThatNeedsToBeLinked = '917666004488'
                   return wabaNumberThatNeedsToBeLinked
                 } else {
