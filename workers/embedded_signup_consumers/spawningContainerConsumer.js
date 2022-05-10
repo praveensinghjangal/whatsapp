@@ -82,8 +82,10 @@ class SpawningContainerConsumer {
           try {
             let wabizurl
             const wabasetUpData = JSON.parse(mqData.content.toString())
-            const wabizPassword = passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
+            // userId, providerId, phoneCode, phoneNumber, phoneCertificate, systemUserToken, wabaIdOfClient, wabizPassword, wabizurl, authTokenOfWhatsapp
             const { userId, providerId, phoneCode, phoneNumber, systemUserToken, privateIp, authTokenOfWhatsapp } = wabasetUpData
+            const wabizPassword = wabasetUpData.wabizPassword || passwordGenerator(__constants.WABIZ_CUSTOM_PASSWORD_LENGTH)
+            wabasetUpData.wabizPassword = wabizPassword
             // required fields: userId, providerId, phoneCode, phoneNumber, systemUserToken, authTokenOfWhatsapp
             console.log('messageData===========', wabasetUpData)
             const retryCount = wabasetUpData.retryCount || 0
@@ -94,6 +96,7 @@ class SpawningContainerConsumer {
                 console.log('spawned container response: ', data)
                 wabasetUpData.privateIp = data.privateIp
                 wabizurl = 'https://' + data.privateIp + `:${__config.wabizPort}`
+                wabasetUpData.wabizurl = wabizurl
                 console.log('wabizurl', wabizurl)
                 console.log('wabizPassword', wabizPassword)
                 // wabizusername will be "admin", wabizpassword => hardcoded,

@@ -69,9 +69,9 @@ class WabaSetupConsumer {
     const queue = __constants.MQ.wabaSetUpConsumerQueue.q_name
     __db.init()
       .then(result => {
-        const retryCount = 0
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         rmqObject.channel[queue].consume(queue, mqData => {
+          let retryCount
           try {
             const wabasetUpData = JSON.parse(mqData.content.toString())
             const { userId, providerId, inputToken, authTokenOfWhatsapp } = wabasetUpData
@@ -80,7 +80,7 @@ class WabaSetupConsumer {
             console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
             // const wabaIdOfClient = '1234'; let businessIdOfClient; const businessName = 'nameOfBusiness'; const phoneCode = '91'; const phoneNumber = '8097353703'; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; let send
             let wabaIdOfClient; let businessIdOfClient; let businessName; let phoneCode; let phoneNumber; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; const send = {}
-            const retryCount = wabasetUpData.retryCount || 0
+            retryCount = wabasetUpData.retryCount || 0
             redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
             // /**
               .then(valResponse => {
