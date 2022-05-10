@@ -543,6 +543,8 @@ const WABIZ_USERNAME = 'admin'
 // const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
 const WABIZ_DEFAULT_PASSWORD = 'secret'
 const WABIZ_CUSTOM_PASSWORD_LENGTH = 8
+const OPTIN_TYPE = ['bi', 'ui']
+const OPTOUT_TEXT = 'stop'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -663,3 +665,5 @@ module.exports.MASTERDATA = MASTERDATA
 module.exports.WABIZ_USERNAME = WABIZ_USERNAME
 module.exports.WABIZ_DEFAULT_PASSWORD = WABIZ_DEFAULT_PASSWORD
 module.exports.WABIZ_CUSTOM_PASSWORD_LENGTH = WABIZ_CUSTOM_PASSWORD_LENGTH
+module.exports.OPTIN_TYPE = OPTIN_TYPE
+module.exports.OPTOUT_TEXT = OPTOUT_TEXT

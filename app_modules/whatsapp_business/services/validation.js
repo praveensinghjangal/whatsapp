@@ -698,8 +698,8 @@ class validate {
         wabaPhoneNumber: {
           type: 'string',
           required: true,
-          minLength: 1,
-          maxLength: 12
+          minLength: 6,
+          maxLength: 15
         },
         userId: {
           type: 'string',

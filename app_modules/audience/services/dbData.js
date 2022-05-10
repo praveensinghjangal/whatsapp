@@ -411,6 +411,67 @@ class AudienceService {
       })
     return audienceData.promise
   }
+
+  getAudienceVerified (audienceNumber, wabaNumber) {
+    console.log('getAudienceVerified (audienceNumber, wabaNumber) ---', audienceNumber, wabaNumber)
+    const promises = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFacebookVerifiedUser(), [audienceNumber, wabaNumber])
+      .then(data => {
+        console.log('db response -----', data)
+        if (data && data.length > 0) {
+          promises.resolve(data)
+        } else {
+          promises.resolve(data)
+        }
+      })
+      .catch(err => {
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
+
+  updateAsFaceBookVerified (wabaPhoneNumberId, phoneNumber, userId) {
+    const isVefifiedUpdate = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAsFaceBookVerified(), [userId, wabaPhoneNumberId, phoneNumber])
+      .then(result => {
+        __logger.info('updateAsFaceBookVerified result then 2', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          isVefifiedUpdate.resolve(true)
+        } else {
+          isVefifiedUpdate.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => isVefifiedUpdate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return isVefifiedUpdate.promise
+  }
+
+  addAudineceToDb (payload, audMappingId, userId) {
+    __logger.info('Add audience service called ~ payload, audMappingId', payload, audMappingId)
+    const audienceDataAdded = q.defer()
+    const audienceData = {
+      audienceId: this.uniqueId.uuid(),
+      phoneNumber: payload.to,
+      channel: __constants.DELIVERY_CHANNEL.whatsapp,
+      createdBy: userId,
+      isFacebookVerified: 1,
+      countryCode: __constants.DEFAULT_COUNTRY_CODE,
+      wabaPhoneNumber: audMappingId
+    }
+    __logger.info('Then add into audience', audienceData)
+    const queryParam = []
+    _.each(audienceData, (val) => queryParam.push(val))
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceDataToDb(), queryParam)
+      .then(result => {
+        __logger.info('added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          audienceDataAdded.resolve(true)
+        } else {
+          audienceDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => audienceDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return audienceDataAdded.promise
+  }
 }
 
 module.exports = AudienceService
