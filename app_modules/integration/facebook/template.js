@@ -10,6 +10,10 @@ const AuthService = require('../facebook/authService')
 const DataMapper = require('./dataMapper')
 
 class InternalFunctions {
+  constructor (maxConcurrent, userId) {
+    this.http = new HttpService(60000, maxConcurrent, userId)
+  }
+
   setTheMappingOfMessageData (templateData, whatsAppAccountId) {
     const finalData = []
     __logger.info('integration :: Inside mapping function', templateData, templateData.data)
@@ -39,35 +43,53 @@ class InternalFunctions {
       return []
     }
   }
+
+  getTemplateList (tokenData) {
+    const deferred = q.defer()
+    let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${tokenData.graphApiKey}`
+    let outData = {}
+    url = url.split(':userAccountIdByProvider').join(tokenData.userAccountIdByProvider || '')
+    __logger.info('URL >>>>>>>>>>>>>>> __constants.FACEBOOK_ENDPOINTS.getTemplateList', url)
+    this.http.Get(url, { 'Content-Type': 'application/json', Accept: 'application/json' }, tokenData.serviceProviderId)
+      .then(async data => {
+        // console.log('data', data)
+        outData = data
+        let next = data && data.paging && data.paging.next ? data.paging.next : ''
+        while (next) {
+          const apiRes = await this.http.Get(next, { 'Content-Type': 'application/json', Accept: 'application/json' }, tokenData.serviceProviderId)
+          if (apiRes && apiRes.data && _.isArray(apiRes.data)) outData.data.push(apiRes.data)
+          next = apiRes && apiRes.paging && apiRes.paging.next ? apiRes.paging.next : ''
+        }
+        outData.data = outData.data.flat()
+        deferred.resolve(outData)
+      })
+      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return deferred.promise
+  }
 }
 
 class Template {
   constructor (maxConcurrent, userId) {
+    this.maxConcurrent = maxConcurrent
     this.userId = userId
     this.http = new HttpService(60000, maxConcurrent, userId)
     this.dataMapper = new DataMapper()
   }
 
-  getTemplateList (wabaNumber) {
+  getTemplateList (wabaNumber, mapData = true) {
     const deferred = q.defer()
+    const internalFunctions = new InternalFunctions(this.maxConcurrent, this.userId)
     let whatsAppAccountId
     if (wabaNumber) {
       const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
           whatsAppAccountId = data.userAccountIdByProvider
-          let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${data.graphApiKey}`
-          url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
-          __logger.info('URL >>>>>>>>>>>>>>> __constants.FACEBOOK_ENDPOINTS.getTemplateList', url)
-          return this.http.Get(url, {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          }, data.serviceProviderId)
+          return internalFunctions.getTemplateList(data)
         })
         .then((templateData) => {
           if (templateData) {
-            const internalFunctions = new InternalFunctions()
-            const data = internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId)
+            const data = mapData === true ? internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId) : templateData
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: data })
           } else {
             return deferred.reject({ ...__constants.RESPONSE_MESSAGES.NOT_FOUND, data: {} })

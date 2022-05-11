@@ -330,6 +330,28 @@ const getAllTemplateCount = () => {
   group by mts.status_name`
 }
 
+const getBulkTemplateDataByIds = () => {
+  return `select facebook_message_template_id as "facebookMessageTemplateId" , mtl1.language_code as "firstLanguage", mtl2.language_code as "secondLanguage"
+  from message_template mt
+  left join message_template_language mtl1 on mt.message_template_language_id =  mtl1.message_template_language_id and mtl1.is_active = 1
+  left join message_template_language mtl2 on mt.second_message_template_language_id =  mtl2.message_template_language_id and mtl2.is_active = 1
+  where mt.is_active = 1 and mt.facebook_message_template_id in (?)`
+}
+
+const insertTemplateBulk = () => {
+  return `INSERT INTO message_template (message_template_id, waba_information_id, template_name, type, message_template_category_id,
+    message_template_status_id, message_template_language_id, body_text, header_text, footer_text, media_type, created_by,updated_by,
+    second_language_required,header_type, button_type, button_data, first_localization_status, body_text_var_example, header_text_var_example,
+    second_language_body_text_var_example, second_language_header_text_var_example, media_example_url, is_personalized,facebook_message_template_id)
+    values ?`
+}
+
+const getFbTemplateName = () => {
+  return `select facebook_message_template_id as "facebookMessageTemplateId"
+  from message_template mt
+  where mt.is_active = 1 and mt.message_template_id = ?`
+}
+
 module.exports = {
   getTemplateList,
   getTemplateInfo,
@@ -354,5 +376,8 @@ module.exports = {
   getTemplateTableDataByTemplateId,
   getAllTemplateWithStatus,
   getTemplateStatusList,
-  getAllTemplateCount
+  getAllTemplateCount,
+  getBulkTemplateDataByIds,
+  insertTemplateBulk,
+  getFbTemplateName
 }

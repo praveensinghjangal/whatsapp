@@ -106,6 +106,16 @@ class InternalService {
     return namespaceReceived.promise
   }
 
+  getFbTemplateName (wabaPhoneNumber, templateid) {
+    const fbTemplateName = q.defer()
+    __logger.info('Inside function to get namespace for the template', { wabaPhoneNumber })
+    const redisService = new RedisService()
+    redisService.getFbTemplateName(templateid)
+      .then(fbTemplateName => fbTemplateName.resolve(fbTemplateName))
+      .catch(err => fbTemplateName.reject(err))
+    return fbTemplateName.promise
+  }
+
   mapComponent (components) {
     if (!components || components.length <= 0) {
       return []
@@ -173,7 +183,7 @@ class InternalService {
       body.template = {
         // namespace: __constants.NAME_SPACE_FB,
         namespace: await this.getNamespaceForTheTemplate(td.whatsapp.from, maxTpsToProvider),
-        name: td.whatsapp.template.templateId,
+        name: await this.getFbTemplateName(td.whatsapp.from, td.whatsapp.template.templateId),
         language: td.whatsapp.template.language,
         components: this.mapComponent(td.whatsapp.template.components)
       }
