@@ -2,8 +2,9 @@ const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const UserService = require('../../app_modules/user/services/dbData')
+
 // const UserService = require('../../user/services/dbData')
-// const q = require('q')
+const q = require('q')
 
 // const sendToDemo10secQueue = (message, queueObj) => {
 //   const messageRouted = q.defer()
@@ -12,6 +13,18 @@ const UserService = require('../../app_modules/user/services/dbData')
 //     .catch(err => messageRouted.reject(err))
 //   return messageRouted.promise
 // }
+
+const urlGeneration = (embeddedSingupErrorConsumerData) => {
+  const messageRouted = q.defer()
+  const informationData = Object.keys(embeddedSingupErrorConsumerData)
+  console.log('informationDatainformationDatainformationData')
+  let url = `${__constants.INTERNAL_END_POINTS.embeddedSignupSupportApi}` + '?'
+  informationData.forEach((key) => {
+    url = url + `${key}=${embeddedSingupErrorConsumerData[key]}` + '&'
+  })
+  messageRouted.resolve(url)
+  return messageRouted.promise
+}
 
 class embeddedSingupErrorConsumer {
   startServer () {
@@ -22,12 +35,14 @@ class embeddedSingupErrorConsumer {
         const userService = new UserService()
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
-            const messageData = JSON.parse(mqData.content.toString())
-            console.log('messageData===========', messageData)
-            const retryCount = messageData.retryCount || 0
-            console.log('retry count: ', retryCount)
-            userService.sendMessageToSupport(messageData)
+            const embeddedSingupErrorConsumerData = JSON.parse(mqData.content.toString())
+            console.log('messageData===========', embeddedSingupErrorConsumerData.err)
+            // const retryCount = embeddedSingupErrorConsumerData.retryCount || 0
+            // console.log('retry count: ', retryCount)
+            urlGeneration(embeddedSingupErrorConsumerData.data)
               .then(response => {
+                console.log('resssssssssssssssssssssssssssssssssssssssssssssssssss', response)
+                userService.sendMessageToSupport(response, embeddedSingupErrorConsumerData)
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {

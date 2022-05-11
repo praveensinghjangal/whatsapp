@@ -60,7 +60,7 @@ const accessInformation = (wabaIdOfClient, businessName, phoneCode, phoneNumber,
     })
     .catch(err => {
       console.log('1111111111111111111111111111111111111111111111', err)
-      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      getAccessInfo.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return getAccessInfo.promise
 }
@@ -71,25 +71,20 @@ class WabaSetupConsumer {
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         rmqObject.channel[queue].consume(queue, mqData => {
-          let retryCount
           try {
             const wabasetUpData = JSON.parse(mqData.content.toString())
-            // userId, providerId, phoneCode, phoneNumber, phoneCertificate, systemUserToken, wabaIdOfClient, authTokenOfWhatsapp
             const { userId, providerId, inputToken, authTokenOfWhatsapp } = wabasetUpData
             console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
             console.log('2222222222222222222222', authTokenOfWhatsapp)
             console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
-            // const wabaIdOfClient = '1234'; let businessIdOfClient; const businessName = 'nameOfBusiness'; const phoneCode = '91'; const phoneNumber = '8097353703'; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; let send
             let wabaIdOfClient; let businessIdOfClient; let businessName; let phoneCode; let phoneNumber; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; const send = {}
-            retryCount = wabasetUpData.retryCount || 0
+            const retryCount = wabasetUpData.retryCount || 0
             redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
-            // /**
               .then(valResponse => {
                 console.log('getMasterRedisDataStatusById-data', valResponse)
                 businessId = valResponse.data.businessId
                 systemUserIdBSP = valResponse.data.systemUserId
                 systemUserToken = valResponse.data.systemUserToken
-                wabasetUpData.systemUserToken = systemUserToken
                 creditLineIdBSP = valResponse.data.creditLineId
                 embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
                 return embeddedSignupService.getWabaOfClient(inputToken, 'wabaNumber')
@@ -165,7 +160,6 @@ class WabaSetupConsumer {
                 // subscribe app to client's waba
                 return embeddedSignupService.subscribeAppToWaba(wabaIdOfClient, 'wabaNumber')
               })
-              // */
               .then(data => {
                 console.log('subscribeAppToWaba', data)
                 return accessInformation(wabaIdOfClient, businessName, phoneCode, phoneNumber, authTokenOfWhatsapp)
@@ -182,6 +176,7 @@ class WabaSetupConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
+                err.data = wabasetUpData
                 // console.log('errorerroreorororooeroreiiieeorturoeteoyyyoieryuytity', err)
                 // console.log('88888888888888888888888888888888888888888888888888888', err.err.include('Phone number not reflected/ not verified. Please try again after some time'))
                 // console.log('99999999999999999999999999999999999999999999999999999', err.err.err)
@@ -215,13 +210,6 @@ class WabaSetupConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            if (err) {
-              if (retryCount < 2) {
-                const oldObj = JSON.parse(mqData.content.toString())
-                oldObj.retryCount = retryCount + 1
-                sendToWabaSetup10secQueue(oldObj, rmqObject)
-              }
-            }
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })

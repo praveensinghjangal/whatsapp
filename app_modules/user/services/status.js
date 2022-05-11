@@ -4,7 +4,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __config = require('../../../config')
 const EmailService = require('../../../lib/sendNotifications/email')
-
+const emailTemplates = require('../../../lib/sendNotifications/emailTemplates')
 class AgreementStatusService {
   canUpdateAgreementStatus (newStatusId, oldStatusId) {
     __logger.info('canUpdateAgreementStatus::', oldStatusId, { TEMPLATE_STATUS_MAPPING: __constants.AGREEMENT_STATUS_MAPPING[oldStatusId], newStatusId })
@@ -24,10 +24,10 @@ class AgreementStatusService {
     }
   }
 
-  sendEmailsToSupports (emails, errorMessage) {
+  sendEmailsToSupports (emails, url, errorMessage) {
     const sendEmail = q.defer()
     const emailService = new EmailService(__config.emailProvider)
-    emailService.sendEmail(emails, 'Error While Embedded Singup', errorMessage)
+    emailService.sendEmail(emails, 'Error While Embedded Singup' + ' - ', emailTemplates.embeddedSingupSupportTemplate(url, errorMessage))
       .then(result => {
         if (result) {
           sendEmail.resolve(result)

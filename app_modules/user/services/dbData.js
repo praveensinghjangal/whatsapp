@@ -690,12 +690,13 @@ class UserData {
     return apiCall.promise
   }
 
-  sendMessageToSupport (errorMessage) {
+  sendMessageToSupport (url, errorMessage) {
     const supportEmails = q.defer()
     const agreementStatusService = new AgreementStatusEngine()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [])
       .then(emails => {
-        return agreementStatusService.sendEmailsToSupports(emails, errorMessage)
+        const supportEmail = emails[0].email.split(',')
+        return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
       })
       .then(result => {
         supportEmails.resolve(result)
