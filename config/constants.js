@@ -201,7 +201,8 @@ const INTERNAL_END_POINTS = {
   markManagerVerified: '/helowhatsapp/api/business/profile/markManagerVerified',
   sendBusinessForApproval: '/helowhatsapp/api/business/profile/submit',
   setProfileStatus: '/helowhatsapp/api/business/profile/status',
-  updateProfileConfigure: '/helowhatsapp/api/business/profile/configure'
+  updateProfileConfigure: '/helowhatsapp/api/business/profile/configure',
+  embeddedSignupSupportApi: '/helowhatsapp/api/users/signup/embedded/continue'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
