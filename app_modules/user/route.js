@@ -33,7 +33,7 @@ router.patch('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt
 router.post('/signup/embedded', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSignup'))
 router.post('/signup/embeddedtest', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSingUpTest'))
 router.post('/signup/embedded/continue', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSingupContinue'))
-
+router.post('/run/script', require('./controllers/runscript'))
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {
   __logger.info('redirected', req.user)
