@@ -17,6 +17,14 @@ const sendToWabaContainerBinding10secQueue = (message, queueObj) => {
   return messageRouted.promise
 }
 
+const sendToWabaContainerBinding15minQueue = (message, queueObj) => {
+  const messageRouted = q.defer()
+  queueObj.sendToQueue(__constants.MQ.wabaContainerBindingConsumer_queue_15_min, JSON.stringify(message))
+    .then(queueResponse => messageRouted.resolve('done!'))
+    .catch(err => messageRouted.reject(err))
+  return messageRouted.promise
+}
+
 const updateProfileconfigure = (authTokenOfWhatsapp, wabaIdOfClient, userId, serviceProviderId, apiKey) => {
   const updateProfileconfigure = q.defer()
   const http = new HttpService(60000)
@@ -101,13 +109,38 @@ class WabaContainerBindingConsumer {
                 rmqObject.sendToQueue(__constants.MQ.twoFaConsumerQueue, JSON.stringify(response))
                 rmqObject.channel[queue].ack(mqData)
               })
+              // .catch(err => {
+              //   err.data = wabaBindingData
+              //   console.log('err', err)
+              //   if (err) {
+              //     if (retryCount < 2) {
+              //       // const oldObj = JSON.parse(mqData.content.toString())
+              //       wabaBindingData.retryCount = retryCount + 1
+              //       // __logger.info('requeing --->', oldObj)
+              //       sendToWabaContainerBinding10secQueue(wabaBindingData, rmqObject)
+              //     } else {
+              //       rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+              //     }
+              //   }
+              //   rmqObject.channel[queue].ack(mqData)
+              // })
               .catch(err => {
-                console.log('err', err)
-                if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                  if (retryCount < 2) {
+                err.data = wabaBindingData
+                if (err) {
+                  if (err.err[0].code === 190 && (err.err[0].message.includes('Error validating access token') || err.err[0].message.includes('The access token could not be decrypted') || err.err[0].message.includes('Malformed access token'))) {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (err.err[0].code === 100 && (err.err[0].message.includes('Unsupported patch request') ||
+                  err.err[0].message.includes('Unsupported post request') ||
+                   err[0].message.includes('(#100) Param waba_id must be a valid WhatsApp Business Account id'))) {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (err.err[0].code === 104 && (err.err[0].message.includes('An access token is required to request'))) {
+                    rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
+                  } else if (err.err[0].code === 4 && (err.err[0].message.includes('(#4) Application request limit reached'))) {
+                    wabaBindingData.retryCount = retryCount + 1
+                    sendToWabaContainerBinding15minQueue(wabaBindingData, rmqObject)
+                  } else if (retryCount < 2) {
                     // const oldObj = JSON.parse(mqData.content.toString())
                     wabaBindingData.retryCount = retryCount + 1
-                    // __logger.info('requeing --->', oldObj)
                     sendToWabaContainerBinding10secQueue(wabaBindingData, rmqObject)
                   } else {
                     rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue, JSON.stringify(err))
