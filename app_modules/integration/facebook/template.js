@@ -54,11 +54,11 @@ class InternalFunctions {
       .then(async data => {
         // console.log('data', data)
         outData = data
-        let next = data && data.paging && data.paging.next ? data.paging.next : ''
-        while (next) {
-          const apiRes = await this.http.Get(next, { 'Content-Type': 'application/json', Accept: 'application/json' }, tokenData.serviceProviderId)
+        let nextUrl = data && data.paging && data.paging.next ? data.paging.next : ''
+        while (nextUrl) {
+          const apiRes = await this.http.Get(nextUrl, { 'Content-Type': 'application/json', Accept: 'application/json' }, tokenData.serviceProviderId)
           if (apiRes && apiRes.data && _.isArray(apiRes.data)) outData.data.push(apiRes.data)
-          next = apiRes && apiRes.paging && apiRes.paging.next ? apiRes.paging.next : ''
+          nextUrl = apiRes && apiRes.paging && apiRes.paging.next ? apiRes.paging.next : ''
         }
         outData.data = outData.data.flat()
         deferred.resolve(outData)

@@ -108,11 +108,14 @@ class InternalService {
 
   getFbTemplateName (wabaPhoneNumber, templateid) {
     const fbTemplateName = q.defer()
-    __logger.info('Inside function to get namespace for the template', { wabaPhoneNumber })
+    __logger.info('getFbTemplateName ------------>', { wabaPhoneNumber, templateid })
     const redisService = new RedisService()
     redisService.getFbTemplateName(templateid)
-      .then(fbTemplateName => fbTemplateName.resolve(fbTemplateName))
-      .catch(err => fbTemplateName.reject(err))
+      .then(templateName => fbTemplateName.resolve(templateName))
+      .catch(err => {
+        console.log('getFbTemplateName err -->', err)
+        fbTemplateName.reject(err)
+      })
     return fbTemplateName.promise
   }
 

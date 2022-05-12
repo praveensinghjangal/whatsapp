@@ -34,10 +34,10 @@ const createInsertParam = (fbTemplate, wabaId, userId) => {
     secondLang: 0,
     headerType: null,
     buttonType: null,
-    buttonData: '{}',
+    buttonData: {},
     firstLanguageStatus: __constants.TEMPLATE_STATUS.approved.statusCode,
-    bodyTextVarExample: '[]',
-    headerTextVarExample: '[]',
+    bodyTextVarExample: [],
+    headerTextVarExample: [],
     secondLanguageBodyTextVarExample: '[]',
     secondLanguageHeaderTextVarExample: '[]',
     mediaExampleUrl: null,
@@ -47,13 +47,13 @@ const createInsertParam = (fbTemplate, wabaId, userId) => {
   _.each(fbTemplate.components, singleComponent => {
     if (singleComponent.type.toLowerCase() === 'body') {
       insertJson.bodyText = singleComponent.text
-      if (singleComponent.example) insertJson.bodyTextVarExample = JSON.stringify(singleComponent.example.body_text[0])
+      if (singleComponent.example) insertJson.bodyTextVarExample = singleComponent.example.body_text[0]
     }
     if (singleComponent.type.toLowerCase() === 'header') {
-      console.log('=============,', singleComponent.format.toLowerCase(), __constants.FB_HEADER_TO_VIVA_HEADER[singleComponent.format.toLowerCase()], singleComponent.example)
+      // console.log('=============,', singleComponent.format.toLowerCase(), __constants.FB_HEADER_TO_VIVA_HEADER[singleComponent.format.toLowerCase()], singleComponent.example)
       insertJson.headerType = __constants.FB_HEADER_TO_VIVA_HEADER[singleComponent.format.toLowerCase()] || null
       if (singleComponent.format.toLowerCase() === 'text') insertJson.headerText = singleComponent.text
-      if (singleComponent.example && singleComponent.example.header_text) insertJson.headerTextVarExample = JSON.stringify(singleComponent.example.header_text)
+      if (singleComponent.example && singleComponent.example.header_text) insertJson.headerTextVarExample = singleComponent.example.header_text
       if (singleComponent.example && singleComponent.example.header_handle) insertJson.mediaExampleUrl = singleComponent.example.header_handle[0]
     }
     if (singleComponent.type.toLowerCase() === 'footer') {
@@ -81,11 +81,17 @@ const createInsertParam = (fbTemplate, wabaId, userId) => {
     }
   })
   if (insertJson.headerText || insertJson.footerText || insertJson.buttonType) insertJson.type = __constants.TEMPLATE_TYPE[1].templateType
-  if (insertJson.bodyTextVarExample.length > 0 || insertJson.headerTextVarExample.length > 0 || insertJson.mediaExampleUrl) insertJson.isPersonalised = 1
-  if (insertJson.buttonType) insertJson.buttonData = JSON.stringify(insertJson.buttonData)
+  if (insertJson.headerType) {
+    insertJson.isPersonalised = 1
+    if (insertJson.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType && insertJson.headerText && (insertJson.headerText.match(/{{\d}}/g) || []).length === 0) insertJson.isPersonalised = 0
+  }
+  if (insertJson.bodyText && (insertJson.bodyText.match(/{{\d}}/g) || []).length > 0)insertJson.isPersonalised = 1
+  insertJson.buttonData = JSON.stringify(insertJson.buttonData)
+  insertJson.bodyTextVarExample = JSON.stringify(insertJson.bodyTextVarExample)
+  insertJson.headerTextVarExample = JSON.stringify(insertJson.headerTextVarExample)
   const insertArr = []
   _.each(insertJson, val => insertArr.push(val))
-  console.log('--------------->', insertArr)
+  // console.log('--------------->', insertArr)
   return insertArr
 }
 
