@@ -2,8 +2,6 @@ const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const UserService = require('../../app_modules/user/services/dbData')
-
-// const UserService = require('../../user/services/dbData')
 const q = require('q')
 
 // const sendToDemo10secQueue = (message, queueObj) => {
@@ -47,16 +45,17 @@ class embeddedSingupErrorConsumer {
               })
               .catch(err => {
                 console.log('err', err)
-                // if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                // if (retryCount < 2) {
-                //   const oldObj = JSON.parse(mqData.content.toString())
-                //   oldObj.retryCount = retryCount + 1
-                //   // __logger.info('requeing --->', oldObj)
-                //   // sendToDemo10secQueue(oldObj, rmqObject)
-                // } else {
-                //   console.log('send to error queue')
-                // }
-                // }
+                if (err) {
+                  rmqObject.sendToQueue(__constants.MQ.em, JSON.stringify(err))
+                  // if (retryCount < 2) {
+                  //   const oldObj = JSON.parse(mqData.content.toString())
+                  //   oldObj.retryCount = retryCount + 1
+                  // // __logger.info('requeing --->', oldObj)
+                  // // sendToDemo10secQueue(oldObj, rmqObject)
+                  // } else {
+                  //   console.log('send to error queue')
+                  // }
+                }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
