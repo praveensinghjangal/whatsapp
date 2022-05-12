@@ -695,7 +695,8 @@ class UserData {
     const agreementStatusService = new AgreementStatusEngine()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [])
       .then(emails => {
-        const supportEmail = emails[0].email.split(',')
+        // const supportEmail = emails[0].email.split(',')
+        const supportEmail = ['8097@yopmail.com']
         return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
       })
       .then(result => {

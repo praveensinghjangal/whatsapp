@@ -145,11 +145,11 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber) => {
   const getIp = q.defer()
   const version = '2.37.2'
   // const command = 'bash shell_scripts/launch_server/launch.bash 2.37.2 917666004488 helo_test_917666004488'
-  const command = `bash shell_scripts/launch_server/launch.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
+  const command = `bash shell_scripts/launch_server_code/launch_customer.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
   // return new Promise((resolve, reject) => {
   shell.exec(command, async (code, stdout, stderr) => {
     if (!code) {
-      const filePath = `shell_scripts/launch_server/output/${userId}_${wabaNumber}.txt`
+      const filePath = `shell_scripts/launch_server_code/output/${userId}_${wabaNumber}.txt`
       fs.readFile(filePath, 'utf8', (err, data) => {
         if (err) {
           console.log('error while reading', err)
