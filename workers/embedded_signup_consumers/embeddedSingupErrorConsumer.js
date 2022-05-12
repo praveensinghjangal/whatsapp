@@ -46,7 +46,7 @@ class embeddedSingupErrorConsumer {
               .catch(err => {
                 console.log('err', err)
                 if (err) {
-                  rmqObject.sendToQueue(__constants.MQ.em, JSON.stringify(err))
+                  rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue2, JSON.stringify(err))
                   // if (retryCount < 2) {
                   //   const oldObj = JSON.parse(mqData.content.toString())
                   //   oldObj.retryCount = retryCount + 1
