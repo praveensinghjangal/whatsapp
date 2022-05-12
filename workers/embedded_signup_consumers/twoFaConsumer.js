@@ -44,7 +44,7 @@ class twoFaConsumer {
                     // __logger.info('requeing --->', oldObj)
                     sendTotwoFaConsumer10secQueue(oldObj, rmqObject)
                   } else {
-                    console.log('send to error queue')
+                    return userService.sendMessageToSupport(tfaPin, err)
                   }
                 }
                 rmqObject.channel[queue].ack(mqData)
