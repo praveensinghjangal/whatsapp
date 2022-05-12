@@ -544,7 +544,7 @@ const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
 const WABIZ_USERNAME = 'admin'
 // const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
 const WABIZ_DEFAULT_PASSWORD = 'secret'
-const WABIZ_CUSTOM_PASSWORD_LENGTH = 8
+const WABIZ_CUSTOM_PASSWORD_LENGTH = 10
 const OPTIN_TYPE = ['bi', 'ui']
 const OPTOUT_TEXT = 'stop'
 

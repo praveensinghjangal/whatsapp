@@ -110,13 +110,14 @@ class SpawningContainerConsumer {
               })
               .then(response => {
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumerQueue, JSON.stringify(response))
+                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumerQueue, JSON.stringify(wabasetUpData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
                 console.log('err', err)
                 if (err) {
-                // todo: check for expiry of authTokenOfWhatsapp
+                  err.data = wabasetUpData
+                  // todo: check for expiry of authTokenOfWhatsapp
                   if (retryCount < 2) {
                     // const oldObj = JSON.parse(mqData.content.toString())
                     wabasetUpData.retryCount = retryCount + 1

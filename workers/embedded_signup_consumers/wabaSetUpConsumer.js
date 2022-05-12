@@ -72,7 +72,7 @@ class WabaSetupConsumer {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
-            const wabasetUpData = JSON.parse(mqData.content.toString())
+            let wabasetUpData = JSON.parse(mqData.content.toString())
             const { userId, providerId, inputToken, authTokenOfWhatsapp } = wabasetUpData
             console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
             console.log('2222222222222222222222', authTokenOfWhatsapp)
@@ -86,6 +86,7 @@ class WabaSetupConsumer {
                 systemUserIdBSP = valResponse.data.systemUserId
                 systemUserToken = valResponse.data.systemUserToken
                 creditLineIdBSP = valResponse.data.creditLineId
+                wabasetUpData = { ...wabasetUpData, ...valResponse.data }
                 embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
                 return embeddedSignupService.getWabaOfClient(inputToken, 'wabaNumber')
               })
@@ -172,7 +173,8 @@ class WabaSetupConsumer {
                 send.userId = userId
                 send.businessIdOfClient = businessIdOfClient
                 send.phoneCertificate = phoneCertificate
-                rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(send))
+                wabasetUpData = { ...wabasetUpData, ...send }
+                rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(wabasetUpData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {

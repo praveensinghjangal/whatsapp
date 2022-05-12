@@ -112,7 +112,7 @@ class BussinessDetailsConsumer {
               .then(response => {
                 console.log('setProfileStatus-data', response)
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.spawningContainerConsumerQueue, JSON.stringify(response))
+                rmqObject.sendToQueue(__constants.MQ.spawningContainerConsumerQueue, JSON.stringify(bussinessDetailsConsumerData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {

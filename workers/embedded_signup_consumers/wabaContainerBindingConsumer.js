@@ -106,7 +106,7 @@ class WabaContainerBindingConsumer {
                 return updateProfileconfigure(authTokenOfWhatsapp, wabaIdOfClient, userId, __config.service_provider_id.facebook, apiKey)
               })
               .then(response => {
-                rmqObject.sendToQueue(__constants.MQ.twoFaConsumerQueue, JSON.stringify(response))
+                rmqObject.sendToQueue(__constants.MQ.twoFaConsumerQueue, JSON.stringify(wabaBindingData))
                 rmqObject.channel[queue].ack(mqData)
               })
               // .catch(err => {
