@@ -158,7 +158,8 @@ const MQ = {
   twoFaConsumerQueue: { type: 'queue', q_name: 'twoFaConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   twoFaConsumer_queue_10_sec: { type: 'queue', q_name: 'twoFaConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'twoFaConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   embeddedSingupErrorConsumerQueue: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  embeddedSingupErrorConsumer_queue_10_sec: { type: 'queue', q_name: 'embeddedSingupErrorConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'embeddedSingupErrorConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  embeddedSingupErrorConsumer_queue_10_sec: { type: 'queue', q_name: 'embeddedSingupErrorConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'embeddedSingupErrorConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  embeddedSingupErrorConsumerQueue2: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue2', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 
 }
 const INCOMING_MESSAGE_RETRY = {
