@@ -39,7 +39,9 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber, privateIp) =>
           return getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [err] })
         }
         console.log('success while reading')
-        let text = data.replace(/ /g, '') // removes white spaces from string
+        const index = data.indexOf('Private IP')
+        let text = data.slice(index, data.length)
+        text = text.replace(/ /g, '') // removes white spaces from string
         text = text.replace(/(\r\n|\n|\r)/gm, '') // removes all line breaks (new lines) from string
         text = text.split('=')[1]
         getIp.resolve({ privateIp: text })

@@ -8,6 +8,10 @@ WORKDIR /app
 
 RUN apk add git
 
+RUN apk add bash
+
+RUN apk add nano
+
 RUN apk add --no-cache \
         python3 \
         py3-pip \
