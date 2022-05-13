@@ -29,13 +29,27 @@ const sendToHeloCampaign = (payload) => {
 
 const sendToUser = (payload) => {
   const userId = payload.userId || null
+  const webhookPostUrl = payload.webhookPostUrl || null
+  const wabaNumber = payload.wabaNumber || null
   delete payload.userId
-  if (payload && payload.webhookPostUrl && __constants.SEND_WEBHOOK_ON.includes(payload.state)) {
-    if (!url.isValid(payload.webhookPostUrl)) {
-      __logger.info('sendToUser ~ invalid webhook URL', payload)
-      return true
+  delete payload.retryCount
+  delete payload.wabaNumber
+  delete payload.heloCampaign
+  delete payload.webhookPostUrl
+  console.log('payyyyyyyyyyyyyyyy ---------->', payload, webhookPostUrl)
+  if (payload && webhookPostUrl && url.isValid(webhookPostUrl)) {
+    if (payload.state) {
+      // console.log('its status ---------->', payload)
+      if (__constants.SEND_WEBHOOK_ON.includes(payload.state)) {
+        return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookQueue', userId, wabaNumber), JSON.stringify({ ...payload, url: webhookPostUrl }))
+      } else {
+        const defer = q.defer()
+        defer.resolve(true)
+        return defer.promise
+      }
     } else {
-      return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookQueue', userId, payload.wabaNumber), JSON.stringify({ ...payload, url: payload.webhookPostUrl }))
+      // console.log('its incoming message ---------->', payload)
+      return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookQueue', userId, wabaNumber), JSON.stringify({ ...payload, url: webhookPostUrl }))
     }
   } else {
     const defer = q.defer()
@@ -52,6 +66,7 @@ const queueCall = (payload, userId) => {
       return [sendToHeloCampaign({ ...payload, userId }), sendToUser({ ...payload, userId })]
     })
     .spread((responseData1, responseData2) => {
+      // console.log('aftger alll ----------', payload)
       defer.resolve(true)
     })
     .then(responseData => defer.resolve(responseData))
