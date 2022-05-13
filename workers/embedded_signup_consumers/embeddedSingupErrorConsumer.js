@@ -32,6 +32,8 @@ class embeddedSingupErrorConsumer {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const userService = new UserService()
         rmqObject.channel[queue].consume(queue, mqData => {
+          let embeddedSingupErrorConsumerDataData
+          let responseData
           try {
             const embeddedSingupErrorConsumerData = JSON.parse(mqData.content.toString())
             console.log('messageData===========', embeddedSingupErrorConsumerData.err)
@@ -39,13 +41,20 @@ class embeddedSingupErrorConsumer {
             // console.log('retry count: ', retryCount)
             urlGeneration(embeddedSingupErrorConsumerData.data)
               .then(response => {
-                console.log('resssssssssssssssssssssssssssssssssssssssssssssssssss', response)
+                console.log('response-----------', response)
+                responseData = response
+                console.log('embeddedSingupErrorConsumerData', embeddedSingupErrorConsumerData)
+                embeddedSingupErrorConsumerDataData = embeddedSingupErrorConsumerData
                 userService.sendMessageToSupport(response, embeddedSingupErrorConsumerData)
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
                 console.log('err', err)
                 if (err) {
+                  err.data = {
+                    response: responseData,
+                    embeddedSingupErrorConsumerData: embeddedSingupErrorConsumerDataData
+                  }
                   rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue2, JSON.stringify(err))
                   // if (retryCount < 2) {
                   //   const oldObj = JSON.parse(mqData.content.toString())
