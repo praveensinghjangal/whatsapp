@@ -18611,11 +18611,19 @@
                 },
                 "templateId": {
                     "type": "string"
+                },
+                "optoutTemplateId":{
+                    "type":"string"
+                },
+                "continuationTransactionMessage":{
+                    "type":"string"
                 }
             },
             "required": [
                 "defaultMessage",
-                "templateId"
+                "templateId",
+                "continuationTransactionMessage",
+                "optoutTemplateId"
             ]
         },
         "addUpdateChatRequest": {
