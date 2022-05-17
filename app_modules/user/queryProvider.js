@@ -418,6 +418,37 @@ const getWabaProfileSetupStatus = () => {
   where wabainfo.user_id = ? and wabainfo.is_active = true`
 }
 
+const getEmbeddedSingupData = () => {
+  return `SELECT fesd.provider_id  as "providerId" , 
+  fesd.input_token as "inputToken", 
+  fesd.auth_token_of_whatsapp as "authTokenOfWhatsapp", 
+  fesd.master_data_id as "masterdDataId", 
+  fesd.business_id as "businessId", 
+  fesd.user_id as "userId" , 
+  fesd.system_user_id as "systemUserId",
+  fesd.system_user_token as "systemUserToken", 
+  fesd.credit_line_id as "creditLineId",
+  fesd.waba_id_of_client as "wabaIdOfClient", 
+  fesd.phone_code as "phoneCode", 
+  fesd.phone_number as "phoneNumber", 
+  fesd.phone_certificate as "phoneCertificate", 
+  fesd.business_id_of_client as "businessIdOfClient",
+  fesd.wabiz_password as "wabizPassword", 
+  fesd.private_ip as "privateIp",  
+  fesd.wabizurl as "wabizurl", 
+  fesd.is_password_set as "isPasswordSet",
+  fesd.is_profile_status_accepted as "isProfileStatusAccepted",
+  fesd.api_key as "apiKey",
+  fesd.system_user_id_bsp as "systemUserIdBSP",
+  fesd.waba_number_that_needs_To_Be_Linked as "wabaNumberThatNeedsToBeLinked",
+  fesd.business_name as "businessName",
+  wabainfo.waba_information_id as "wabaInformationId", 
+  wabainfo.waba_profile_setup_status_id as "wabaProfileSetupStatusId"
+  from facebook_embedded_singup_data fesd
+  left join waba_information wabainfo on wabainfo.user_id = fesd.user_id and wabainfo.is_active = true
+  left Join waba_profile_setup_status wabaprof on wabainfo.waba_profile_setup_status_id = wabaprof.waba_profile_setup_status_id and wabaprof.is_active  = true
+  where fesd.embedded_singup_id = ? and fesd.is_active = true`
+}
 module.exports = {
   getUserRoleData,
   getUserDetailsByEmail,
@@ -474,5 +505,6 @@ module.exports = {
   getPhoneNumbersFromWabaId,
   updateWabizInformation,
   updateTfaPinInformation,
-  getWabaProfileSetupStatus
+  getWabaProfileSetupStatus,
+  getEmbeddedSingupData
 }

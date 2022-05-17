@@ -28,9 +28,9 @@ const redisCommonFunction = require('../../../../lib/commonFunction/redisFunctio
  */
 
 const addUpdateMasterData = (req, res) => {
-  // if (req.user.userRoleId !== __constants.SUPPORT_ROLE_ID) {
-  //   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: [] })
-  // }
+  if (req.user.userRoleId !== __constants.SUPPORT_ROLE_ID) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: [] })
+  }
   const validate = new ValidatonService()
   const userService = new UserService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -40,7 +40,6 @@ const addUpdateMasterData = (req, res) => {
       return redisCommonFunction.getMasterRedisDataStatusById(req.body.masterdDataId)
     })
     .then((data) => {
-      console.log('daaaaaaaaaaaaaaaaaaaatttttttttaaaaaaaaa', data)
       if (data && data.data.masterdDataId && data.exists === true) {
         return userService.updateMasterDataByMasterDataId(req.body, data.data, userId)
       } else {
@@ -59,9 +58,9 @@ const addUpdateMasterData = (req, res) => {
 }
 
 const getMasterDataById = (req, res) => {
-  // if (req.user.userRoleId !== __constants.SUPPORT_ROLE_ID) {
-  //   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_VALID_ROLE_ASSIGNED, err: [] })
-  // }
+  if (req.user.userRoleId !== __constants.SUPPORT_ROLE_ID) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_VALID_ROLE_ASSIGNED, err: [] })
+  }
   const userService = new UserService()
   userService.getMasterData(__constants.FACEBOOK_MASTERDATA_ID)
     .then(data => {
