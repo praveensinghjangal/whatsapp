@@ -696,7 +696,9 @@ class UserData {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [])
       .then(emails => {
         // const supportEmail = emails[0].email.split(',')
-        const supportEmail = ['8097@yopmail.com']
+        // const supportEmail = ['8097@yopmail.com']
+        const supportEmail = emails[0].email.split(',')
+        console.log('support emails to be send ', supportEmail)
         return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
       })
       .then(result => {
@@ -740,6 +742,36 @@ class UserData {
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
+  }
+
+  getEmbeddedSingupData (embeddedsingupid) {
+    __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getEmbeddedSingupData(), [embeddedsingupid])
+      .then(result => {
+        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        userDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
+
+  addEmbbeddedSingupErrorData (query, paramsArray) {
+    const addEmbbeddedSingupErrorData = q.defer()
+    console.log('query to be inserted into the ', query)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, paramsArray)
+      .then(result => {
+        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        addEmbbeddedSingupErrorData.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        addEmbbeddedSingupErrorData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return addEmbbeddedSingupErrorData.promise
   }
 }
 

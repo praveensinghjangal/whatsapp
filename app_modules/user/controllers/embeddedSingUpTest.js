@@ -11,6 +11,7 @@ const controller = (req, res) => {
       console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.user)
       validateData.providerId = req.user.providerId
       validateData.userId = req.user.user_id
+      validateData.createdBy = req.user.user_id
       validateData.inputToken = req.body.inputToken
       validateData.authTokenOfWhatsapp = req.headers.authorization
       return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.wabaSetUpConsumerQueue, JSON.stringify(validateData))

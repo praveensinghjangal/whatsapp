@@ -86,7 +86,7 @@ class WabaSetupConsumer {
                 systemUserIdBSP = valResponse.data.systemUserId
                 systemUserToken = valResponse.data.systemUserToken
                 creditLineIdBSP = valResponse.data.creditLineId
-                wabasetUpData = { ...wabasetUpData, ...valResponse.data }
+                wabasetUpData = { ...wabasetUpData, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP }
                 embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
                 return embeddedSignupService.getWabaOfClient(inputToken, 'wabaNumber')
               })
@@ -106,6 +106,7 @@ class WabaSetupConsumer {
               .then(wabaDetails => {
                 console.log('getWabaDetailsByWabaId-data', wabaDetails)
                 businessName = wabaDetails.name
+                wabasetUpData.businessName = businessName
                 // get phone numbers linked to client's waba id
                 return embeddedSignupService.getPhoneNumberOfWabaId(wabaIdOfClient, 'wabaNumber')
               })
@@ -120,6 +121,7 @@ class WabaSetupConsumer {
                   } else {
                     wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked.split(' ').join('').split('-').join('')
                   }
+                  wabasetUpData.wabaNumberThatNeedsToBeLinked = wabaNumberThatNeedsToBeLinked
                   const obj = phoneCodeAndPhoneSeprator(wabaNumberThatNeedsToBeLinked)
                   phoneCode = obj.phoneCode
                   wabasetUpData.phoneCode = phoneCode

@@ -3,49 +3,125 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const UserService = require('../../app_modules/user/services/dbData')
 const q = require('q')
+const UniqueId = require('../../lib/util/uniqueIdGenerator')
 
-// const sendToDemo10secQueue = (message, queueObj) => {
+// const urlGeneration = (uuid) => {
 //   const messageRouted = q.defer()
-//   queueObj.sendToQueue(__constants.MQ.demo_queue_10_sec, JSON.stringify(message))
-//     .then(queueResponse => messageRouted.resolve('done!'))
-//     .catch(err => messageRouted.reject(err))
+//   // const informationData = Object.keys(embeddedSingupErrorConsumerData)
+//   console.log('informationDatainformationDatainformationData')
+//   const url = `${__constants.INTERNAL_END_POINTS.embeddedSignupSupportApi}` + `/:${uuid}`
+//   // informationData.forEach((key) => {
+//   //   url = url + `${key}=${embeddedSingupErrorConsumerData[key]}` + '&'
+//   // })
+//   // url = url.slice(0, -1)
+//   console.log('final........url', url)
+//   messageRouted.resolve(url)
 //   return messageRouted.promise
 // }
 
-const urlGeneration = (embeddedSingupErrorConsumerData) => {
+const embeddedSingupFacebookData = {
+  userId: 'user_id',
+  inputToken: 'input_token',
+  providerId: 'provider_id',
+  authTokenOfWhatsapp: 'auth_token_of_whatsapp',
+  masterdDataId: 'master_data_id',
+  platFormName: 'platform_name',
+  businessId: 'business_id',
+  systemUserId: 'system_user_id',
+  systemUserToken: 'system_user_token',
+  creditLineId: 'credit_line_id',
+  wabaIdOfClient: 'waba_id_of_client',
+  phoneCode: 'phone_code',
+  phoneNumber: 'phone_number',
+  phoneCertificate: 'phone_certificate',
+  businessIdOfClient: 'business_id_of_client',
+  wabizPassword: 'wabiz_password',
+  privateIp: 'private_ip',
+  wabizurl: 'wabizurl',
+  isPasswordSet: 'is_password_set',
+  createdBy: 'created_by',
+  isProfileStatusAccepted: 'is_profile_status_accepted',
+  apiKey: 'api_key',
+  systemUserIdBSP: 'system_user_id_bsp',
+  wabaNumberThatNeedsToBeLinked: 'waba_number_that_needs_To_Be_Linked',
+  businessName: 'business_name'
+}
+
+const getDynamicQuery = (data, paramsArray) => {
+  console.log('getDynamicQuerygetDynamicQuerygetDynamicQuery11111111', data, paramsArray)
+  console.log('getDynamicQuerygetDynamicQuerygetDynamicQuery222222222', paramsArray)
   const messageRouted = q.defer()
-  const informationData = Object.keys(embeddedSingupErrorConsumerData)
-  console.log('informationDatainformationDatainformationData')
-  let url = `${__constants.INTERNAL_END_POINTS.embeddedSignupSupportApi}` + '?'
-  informationData.forEach((key) => {
-    url = url + `${key}=${embeddedSingupErrorConsumerData[key]}` + '&'
+  const keys = Object.keys(data)
+  // const uniqueId = new UniqueId()
+  let query = 'INSERT INTO facebook_embedded_singup_data '
+  let fields = '( embedded_singup_id, '
+  let values = '( ?, '
+  // paramsArray.push(uniqueId)
+  keys.forEach(key => {
+    fields += `${embeddedSingupFacebookData[key]}, `
+    values += '?, '
+    paramsArray.push(data[key])
   })
-  messageRouted.resolve(url)
+  // fields.length = fields.length - 1
+  // values.length = values.length - 1
+  fields = fields.slice(0, -2)
+  values = values.slice(0, -2)
+  fields += ' )'
+  values += ' )'
+  query = query + fields + ' VALUES ' + values
+  console.log('????????????????????????????????', query)
+  console.log('{{{{{{}{}{}{}{}{}{}{}{}{}{}{', paramsArray)
+  messageRouted.resolve({ query, paramsArray })
   return messageRouted.promise
 }
 
+const InsertEmbbeddedSingupErrorData = (data, paramsArray) => {
+  console.log('InsertEmbbeddedSingupErrorData>>>>>>>>>>>>>>>>>>11111111', data)
+  console.log('InsertEmbbeddedSingupErrorData>>>>>>>>>>>>>>>>>>22222222', data)
+  const InsertEmbbeddedSingupErrorData = q.defer()
+  const userService = new UserService()
+  getDynamicQuery(data, paramsArray)
+    .then(result => {
+      console.log('result form the get dynamic query ', result)
+      return userService.addEmbbeddedSingupErrorData(result.query, result.paramsArray)
+    })
+    .then(data => {
+      InsertEmbbeddedSingupErrorData.resolve(data)
+    })
+    .catch((err) => {
+      InsertEmbbeddedSingupErrorData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [err] })
+    })
+  return InsertEmbbeddedSingupErrorData.promise
+}
+
 class embeddedSingupErrorConsumer {
+  constructor () {
+    this.uniqueId = new UniqueId()
+  }
+
   startServer () {
     const queue = __constants.MQ.embeddedSingupErrorConsumerQueue.q_name
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const userService = new UserService()
+        const uniqueId = this.uniqueId.uuid()
         rmqObject.channel[queue].consume(queue, mqData => {
           let embeddedSingupErrorConsumerDataData
           let responseData
           try {
             const embeddedSingupErrorConsumerData = JSON.parse(mqData.content.toString())
-            console.log('messageData===========', embeddedSingupErrorConsumerData.err)
-            // const retryCount = embeddedSingupErrorConsumerData.retryCount || 0
-            // console.log('retry count: ', retryCount)
-            urlGeneration(embeddedSingupErrorConsumerData.data)
+            console.log('erorororororororororororororororororororor', embeddedSingupErrorConsumerData)
+            InsertEmbbeddedSingupErrorData(embeddedSingupErrorConsumerData.data, [uniqueId])
               .then(response => {
                 console.log('response-----------', response)
                 responseData = response
                 console.log('embeddedSingupErrorConsumerData', embeddedSingupErrorConsumerData)
                 embeddedSingupErrorConsumerDataData = embeddedSingupErrorConsumerData
-                userService.sendMessageToSupport(response, embeddedSingupErrorConsumerData)
+                console.log('response response response response rseponse ', response)
+                const url = `${__constants.INTERNAL_END_POINTS.embeddedSignupSupportApi}` + `/${uniqueId}`
+                console.log('uuuuuuuuuuuuuuuuuuurrrrrrrrrrrrrrrlllllllllllllllllllllll', url)
+                userService.sendMessageToSupport(url, embeddedSingupErrorConsumerData.err)
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
