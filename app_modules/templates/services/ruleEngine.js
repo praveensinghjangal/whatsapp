@@ -71,28 +71,28 @@ class InternalClass {
     __logger.info('callToActionButtonValid::')
     const valid = q.defer()
     if (td.buttonData && !_.isEmpty(td.buttonData) && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
-      if (!td.buttonData.websiteButtontext) {
-        valid.reject('please provide website button text')
+      if (!td.buttonData.websiteButtontext && td.secondLanguageRequired && td.buttonData.secondLanguageWebsiteButtontext) {
+        valid.reject('please provide website button text for first language')
         return valid.promise
       }
-      if (td.secondLanguageRequired && !td.buttonData.secondLanguageWebsiteButtontext) {
+      if (td.buttonData.websiteButtontext && td.secondLanguageRequired && !td.buttonData.secondLanguageWebsiteButtontext) {
         valid.reject('please provide website button text for second language')
         return valid.promise
       }
-      if (!td.buttonData.phoneButtonText) {
+      if (!td.buttonData.phoneButtonText && td.secondLanguageRequired && td.buttonData.secondLanguagePhoneButtonText) {
         valid.reject('please provide phone button text')
         return valid.promise
       }
-      if (td.secondLanguageRequired && !td.buttonData.secondLanguagePhoneButtonText) {
+      if (td.buttonData.phoneButtonText && td.secondLanguageRequired && !td.buttonData.secondLanguagePhoneButtonText) {
         valid.reject('please provide phone button text for second language')
         return valid.promise
       }
-      if (!td.buttonData.webAddress || !url.isValid(td.buttonData.webAddress)) {
+      if (td.buttonData.websiteButtontext && !td.buttonData.webAddress || !url.isValid(td.buttonData.webAddress)) {
         valid.reject('please provide valid web URL')
         return valid.promise
       }
       const testRegex = td.buttonData.phoneNumber ? td.buttonData.phoneNumber.match(new RegExp(__constants.VALIDATOR.phoneNumber, 'g')) : []
-      if (!td.buttonData.phoneNumber || !testRegex || testRegex.length === 0) {
+      if (td.buttonData.phoneButtonText && !td.buttonData.phoneNumber || !testRegex || testRegex.length === 0) {
         valid.reject('please provide valid phone number')
         return valid.promise
       }
