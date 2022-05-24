@@ -113,7 +113,7 @@ class SpawningContainerConsumer {
               })
               .then(response => {
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumerQueue, JSON.stringify(wabasetUpData))
+                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumer_queue_2_min, JSON.stringify(wabasetUpData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {

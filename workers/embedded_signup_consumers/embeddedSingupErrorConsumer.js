@@ -51,6 +51,7 @@ const getDynamicQuery = (data, paramsArray) => {
   console.log('getDynamicQuerygetDynamicQuerygetDynamicQuery11111111', data, paramsArray)
   console.log('getDynamicQuerygetDynamicQuerygetDynamicQuery222222222', paramsArray)
   const messageRouted = q.defer()
+  delete data.retryCount
   const keys = Object.keys(data)
   // const uniqueId = new UniqueId()
   let query = 'INSERT INTO facebook_embedded_singup_data '
