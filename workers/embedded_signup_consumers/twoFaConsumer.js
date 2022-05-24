@@ -23,7 +23,8 @@ class twoFaConsumer {
           try {
             const twoFaConsumerData = JSON.parse(mqData.content.toString())
             const { userId, wabizurl, apiKey, providerId, systemUserToken, phoneCode, phoneNumber } = twoFaConsumerData
-            const tfaPin = Math.floor(100000 + Math.random() * 900000)
+            let tfaPin = Math.floor(100000 + Math.random() * 900000)
+            tfaPin = tfaPin.toString()
             const userService = new UserService()
             const retryCount = twoFaConsumerData.retryCount || 0
             console.log('retry count: ', retryCount)
