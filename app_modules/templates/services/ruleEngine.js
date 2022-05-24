@@ -87,12 +87,12 @@ class InternalClass {
         valid.reject('please provide phone button text for second language')
         return valid.promise
       }
-      if (td.buttonData.websiteButtontext && !td.buttonData.webAddress || !url.isValid(td.buttonData.webAddress)) {
+      if (td.buttonData.websiteButtontext && (!td.buttonData.webAddress || !url.isValid(td.buttonData.webAddress))) {
         valid.reject('please provide valid web URL')
         return valid.promise
       }
       const testRegex = td.buttonData.phoneNumber ? td.buttonData.phoneNumber.match(new RegExp(__constants.VALIDATOR.phoneNumber, 'g')) : []
-      if (td.buttonData.phoneButtonText && !td.buttonData.phoneNumber || !testRegex || testRegex.length === 0) {
+      if (td.buttonData.phoneButtonText && (!td.buttonData.phoneNumber || !testRegex || testRegex.length === 0)) {
         valid.reject('please provide valid phone number')
         return valid.promise
       }
