@@ -76,6 +76,7 @@ class WabaContainerBindingConsumer {
               .then(data => {
                 wabaBindingData.isPasswordSet = true
                 apiKey = data.apiKey
+                wabaBindingData.apiKey = apiKey
                 // todo: if we are running this piece of code after 2tfa is set, we will need to pass 2tfa pin as well
                 // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
                 return embeddedSignupService.requestCode(wabizurl, apiKey, phoneCode, phoneNumber, phoneCertificate)

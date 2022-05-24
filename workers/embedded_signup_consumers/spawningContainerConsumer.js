@@ -26,7 +26,8 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber, privateIp) =>
     return getIp.promise
   }
 
-  const version = '2.37.2'
+  // https://developers.facebook.com/docs/whatsapp/on-premises/changelog/ => gets the version of whatsapp
+  const version = 'v2.39.4'
   // const command = 'bash shell_scripts/launch_server/launch.bash 2.37.2 917666004488 helo_test_917666004488'
   const command = `bash shell_scripts/launch_server/launch_customer.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
   // return new Promise((resolve, reject) => {

@@ -711,7 +711,7 @@ class UserData {
   updateTfaPinInformation (phoneCode, phoneNumber, tfaPin) {
     __logger.info('updateWabizInformation>>>>>>>>>>>>>')
     const apiCall = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTfaPinInformation(), [phoneCode, phoneNumber, tfaPin])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTfaPinInformation(), [tfaPin, phoneCode, phoneNumber])
       .then(result => {
         __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
