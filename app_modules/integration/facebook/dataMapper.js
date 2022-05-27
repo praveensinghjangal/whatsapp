@@ -249,12 +249,12 @@ class InternalService {
       if (td.buttonData.websiteButtontext && td.buttonData.webAddress) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
       if (td.buttonData.phoneButtonText && td.buttonData.phoneNumber) pushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.phoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
       if (pushData.buttons.length > 0) body[0].components.push(pushData)
-      
+
       if (td.secondLanguageRequired) {
-        const secondLangsecondLangPushData = { type: 'BUTTONS', buttons: [] }
+        const secondLangPushData = { type: 'BUTTONS', buttons: [] }
         if (td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.secondLanguageWebsiteButtontext, url: td.buttonData.webAddress })
         if (td.buttonData.secondLanguagePhoneButtonText && td.buttonData.phoneNumber) secondLangPushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.secondLanguagePhoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
-        if (secondLangPushData.buttons.length > 0) body[1].components.push(secondLangsecondLangPushData)
+        if (secondLangPushData.buttons.length > 0) body[1].components.push(secondLangPushData)
       }
     }
     return body
