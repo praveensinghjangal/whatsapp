@@ -548,7 +548,12 @@ const FB_LANG_TO_VIVA_LANG_MAPPING = {
   ga: 'e424155a-f37f-46e2-96df-2146c318f6cd',
   ms: 'e904bc04-7c4c-49ff-9fad-27475a7d5290',
   sw: 'ed26d94c-e250-4d72-9670-38cc751af2a1',
-  ro: 'fbf1426a-e884-4547-a079-684c65688423'
+  ro: 'fbf1426a-e884-4547-a079-684c65688423',
+  zu: 'feb1338f-43e7-4a0d-828f-5ba6e59aff77',
+  ka: 'fc37fc39-8486-40ab-880c-c6a2b592c8aa',
+  ur: 'e68a4fa5-c7cf-4fc1-9d93-11b1178d9196',
+  fil: 'c094dc3a-c0ba-48d2-b790-3cdd2b10ca41',
+  ha: '8dbc173e-cd5f-4643-bb4c-cda552dfb53d'
 }
 const FB_CATEGORY_TO_VIVA_CATEGORY = {
   SHIPPING_UPDATE: 'b3f6ccc1-b271-45bd-aebb-413274f69da1',
