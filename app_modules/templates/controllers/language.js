@@ -26,6 +26,7 @@ const getTemplateLanguages = (req, res) => {
     .then(results => {
       __logger.info('Then 1')
       if (results && results.length > 0) {
+        results.sort((a, b) => a.languageName.localeCompare(b.languageName))
         return __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SUCCESS,
           data: results
