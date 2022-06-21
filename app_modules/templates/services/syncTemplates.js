@@ -83,9 +83,9 @@ const createInsertParam = (fbTemplate, wabaId, userId) => {
   if (insertJson.headerText || insertJson.footerText || insertJson.buttonType) insertJson.type = __constants.TEMPLATE_TYPE[1].templateType
   if (insertJson.headerType) {
     insertJson.isPersonalised = 1
-    if (insertJson.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType && insertJson.headerText && (insertJson.headerText.match(/{{\d}}/g) || []).length === 0) insertJson.isPersonalised = 0
+    if (insertJson.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType && insertJson.headerText && (insertJson.headerText.match(/{{\d{1,2}}}/g) || []).length === 0) insertJson.isPersonalised = 0
   }
-  if (insertJson.bodyText && (insertJson.bodyText.match(/{{\d}}/g) || []).length > 0)insertJson.isPersonalised = 1
+  if (insertJson.bodyText && (insertJson.bodyText.match(/{{\d{1,2}}}/g) || []).length > 0)insertJson.isPersonalised = 1
   insertJson.buttonData = JSON.stringify(insertJson.buttonData)
   insertJson.bodyTextVarExample = JSON.stringify(insertJson.bodyTextVarExample)
   insertJson.headerTextVarExample = JSON.stringify(insertJson.headerTextVarExample)

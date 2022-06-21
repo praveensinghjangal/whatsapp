@@ -62,9 +62,9 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
         if (singleObj && singleObj.message_template_id) { // block to push template data in templateDataObj and redis
           const dataObject = {
             templateId: singleObj.message_template_id,
-            headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d}}/g) || []).length : 0,
-            bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d}}/g) || []).length : 0,
-            footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d}}/g) || []).length : 0,
+            headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             phoneNumber: singleObj.phone_number
           }
           dataObject.approvedLanguages = []

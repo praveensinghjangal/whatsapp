@@ -116,8 +116,8 @@ class InternalClass {
   bodyTextVarMatchInBothLang (td) {
     __logger.info('bodyTextVarMatchInBothLang::')
     const valid = q.defer()
-    const firstLangBodyVarCount = td.bodyText ? (td.bodyText.match(/{{\d}}/g) || []).length : 0
-    const secondLangBodyVarCount = td.secondLanguageBodyText ? (td.secondLanguageBodyText.match(/{{\d}}/g) || []).length : 0
+    const firstLangBodyVarCount = td.bodyText ? (td.bodyText.match(/{{\d{1,2}}}/g) || []).length : 0
+    const secondLangBodyVarCount = td.secondLanguageBodyText ? (td.secondLanguageBodyText.match(/{{\d{1,2}}}/g) || []).length : 0
     __logger.info('header var match', firstLangBodyVarCount, secondLangBodyVarCount)
     if (td.secondLanguageRequired && firstLangBodyVarCount !== secondLangBodyVarCount) {
       valid.reject('Variable in both language body does not match')
@@ -134,8 +134,8 @@ class InternalClass {
       valid.reject('please provide second language footer type')
       return valid.promise
     }
-    const firstLangFooterVarCount = td.footerText ? (td.footerText.match(/{{\d}}/g) || []).length : 0
-    const secondLangFooterVarCount = td.secondLanguageFooterText ? (td.secondLanguageFooterText.match(/{{\d}}/g) || []).length : 0
+    const firstLangFooterVarCount = td.footerText ? (td.footerText.match(/{{\d{1,2}}}/g) || []).length : 0
+    const secondLangFooterVarCount = td.secondLanguageFooterText ? (td.secondLanguageFooterText.match(/{{\d{1,2}}}/g) || []).length : 0
     if (firstLangFooterVarCount > 0) {
       valid.reject('Variable not allowed in footer')
       return valid.promise
@@ -155,8 +155,8 @@ class InternalClass {
       valid.reject('please provide second language header text for header type text')
       return valid.promise
     }
-    const firstLangHeaderTextVarCount = td.headerText ? (td.headerText.match(/{{\d}}/g) || []).length : 0
-    const secondLangHeaderTextVarCount = td.secondLanguageHeaderText ? (td.secondLanguageHeaderText.match(/{{\d}}/g) || []).length : 0
+    const firstLangHeaderTextVarCount = td.headerText ? (td.headerText.match(/{{\d{1,2}}}/g) || []).length : 0
+    const secondLangHeaderTextVarCount = td.secondLanguageHeaderText ? (td.secondLanguageHeaderText.match(/{{\d{1,2}}}/g) || []).length : 0
     __logger.info('header var match', firstLangHeaderTextVarCount, secondLangHeaderTextVarCount)
     if (td.secondLanguageRequired && firstLangHeaderTextVarCount !== secondLangHeaderTextVarCount) {
       valid.reject('Variable in both language header text does not match')
