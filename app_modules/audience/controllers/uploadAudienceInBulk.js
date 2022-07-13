@@ -48,6 +48,14 @@ const formReqBody = excelSingleData => {
     country: excelSingleData.country
   }
 
+  if (!formattedBody.email) {
+    delete formattedBody.email
+  }
+
+  if (!formattedBody.gender) {
+    delete formattedBody.gender
+  }
+
   reqbody.resolve(formattedBody)
   return reqbody.promise
 }
