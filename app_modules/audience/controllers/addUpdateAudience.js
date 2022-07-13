@@ -163,6 +163,12 @@ const sendOptinSuccessMessageToVerifiedAudiences = (verifiedAudiences, updatedAu
 const sendOptinMessage = (body, authToken) => {
   const apiCalled = q.defer()
   __logger.info('inside sendOptinMessage. It calls sendMessageToQueue api ', body)
+
+  //! remove this from
+  if (body[0].whatsapp.from === '917926460095') {
+    apiCalled.resolve(true)
+    return apiCalled.promise
+  }
   const http = new HttpService(60000)
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
   const headers = { 'Content-Type': 'application/json', Authorization: authToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT }

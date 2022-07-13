@@ -58,9 +58,21 @@ const validateSingleReq = excelSingleData => {
   if (!excelSingleData.phoneNumber) errorData.push('please provide "phoneNumber" of type number')
   if (!excelSingleData.optinSource && typeof excelSingleData.optinSource !== 'string' && excelSingleData.optinSource < 1) errorData.push('please provide "optinSource" of type string ')
   if (!excelSingleData.name || typeof excelSingleData.name !== 'string' || excelSingleData.name.length < 1) errorData.push('please provide "name" of type string having minimum length 1')
-  if (!excelSingleData.email || typeof excelSingleData.email !== 'string' || excelSingleData.email.length < 1) errorData.push('please provide "email" of type string having minimum length 1')
-  if (!excelSingleData.gender || typeof excelSingleData.gender !== 'string' || excelSingleData.gender.length < 1) errorData.push('please provide "gender" of type string having minimum length 1')
+  // if (!excelSingleData.email || typeof excelSingleData.email !== 'string' || excelSingleData.email.length < 1) errorData.push('please provide "email" of type string having minimum length 1')
+  // if (!excelSingleData.gender || typeof excelSingleData.gender !== 'string' || excelSingleData.gender.length < 1) errorData.push('please provide "gender" of type string having minimum length 1')
   if (!excelSingleData.country || typeof excelSingleData.country !== 'string' || excelSingleData.country.length < 1) errorData.push('please provide "country" of type string having minimum length 1')
+
+  if (excelSingleData.gender) {
+    if (typeof excelSingleData.gender !== 'string' || excelSingleData.gender.length < 1) {
+      errorData.push('please provide "gender" of type string having minimum length 1')
+    }
+  }
+
+  if (excelSingleData.email) {
+    if (typeof excelSingleData.email !== 'string' || excelSingleData.email.length < 1) {
+      errorData.push('please provide "email" of type string having minimum length 1')
+    }
+  }
 
   _.each(excelSingleData, (val, key) => {
     if (key !== 'phoneNumber' && key !== 'optinSource' && key !== 'name' && key !== 'email' && key !== 'gender' && key !== 'country') {
