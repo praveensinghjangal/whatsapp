@@ -499,7 +499,90 @@
                                         "customThree": "three",
                                         "customFour": "customFour"
                                     }
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "interactive",
+                                        "from": "911234567890",
+                                        "interactive": {
+                                            "type": "button",
+                                            "body": {
+                                                "text": "Thank you for contacting viva connect. Send \"enquiry\" on this number to interact further.\nYou can also Optin with us by clicking on the below button to receive important updates."
+                                            },
+                                            "action": {
+                                                "buttons": [
+                                                    {
+                                                        "type": "reply",
+                                                        "reply": {
+                                                            "id": "Hello Viva",
+                                                            "title": "Hello Viva"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "countryCode": "IN"
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "text",
+                                        "text": "Hello! Welcome to helo.ai. Please let us know what information we can provide you today by opting for any of the below options\n1 - Sms Consumption\n2 - Voice Consumption\n3 - WhatsApp Consumption\n4 - Email Consumption\n5 - Report Card\n6 - Visit us\n7 - Address\n8 - Your Bill",
+                                        "from": "911234567890"
+                                    },
+                                    "countryCode": "IN"
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "interactive",
+                                        "from": "911234567890",
+                                        "interactive": {
+                                            "type": "list",
+                                            "body": {
+                                                "text": "Please select from the below services"
+                                            },
+                                            "action": {
+                                                "button": "View Menu",
+                                                "sections": [
+                                                    {
+                                                        "title": "menu",
+                                                        "rows": [
+                                                            {
+                                                                "id": "1",
+                                                                "title": "Loan Enquiry"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "title": "menu",
+                                                        "rows": [
+                                                            {
+                                                                "id": "2",
+                                                                "title": "Service Queries"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "countryCode": "IN"
                                 }
+                                
+
+
                             ],
                             "type": "array",
                             "items": {
