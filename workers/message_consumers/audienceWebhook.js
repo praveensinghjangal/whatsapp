@@ -16,7 +16,7 @@ class AudienceWebookConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const dataConsumedFromQueue = JSON.parse(mqData.content.toString())
-            const http = new HttpService(5000)
+            const http = new HttpService(180000)
             const headers = {
               'Content-Type': 'application/json'
             }
