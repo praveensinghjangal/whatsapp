@@ -29,6 +29,7 @@ class AudienceWebookConsumer {
 
             http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
               .then(data => {
+                console.log('data.body', data.body)
                 if (data && data.statusCode >= 200 && data.statusCode <= 299) {
                   return data.body
                 } else {
