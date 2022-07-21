@@ -55,7 +55,9 @@ function getTransformObject () {
       }
       chunk.channel = __constants.DELIVERY_CHANNEL.whatsapp
       chunk.optin = true
-      this.records.push(chunk)
+      if(chunk.phoneNumber) {
+        this.records.push(chunk)
+      }
       // console.log(chunk)
       // batch processing of records
       if (this.records.length === __constants.STREAM_OPTIN_BATCH_SIZE) {
