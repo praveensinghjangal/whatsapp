@@ -27,6 +27,7 @@
     "jsodoc": "./node_modules/.bin/jsdoc -c jsdoc.conf -d public/js-docs",
     "debug": "nodemon --inspect=9231 server.js",
     "develop-redis-pubsub": "NODE_ENV=development WORKER_TYPE=redisPubSubMechanism node server.js",
+    "develop-send-optin-excel-streams": "NODE_ENV=development WORKER_TYPE=sendOptinExcelStreams MQ_OBJECT_KEY=send_optin_excel_stream node server.js",
     "v8Profile": "node --prof server.js",
     "standard": "standard --fix"
   },

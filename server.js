@@ -23,7 +23,8 @@ const SERVER_SCRIPTS = {
   processCountScheduler: './workers/schedulers/processCounts',
   misScheduler: './workers/schedulers/mis',
   misSchedulerConversation: './workers/schedulers/misOfConversation',
-  audienceWebhook: './workers/message_consumers/audienceWebhook.js'
+  audienceWebhook: './workers/message_consumers/audienceWebhook.js',
+  sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

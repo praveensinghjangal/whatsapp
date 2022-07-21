@@ -90,11 +90,8 @@ function getTransformObject () {
 // async function to process data
 function saveDataToDB (array) {
   return new Promise((resolve, reject) => {
-    // setTimeout(() => {
-    //   // here data can be modified
-    //   resolve(array.map(e => ({ ...e, id: Math.floor((Math.random() * 10) + 1) })))
-    // }, 10)
-    rmqObject.sendToQueue(__constants.MQ.send_optin_excel_stream, JSON.stringify({ data: array }))
+    const authorization = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiJjZmEwZmZiYy0zMjliLTQzNDktYWQwMi02M2IwNTE2MTBjNTgiLCJwcm92aWRlcklkIjoiYTRmMDM3MjAtM2EzMy00Yjk0LWI4OGEtZTEwNDUzNDkyMTgzIiwid2FiYVBob25lTnVtYmVyIjoiOTE3OTI2NDYwMDk1IiwibWF4VHBzVG9Qcm92aWRlciI6MTV9LCJpYXQiOjE2NTg0MDQ5MzIsImV4cCI6MTY1ODQ5MTMzMn0.3pU27Cd7VCv0qi6AXw2W62TXkP8AvnXziMq8rtk420w'
+    rmqObject.sendToQueue(__constants.MQ.send_optin_excel_stream, JSON.stringify({ data: array, authorization: authorization }))
       .then(statusResponse => resolve('done!'))
       .catch(err => {
         reject(err)
