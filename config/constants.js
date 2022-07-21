@@ -135,6 +135,7 @@ const MQ = {
   webhookHeloCampaign: { type: 'queue', q_name: 'webhook_helo_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   audience_webhook: { type: 'queue', q_name: 'audience_webhook', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  send_optin_excel_stream: { type: 'queue', q_name: 'send_optin_excel_stream', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
@@ -580,6 +581,7 @@ const FB_HEADER_TO_VIVA_HEADER = {
   image: 'Image'
 }
 const FB_TEMPLATE_REDIS_KEY_FOLDER = 'fb_viva_template_name_mapping:'
+const STREAM_OPTIN_BATCH_SIZE = 3500
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -700,3 +702,4 @@ module.exports.FB_LANG_TO_VIVA_LANG_MAPPING = FB_LANG_TO_VIVA_LANG_MAPPING
 module.exports.FB_CATEGORY_TO_VIVA_CATEGORY = FB_CATEGORY_TO_VIVA_CATEGORY
 module.exports.FB_HEADER_TO_VIVA_HEADER = FB_HEADER_TO_VIVA_HEADER
 module.exports.FB_TEMPLATE_REDIS_KEY_FOLDER = FB_TEMPLATE_REDIS_KEY_FOLDER
+module.exports.STREAM_OPTIN_BATCH_SIZE = STREAM_OPTIN_BATCH_SIZE

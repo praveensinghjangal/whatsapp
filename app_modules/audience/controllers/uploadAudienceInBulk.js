@@ -8,6 +8,8 @@ const excelToJson = require('convert-excel-to-json')
 const request = require('request')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
+const storageCustom = require('../services/customStorageEngine')
+const XLSXWriteStream = require('xlsx-write-stream')
 
 /**
  * @namespace -Whatsapp-Audience-Controller-Upload-excel-to-upload-audience-data-
@@ -152,6 +154,14 @@ const upload = multer({
   fileFilter: filter
 }).array('optinFile', 1)
 
+const uploadSingleFile = multer({
+  storage: storageCustom({
+    key: function (req, file, cb) {
+      cb(null, file.fieldname + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
+    }
+  })
+}).single('optinFile')
+
 /**
  * @memberof -Whatsapp-Audience-Controller-Upload-excel-to-upload-audience-data-
  * @name UploadAudienceData
@@ -198,4 +208,47 @@ const uploadAudienceData = (req, res) => {
   })
 }
 
-module.exports = { uploadAudienceData }
+const uploadAudienceDataUsingStreams = (req, res) => {
+  __logger.info('inside uploadAudienceDataUsingStreams::>>>>>>>>>>>>>>')
+  req.xlsxWriter = new XLSXWriteStream()
+  try {
+    uploadSingleFile(req, res, function (err, data) {
+      if (err) {
+        __logger.error('uploadAudienceDataUsingStreams :: file upload API error', err)
+        return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
+      }
+      return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
+      /**
+      if (!req.files || (req.files && !req.files[0])) {
+        return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
+      } else {
+        __logger.info('sendAudieneDataToExcel :: file uploaded')
+        convertToJson(req.files)
+          .then(jsonData => {
+            // todo: divide the json into batches of 3500 and validate each batch and push it to queue
+            return validateAndFormRequestBody(jsonData)
+          })
+          .then(reqBody => {
+            __logger.info('req body for api => then 2', { reqBody })
+            const invalidReq = _.filter(reqBody, { valid: false })
+            if (invalidReq.length > 0) {
+              return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
+            } else {
+              // return callAddUpdateAudienceApi(reqBody, req.headers.authorization)
+            }
+          })
+          .then(data => res.send(data))
+          .catch(err => {
+            __logger.error('sendAudieneDataToExcel :: file upload API error', err)
+            res.send(__util.send(res, { type: err.type, err: err.err }))
+          })
+      }
+      */
+    })
+  } catch (err) {
+    console.log(err)
+    res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err }))
+  }
+}
+
+module.exports = { uploadAudienceData, uploadAudienceDataUsingStreams }
