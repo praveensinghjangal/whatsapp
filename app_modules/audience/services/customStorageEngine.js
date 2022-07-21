@@ -44,6 +44,14 @@ function getTransformObject () {
       // const used = process.memoryUsage().heapUsed / 1024 / 1024
       // console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`)
       // records is blank array decalred below
+      if (!chunk.email) {
+        delete chunk.email
+      }
+      if (!chunk.gender) {
+        delete chunk.gender
+      }
+      chunk.channel = __constants.DELIVERY_CHANNEL.whatsapp
+      chunk.optin = true
       this.records.push(chunk)
       // console.log(chunk)
       // batch processing of records
