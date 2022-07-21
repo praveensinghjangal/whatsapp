@@ -51,6 +51,7 @@ const getDynamicQuery = (data, paramsArray) => {
   console.log('getDynamicQuerygetDynamicQuerygetDynamicQuery11111111', data, paramsArray)
   console.log('getDynamicQuerygetDynamicQuerygetDynamicQuery222222222', paramsArray)
   const messageRouted = q.defer()
+  delete data.retryCount
   const keys = Object.keys(data)
   // const uniqueId = new UniqueId()
   let query = 'INSERT INTO facebook_embedded_singup_data '
@@ -107,11 +108,17 @@ class embeddedSingupErrorConsumer {
         const userService = new UserService()
         const uniqueId = this.uniqueId.uuid()
         rmqObject.channel[queue].consume(queue, mqData => {
+          let embeddedSingupErrorConsumerDataData
+          let responseData
           try {
             const embeddedSingupErrorConsumerData = JSON.parse(mqData.content.toString())
             console.log('erorororororororororororororororororororor', embeddedSingupErrorConsumerData)
             InsertEmbbeddedSingupErrorData(embeddedSingupErrorConsumerData.data, [uniqueId])
               .then(response => {
+                console.log('response-----------', response)
+                responseData = response
+                console.log('embeddedSingupErrorConsumerData', embeddedSingupErrorConsumerData)
+                embeddedSingupErrorConsumerDataData = embeddedSingupErrorConsumerData
                 console.log('response response response response rseponse ', response)
                 const url = `${__constants.INTERNAL_END_POINTS.embeddedSignupSupportApi}` + `/${uniqueId}`
                 console.log('uuuuuuuuuuuuuuuuuuurrrrrrrrrrrrrrrlllllllllllllllllllllll', url)
@@ -121,7 +128,19 @@ class embeddedSingupErrorConsumer {
               .catch(err => {
                 console.log('err', err)
                 if (err) {
-                  rmqObject.sendToQueue(__constants.MQ.em, JSON.stringify(err))
+                  err.data = {
+                    response: responseData,
+                    embeddedSingupErrorConsumerData: embeddedSingupErrorConsumerDataData
+                  }
+                  rmqObject.sendToQueue(__constants.MQ.embeddedSingupErrorConsumerQueue2, JSON.stringify(err))
+                  // if (retryCount < 2) {
+                  //   const oldObj = JSON.parse(mqData.content.toString())
+                  //   oldObj.retryCount = retryCount + 1
+                  // // __logger.info('requeing --->', oldObj)
+                  // // sendToDemo10secQueue(oldObj, rmqObject)
+                  // } else {
+                  //   console.log('send to error queue')
+                  // }
                 }
                 rmqObject.channel[queue].ack(mqData)
               })

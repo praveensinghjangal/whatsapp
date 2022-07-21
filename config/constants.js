@@ -154,6 +154,7 @@ const MQ = {
   spawningContainerConsumer_queue_10_sec: { type: 'queue', q_name: 'spawningContainerConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'spawningContainerConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   wabaContainerBindingConsumerQueue: { type: 'queue', q_name: 'wabaContainerBindingConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   wabaContainerBindingConsumer_queue_10_sec: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumer_queue_2_min: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_2_min', q_options: { durable: true, maxPriority: 10, messageTtl: 120000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   wabaContainerBindingConsumer_queue_15_min: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_15_min', q_options: { durable: true, maxPriority: 10, messageTtl: 900000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   twoFaConsumerQueue: { type: 'queue', q_name: 'twoFaConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   twoFaConsumer_queue_10_sec: { type: 'queue', q_name: 'twoFaConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'twoFaConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
@@ -391,7 +392,7 @@ const WABA_PROFILE_STATUS = {
 }
 const CHAT_APP_BASE_PATH = '/helowhatsappchat/api'
 const WABA_STATUS_MAPPING = {
-  // [WABA_PROFILE_STATUS.profileIncomplete.wabaSetup]: [WABA_PROFILE_STATUS.pendingForSubmission.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
+  [WABA_PROFILE_STATUS.profileIncomplete.statusCode]: [WABA_PROFILE_STATUS.pendingForSubmission.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
   [WABA_PROFILE_STATUS.pendingForSubmission.statusCode]: [WABA_PROFILE_STATUS.submitted.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
   [WABA_PROFILE_STATUS.submitted.statusCode]: [WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.pendingForApproval.statusCode],
   [WABA_PROFILE_STATUS.pendingForApproval.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.containerSpawned.statusCode], // remove accepted & rejected
@@ -545,7 +546,7 @@ const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
 const WABIZ_USERNAME = 'admin'
 // const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
 const WABIZ_DEFAULT_PASSWORD = 'secret'
-const WABIZ_CUSTOM_PASSWORD_LENGTH = 8
+const WABIZ_CUSTOM_PASSWORD_LENGTH = 10
 const OPTIN_TYPE = ['bi', 'ui']
 const OPTOUT_TEXT = 'stop'
 

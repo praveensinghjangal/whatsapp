@@ -32,7 +32,7 @@ class InternalFunctions {
             return resolveObj
           }
         } else {
-          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: { } })
+          return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: data.errors })
         }
       })
       .then(updateRes => {

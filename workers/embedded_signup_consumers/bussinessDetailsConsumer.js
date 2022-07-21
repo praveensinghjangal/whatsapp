@@ -25,7 +25,11 @@ const markManagerVerified = (authTokenOfWhatsapp) => {
   }
   http.Post(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.markManagerVerified, headers)
     .then(data => {
-      markedVerified.resolve(data)
+      if (data && data.body && data.body.data && Object.keys(data.body.data).length) {
+        markedVerified.resolve(data)
+      } else {
+        markedVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.body.msg] })
+      }
     })
     .catch(err => {
       markedVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
@@ -47,7 +51,11 @@ const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
   // this.http.Put(profilePicBuffer, 'body', url, headers, false, data.serviceProviderId)
   http.Put(body, 'body', __config.base_url + __constants.INTERNAL_END_POINTS.sendBusinessForApproval, headers, true)
     .then(data => {
-      sentForApproval.resolve(data)
+      if (data && data.data && Object.keys(data.data).length) {
+        sentForApproval.resolve(data)
+      } else {
+        sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [data.msg] })
+      }
     })
     .catch(err => {
       sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
@@ -104,11 +112,11 @@ class BussinessDetailsConsumer {
               .then(response => {
                 console.log('setProfileStatus-data', response)
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.spawningContainerConsumerQueue, JSON.stringify(response))
+                rmqObject.sendToQueue(__constants.MQ.spawningContainerConsumerQueue, JSON.stringify(bussinessDetailsConsumerData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err)
+                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err, bussinessDetailsConsumerData)
                 if (err) {
                   if (retryCount < 2) {
                     const oldObj = JSON.parse(mqData.content.toString())
@@ -121,6 +129,7 @@ class BussinessDetailsConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
+            console.log('err')
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })

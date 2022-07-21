@@ -12,5 +12,5 @@ sleep 1
 echo "spawnning fb containers"
 sleep 1
 echo "all done"
-echo "private IP = 10.40.13.240" > shell_scripts/launch_server/output/$3.txt
+echo "private IP = 10.40.13.240" > shell_scripts/launch_server_code/output/$3.txt
 

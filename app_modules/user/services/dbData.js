@@ -695,6 +695,8 @@ class UserData {
     const agreementStatusService = new AgreementStatusEngine()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [])
       .then(emails => {
+        // const supportEmail = emails[0].email.split(',')
+        // const supportEmail = ['8097@yopmail.com']
         const supportEmail = emails[0].email.split(',')
         console.log('support emails to be send ', supportEmail)
         return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
@@ -711,7 +713,7 @@ class UserData {
   updateTfaPinInformation (phoneCode, phoneNumber, tfaPin) {
     __logger.info('updateWabizInformation>>>>>>>>>>>>>')
     const apiCall = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTfaPinInformation(), [phoneCode, phoneNumber, tfaPin])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTfaPinInformation(), [tfaPin, phoneCode, phoneNumber])
       .then(result => {
         __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {

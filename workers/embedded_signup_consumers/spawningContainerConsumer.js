@@ -26,9 +26,10 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber, privateIp) =>
     return getIp.promise
   }
 
-  const version = '2.37.2'
+  // https://developers.facebook.com/docs/whatsapp/on-premises/changelog/ => gets the version of whatsapp
+  const version = 'v2.39.4'
   // const command = 'bash shell_scripts/launch_server/launch.bash 2.37.2 917666004488 helo_test_917666004488'
-  const command = `bash shell_scripts/launch_server/launch.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
+  const command = `bash shell_scripts/launch_server/launch_customer.bash ${version} ${wabaNumber} ${userId}_${wabaNumber}`
   // return new Promise((resolve, reject) => {
   shell.exec(command, async (code, stdout, stderr) => {
     if (!code) {
@@ -39,7 +40,9 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber, privateIp) =>
           return getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: [err] })
         }
         console.log('success while reading')
-        let text = data.replace(/ /g, '') // removes white spaces from string
+        const index = data.indexOf('Private IP')
+        let text = data.slice(index, data.length)
+        text = text.replace(/ /g, '') // removes white spaces from string
         text = text.replace(/(\r\n|\n|\r)/gm, '') // removes all line breaks (new lines) from string
         text = text.split('=')[1]
         getIp.resolve({ privateIp: text })
@@ -110,13 +113,14 @@ class SpawningContainerConsumer {
               })
               .then(response => {
                 // after this worker now in which worker we have send data
-                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumerQueue, JSON.stringify(response))
+                rmqObject.sendToQueue(__constants.MQ.wabaContainerBindingConsumer_queue_2_min, JSON.stringify(wabasetUpData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
                 console.log('err', err)
                 if (err) {
-                // todo: check for expiry of authTokenOfWhatsapp
+                  err.data = wabasetUpData
+                  // todo: check for expiry of authTokenOfWhatsapp
                   if (retryCount < 2) {
                     // const oldObj = JSON.parse(mqData.content.toString())
                     wabasetUpData.retryCount = retryCount + 1

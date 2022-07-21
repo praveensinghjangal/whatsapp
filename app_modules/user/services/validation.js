@@ -864,16 +864,6 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
-      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
-
-      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
-        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
-      }
-
-      if (patternError && formatedErr[1].includes('fullName')) {
-        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
-      }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
@@ -881,12 +871,6 @@ class validate {
     } else {
       trimInput.singleInputTrim(request)
         .then(data => isvalid.resolve(data))
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
       if (formatedError.length > 0) {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
@@ -988,16 +972,6 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
-      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
-
-      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
-        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
-      }
-
-      if (patternError && formatedErr[1].includes('fullName')) {
-        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
-      }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
@@ -1005,12 +979,6 @@ class validate {
     } else {
       trimInput.singleInputTrim(request)
         .then(data => isvalid.resolve(data))
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
       if (formatedError.length > 0) {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
@@ -1078,16 +1046,6 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
-      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
-
-      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
-        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
-      }
-
-      if (patternError && formatedErr[1].includes('fullName')) {
-        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
-      }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
@@ -1095,12 +1053,6 @@ class validate {
     } else {
       trimInput.singleInputTrim(request)
         .then(data => isvalid.resolve(data))
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
       if (formatedError.length > 0) {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {
@@ -1183,16 +1135,6 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      const patternError = formatedErr && formatedErr[1] && formatedErr[1].includes('pattern')
-      const date = patternError && formatedErr[1].includes('startDate') ? 'startDate' : 'endDate'
-
-      if (patternError && (formatedErr[1].includes('startDate') || formatedErr[1].includes('endDate'))) {
-        formatedErr[1] = date + ' -invalid date format- use yyyy-mm-dd hh:MM:ss'
-      }
-
-      if (patternError && formatedErr[1].includes('fullName')) {
-        formatedErr[1] = 'fullName -invalid format- please enter valid user name'
-      }
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
@@ -1200,12 +1142,6 @@ class validate {
     } else {
       trimInput.singleInputTrim(request)
         .then(data => isvalid.resolve(data))
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
       if (formatedError.length > 0) {
         isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
       } else {

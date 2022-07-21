@@ -175,7 +175,8 @@ class WabaSetupConsumer {
                 send.userId = userId
                 send.businessIdOfClient = businessIdOfClient
                 send.phoneCertificate = phoneCertificate
-                rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(send))
+                wabasetUpData = { ...wabasetUpData, ...send }
+                rmqObject.sendToQueue(__constants.MQ.bussinessDetailsConsumerQueue, JSON.stringify(wabasetUpData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
