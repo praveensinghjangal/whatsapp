@@ -50,6 +50,9 @@ function getTransformObject () {
       if (!chunk.gender) {
         delete chunk.gender
       }
+      if (typeof chunk.phoneNumber !== 'string') {
+        chunk.phoneNumber = chunk.phoneNumber.toString()
+      }
       chunk.channel = __constants.DELIVERY_CHANNEL.whatsapp
       chunk.optin = true
       this.records.push(chunk)
