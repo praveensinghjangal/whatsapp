@@ -583,7 +583,8 @@ const FB_HEADER_TO_VIVA_HEADER = {
 }
 const FB_TEMPLATE_REDIS_KEY_FOLDER = 'fb_viva_template_name_mapping:'
 const STREAM_OPTIN_BATCH_SIZE = 3500
-const SEND_OPTIN_BATCH_ACK_IN_SECS = 180 // 3 minutes
+// const SEND_OPTIN_BATCH_ACK_IN_SECS = 180 // 3 minutes
+const SEND_OPTIN_BATCH_ACK_IN_SECS = 30 // 30 seconds
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
