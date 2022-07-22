@@ -25,10 +25,11 @@ const getAuthorizationToken = (userId, authorizationToken, wabaNumber) => {
   return getToken.promise
 }
 class EmbeddedSignup {
-  constructor (providerId, userId, authorizationToken) {
+  constructor (providerId, userId, authorizationToken, accessToken) {
     this.providerId = providerId
     this.userId = userId
     this.authorizationToken = authorizationToken
+    this.accessToken = accessToken
   }
 
   getWabaOfClient (inputToken, wabaNumber) {
@@ -37,6 +38,7 @@ class EmbeddedSignup {
     const userService = new UserService()
     getAuthorizationToken(this.userId, this.authorizationToken, wabaNumber)
       .then(token => {
+        token = this.accessToken
         const url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_GRAPHURL_VERSION}${__constants.FACEBOOK_ENDPOINTS.debugToken}${inputToken}`
         const headers = {
           'Content-Type': 'application/json',

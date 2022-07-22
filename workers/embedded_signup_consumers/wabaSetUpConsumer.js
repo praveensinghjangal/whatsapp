@@ -77,7 +77,7 @@ class WabaSetupConsumer {
             console.log('11111111111111111111', userId, providerId, inputToken, authTokenOfWhatsapp)
             console.log('2222222222222222222222', authTokenOfWhatsapp)
             console.log('wabasetupConsumer-data 111111111111111111111111', wabasetUpData)
-            let wabaIdOfClient; let businessIdOfClient; let businessName; let phoneCode; let phoneNumber; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let embeddedSignupService; const send = {}
+            let wabaIdOfClient; let businessIdOfClient; let businessName; let phoneCode; let phoneNumber; let phoneCertificate; let wabaNumberThatNeedsToBeLinked; let businessId; let systemUserIdBSP; let systemUserToken; let creditLineIdBSP; let accessToken; let embeddedSignupService; const send = {}
             const retryCount = wabasetUpData.retryCount || 0
             redisFunction.getMasterRedisDataStatusById(__constants.FACEBOOK_MASTERDATA_ID)
               .then(valResponse => {
@@ -86,8 +86,9 @@ class WabaSetupConsumer {
                 systemUserIdBSP = valResponse.data.systemUserId
                 systemUserToken = valResponse.data.systemUserToken
                 creditLineIdBSP = valResponse.data.creditLineId
-                wabasetUpData = { ...wabasetUpData, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP }
-                embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
+                accessToken = valResponse.data.accessToken
+                wabasetUpData = { ...wabasetUpData, businessId, systemUserIdBSP, systemUserToken, creditLineIdBSP, accessToken }
+                embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken, accessToken)
                 return embeddedSignupService.getWabaOfClient(inputToken, 'wabaNumber')
               })
               .then(debugData => {

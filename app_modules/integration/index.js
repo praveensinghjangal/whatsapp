@@ -72,9 +72,9 @@ class Audience {
 }
 
 class EmbeddedSignup {
-  constructor (providerId, userId, authorizationToken) {
+  constructor (providerId, userId, authorizationToken, accessToken) {
     this.providerName = 'facebook'
-    this.embeddedSignup = new providers[this.providerName].EmbeddedSignup(providerId, userId, authorizationToken)
+    this.embeddedSignup = new providers[this.providerName].EmbeddedSignup(providerId, userId, authorizationToken, accessToken)
   }
 
   getWabaOfClient (inputToken, wabaNumber) { return this.embeddedSignup.getWabaOfClient(inputToken, wabaNumber) }
