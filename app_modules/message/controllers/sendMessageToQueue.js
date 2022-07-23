@@ -135,7 +135,13 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
-  rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
+  const fromPhoneNumer = data.whatsapp.from
+  const numbersThatNeedsToBeSentToCampaignProcessMessagesQueue = ['918122776890', '918976765203', '912261611652', '918976765202', '918976765205']
+  let queueObj = __constants.MQ.process_message
+  if (numbersThatNeedsToBeSentToCampaignProcessMessagesQueue.includes(fromPhoneNumer)) {
+    queueObj = __constants.MQ.process_message_campaign
+  }
+  rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
     .then(queueResponse => saveAndSendMessageStatus(data))
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour }))
     .catch(err => {
