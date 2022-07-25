@@ -501,6 +501,11 @@ class validate {
                 required: ['interactive']
               }
             ]
+          },
+          isCampaign: {
+            type: 'boolean',
+            required: false,
+            default: false
           }
         }
       }

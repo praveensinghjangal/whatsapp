@@ -135,10 +135,8 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
-  const fromPhoneNumer = data.whatsapp.from
-  const numbersThatNeedsToBeSentToCampaignProcessMessagesQueue = ['918122776890', '918976765203', '912261611652', '918976765202', '918976765205']
   let queueObj = __constants.MQ.process_message
-  if (numbersThatNeedsToBeSentToCampaignProcessMessagesQueue.includes(fromPhoneNumer)) {
+  if (data && data.isCampaign) {
     queueObj = __constants.MQ.process_message_campaign
   }
   rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
