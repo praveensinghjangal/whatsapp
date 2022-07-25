@@ -11,7 +11,7 @@ const trimInput = new TrimService()
 //     "text": "This is an example response"
 // }
 class validate {
-  sendMessage(request) {
+  sendMessage (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/sendMessage',
@@ -58,7 +58,7 @@ class validate {
     return isvalid.promise
   }
 
-  sendMessageToQueue(request) {
+  sendMessageToQueue (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/sendMessageToQueue',
@@ -530,7 +530,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkMessageIdExistService(request) {
+  checkMessageIdExistService (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/checkMessageIdExist',
@@ -561,7 +561,7 @@ class validate {
     return isvalid.promise
   }
 
-  addMessageHistory(request) {
+  addMessageHistory (request) {
     const isvalid = q.defer()
 
     const schema = {
@@ -639,7 +639,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkstartDateAndendDate(request) {
+  checkstartDateAndendDate (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/checkstartDateAndendDate',
@@ -691,7 +691,7 @@ class validate {
     return isvalid.promise
   }
 
-  transactionValidator(request) {
+  transactionValidator (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/transactionValidator',
@@ -746,7 +746,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkMediaIdExist(request) {
+  checkMediaIdExist (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/checkMediaIdExist',
@@ -776,7 +776,7 @@ class validate {
     return isvalid.promise
   }
 
-  outgoingTransactionValidatorByFilters(request) {
+  outgoingTransactionValidatorByFilters (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/outgoingTransactionValidator',
@@ -832,7 +832,7 @@ class validate {
     return isvalid.promise
   }
 
-  addConversationLog(request) {
+  addConversationLog (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/addConversationLog',
@@ -889,7 +889,7 @@ class validate {
     return isvalid.promise
   }
 
-  getMediaByPhoneNumber(request) {
+  getMediaByPhoneNumber (request) {
     const isvalid = q.defer()
     const schema = {
       id: '/getMediaByPhoneNumber',

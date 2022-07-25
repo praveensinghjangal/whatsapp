@@ -236,7 +236,7 @@ const controller = (req, res) => {
     }
   }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
-  console.log("req.body===>>", req.body)
+  console.log('req.body===>>', req.body)
   validate.sendMessageToQueue(req.body)
     .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
     .then(data => {
