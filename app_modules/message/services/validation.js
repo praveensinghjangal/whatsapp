@@ -395,8 +395,8 @@ class validate {
                               text: {
                                 type: 'string',
                                 required: false,
-                                minLength: 1,
-                                pattern: __constants.VALIDATOR.noTabLinebreakSpace
+                                minLength: 1
+                                // pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
                                 type: 'object',
