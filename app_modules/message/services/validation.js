@@ -509,19 +509,21 @@ class validate {
     v.addSchema(schema, '/sendMessageToQueue')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
-      // if (err.split('"/^(?:(.)(?!\\\\s\\\\s\\\\s\\\\s)(?!\\\\n)(?!\\\\t))*$/g"').length > 1) {
-      //   const formatedErr = 'Template variable parameter of text cannot contain new line, tab or more than 3 spaces'
-      //   formatedError.push(formatedErr)
-      // } else {
-      const formatedErr = err.split('.')
-      if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
-        formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
-      } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
-        formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
-      } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
-      // }
+      if (err.split('"/^(?:(.)(?!\\\\s\\\\s\\\\s\\\\s)(?!\\\\n)(?!\\\\t))*$/g"').length > 1) {
+        const formatedErr = 'Template variable parameter of text cannot contain new line, tab or more than 3 spaces'
+        formatedError.push(formatedErr)
+      } else {
+        const formatedErr = err.split('.')
+        if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
+          formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
+          formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
+        } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
+      }
     })
     if (formatedError.length > 0) {
+      console.log('sendMessageToQueue validation error: ', formatedError)
+      console.log('request=>>', request)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
