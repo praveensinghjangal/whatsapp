@@ -11,7 +11,7 @@ const trimInput = new TrimService()
 //     "text": "This is an example response"
 // }
 class validate {
-  sendMessage (request) {
+  sendMessage(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/sendMessage',
@@ -58,7 +58,7 @@ class validate {
     return isvalid.promise
   }
 
-  sendMessageToQueue (request) {
+  sendMessageToQueue(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/sendMessageToQueue',
@@ -304,11 +304,11 @@ class validate {
                 anyOf: [
                   {
                     required:
-                    ['mediaId']
+                      ['mediaId']
                   },
                   {
                     required:
-                    ['url']
+                      ['url']
                   }
                 ]
               },
@@ -509,17 +509,17 @@ class validate {
     v.addSchema(schema, '/sendMessageToQueue')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
-      if (err.split('"/^(?:(.)(?!\\\\s\\\\s\\\\s\\\\s)(?!\\\\n)(?!\\\\t))*$/g"').length > 1) {
-        const formatedErr = 'Template variable parameter of text cannot contain new line, tab or more than 3 spaces'
-        formatedError.push(formatedErr)
-      } else {
-        const formatedErr = err.split('.')
-        if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
-          formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
-          formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
-        } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
-      }
+      // if (err.split('"/^(?:(.)(?!\\\\s\\\\s\\\\s\\\\s)(?!\\\\n)(?!\\\\t))*$/g"').length > 1) {
+      //   const formatedErr = 'Template variable parameter of text cannot contain new line, tab or more than 3 spaces'
+      //   formatedError.push(formatedErr)
+      // } else {
+      const formatedErr = err.split('.')
+      if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
+        formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
+      } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
+        formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
+      } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
+      // }
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
@@ -530,7 +530,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkMessageIdExistService (request) {
+  checkMessageIdExistService(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/checkMessageIdExist',
@@ -561,7 +561,7 @@ class validate {
     return isvalid.promise
   }
 
-  addMessageHistory (request) {
+  addMessageHistory(request) {
     const isvalid = q.defer()
 
     const schema = {
@@ -572,11 +572,11 @@ class validate {
       anyOf: [
         {
           required:
-          ['messageId']
+            ['messageId']
         },
         {
           required:
-          ['serviceProviderMessageId']
+            ['serviceProviderMessageId']
         }
       ],
       properties: {
@@ -639,7 +639,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkstartDateAndendDate (request) {
+  checkstartDateAndendDate(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/checkstartDateAndendDate',
@@ -691,7 +691,7 @@ class validate {
     return isvalid.promise
   }
 
-  transactionValidator (request) {
+  transactionValidator(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/transactionValidator',
@@ -746,7 +746,7 @@ class validate {
     return isvalid.promise
   }
 
-  checkMediaIdExist (request) {
+  checkMediaIdExist(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/checkMediaIdExist',
@@ -776,7 +776,7 @@ class validate {
     return isvalid.promise
   }
 
-  outgoingTransactionValidatorByFilters (request) {
+  outgoingTransactionValidatorByFilters(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/outgoingTransactionValidator',
@@ -832,7 +832,7 @@ class validate {
     return isvalid.promise
   }
 
-  addConversationLog (request) {
+  addConversationLog(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/addConversationLog',
@@ -889,7 +889,7 @@ class validate {
     return isvalid.promise
   }
 
-  getMediaByPhoneNumber (request) {
+  getMediaByPhoneNumber(request) {
     const isvalid = q.defer()
     const schema = {
       id: '/getMediaByPhoneNumber',
