@@ -71,7 +71,7 @@
     "e164": "0.0.5",
     "encrypy-decrypt": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/encrypt-decrypt.git#3.1.0",
     "excel": "^1.0.1",
-    "excel-stream": "https://github.com/riddheshganatra/excel-stream.git",
+    "excel-stream": "github:riddheshganatra/excel-stream",
     "express": "4.17.1",
     "express-request-id": "1.4.1",
     "express-validator": "6.1.1",
