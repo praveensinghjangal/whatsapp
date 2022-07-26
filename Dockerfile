@@ -22,6 +22,8 @@ RUN aws configure set default.region ap-south-1
 
 RUN apk add openssh
 
+RUN apk add nano
+
 RUN npm install --production
 
 RUN apk add --update tzdata && cp /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
