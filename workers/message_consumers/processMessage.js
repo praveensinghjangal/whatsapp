@@ -195,6 +195,7 @@ const getWabaPhoneNumberAndAdd = (payload, userId) => {
       const telegramErrorMessage = 'ProcessMessageConsumer ~ getWabaPhoneNumberAndAdd function ~ error while getWabaPhoneNumberAndAdd functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('getWabaPhoneNumberAndAdd sendToRespectiveProviderQueue ::error: ', err)
+      messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return messageStatus.promise
 }
@@ -219,6 +220,7 @@ const callFbApiAndAddUpdateInDb = (messageData, payload, data) => {
       const telegramErrorMessage = 'ProcessMessageConsumer ~ callFbApiAndAddUpdateInDb function ~ error while callFbApiAndAddUpdateInDb functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('callFbApiAndAddUpdateInDb sendToRespectiveProviderQueue ::error: ', err)
+      messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return messageStatus.promise
 }
@@ -241,6 +243,7 @@ const checkIsVerifiedTrueOrFalse = (messageData, rmqObject, queue, mqData, paylo
       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
+      messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return messageStatus.promise
 }
