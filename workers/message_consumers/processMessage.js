@@ -200,7 +200,7 @@ const getWabaPhoneNumberAndAdd = (payload, userId) => {
   return messageStatus.promise
 }
 
-const callFbApiAndAddUpdateInDb = (messageData, payload, data) => {
+const callFbApiAndAddUpdateInDb = (messageData, payload, data, rmqObject, queueObj) => {
   const bool = !!(data && data[0] && data[0].phoneNumber && data[0].wabaPhoneNumberId)
   const messageStatus = q.defer()
   const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
@@ -220,12 +220,16 @@ const callFbApiAndAddUpdateInDb = (messageData, payload, data) => {
       const telegramErrorMessage = 'ProcessMessageConsumer ~ callFbApiAndAddUpdateInDb function ~ error while callFbApiAndAddUpdateInDb functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('callFbApiAndAddUpdateInDb sendToRespectiveProviderQueue ::error: ', err)
+      if (err && err.err && err.err.errors && err.err.errors.length && err.err.errors[0].code === 1015) {
+        // Rate limiting engaged - Too Many Requests.
+        rmqObject.sendToQueue(queueObj, JSON.stringify(messageData))
+      }
       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return messageStatus.promise
 }
 
-const checkIsVerifiedTrueOrFalse = (messageData, rmqObject, queue, mqData, payload) => {
+const checkIsVerifiedTrueOrFalse = (messageData, rmqObject, queue, mqData, payload, queueObj) => {
   const messageStatus = q.defer()
   const audienceService = new AudienceService()
   audienceService.getAudienceVerified(payload.to, payload.whatsapp.from)
@@ -233,7 +237,7 @@ const checkIsVerifiedTrueOrFalse = (messageData, rmqObject, queue, mqData, paylo
       if (data && data.length > 0 && data[0] && data[0].isFacebookVerified) {
         messageStatus.resolve(true)
       } else {
-        return callFbApiAndAddUpdateInDb(messageData, payload, data)
+        return callFbApiAndAddUpdateInDb(messageData, payload, data, rmqObject, queueObj)
       }
     })
     .then(() => {
@@ -262,7 +266,7 @@ class ProcessQueueConsumer {
               const messageData = JSON.parse(mqData.content.toString())
               const payload = messageData.payload
               if (payload.isOptin) {
-                checkIsVerifiedTrueOrFalse(messageData, rmqObject, queue, mqData, payload)
+                checkIsVerifiedTrueOrFalse(messageData, rmqObject, queue, mqData, payload, queueObj)
                   .then(isOptin => {
                     if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
                       return callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
