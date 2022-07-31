@@ -142,13 +142,18 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // todo: for numbers not present in db => create new entries in audiences table
     })
     .then((optinData) => {
-      optinData = [
-        {
-          input: '+917666220077',
-          status: 'valid',
-          wa_id: '917666220077'
-        }
-      ]
+      // optinData = [
+      //   {
+      //     input: '+917666220077',
+      //     status: 'valid',
+      //     wa_id: '917666220077'
+      //   },
+      //   {
+      //     input: '+918097353703',
+      //     status: 'valid',
+      //     wa_id: '918097353703'
+      //   }
+      // ]
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
         const contactNumber = optinData[i].wa_id // without "+"
@@ -246,7 +251,7 @@ class PreProcessQueueConsumer {
                     }
                   })
                   finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
-                  console.log('finalPayloadArr', finalPayloadArr)
+                  // console.log('finalPayloadArr', finalPayloadArr)
                   return sendToQueueBulk(finalPayloadArr, config)
                 })
                 .then(sendToQueueRes => {
