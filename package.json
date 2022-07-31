@@ -8,7 +8,10 @@
     "develop": "nodemon server.js",
     "develop-sendToWebhook-u": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookQueue USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-h": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookHeloCampaign USER_ID=Helo_test node server.js",
+    "develop-preProcessQueueConsumer": "NODE_ENV=development WORKER_TYPE=preProcessQueueConsumer MQ_OBJECT_KEY=pre_process_message USER_ID=Helo_test node server.js",
+    "develop-preProcessCampaignQueueConsumer": "NODE_ENV=development WORKER_TYPE=preProcessQueueConsumer MQ_OBJECT_KEY=pre_process_message_campaign USER_ID=Helo_test node server.js",
     "develop-processQueueConsumer": "NODE_ENV=development WORKER_TYPE=processQueueConsumer MQ_OBJECT_KEY=process_message USER_ID=Helo_test node server.js",
+    "develop-processCampaignQueueConsumer": "NODE_ENV=development WORKER_TYPE=processQueueConsumer MQ_OBJECT_KEY=process_message_campaign USER_ID=Helo_test node server.js",
     "develop-tyntecOutGoingQueueConsumer": "NODE_ENV=development WORKER_TYPE=tyntecOutGoingQueueConsumer MQ_OBJECT_KEY=tyntecOutgoing USER_ID=Helo_test node server.js",
     "develop-tyntecIncoming": "NODE_ENV=development WORKER_TYPE=tyntecIncoming MQ_OBJECT_KEY=tyntec_incoming USER_ID=Helo_test node server.js",
     "develop-tyntecMessageStatus": "NODE_ENV=development WORKER_TYPE=tyntecMessageStatus MQ_OBJECT_KEY=tyntec_message_status USER_ID=Helo_test node server.js",
@@ -37,7 +40,8 @@
     },
     "watch": [
       "app_modules",
-      "routes"
+      "routes",
+      "workers"
     ],
     "events": {
       "restart": "fuser -k 3000/tcp;",

@@ -8,6 +8,7 @@ if (process.env.NODE_ENV === 'development') require('dotenv').config({ path: pro
 
 const SERVER_SCRIPTS = {
   http_api: './workers/http_api.js',
+  preProcessQueueConsumer: './workers/message_consumers/preProcessMessage.js',
   processQueueConsumer: './workers/message_consumers/processMessage.js',
   mockQueueConsumer: './workers/message_consumers/mockQueueConsumer.js',
   tyntecOutGoingQueueConsumer: './workers/message_consumers/tyntecOutGoingQueueConsumer.js',

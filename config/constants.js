@@ -114,6 +114,8 @@ const TEMPLATE_BUTTON_TYPE = [{
 }]
 const PREFETCH_COUNT = +process.env.QUEUE_PREFETCH_COUNT || 25
 const MQ = {
+  pre_process_message: { type: 'queue', q_name: 'pre_process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_campaign: { type: 'queue', q_name: 'pre_process_message_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   process_message_campaign: { type: 'queue', q_name: 'process_message_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
@@ -182,6 +184,7 @@ const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
 
 const MESSAGE_STATUS = {
+  preProcess: 'pre process',
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
   forwarded: 'forwarded',
@@ -194,6 +197,7 @@ const MESSAGE_STATUS = {
   rejected: 'rejected'
 }
 const MESSAGE_STATUS_FOR_DISPLAY = [
+  MESSAGE_STATUS.preProcess,
   MESSAGE_STATUS.inProcess,
   MESSAGE_STATUS.accepted,
   MESSAGE_STATUS.delivered,

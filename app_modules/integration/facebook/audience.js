@@ -45,6 +45,7 @@ class Audience {
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(wabaNumber)
       .then(data => {
+        // data.baseUrl = 'https://10.40.13.240:9090'
         const url = data.baseUrl + __constants.FACEBOOK_ENDPOINTS.saveOptin
         const headers = {
           'Content-Type': 'application/json',
@@ -65,6 +66,7 @@ class Audience {
         return qalllib.qASyncWithBatch(apiCallFn, listOfBodies, __constants.BATCH_SIZE_FOR_SAVE_OPTIN, url, headers, this.http)
       })
       .then(data => {
+        // return deferred.resolve([])
         if (data && data.reject && data.reject.length) {
           return deferred.reject(data.reject[0])
         }

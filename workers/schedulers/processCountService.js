@@ -26,6 +26,9 @@ const upsertCounts = singleUserDayStatusData => {
 
   singleUserDayStatusData.status.forEach(singleStatus => {
     switch (singleStatus.name) {
+      case __constants.MESSAGE_STATUS.preProcess:
+        dataObject.preProcess = singleStatus.count
+        break
       case __constants.MESSAGE_STATUS.inProcess:
         dataObject.inProcess = singleStatus.count
         break

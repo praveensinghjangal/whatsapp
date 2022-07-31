@@ -526,6 +526,21 @@ class validate {
         } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
       }
     })
+
+    // check validation for similar fromNumber
+    const fromNumber = request[0].whatsapp.from
+    const fromNumberIsValid = request.every((obj) => obj.whatsapp.from === fromNumber)
+    if (!fromNumberIsValid) {
+      formatedError.push('From number should be same across the entire request body')
+    }
+
+    // check validation for similar value of isCampaign
+    const isCampaign = request[0].isCampaign
+    const isCampaignIsValid = request.every((obj) => obj.isCampaign === isCampaign)
+    if (!isCampaignIsValid) {
+      formatedError.push('isCampaign value should be same across the entire request body')
+    }
+
     if (formatedError.length > 0) {
       console.log('sendMessageToQueue validation error: ', formatedError)
       console.log('request=>>', request)
