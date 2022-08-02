@@ -364,7 +364,8 @@ const controller = (req, res) => {
         // let queueObj = __constants.MQ.pre_process_message
         let queueObj = __constants.MQ.pre_process_message_general
         if (payloadArray[0] && payloadArray[0].isCampaign) {
-          queueObj = __constants.MQ.pre_process_message_campaign
+          queueObj = require('../../../lib/util/rabbitmqHelper')('pre_process_message_campaign', req.user.user_id, payloadArray[0].whatsapp.from)
+          // queueObj = __constants.MQ.pre_process_message_campaign
         } else if (payloadArray[0] && payloadArray[0].isChatBot) {
           queueObj = __constants.MQ.pre_process_message_chatbot
         } else {

@@ -639,10 +639,14 @@ class UserData {
             __constants.MQ['fbOutgoingSync_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoingSync))
             __constants.MQ['webhookHeloCampaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookHeloCampaign))
             __constants.MQ['webhookQueue_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookQueue))
+            __constants.MQ['pre_process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.pre_process_message_campaign))
+            __constants.MQ['process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.process_message_campaign))
             __constants.MQ['fbOutgoing_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.fbOutgoing.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
             __constants.MQ['fbOutgoingSync_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.fbOutgoingSync.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
             __constants.MQ['webhookHeloCampaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.webhookHeloCampaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
             __constants.MQ['webhookQueue_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.webhookQueue.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
+            __constants.MQ['pre_process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.pre_process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
+            __constants.MQ['process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
           })
           __logger.info('created per user Queue success >>>>>>>>>>>>>')
           userDetails.resolve(result)
