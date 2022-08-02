@@ -46,14 +46,25 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
   return statusSent.promise
 }
 
-const sendToQueue = (data, config) => {
+const sendToQueue = (data, config, currentQueueName) => {
   const messageSent = q.defer()
   const queueData = {
     config: config,
     payload: data
   }
-  let queueObj = __constants.MQ.process_message
-  if (data && data.isCampaign) {
+
+  let queueObj = __constants.MQ.process_message_general
+  if (currentQueueName.includes('chatbot')) {
+    queueObj = __constants.MQ.process_message_chatbot
+  } else if (currentQueueName.includes('otp')) {
+    queueObj = __constants.MQ.process_message_category_otp
+  } else if (currentQueueName.includes('transactional')) {
+    queueObj = __constants.MQ.process_message_category_transactional
+  } else if (currentQueueName.includes('promotional')) {
+    queueObj = __constants.MQ.process_message_category_promotional
+  } else if (currentQueueName.includes('general')) {
+    queueObj = __constants.MQ.process_message_general
+  } else if (currentQueueName.includes('campaign')) {
     queueObj = __constants.MQ.process_message_campaign
   }
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
@@ -68,9 +79,9 @@ const sendToQueue = (data, config) => {
   return messageSent.promise
 }
 
-const sendToQueueBulk = (data, config) => { // function to push to queue in bulk
+const sendToQueueBulk = (data, config, currentQueueName) => { // function to push to queue in bulk
   const sendSingleMessage = q.defer()
-  qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config)
+  qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config, currentQueueName)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
@@ -219,6 +230,7 @@ class PreProcessQueueConsumer {
           __logger.info('preProcessQueueConsumer::Waiting for message...')
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
+              // console.log(__config.mqObjectKey)
               const messageData = JSON.parse(mqData.content.toString())
               let payloadsToBeCheckedForVerified = []
               const payloadsToBeNotCheckedForVerified = []
@@ -252,7 +264,7 @@ class PreProcessQueueConsumer {
                   })
                   finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
                   // console.log('finalPayloadArr', finalPayloadArr)
-                  return sendToQueueBulk(finalPayloadArr, config)
+                  return sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey)
                 })
                 .then(sendToQueueRes => {
                   console.log('=================== final final LAst final')

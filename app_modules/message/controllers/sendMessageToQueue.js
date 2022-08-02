@@ -362,7 +362,7 @@ const controller = (req, res) => {
         finalObjToBeSent.payload = payloadArray
         const planPriority = payloadArray && payloadArray[0] && payloadArray[0].redisData.planPriority ? payloadArray[0].redisData.planPriority : null
         // let queueObj = __constants.MQ.pre_process_message
-        let queueObj
+        let queueObj = __constants.MQ.pre_process_message_general
         if (payloadArray[0] && payloadArray[0].isCampaign) {
           queueObj = __constants.MQ.pre_process_message_campaign
         } else if (payloadArray[0] && payloadArray[0].isChatBot) {
