@@ -276,7 +276,7 @@ const controller = (req, res) => {
     })
     .then(data => {
       if (data && data.categoryId) {
-        data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b'
+        // data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b' // promotional
         // message is a template
         switch (data.categoryId) {
           case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.OTP:
