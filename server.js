@@ -23,6 +23,7 @@ const SERVER_SCRIPTS = {
   processCountScheduler: './workers/schedulers/processCounts',
   misScheduler: './workers/schedulers/mis',
   misSchedulerConversation: './workers/schedulers/misOfConversation',
+  reportsScheduler: './workers/schedulers/reports.js',
   audienceWebhook: './workers/message_consumers/audienceWebhook.js',
   sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js'
 }
