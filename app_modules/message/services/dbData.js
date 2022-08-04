@@ -553,6 +553,74 @@ class MessgaeHistoryService {
       })
     return billingConversation.promise
   }
+
+  getUserDetailsAgainstWabaNumber (uniquewabaNumber) {
+    const getUserDetailsAgainstWabaNumber = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getUserDetailsAgainstWabaNumber(), uniquewabaNumber)
+      .then(result => {
+        if (result) {
+          return getUserDetailsAgainstWabaNumber.resolve(result[0])
+        } else {
+          return getUserDetailsAgainstWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getUserDetailsAgainstWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getUserDetailsAgainstWabaNumber.promise
+  }
+
+  addDataToUserWiseSummray (allUserDetails) {
+    const addDataToUserWiseSummray = q.defer()
+    console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addDataToUserWiseSummray(), allUserDetails)
+      .then(result => {
+        if (result) {
+          return addDataToUserWiseSummray.resolve(result[0])
+        } else {
+          return addDataToUserWiseSummray.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return addDataToUserWiseSummray.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return addDataToUserWiseSummray.promise
+  }
+
+  getActiveBusinessNumber () {
+    const getActiveBusinessNumber = q.defer()
+    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+    // __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getActiveBusinessNumber())
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getActiveBusinessNumber())
+      .then(result => {
+        if (result) {
+          return getActiveBusinessNumber.resolve(result[0])
+        } else {
+          return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getActiveBusinessNumber.promise
+  }
+
+  getCountOfStatusOfWabaNumber (wabaNumber) {
+    const getCountOfStatusOfWabaNumber = q.defer()
+    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getCountOfStatusOfWabaNumber(), [wabaNumber])
+      .then(result => {
+        if (result) {
+          return getCountOfStatusOfWabaNumber.resolve(result)
+        } else {
+          return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getCountOfStatusOfWabaNumber.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

@@ -268,6 +268,27 @@ const getDataOnBasisOfWabaNumberFromBillingCoversation = () => {
   where b.created_on between ? and ? and b.from = ?
   GROUP BY b.conversation_category`
 }
+const getUserDetailsAgainstWabaNumber = () => {
+  return `select  GROUP_CONCAT(wi.user_id) as userId, business_name as businessName 
+  from waba_information wi where CONCAT(phone_code ,phone_number) IN (?)`
+}
+const addDataToUserWiseSummray = () => {
+  return `Insert into userwise_summary 
+  (serial_no,user_id,waba_id,waba_name,
+  waba_number,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,
+  Total_message_InFailed,Total_message_Rejected) 
+  values (?,?,?,?,?,?,?,?,?,?,?,?)`
+}
+const getActiveBusinessNumber = () => {
+  return `select GROUP_CONCAT(phone_code ,phone_number) as wabaNumber , GROUP_CONCAT(user_id) as user_id,
+  GROUP_CONCAT(waba_information_id) as wabaId, GROUP_CONCAT(business_name) as wabaName
+  from waba_information
+  where is_active = true`
+}
+const getCountOfStatusOfWabaNumber = () => {
+  return `select business_number ,state,count(*)  
+  from message_history_220802 where business_number in (?) group by 1,2;`
+}
 
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
@@ -290,5 +311,9 @@ module.exports = {
   addConversationLog,
   checkConversationLogExists,
   getMisRelatedData,
-  getWabaNameByWabaNumber
+  getWabaNameByWabaNumber,
+  getUserDetailsAgainstWabaNumber,
+  addDataToUserWiseSummray,
+  getActiveBusinessNumber,
+  getCountOfStatusOfWabaNumber
 }
