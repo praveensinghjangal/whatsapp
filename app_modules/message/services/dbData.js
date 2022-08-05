@@ -621,6 +621,55 @@ class MessgaeHistoryService {
       })
     return getCountOfStatusOfWabaNumber.promise
   }
+
+  getNewStateDataAgainstAllUser (wabaNumber) {
+    const getCountOfStatusOfWabaNumber = q.defer()
+    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewStateDataAgainstAllUser(), [wabaNumber])
+      .then(result => {
+        if (result) {
+          return getCountOfStatusOfWabaNumber.resolve(result)
+        } else {
+          return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getCountOfStatusOfWabaNumber.promise
+  }
+
+  insertStatusAgainstWaba (data) {
+    const insertStatusAgainstWaba = q.defer()
+    const wabaNumbers = Object.keys(data)
+    const values = []
+    for (let i = 0; i < wabaNumbers.length; i++) {
+      const wabaNumber = wabaNumbers[i]
+      const summary = data[wabaNumber]
+      const totalSubmission = summary['pre process'] || 0
+      const totalMessageSent = summary.forwarded || 0
+      const totalMessageInProcess = summary['in process'] || 0
+      const totalMesageInDelivered = summary.delivered || 0
+      const totalMessageFailed = summary.failed || 0
+      const totalMessageRejected = summary.rejected || 0
+      // Math.round((num + Number.EPSILON) * 100) / 100
+      const deliveryPercentage = Math.round((totalMesageInDelivered + Number.EPSILON * 100) / 100)
+      values.push([wabaNumber, totalSubmission, totalMessageSent, totalMessageInProcess, totalMesageInDelivered, totalMessageFailed, totalMessageRejected, deliveryPercentage])
+    }
+    console.log('finalllllllllllllllllllllllllllllllllllllllllllll', values)
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.mapNewResourceToRole(), values)
+      .then(result => {
+        if (result) {
+          return insertStatusAgainstWaba.resolve(result)
+        } else {
+          return insertStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return insertStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return insertStatusAgainstWaba.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

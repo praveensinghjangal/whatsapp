@@ -10,59 +10,61 @@ const DbService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
 // const rejectionHandler = require('../../lib/util/rejectionHandler')
 // const _ = require('lodash')
+// const { values } = require('lodash')
 // const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 
-// handle no record for mis data as of now mis stops in case of no data but if there is 0 campagin the opt out data should go
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  // const audienceService = new AudienceService()
   const date = moment().utc().subtract(0, 'days').format('YYYY-MM-DD')
   const onedayBefore = moment().utc().subtract(360, 'days').format('YYYY-MM-DD')
-  //   const startDate = moment().utc().subtract(2, 'days').format('YYYY-MM-DD')
-  //   const startOfMonth = moment(dateWithTime).utc().startOf('month').format('YYYY-MM-DD')
-  //   const endOfMonth = moment(dateWithTime).utc().endOf('month').format('YYYY-MM-DD')
-  // const attachments = []
-  // const passingObjectToMailer = {}
-  // const userIdToUserName = {}
-  // let allUserDetails
-  // const wabaNumber = []
   let wabaNumber
-  // const overallData = {}
+  const wabaData = {}
+  // const states = Object.keys(__constants.MESSAGE_STATUS)
+  // const queryParam = []
   console.log('00000000000000000000000000000', onedayBefore, date)
   dbService.getActiveBusinessNumber()
+    .then((data) => {
+      if (data) {
+        wabaNumber = data.wabaNumber.split(',')
+        return dbService.getNewStateDataAgainstAllUser(wabaNumber)
+      }
+    })
     .then(data => {
       console.log('11111111111111111111111111111111111', data)
       if (data) {
-        wabaNumber = data.wabaNumber.split(',')
-        // userId = data.wabaNumber.split(',')
-        // wabaId = data.wabaNumber.split(',')
-        // wabaName = data.wabaNumber.split(',')
-        return dbService.getCountOfStatusOfWabaNumber(wabaNumber)
+        data.forEach((value, index) => {
+          let finalvalue = 0
+          if (value['count(state)']) {
+            finalvalue = value['count(state)']
+          }
+          if (!wabaData[value.business_number]) {
+            wabaData[value.business_number] = {
+              [value.state]: finalvalue
+            }
+          } else {
+            wabaData[value.business_number][value.state] = finalvalue
+          }
+        })
+        console.log('wabaData===>', wabaData)
       }
-      // } else {
-      //   return rejectionHandler({ type: __constants.RESPONSE_MESSAGES., err: [messages.invalidCredentials] })
-      // // console.log('111111111111111111111111111111111111', allUserData)
-      // allUserData.map((data) => {
-      //   wabaNumber.push(data.wabaPhoneNumber)
-      // })
-      // const uniquewabaNumber = [...new Set(wabaNumber)]
-      // console.log('999999999999999999999', uniquewabaNumber)
-      // allUserDetails = allUserData
-      // return uniquewabaNumber
+    })
+    .then(() => {
+      return dbService.insertStatusAgainstWaba(wabaData)
     })
     .then((data) => {
-      console.log('2222222222222222222222222222222222222222222222', data)
-      // data.map((value) => {
-      //   // overallData = value.state
-      // })
+      __logger.info('MIS mail sent ~function=messageStatusOnMail', data)
     })
-    // .then((uniquewabaNumber) => {
-    //   return dbService.getUserDetailsAgainstWabaNumber(uniquewabaNumber)
-    // })
-    // .then((data) => {
-    //   console.log('88888888888888888888888888888888888888', data)
-    //   console.log('99999999999999999999999999999999999999', allUserDetails)
-    //   return dbService.addDataToUserWiseSummray(allUserDetails)
+    // .then(() => {
+    //   const wabaNumbers = Object.keys(wabaData)
+    //   for (let i = 0; i < wabaNumbers.length; i++) {
+    //     const wabaNumber = wabaNumbers[i]
+    //     queryParam.push([wabaNumber])
+    //     for (let j = 0; j < states.length; j++) {
+    //       const state = states[j]
+    //       queryParam[queryParam.length - 1].push(wabaData[wabaNumber][state])
+    //     }
+    //   }
+    //   console.log('333333333333333333333333333333333333', queryParam)
     // })
     .catch((error) => {
       console.log('error in sending mis ~function=messageStatusOnMail', error)

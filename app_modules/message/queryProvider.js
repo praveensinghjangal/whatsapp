@@ -289,6 +289,22 @@ const getCountOfStatusOfWabaNumber = () => {
   return `select business_number ,state,count(*)  
   from message_history_220802 where business_number in (?) group by 1,2;`
 }
+const getNewStateDataAgainstAllUser = () => {
+  return `SELECT business_number, count(state), state
+  from
+  (SELECT business_number, state, message_id, created_on
+  FROM (
+    SELECT DISTINCT message_id, state, business_number, created_on
+    FROM helo_whatsapp.message_history
+    where  business_number in (?)
+    order BY created_on desc) as ids
+  group BY ids.message_id) as id
+  group by 1, 3 ;`
+}
+const mapNewResourceToRole = () => {
+  return `INSERT into userwise_summary (waba_number,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,Total_message_InFailed,Total_message_Rejected,Delivered_Percentage) 
+  values (?)`
+}
 
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
@@ -315,5 +331,7 @@ module.exports = {
   getUserDetailsAgainstWabaNumber,
   addDataToUserWiseSummray,
   getActiveBusinessNumber,
-  getCountOfStatusOfWabaNumber
+  getCountOfStatusOfWabaNumber,
+  getNewStateDataAgainstAllUser,
+  mapNewResourceToRole
 }

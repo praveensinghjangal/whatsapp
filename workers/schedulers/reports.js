@@ -2,12 +2,12 @@ const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
 // const messageStatusOnMail = require('./misService')
-const insertReportsToTable = require('./reportServices')
+const InsertDataIntoSumarryReports = require('./reportServices')
 const __constants = require('../../config/constants')
 
 const task = {
   one: cron.schedule(__constants.REPORTS_SCHEDULER_TIME, () => {
-    insertReportsToTable()
+    InsertDataIntoSumarryReports()
   }, {
   })
 }
