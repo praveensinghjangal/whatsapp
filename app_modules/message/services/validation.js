@@ -224,7 +224,7 @@ class validate {
                           properties: {
                             title: {
                               type: 'string',
-                              required: true,
+                              required: false,
                               maxLength: 24
                             },
                             rows: {
