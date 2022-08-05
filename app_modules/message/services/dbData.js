@@ -652,7 +652,6 @@ class MessgaeHistoryService {
       const totalMesageInDelivered = summary.delivered || 0
       const totalMessageFailed = summary.failed || 0
       const totalMessageRejected = summary.rejected || 0
-      // Math.round((num + Number.EPSILON) * 100) / 100
       const deliveryPercentage = Math.round((totalMesageInDelivered + Number.EPSILON * 100) / 100)
       values.push([wabaNumber, totalSubmission, totalMessageSent, totalMessageInProcess, totalMesageInDelivered, totalMessageFailed, totalMessageRejected, deliveryPercentage])
     }
