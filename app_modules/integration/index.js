@@ -24,7 +24,7 @@ class Template {
 
   addTemplate (data, wabaNumber) { return this.template.addTemplate(data, wabaNumber) }
 
-  getTemplateList (wabaNumber) { return this.template.getTemplateList(wabaNumber) }
+  getTemplateList (wabaNumber, mapData) { return this.template.getTemplateList(wabaNumber, mapData) }
 
   getTemplateInfo (wabaNumber, templateId, queryParam) { return this.template.getTemplateInfo(wabaNumber, templateId, queryParam) }
 

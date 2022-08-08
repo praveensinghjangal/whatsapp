@@ -486,6 +486,64 @@ class TemplateService {
       })
     return templateData.promise
   }
+
+  getBulkTemplateDataByIds (messageTemplateIds) {
+    __logger.info('inside get template by id service', messageTemplateIds)
+    const templateData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBulkTemplateDataByIds(), [messageTemplateIds])
+      .then(result => {
+        __logger.info('Qquery Result', { result })
+        if (result && result.length > 0) {
+          templateData.resolve(result)
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_ID_NOT_EXISTS, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template by id function: ', err)
+        templateData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateData.promise
+  }
+
+  insertTemplateBulk (queryParam) {
+    __logger.info('Inserting new template')
+    const dataInserted = q.defer()
+    __logger.info('inserttttttttttttttttttttt->', queryParam)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.insertTemplateBulk(), [queryParam])
+      .then(result => {
+        __logger.info('result', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          dataInserted.resolve(true)
+        } else {
+          dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error: ', err)
+        dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return dataInserted.promise
+  }
+
+  getFbTemplateName (messageTemplateId) {
+    __logger.info('inside get template by id service', messageTemplateId)
+    const templateData = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFbTemplateName(), [messageTemplateId])
+      .then(result => {
+        __logger.info('Qquery Result', { result })
+        if (result && result.length > 0) {
+          templateData.resolve(result)
+        } else {
+          templateData.reject({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get template by id function: ', err)
+        templateData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return templateData.promise
+  }
 }
 
 module.exports = TemplateService

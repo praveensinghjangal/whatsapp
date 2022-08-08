@@ -16,7 +16,7 @@ class AudienceWebookConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const dataConsumedFromQueue = JSON.parse(mqData.content.toString())
-            const http = new HttpService(5000)
+            const http = new HttpService(180000)
             const headers = {
               'Content-Type': 'application/json'
             }
@@ -29,6 +29,7 @@ class AudienceWebookConsumer {
 
             http.Post(postObj, 'body', dataConsumedFromQueue.audienceWebhookUrl, headers)
               .then(data => {
+                console.log('data.body', data.body)
                 if (data && data.statusCode >= 200 && data.statusCode <= 299) {
                   return data.body
                 } else {

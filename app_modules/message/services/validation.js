@@ -224,7 +224,7 @@ class validate {
                           properties: {
                             title: {
                               type: 'string',
-                              required: true,
+                              required: false,
                               maxLength: 24
                             },
                             rows: {
@@ -304,11 +304,11 @@ class validate {
                 anyOf: [
                   {
                     required:
-                    ['mediaId']
+                      ['mediaId']
                   },
                   {
                     required:
-                    ['url']
+                      ['url']
                   }
                 ]
               },
@@ -395,8 +395,8 @@ class validate {
                               text: {
                                 type: 'string',
                                 required: false,
-                                minLength: 1,
-                                pattern: __constants.VALIDATOR.noTabLinebreakSpace
+                                minLength: 1
+                                // pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
                                 type: 'object',
@@ -501,6 +501,11 @@ class validate {
                 required: ['interactive']
               }
             ]
+          },
+          isCampaign: {
+            type: 'boolean',
+            required: false,
+            default: false
           }
         }
       }
@@ -521,7 +526,24 @@ class validate {
         } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
       }
     })
+
+    // check validation for similar fromNumber
+    const fromNumber = request[0].whatsapp.from
+    const fromNumberIsValid = request.every((obj) => obj.whatsapp.from === fromNumber)
+    if (!fromNumberIsValid) {
+      formatedError.push('From number should be same across the entire request body')
+    }
+
+    // check validation for similar value of isCampaign
+    const isCampaign = request[0].isCampaign
+    const isCampaignIsValid = request.every((obj) => obj.isCampaign === isCampaign)
+    if (!isCampaignIsValid) {
+      formatedError.push('isCampaign value should be same across the entire request body')
+    }
+
     if (formatedError.length > 0) {
+      console.log('sendMessageToQueue validation error: ', formatedError)
+      console.log('request=>>', request)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
@@ -572,11 +594,11 @@ class validate {
       anyOf: [
         {
           required:
-          ['messageId']
+            ['messageId']
         },
         {
           required:
-          ['serviceProviderMessageId']
+            ['serviceProviderMessageId']
         }
       ],
       properties: {

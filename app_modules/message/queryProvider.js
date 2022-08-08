@@ -255,7 +255,7 @@ const getMisRelatedData = () => {
   FROM billing_conversation b
   where b.created_on between ? and ?
   and   b.created_on not between concat(Date(now()),' 00:00:00') and concat(Date(now()),' 23:59:59')
-  GROUP BY b.conversation_category , b.from, DATE(b.created_on)`
+  GROUP BY b.conversation_category ,b.from, DATE(b.created_on)`
 }
 
 const getWabaNameByWabaNumber = () => {

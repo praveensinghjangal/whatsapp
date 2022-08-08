@@ -8,7 +8,10 @@
     "develop": "nodemon server.js",
     "develop-sendToWebhook-u": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookQueue USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-h": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookHeloCampaign USER_ID=Helo_test node server.js",
+    "develop-preProcessQueueConsumer": "NODE_ENV=development WORKER_TYPE=preProcessQueueConsumer MQ_OBJECT_KEY=pre_process_message USER_ID=Helo_test node server.js",
+    "develop-preProcessCampaignQueueConsumer": "NODE_ENV=development WORKER_TYPE=preProcessQueueConsumer MQ_OBJECT_KEY=pre_process_message_campaign USER_ID=Helo_test node server.js",
     "develop-processQueueConsumer": "NODE_ENV=development WORKER_TYPE=processQueueConsumer MQ_OBJECT_KEY=process_message USER_ID=Helo_test node server.js",
+    "develop-processCampaignQueueConsumer": "NODE_ENV=development WORKER_TYPE=processQueueConsumer MQ_OBJECT_KEY=process_message_campaign USER_ID=Helo_test node server.js",
     "develop-tyntecOutGoingQueueConsumer": "NODE_ENV=development WORKER_TYPE=tyntecOutGoingQueueConsumer MQ_OBJECT_KEY=tyntecOutgoing USER_ID=Helo_test node server.js",
     "develop-tyntecIncoming": "NODE_ENV=development WORKER_TYPE=tyntecIncoming MQ_OBJECT_KEY=tyntec_incoming USER_ID=Helo_test node server.js",
     "develop-tyntecMessageStatus": "NODE_ENV=development WORKER_TYPE=tyntecMessageStatus MQ_OBJECT_KEY=tyntec_message_status USER_ID=Helo_test node server.js",
@@ -37,6 +40,7 @@
     "jsodoc": "./node_modules/.bin/jsdoc -c jsdoc.conf -d public/js-docs",
     "debug": "nodemon --inspect=9231 server.js",
     "develop-redis-pubsub": "NODE_ENV=development WORKER_TYPE=redisPubSubMechanism node server.js",
+    "develop-send-optin-excel-streams": "NODE_ENV=development WORKER_TYPE=sendOptinExcelStreams MQ_OBJECT_KEY=send_optin_excel_stream node server.js",
     "v8Profile": "node --prof server.js",
     "standard": "standard --fix"
   },
@@ -46,7 +50,8 @@
     },
     "watch": [
       "app_modules",
-      "routes"
+      "routes",
+      "workers"
     ],
     "events": {
       "restart": "fuser -k 3000/tcp;",
@@ -79,6 +84,8 @@
     "dotenv": "8.2.0",
     "e164": "0.0.5",
     "encrypy-decrypt": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/encrypt-decrypt.git#3.1.0",
+    "excel": "^1.0.1",
+    "excel-stream": "https://github.com/riddheshganatra/excel-stream.git",
     "express": "4.17.1",
     "express-request-id": "1.4.1",
     "express-validator": "6.1.1",
@@ -127,6 +134,7 @@
     "viva-logger": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/viva-logger.git#2.2.3",
     "winston": "3.1.0",
     "winston-daily-rotate-file": "3.10.0",
+    "xlsx-write-stream": "0.0.19",
     "yamljs": "0.3.0"
   },
   "devDependencies": {

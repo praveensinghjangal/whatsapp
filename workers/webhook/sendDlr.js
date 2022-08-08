@@ -9,17 +9,33 @@ const sendDlr = (message, queueObj, queue, mqData) => {
   __logger.info('inside ~function=sendDlr.', message)
   const messageRouted = q.defer()
   const http = new HttpService(60000)
-  const webhookPayload = {
-    messageId: message.messageId || null,
-    deliveryChannel: message.deliveryChannel || null,
-    statusTime: message.statusTime || null,
-    state: message.state || null,
-    from: message.from || null,
-    to: message.to || null,
-    customOne: message.customOne,
-    customTwo: message.customTwo,
-    customThree: message.customThree,
-    customFour: message.customFour
+  let webhookPayload = {}
+  if (message && message.content) {
+    // incoming message
+    webhookPayload = {
+      messageId: message.messageId || null,
+      channel: message.channel || null,
+      from: message.from || null,
+      to: message.to || null,
+      receivedAt: message.receivedAt || null,
+      content: message.content || null,
+      event: message.event || null,
+      whatsapp: message.whatsapp || null
+    }
+  } else {
+    // message status
+    webhookPayload = {
+      messageId: message.messageId || null,
+      deliveryChannel: message.deliveryChannel || null,
+      statusTime: message.statusTime || null,
+      state: message.state || null,
+      from: message.from || null,
+      to: message.to || null,
+      customOne: message.customOne,
+      customTwo: message.customTwo,
+      customThree: message.customThree,
+      customFour: message.customFour
+    }
   }
   http.Post(webhookPayload, 'body', message.url)
     .then(function (response) {

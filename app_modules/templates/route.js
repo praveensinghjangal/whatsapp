@@ -4,6 +4,7 @@ const authMiddleware = require('../../middlewares/auth/authentication')
 const authstrategy = require('../../config').authentication.strategy
 const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 const endUserConfigMiddleware = require('../../middlewares/setUserConfig').setEndUserConfig
+const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 
 // Controller require section
 const fetchTemplatesController = require('./controllers/fetchTemplates')
@@ -50,5 +51,8 @@ router.patch('/:templateId/status', authMiddleware.authenticate(authstrategy.jwt
 router.delete('/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, deleteTemplateController.deleteTemplate)
 router.get('/:userId/:templateId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateInfoByUserIdAndTemplateId)
 router.get('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchTemplatesController.getTemplateList)
+
+// sync
+router.post('/facebook/sync', tokenBasedAuth, require('./controllers/syncTemplate').controller)
 
 module.exports = router

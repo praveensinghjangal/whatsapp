@@ -55,6 +55,7 @@ class Authentication {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(wabaData => {
+        // wabaData.wabizBaseUrl = 'https://10.40.13.240:9090'
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
         if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
           const internalFunctions = new InternalFunctions()

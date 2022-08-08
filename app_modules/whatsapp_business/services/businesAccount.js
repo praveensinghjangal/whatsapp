@@ -602,7 +602,7 @@ class businesAccountService {
     __logger.info('toggleChatbot service ->', userId, callerUserId, wabaOldData, chatBotData)
     const dataUpdated = q.defer()
     const serviceProviderData = {
-      chatbotActivated: chatBotData.chatBotActivated ? chatBotData.chatBotActivated : wabaOldData.chatBotActivated,
+      chatbotActivated: chatBotData.chatBotActivated !== undefined ? chatBotData.chatBotActivated : wabaOldData.chatBotActivated,
       updatedBy: callerUserId,
       userId: userId
     }

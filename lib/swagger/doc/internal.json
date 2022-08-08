@@ -235,6 +235,93 @@
                                         "customThree": "three",
                                         "customFour": "customFour"
                                     }
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "interactive",
+                                        "from": "911234567890",
+                                        "interactive": {
+                                            "type": "button",
+                                            "body": {
+                                                "text": "Thank you for contacting viva connect. Send \"enquiry\" on this number to interact further.\nYou can also Optin with us by clicking on the below button to receive important updates."
+                                            },
+                                            "action": {
+                                                "buttons": [
+                                                    {
+                                                        "type": "reply",
+                                                        "reply": {
+                                                            "id": "Hello Viva",
+                                                            "title": "Hello Viva"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "countryCode": "IN"
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "text",
+                                        "text": "Hello! Welcome to helo.ai. Please let us know what information we can provide you today by opting for any of the below options\n1 - Sms Consumption\n2 - Voice Consumption\n3 - WhatsApp Consumption\n4 - Email Consumption\n5 - Report Card\n6 - Visit us\n7 - Address\n8 - Your Bill",
+                                        "from": "911234567890"
+                                    },
+                                    "countryCode": "IN"
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "interactive",
+                                        "from": "911234567890",
+                                        "interactive": {
+                                            "type": "list",
+                                            "header":{
+                                                "type":"text",
+                                                "text":"This is header"
+                                            },
+                                             "footer":{
+                                                "text":"This is footer"
+                                            },
+                                            "body": {
+                                                "text": "Please select from the below services"
+                                            },
+                                            "action": {
+                                                "button": "View Menu",
+                                                "sections": [
+                                                    {
+                                                        "title": "menu",
+                                                        "rows": [
+                                                            {
+                                                                "id": "1",
+                                                                "title": "Loan Enquiry"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "title": "menu",
+                                                        "rows": [
+                                                            {
+                                                                "id": "2",
+                                                                "title": "Service Queries"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "countryCode": "IN"
                                 }
                             ],
                             "type": "array",
@@ -499,7 +586,97 @@
                                         "customThree": "three",
                                         "customFour": "customFour"
                                     }
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "interactive",
+                                        "from": "911234567890",
+                                        "interactive": {
+                                            "type": "button",
+                                            "body": {
+                                                "text": "Thank you for contacting viva connect. Send \"enquiry\" on this number to interact further.\nYou can also Optin with us by clicking on the below button to receive important updates."
+                                            },
+                                            "action": {
+                                                "buttons": [
+                                                    {
+                                                        "type": "reply",
+                                                        "reply": {
+                                                            "id": "Hello Viva",
+                                                            "title": "Hello Viva"
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "countryCode": "IN"
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "text",
+                                        "text": "Hello! Welcome to helo.ai. Please let us know what information we can provide you today by opting for any of the below options\n1 - Sms Consumption\n2 - Voice Consumption\n3 - WhatsApp Consumption\n4 - Email Consumption\n5 - Report Card\n6 - Visit us\n7 - Address\n8 - Your Bill",
+                                        "from": "911234567890"
+                                    },
+                                    "countryCode": "IN"
+                                },
+                                {
+                                    "to": "911234567890",
+                                    "channels": [
+                                        "whatsapp"
+                                    ],
+                                    "whatsapp": {
+                                        "contentType": "interactive",
+                                        "from": "911234567890",
+                                        "interactive": {
+                                            "type": "list",
+                                            "header":{
+                                                "type":"text",
+                                                "text":"This is header"
+                                            },
+                                             "footer":{
+                                                "text":"This is footer"
+                                            },
+                                            "body": {
+                                                "text": "Please select from the below services"
+                                            },
+                                            "action": {
+                                                "button": "View Menu",
+                                                "sections": [
+                                                    {
+                                                        "title": "menu",
+                                                        "rows": [
+                                                            {
+                                                                "id": "1",
+                                                                "title": "Loan Enquiry"
+                                                            }
+                                                        ]
+                                                    },
+                                                    {
+                                                        "title": "menu",
+                                                        "rows": [
+                                                            {
+                                                                "id": "2",
+                                                                "title": "Service Queries"
+                                                            }
+                                                        ]
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    },
+                                    "countryCode": "IN"
                                 }
+                                
+
+
                             ],
                             "type": "array",
                             "items": {
@@ -641,7 +818,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "User can obtain auth token by using login API"
+                        "description": "User can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "messagefile",
@@ -1000,9 +1177,9 @@
                 "security": []
             }
         },
-        "/chat/v1/messages/{mediaId}": {
+        "/chat/v1/messages/media/{mediaId}": {
             "get": {
-                "x-isPublic": false,
+                "x-isPublic": true,
                 "x-module": "platform",
                 "summary": "Get Media Data",
                 "description": "Use this API to get media\nYou need to pass mediaId in path",
@@ -1020,7 +1197,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "Provided by vivaconnect upon signup"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "mediaId",
@@ -1126,7 +1303,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "startDate",
@@ -1254,7 +1431,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "messageStatus",
@@ -1405,7 +1582,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "startDate",
@@ -1535,7 +1712,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "startDate",
@@ -1698,7 +1875,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "startDate",
@@ -1855,7 +2032,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -1975,7 +2152,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -2075,7 +2252,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -2171,7 +2348,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -2293,7 +2470,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "userId",
@@ -2393,7 +2570,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -2520,7 +2697,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -2640,7 +2817,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -2738,7 +2915,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -2827,7 +3004,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -2954,7 +3131,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -3043,7 +3220,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -3569,7 +3746,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -3728,7 +3905,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -3887,7 +4064,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "userId",
@@ -3966,7 +4143,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "agreement",
@@ -4095,7 +4272,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -4162,7 +4339,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -4230,7 +4407,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -4355,7 +4532,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -4483,7 +4660,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "page",
@@ -5082,7 +5259,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "userId",
@@ -5212,7 +5389,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "page",
@@ -5355,7 +5532,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -5455,7 +5632,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -5718,7 +5895,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "stateId",
@@ -5824,7 +6001,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "countryId",
@@ -5925,7 +6102,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -6020,7 +6197,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -6119,7 +6296,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -6271,7 +6448,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -6378,7 +6555,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -6524,7 +6701,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -6667,7 +6844,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -6810,7 +6987,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -6977,7 +7154,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -7201,7 +7378,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -7321,7 +7498,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -7636,7 +7813,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "profilePicture",
@@ -7768,7 +7945,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -7894,7 +8071,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -8027,7 +8204,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -8134,7 +8311,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "wabaId",
@@ -8290,7 +8467,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "userId",
@@ -8403,7 +8580,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -8516,7 +8693,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -8648,7 +8825,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -8755,7 +8932,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "itemsPerPage",
@@ -8952,7 +9129,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "messageTemplateStatusId",
@@ -9059,7 +9236,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -9202,7 +9379,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -9334,7 +9511,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "templateId",
@@ -9465,7 +9642,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "templateId",
@@ -9732,7 +9909,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "templateId",
@@ -10032,7 +10209,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -10139,7 +10316,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -10228,7 +10405,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -10341,7 +10518,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -10442,7 +10619,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "templateId",
@@ -10594,7 +10771,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -10683,7 +10860,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -10778,7 +10955,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "templateId",
@@ -10955,7 +11132,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "statusId",
@@ -11122,7 +11299,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -11271,7 +11448,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -11452,7 +11629,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "phoneNumber",
@@ -11637,7 +11814,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -11794,7 +11971,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "User can obtain auth token by using login API"
+                        "description": "User can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "optinFile",
@@ -11933,7 +12110,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "audienceId",
@@ -12059,7 +12236,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -12160,7 +12337,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -12304,7 +12481,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -12417,7 +12594,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -12562,7 +12739,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -12706,7 +12883,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -12849,7 +13026,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -12943,7 +13120,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "wabaNumber",
@@ -13171,7 +13348,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "messageId",
@@ -13292,7 +13469,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -13861,7 +14038,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -13995,7 +14172,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -14133,7 +14310,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "page",
@@ -14298,7 +14475,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "templateId",
@@ -14571,7 +14748,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -14811,7 +14988,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -14915,7 +15092,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -15024,7 +15201,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -15136,7 +15313,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -15252,7 +15429,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -15371,7 +15548,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -15509,7 +15686,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -15623,7 +15800,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -15788,7 +15965,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -15954,7 +16131,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -16067,7 +16244,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -16477,7 +16654,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -16586,7 +16763,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -16698,7 +16875,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -16814,7 +16991,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "flowTopicId",
@@ -16933,7 +17110,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     },
                     {
                         "name": "Body",
@@ -17071,7 +17248,7 @@
                         "in": "header",
                         "required": true,
                         "type": "string",
-                        "description": "user can obtain auth token by using login API"
+                        "description": "user can obtain auth token by using Authorize API"
                     }
                 ],
                 "responses": {
@@ -18611,11 +18788,19 @@
                 },
                 "templateId": {
                     "type": "string"
+                },
+                "optoutTemplateId":{
+                    "type":"string"
+                },
+                "continuationTransactionMessage":{
+                    "type":"string"
                 }
             },
             "required": [
                 "defaultMessage",
-                "templateId"
+                "templateId",
+                "continuationTransactionMessage",
+                "optoutTemplateId"
             ]
         },
         "addUpdateChatRequest": {

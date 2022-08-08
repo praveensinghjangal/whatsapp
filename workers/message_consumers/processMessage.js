@@ -6,9 +6,9 @@ const __db = require('../../lib/db')
 const q = require('q')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
-const AudienceService = require('./../../app_modules/audience/services/dbData')
+// const AudienceService = require('./../../app_modules/audience/services/dbData')
 const HttpService = require('../../lib/http_service')
-const integrationService = require('./../../app_modules/integration')
+// const integrationService = require('./../../app_modules/integration')
 const audienceFetchController = require('../../app_modules/audience/controllers/fetchAudienceData')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 
@@ -177,73 +177,80 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
   return messageStatus.promise
 }
 
-const getWabaPhoneNumberAndAdd = (payload, userId) => {
-  const messageStatus = q.defer()
-  const audienceService = new AudienceService()
-  audienceService.getWabaPhoneNumber(payload.whatsapp.from)
-    .then(data => {
-      if (data && data.audMappingId) {
-        return audienceService.addAudineceToDb(payload, data.audMappingId, userId)
-      } else {
-        messageStatus.resolve(true)
-      }
-    })
-    .then(rm => {
-      messageStatus.resolve(true)
-    })
-    .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ getWabaPhoneNumberAndAdd function ~ error while getWabaPhoneNumberAndAdd functionality'
-      errorToTelegram.send(err, telegramErrorMessage)
-      __logger.error('getWabaPhoneNumberAndAdd sendToRespectiveProviderQueue ::error: ', err)
-    })
-  return messageStatus.promise
-}
+// const getWabaPhoneNumberAndAdd = (payload, userId) => {
+//   const messageStatus = q.defer()
+//   const audienceService = new AudienceService()
+//   audienceService.getWabaPhoneNumber(payload.whatsapp.from)
+//     .then(data => {
+//       if (data && data.audMappingId) {
+//         return audienceService.addAudineceToDb(payload, data.audMappingId, userId)
+//       } else {
+//         messageStatus.resolve(true)
+//       }
+//     })
+//     .then(rm => {
+//       messageStatus.resolve(true)
+//     })
+//     .catch(err => {
+//       const telegramErrorMessage = 'ProcessMessageConsumer ~ getWabaPhoneNumberAndAdd function ~ error while getWabaPhoneNumberAndAdd functionality'
+//       errorToTelegram.send(err, telegramErrorMessage)
+//       __logger.error('getWabaPhoneNumberAndAdd sendToRespectiveProviderQueue ::error: ', err)
+//       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+//     })
+//   return messageStatus.promise
+// }
 
-const callFbApiAndAddUpdateInDb = (messageData, payload, data) => {
-  const bool = !!(data && data[0] && data[0].phoneNumber && data[0].wabaPhoneNumberId)
-  const messageStatus = q.defer()
-  const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
-  audienceService.saveOptin(payload.whatsapp.from, ['+' + payload.to])
-    .then(response => {
-      if (bool) {
-        const audienceService = new AudienceService()
-        return audienceService.updateAsFaceBookVerified(data[0].wabaPhoneNumberId, data[0].phoneNumber, messageData.config.userId)
-      } else {
-        return getWabaPhoneNumberAndAdd(payload, messageData.config.userId)
-      }
-    })
-    .then(() => {
-      return messageStatus.resolve(true)
-    })
-    .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ callFbApiAndAddUpdateInDb function ~ error while callFbApiAndAddUpdateInDb functionality'
-      errorToTelegram.send(err, telegramErrorMessage)
-      __logger.error('callFbApiAndAddUpdateInDb sendToRespectiveProviderQueue ::error: ', err)
-    })
-  return messageStatus.promise
-}
+// const callFbApiAndAddUpdateInDb = (messageData, payload, data, rmqObject, queueObj) => {
+//   const bool = !!(data && data[0] && data[0].phoneNumber && data[0].wabaPhoneNumberId)
+//   const messageStatus = q.defer()
+//   const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+//   audienceService.saveOptin(payload.whatsapp.from, ['+' + payload.to])
+//     .then(response => {
+//       if (bool) {
+//         const audienceService = new AudienceService()
+//         return audienceService.updateAsFaceBookVerified(data[0].wabaPhoneNumberId, data[0].phoneNumber, messageData.config.userId)
+//       } else {
+//         return getWabaPhoneNumberAndAdd(payload, messageData.config.userId)
+//       }
+//     })
+//     .then(() => {
+//       return messageStatus.resolve(true)
+//     })
+//     .catch(err => {
+//       const telegramErrorMessage = 'ProcessMessageConsumer ~ callFbApiAndAddUpdateInDb function ~ error while callFbApiAndAddUpdateInDb functionality'
+//       errorToTelegram.send(err, telegramErrorMessage)
+//       __logger.error('callFbApiAndAddUpdateInDb sendToRespectiveProviderQueue ::error: ', err)
+//       if (err && err.err && err.err.errors && err.err.errors.length && err.err.errors[0].code === 1015) {
+//         // Rate limiting engaged - Too Many Requests.
+//         rmqObject.sendToQueue(queueObj, JSON.stringify(messageData))
+//       }
+//       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+//     })
+//   return messageStatus.promise
+// }
 
-const checkIsVerifiedTrueOrFalse = (messageData, rmqObject, queue, mqData, payload) => {
-  const messageStatus = q.defer()
-  const audienceService = new AudienceService()
-  audienceService.getAudienceVerified(payload.to, payload.whatsapp.from)
-    .then(data => {
-      if (data && data.length > 0 && data[0] && data[0].isFacebookVerified) {
-        messageStatus.resolve(true)
-      } else {
-        return callFbApiAndAddUpdateInDb(messageData, payload, data)
-      }
-    })
-    .then(() => {
-      return messageStatus.resolve(true)
-    })
-    .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
-      errorToTelegram.send(err, telegramErrorMessage)
-      __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
-    })
-  return messageStatus.promise
-}
+// const checkIsVerifiedTrueOrFalse = (messageData, rmqObject, queue, mqData, payload, queueObj) => {
+//   const messageStatus = q.defer()
+//   const audienceService = new AudienceService()
+//   audienceService.getAudienceVerified(payload.to, payload.whatsapp.from)
+//     .then(data => {
+//       if (data && data.length > 0 && data[0] && data[0].isFacebookVerified) {
+//         messageStatus.resolve(true)
+//       } else {
+//         return callFbApiAndAddUpdateInDb(messageData, payload, data, rmqObject, queueObj)
+//       }
+//     })
+//     .then(() => {
+//       return messageStatus.resolve(true)
+//     })
+//     .catch(err => {
+//       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+//       errorToTelegram.send(err, telegramErrorMessage)
+//       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
+//       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+//     })
+//   return messageStatus.promise
+// }
 
 class ProcessQueueConsumer {
   startServer () {
@@ -259,20 +266,20 @@ class ProcessQueueConsumer {
               const messageData = JSON.parse(mqData.content.toString())
               const payload = messageData.payload
               if (payload.isOptin) {
-                checkIsVerifiedTrueOrFalse(messageData, rmqObject, queue, mqData, payload)
-                  .then(isOptin => {
-                    if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
-                      return callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
-                    } else {
-                      return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
-                    }
-                  })
-                  .catch(err => {
-                    const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
-                    errorToTelegram.send(err, telegramErrorMessage)
-                    __logger.error('processQueueConsumer::error while parsing: ', err)
-                    rmqObject.channel[queue].ack(mqData)
-                  })
+                // checkIsVerifiedTrueOrFalse(messageData, rmqObject, queue, mqData, payload, queueObj)
+                //   .then(isOptin => {
+                if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
+                  callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
+                } else {
+                  sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
+                }
+                // })
+                // .catch(err => {
+                //   const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
+                //   errorToTelegram.send(err, telegramErrorMessage)
+                //   __logger.error('processQueueConsumer::error while parsing: ', err)
+                //   rmqObject.channel[queue].ack(mqData)
+                // })
               } else {
                 checkOptinStaus(payload.to, payload.whatsapp.template, payload.isOptin, payload.whatsapp.from, payload.authToken)
                   .then(isOptin => {

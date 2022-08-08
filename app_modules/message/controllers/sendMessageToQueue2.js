@@ -97,7 +97,7 @@ const saveAndSendMessageStatus = (payload) => {
     messageId: payload.messageId,
     deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
-    state: __constants.MESSAGE_STATUS.preProcess,
+    state: __constants.MESSAGE_STATUS.inProcess,
     from: payload.to,
     to: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
@@ -128,22 +128,20 @@ const checkIfNoExists = (number) => {
 const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   const messageSent = q.defer()
   data.authToken = headers.authorization
-  data.vivaReqId = headers.vivaReqId
   const queueData = {
     config: config.provider_config[providerId],
     payload: data
   }
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
-  // const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
-  // let queueObj = __constants.MQ.process_message
-  // if (data && data.isCampaign) {
-  //   queueObj = __constants.MQ.process_message_campaign
-  // }
-  // rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
-  //   .then(queueResponse =>
-  saveAndSendMessageStatus(data)
-    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, queueData }))
+  const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
+  let queueObj = __constants.MQ.process_message
+  if (data && data.isCampaign) {
+    queueObj = __constants.MQ.process_message_campaign
+  }
+  rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
+    .then(queueResponse => saveAndSendMessageStatus(data))
+    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour }))
     .catch(err => {
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
       errorToTelegram.send(err, telegramErrorMessage)
@@ -232,8 +230,6 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
-  let sendToQueueRes
-  let finalObjToBeSent
   let userRedisData
   // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
@@ -262,7 +258,7 @@ const controller = (req, res) => {
         const msgInsertData = []
         const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
-          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,
             serviceProviderMessageId: null,
@@ -274,13 +270,13 @@ const controller = (req, res) => {
             customTwo: singleMessage.whatsapp.customTwo || null,
             customThree: singleMessage.whatsapp.customThree || null,
             customFour: singleMessage.whatsapp.customFour || null,
-            currentStatus: __constants.MESSAGE_STATUS.preProcess,
+            currentStatus: __constants.MESSAGE_STATUS.inProcess,
             currentStatusTime: new Date(),
             createdOn: new Date(),
             status: [
               {
                 senderPhoneNumber: singleMessage.to,
-                eventType: __constants.MESSAGE_STATUS.preProcess,
+                eventType: __constants.MESSAGE_STATUS.inProcess,
                 eventId: uniqueId.uuid(),
                 messageId: singleMessage.messageId,
                 sendTime: new Date()
@@ -295,37 +291,12 @@ const controller = (req, res) => {
       if (!msgAdded) return []
       return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
-    .then(res => {
-      sendToQueueRes = res
+    .then(sendToQueueRes => {
       console.log('=================== final final LAst final')
       __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
-        return false
-      } else {
-        finalObjToBeSent = {
-          config: sendToQueueRes[0].queueData.config
-        }
-        const payloadArray = []
-        sendToQueueRes = sendToQueueRes.map(resData => {
-          payloadArray.push(resData.queueData.payload)
-          delete resData.queueData
-          return resData
-        })
-        finalObjToBeSent.payload = payloadArray
-        const planPriority = payloadArray && payloadArray[0] && payloadArray[0].redisData.planPriority ? payloadArray[0].redisData.planPriority : null
-        let queueObj = __constants.MQ.pre_process_message
-        if (payloadArray[0] && payloadArray[0].isCampaign) {
-          queueObj = __constants.MQ.pre_process_message_campaign
-        }
-        return rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(finalObjToBeSent), planPriority)
-      }
-    })
-    .then(data => {
-      if (data === false) {
-        // data is false
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
       } else {
-        // success
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes, ...rejected] })
       }
     })
