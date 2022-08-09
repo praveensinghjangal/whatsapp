@@ -669,6 +669,22 @@ class MessgaeHistoryService {
       })
     return insertStatusAgainstWaba.promise
   }
+
+  checkTableExist (date) {
+    const checkTableExist = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.checkTableExist(date))
+      .then(result => {
+        if (result) {
+          return checkTableExist.resolve()
+        } else {
+          return checkTableExist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'ER_NO_SUCH_TABLE' })
+        }
+      })
+      .catch(err => {
+        return checkTableExist.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return checkTableExist.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

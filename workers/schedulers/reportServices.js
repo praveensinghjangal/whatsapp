@@ -7,7 +7,7 @@ const DbService = require('../../app_modules/message/services/dbData')
 // const EmailService = require('../../lib/sendNotifications/email')
 // const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 // const conversationMisService = require('./misServiceOfConversation')
-const moment = require('moment')
+// const moment = require('moment')
 // const rejectionHandler = require('../../lib/util/rejectionHandler')
 // const _ = require('lodash')
 // const { values } = require('lodash')
@@ -15,13 +15,13 @@ const moment = require('moment')
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  const date = moment().utc().subtract(0, 'days').format('YYYY-MM-DD')
-  const onedayBefore = moment().utc().subtract(360, 'days').format('YYYY-MM-DD')
+  // const date = moment().utc().subtract(0, 'days').format('YYYY-MM-DD')
+  // const onedayBefore = moment().utc().subtract(360, 'days').format('YYYY-MM-DD')
   let wabaNumber
   const wabaData = {}
   // const states = Object.keys(__constants.MESSAGE_STATUS)
   // const queryParam = []
-  console.log('00000000000000000000000000000', onedayBefore, date)
+  // console.log('00000000000000000000000000000', onedayBefore, date)
   dbService.getActiveBusinessNumber()
     .then((data) => {
       if (data) {

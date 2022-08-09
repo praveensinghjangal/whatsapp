@@ -178,7 +178,7 @@ const getVivaMsgIdByserviceProviderMsgId = () => {
 
 const addMessageHistoryDataInBulk = (date) => {
   const messageHistory = `message_history_${date}`
-  return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  return `INSERT INTO ${messageHistory} (message_id,template_id,service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
   end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
@@ -209,6 +209,7 @@ const createMessageHistoryTable = (date) => {
     business_number  varchar(50) DEFAULT NULL,
     created_on  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     is_active  tinyint(1) DEFAULT '1',
+    template_id varchar(50) DEFAULT NULL,
     service_provider_message_id  varchar(250) DEFAULT NULL,
     errors  json DEFAULT NULL,
     custom_one  varchar(50) DEFAULT NULL,
@@ -221,18 +222,18 @@ const createMessageHistoryTable = (date) => {
 
 const addMessageIdMappingData = () => {
   return `INSERT INTO message_id_mapping_data
-  (message_id, service_provider_message_id, end_consumer_number, business_number, custom_one, custom_two, custom_three, custom_four, date)
-  VALUES (?,?,?,?,?,?,?,?,?)`
+  (message_id,template_id, service_provider_message_id, end_consumer_number, business_number, custom_one, custom_two, custom_three, custom_four, date)
+  VALUES (?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInMis = () => {
-  return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  return `INSERT INTO message_history (message_id,template_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
   end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {
-  return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  return `INSERT INTO message_history (message_id,template_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
   end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
@@ -305,6 +306,10 @@ const mapNewResourceToRole = () => {
   return `INSERT into userwise_summary (waba_number,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,Total_message_InFailed,Total_message_Rejected,Delivered_Percentage) 
   values (?)`
 }
+const checkTableExist = (date) => {
+  const messageHistory = `message_history_${date}`
+  return `select message_id from ${messageHistory}`
+}
 
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
@@ -333,5 +338,6 @@ module.exports = {
   getActiveBusinessNumber,
   getCountOfStatusOfWabaNumber,
   getNewStateDataAgainstAllUser,
-  mapNewResourceToRole
+  mapNewResourceToRole,
+  checkTableExist
 }
