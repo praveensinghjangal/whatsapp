@@ -46,15 +46,27 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
   return statusSent.promise
 }
 
-const sendToQueue = (data, config) => {
+const sendToQueue = (data, config, currentQueueName) => {
   const messageSent = q.defer()
   const queueData = {
     config: config,
     payload: data
   }
-  let queueObj = __constants.MQ.process_message
-  if (data && data.isCampaign) {
-    queueObj = __constants.MQ.process_message_campaign
+
+  let queueObj = __constants.MQ.process_message_general
+  if (currentQueueName.includes('chatbot')) {
+    queueObj = __constants.MQ.process_message_chatbot
+  } else if (currentQueueName.includes('otp')) {
+    queueObj = __constants.MQ.process_message_category_otp
+  } else if (currentQueueName.includes('transactional')) {
+    queueObj = __constants.MQ.process_message_category_transactional
+  } else if (currentQueueName.includes('promotional')) {
+    queueObj = __constants.MQ.process_message_category_promotional
+  } else if (currentQueueName.includes('general')) {
+    queueObj = __constants.MQ.process_message_general
+  } else if (currentQueueName.includes('campaign')) {
+    queueObj = require('../../lib/util/rabbitmqHelper')('process_message_campaign', config.userId, data.whatsapp.from)
+    // queueObj = __constants.MQ.process_message_campaign
   }
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
   __db.rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
@@ -68,9 +80,9 @@ const sendToQueue = (data, config) => {
   return messageSent.promise
 }
 
-const sendToQueueBulk = (data, config) => { // function to push to queue in bulk
+const sendToQueueBulk = (data, config, currentQueueName) => { // function to push to queue in bulk
   const sendSingleMessage = q.defer()
-  qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config)
+  qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config, currentQueueName)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
@@ -210,99 +222,100 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
 
 class PreProcessQueueConsumer {
   startServer () {
-    const queueObj = __constants.MQ[__config.mqObjectKey]
-    if (queueObj && queueObj.q_name) {
-      __db.init()
-        .then(result => {
-          const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-          const queue = queueObj.q_name
-          __logger.info('preProcessQueueConsumer::Waiting for message...')
-          rmqObject.channel[queue].consume(queue, mqData => {
-            try {
-              const messageData = JSON.parse(mqData.content.toString())
-              let payloadsToBeCheckedForVerified = []
-              const payloadsToBeNotCheckedForVerified = []
-              const toNumbersThatNeedsToBeChecked = []
-              // const payload = messageData.payload
-              // check for audiences only if we pass "isOptin" flag, bcoz we need to add them in audiences if they are not in audiences.
-              // if isOptin is false, then we need to check the optin of audiences (audiences needs to be present, so no need to call save optin)
-              const config = messageData.config
-              const payloadArr = messageData.payload
-              const fromNumber = payloadArr[0].whatsapp.from
-              let finalPayloadArr = []
-              for (let i = 0; i < payloadArr.length; i++) {
-                const payload = payloadArr[i]
-                if (payload.isOptin) {
-                  toNumbersThatNeedsToBeChecked.push(payload.to)
-                  payloadsToBeCheckedForVerified.push(payload)
-                } else {
-                  payloadsToBeNotCheckedForVerified.push(payload)
-                }
+    // if (queueObj && queueObj.q_name) {
+    __db.init()
+      .then(result => {
+        const queueObj = __constants.MQ[__config.mqObjectKey]
+        const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
+        const queue = queueObj.q_name
+        __logger.info('preProcessQueueConsumer::Waiting for message...')
+        rmqObject.channel[queue].consume(queue, mqData => {
+          try {
+            // console.log(__config.mqObjectKey)
+            const messageData = JSON.parse(mqData.content.toString())
+            let payloadsToBeCheckedForVerified = []
+            const payloadsToBeNotCheckedForVerified = []
+            const toNumbersThatNeedsToBeChecked = []
+            // const payload = messageData.payload
+            // check for audiences only if we pass "isOptin" flag, bcoz we need to add them in audiences if they are not in audiences.
+            // if isOptin is false, then we need to check the optin of audiences (audiences needs to be present, so no need to call save optin)
+            const config = messageData.config
+            const payloadArr = messageData.payload
+            const fromNumber = payloadArr[0].whatsapp.from
+            let finalPayloadArr = []
+            for (let i = 0; i < payloadArr.length; i++) {
+              const payload = payloadArr[i]
+              if (payload.isOptin) {
+                toNumbersThatNeedsToBeChecked.push(payload.to)
+                payloadsToBeCheckedForVerified.push(payload)
+              } else {
+                payloadsToBeNotCheckedForVerified.push(payload)
               }
-
-              checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
-                .then(data => {
-                  const verifiedNumbers = data.verifiedNumbers
-                  payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
-                    if (verifiedNumbers.includes(payload.to)) {
-                      return true
-                    } else {
-                      return false
-                    }
-                  })
-                  finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
-                  // console.log('finalPayloadArr', finalPayloadArr)
-                  return sendToQueueBulk(finalPayloadArr, config)
-                })
-                .then(sendToQueueRes => {
-                  console.log('=================== final final LAst final')
-                  __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
-                  rmqObject.channel[queue].ack(mqData)
-                  // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
-                  //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [] })
-                  // } else {
-                  //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes] })
-                  // }
-                })
-                .catch(err => {
-                  console.log('send message ctrl error : ', err)
-                  const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
-                  errorToTelegram.send(err, telegramErrorMessage)
-                  // if (err && err.type && err.type.code && err.type.code === 3021) {
-                  //   delete err.type.status_code
-                  //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })
-                  // } else {
-                  //   __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-                  // }
-                  rmqObject.channel[queue].ack(mqData)
-                })
-              // todo:
-              // above function will return all the numbers that are verified . get the data of only these verified numbers out of payloadsToBeCheckedForVerified
-              // concat both arrays => above one + payloadsToBeNotCheckedForVerified
-              // sendToRespectiveProviderQueue => send to processMessageQueue
-              // saveAndSendMessageStatus (in bulk)
-            } catch (err) {
-              const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ preProcessQueueConsumer::error while parsing:'
-              errorToTelegram.send(err, telegramErrorMessage)
-
-              __logger.error('preProcessQueueConsumer::error while parsing: ', err)
-              rmqObject.channel[queue].ack(mqData)
             }
-          }, {
-            noAck: false
-          })
+
+            checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
+              .then(data => {
+                const verifiedNumbers = data.verifiedNumbers
+                payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
+                  if (verifiedNumbers.includes(payload.to)) {
+                    return true
+                  } else {
+                    return false
+                  }
+                })
+                finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
+                // console.log('finalPayloadArr', finalPayloadArr)
+                return sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey)
+              })
+              .then(sendToQueueRes => {
+                console.log('=================== final final LAst final')
+                __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
+                rmqObject.channel[queue].ack(mqData)
+                // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
+                //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [] })
+                // } else {
+                //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes] })
+                // }
+              })
+              .catch(err => {
+                console.log('send message ctrl error : ', err)
+                const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
+                errorToTelegram.send(err, telegramErrorMessage)
+                // if (err && err.type && err.type.code && err.type.code === 3021) {
+                //   delete err.type.status_code
+                //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })
+                // } else {
+                //   __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+                // }
+                rmqObject.channel[queue].ack(mqData)
+              })
+            // todo:
+            // above function will return all the numbers that are verified . get the data of only these verified numbers out of payloadsToBeCheckedForVerified
+            // concat both arrays => above one + payloadsToBeNotCheckedForVerified
+            // sendToRespectiveProviderQueue => send to processMessageQueue
+            // saveAndSendMessageStatus (in bulk)
+          } catch (err) {
+            const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ preProcessQueueConsumer::error while parsing:'
+            errorToTelegram.send(err, telegramErrorMessage)
+
+            __logger.error('preProcessQueueConsumer::error while parsing: ', err)
+            rmqObject.channel[queue].ack(mqData)
+          }
+        }, {
+          noAck: false
         })
-        .catch(err => {
-          const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
-          errorToTelegram.send(err, telegramErrorMessage)
-          __logger.error('preProcessQueueConsumer::error: ', err)
-          process.exit(1)
-        })
-    } else {
-      errorToTelegram.send({}, 'ProcessMessageConsumer error: no such queue object exists with name')
-      __logger.error('preProcessQueueConsumer::error: no such queue object exists with name', __config.mqObjectKey)
-      process.exit(1)
-    }
+      })
+      .catch(err => {
+        const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
+        errorToTelegram.send(err, telegramErrorMessage)
+        __logger.error('preProcessQueueConsumer::error: ', err)
+        process.exit(1)
+      })
+    // } else {
+    //   errorToTelegram.send({}, 'ProcessMessageConsumer error: no such queue object exists with name')
+    //   __logger.error('preProcessQueueConsumer::error: no such queue object exists with name', __config.mqObjectKey)
+    //   process.exit(1)
+    // }
 
     this.stop_gracefully = function () {
       __logger.info('stopping all resources gracefully')

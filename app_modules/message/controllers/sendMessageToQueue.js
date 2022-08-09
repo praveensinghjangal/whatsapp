@@ -212,6 +212,25 @@ const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
   return sendSingleMessage.promise
 }
 
+const getTemplateCategory = (wabaPhoneNumber, templateId) => {
+  const messageSent = q.defer()
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
+    .then((data) => {
+      console.log('insisisisisisdeeeee data', data)
+      if (data.length > 0) {
+        messageSent.resolve({ categoryId: data[0].message_template_category_id })
+      } else {
+        messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
+      }
+    })
+    .catch((err) => {
+      console.log('errorrrrr', err)
+      messageSent.reject(err)
+    })
+
+  return messageSent.promise
+}
+
 /**
  * @memberof -WhatsApp-Message-Controller-SendMessage-
  * @name SendMessageInQueue
@@ -235,6 +254,7 @@ const controller = (req, res) => {
   let sendToQueueRes
   let finalObjToBeSent
   let userRedisData
+  let templateCategory = ''
   // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
@@ -245,7 +265,35 @@ const controller = (req, res) => {
   }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
-    .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
+    .then(data => {
+      if (data && data[0] && !data[0].isCampaign && !data[0].isChatBot && data[0].whatsapp && data[0].whatsapp.contentType === 'template') {
+        // all templates have same templateId => already validated above
+        // it shoud neither be isCampaign nor isChatBot
+        // check the category of the template
+        return getTemplateCategory(data[0].whatsapp.from, data[0].whatsapp.template.templateId)
+      }
+      return true
+    })
+    .then(data => {
+      if (data && data.categoryId) {
+        // data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b' // promotional
+        // message is a template
+        switch (data.categoryId) {
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.OTP:
+            templateCategory = 'category_otp'
+            break
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.TRANSACTIONAL:
+            templateCategory = 'category_transactional'
+            break
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.PROMOTIONAL:
+            templateCategory = 'category_promotional'
+            break
+          default:
+            templateCategory = 'general'
+        }
+      }
+      return checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null)
+    })
     .then(data => {
       userRedisData = data
       return getBulkTemplates(req.body, req.user.wabaPhoneNumber)
@@ -313,9 +361,18 @@ const controller = (req, res) => {
         })
         finalObjToBeSent.payload = payloadArray
         const planPriority = payloadArray && payloadArray[0] && payloadArray[0].redisData.planPriority ? payloadArray[0].redisData.planPriority : null
-        let queueObj = __constants.MQ.pre_process_message
+        // let queueObj = __constants.MQ.pre_process_message
+        let queueObj = __constants.MQ.pre_process_message_general
         if (payloadArray[0] && payloadArray[0].isCampaign) {
-          queueObj = __constants.MQ.pre_process_message_campaign
+          queueObj = require('../../../lib/util/rabbitmqHelper')('pre_process_message_campaign', req.user.user_id, payloadArray[0].whatsapp.from)
+          // queueObj = __constants.MQ.pre_process_message_campaign
+        } else if (payloadArray[0] && payloadArray[0].isChatBot) {
+          queueObj = __constants.MQ.pre_process_message_chatbot
+        } else {
+          if (!templateCategory) {
+            templateCategory = 'general'
+          }
+          queueObj = __constants.MQ[`pre_process_message_${templateCategory}`]
         }
         return rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(finalObjToBeSent), planPriority)
       }

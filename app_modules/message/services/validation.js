@@ -79,6 +79,10 @@ class validate {
             type: 'boolean',
             required: false
           },
+          isChatBot: {
+            type: 'boolean',
+            required: false
+          },
           sendAfterMessageId: {
             type: 'string',
             required: false
@@ -507,7 +511,29 @@ class validate {
             required: false,
             default: false
           }
-        }
+        },
+        oneOf: [
+          {
+            required: [
+              'isChatBot'
+            ]
+          },
+          {
+            required: [
+              'isCampaign'
+            ]
+          },
+          {
+            not: {
+              anyOf: [{
+                required: ['isChatBot']
+              }, {
+                required: ['isCampaign']
+              }]
+            }
+          }
+        ],
+        additionalProperties: false
       }
     }
     const formatedError = []
@@ -521,6 +547,8 @@ class validate {
         const formatedErr = err.split('.')
         if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
           formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('instance[1] is not exactly one from [subschema 0],[subschema 1]')) {
+          formatedError.push('Either isCampaign or isChatBot or both should should not be present')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
           formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
         } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
@@ -539,6 +567,29 @@ class validate {
     const isCampaignIsValid = request.every((obj) => obj.isCampaign === isCampaign)
     if (!isCampaignIsValid) {
       formatedError.push('isCampaign value should be same across the entire request body')
+    }
+
+    // check validation for similar value of isChatBot
+    const isChatBot = request[0].isChatBot
+    const isChatBotIsValid = request.every((obj) => obj.isChatBot === isChatBot)
+    if (!isChatBotIsValid) {
+      formatedError.push('isChatBot value should be same across the entire request body')
+    }
+
+    // all json's contentType should be same
+    const contentType = request[0].whatsapp.contentType
+    const contentTypeIsValid = request.every((obj) => obj.whatsapp.contentType === contentType)
+    if (!contentTypeIsValid) {
+      formatedError.push('contentType value should be same across the entire request body')
+    }
+
+    // all templates should be of same template
+    if (contentTypeIsValid && request[0] && request[0].whatsapp && request[0].whatsapp.contentType === 'template') {
+      const templateId = request[0].whatsapp.template.templateId
+      const templateIdIsValid = request.every((obj) => obj.whatsapp.template.templateId === templateId)
+      if (!templateIdIsValid) {
+        formatedError.push('templateId value should be same across the entire request body')
+      }
     }
 
     if (formatedError.length > 0) {

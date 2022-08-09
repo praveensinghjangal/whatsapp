@@ -254,74 +254,74 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 
 class ProcessQueueConsumer {
   startServer () {
-    const queueObj = __constants.MQ[__config.mqObjectKey]
-    if (queueObj && queueObj.q_name) {
-      __db.init()
-        .then(result => {
-          const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-          const queue = queueObj.q_name
-          __logger.info('processQueueConsumer::Waiting for message...')
-          rmqObject.channel[queue].consume(queue, mqData => {
-            try {
-              const messageData = JSON.parse(mqData.content.toString())
-              const payload = messageData.payload
-              if (payload.isOptin) {
-                // checkIsVerifiedTrueOrFalse(messageData, rmqObject, queue, mqData, payload, queueObj)
-                //   .then(isOptin => {
-                if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
-                  callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
-                } else {
-                  sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
-                }
-                // })
-                // .catch(err => {
-                //   const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
-                //   errorToTelegram.send(err, telegramErrorMessage)
-                //   __logger.error('processQueueConsumer::error while parsing: ', err)
-                //   rmqObject.channel[queue].ack(mqData)
-                // })
+    // if (queueObj && queueObj.q_name) {
+    __db.init()
+      .then(result => {
+        const queueObj = __constants.MQ[__config.mqObjectKey]
+        const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
+        const queue = queueObj.q_name
+        __logger.info('processQueueConsumer::Waiting for message...')
+        rmqObject.channel[queue].consume(queue, mqData => {
+          try {
+            const messageData = JSON.parse(mqData.content.toString())
+            const payload = messageData.payload
+            if (payload.isOptin) {
+              // checkIsVerifiedTrueOrFalse(messageData, rmqObject, queue, mqData, payload, queueObj)
+              //   .then(isOptin => {
+              if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
+                callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
               } else {
-                checkOptinStaus(payload.to, payload.whatsapp.template, payload.isOptin, payload.whatsapp.from, payload.authToken)
-                  .then(isOptin => {
-                    if (isOptin) {
-                      if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
-                        return callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
-                      } else {
-                        return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
-                      }
-                    } else {
-                      return updateMessageStatusToRejected(messageData, rmqObject, queue, mqData)
-                    }
-                  })
-                  .catch(err => {
-                    const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
-                    errorToTelegram.send(err, telegramErrorMessage)
-                    __logger.error('processQueueConsumer::error while parsing: ', err)
-                    rmqObject.channel[queue].ack(mqData)
-                  })
+                sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
               }
-            } catch (err) {
-              const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ processQueueConsumer::error while parsing:'
-              errorToTelegram.send(err, telegramErrorMessage)
-
-              __logger.error('processQueueConsumer::error while parsing: ', err)
-              rmqObject.channel[queue].ack(mqData)
+              // })
+              // .catch(err => {
+              //   const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
+              //   errorToTelegram.send(err, telegramErrorMessage)
+              //   __logger.error('processQueueConsumer::error while parsing: ', err)
+              //   rmqObject.channel[queue].ack(mqData)
+              // })
+            } else {
+              checkOptinStaus(payload.to, payload.whatsapp.template, payload.isOptin, payload.whatsapp.from, payload.authToken)
+                .then(isOptin => {
+                  if (isOptin) {
+                    if (messageData && messageData.payload && messageData.payload && messageData.payload.sendAfterMessageId) {
+                      return callApiAndSendToQueue(messageData, rmqObject, queue, mqData)
+                    } else {
+                      return sendToRespectiveProviderQueue(messageData, rmqObject, queue, mqData)
+                    }
+                  } else {
+                    return updateMessageStatusToRejected(messageData, rmqObject, queue, mqData)
+                  }
+                })
+                .catch(err => {
+                  const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
+                  errorToTelegram.send(err, telegramErrorMessage)
+                  __logger.error('processQueueConsumer::error while parsing: ', err)
+                  rmqObject.channel[queue].ack(mqData)
+                })
             }
-          }, {
-            noAck: false
-          })
+          } catch (err) {
+            const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ processQueueConsumer::error while parsing:'
+            errorToTelegram.send(err, telegramErrorMessage)
+
+            __logger.error('processQueueConsumer::error while parsing: ', err)
+            rmqObject.channel[queue].ack(mqData)
+          }
+        }, {
+          noAck: false
         })
-        .catch(err => {
-          const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
-          errorToTelegram.send(err, telegramErrorMessage)
-          __logger.error('processQueueConsumer::error: ', err)
-          process.exit(1)
-        })
-    } else {
-      errorToTelegram.send({}, 'ProcessMessageConsumer error: no such queue object exists with name')
-      __logger.error('processQueueConsumer::error: no such queue object exists with name', __config.mqObjectKey)
-      process.exit(1)
-    }
+      })
+      .catch(err => {
+        const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
+        errorToTelegram.send(err, telegramErrorMessage)
+        __logger.error('processQueueConsumer::error: ', err)
+        process.exit(1)
+      })
+    // } else {
+    //   errorToTelegram.send({}, 'ProcessMessageConsumer error: no such queue object exists with name')
+    //   __logger.error('processQueueConsumer::error: no such queue object exists with name', __config.mqObjectKey)
+    //   process.exit(1)
+    // }
 
     this.stop_gracefully = function () {
       __logger.info('stopping all resources gracefully')

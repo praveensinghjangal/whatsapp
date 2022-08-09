@@ -37,18 +37,26 @@ class InternalFunctions {
     __constants.MQ['fbOutgoingSync_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoingSync))
     __constants.MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookHeloCampaign))
     __constants.MQ['webhookQueue_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookQueue))
+    __constants.MQ['pre_process_message_campaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.pre_process_message_campaign))
+    __constants.MQ['process_message_campaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.process_message_campaign))
     __constants.MQ['fbOutgoing_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoing.q_name + '_' + userId + '_' + phoneNumber
     __constants.MQ['fbOutgoingSync_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoingSync.q_name + '_' + userId + '_' + phoneNumber
     __constants.MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookHeloCampaign.q_name + '_' + userId + '_' + phoneNumber
     __constants.MQ['webhookQueue_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookQueue.q_name + '_' + userId + '_' + phoneNumber
+    __constants.MQ['pre_process_message_campaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.pre_process_message_campaign.q_name + '_' + userId + '_' + phoneNumber
+    __constants.MQ['process_message_campaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.process_message_campaign.q_name + '_' + userId + '_' + phoneNumber
     MQ['fbOutgoing_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoing))
     MQ['fbOutgoingSync_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.fbOutgoingSync))
     MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookHeloCampaign))
     MQ['webhookQueue_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.webhookQueue))
+    MQ['pre_process_message_campaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.pre_process_message_campaign))
+    MQ['process_message_campaign_' + userId + '_' + phoneNumber] = JSON.parse(JSON.stringify(__constants.MQ.process_message_campaign))
     MQ['fbOutgoing_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoing.q_name + '_' + userId + '_' + phoneNumber
     MQ['fbOutgoingSync_' + userId + '_' + phoneNumber].q_name = __constants.MQ.fbOutgoingSync.q_name + '_' + userId + '_' + phoneNumber
     MQ['webhookHeloCampaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookHeloCampaign.q_name + '_' + userId + '_' + phoneNumber
     MQ['webhookQueue_' + userId + '_' + phoneNumber].q_name = __constants.MQ.webhookQueue.q_name + '_' + userId + '_' + phoneNumber
+    MQ['pre_process_message_campaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.pre_process_message_campaign.q_name + '_' + userId + '_' + phoneNumber
+    MQ['process_message_campaign_' + userId + '_' + phoneNumber].q_name = __constants.MQ.process_message_campaign.q_name + '_' + userId + '_' + phoneNumber
     if (MQ && Object.keys(MQ).length > 0) {
       for (const queueIndex in MQ) {
         const queue = MQ[queueIndex]

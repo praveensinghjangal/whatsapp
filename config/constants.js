@@ -122,9 +122,19 @@ const TEMPLATE_BUTTON_TYPE = [{
 }]
 const PREFETCH_COUNT = +process.env.QUEUE_PREFETCH_COUNT || 25
 const MQ = {
-  pre_process_message: { type: 'queue', q_name: 'pre_process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  // pre_process_message: { type: 'queue', q_name: 'pre_process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_chatbot: { type: 'queue', q_name: 'pre_process_message_chatbot', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_category_otp: { type: 'queue', q_name: 'pre_process_message_category_otp', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_category_transactional: { type: 'queue', q_name: 'pre_process_message_category_transactional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_category_promotional: { type: 'queue', q_name: 'pre_process_message_category_promotional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_general: { type: 'queue', q_name: 'pre_process_message_general', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   pre_process_message_campaign: { type: 'queue', q_name: 'pre_process_message_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  // process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_chatbot: { type: 'queue', q_name: 'process_message_chatbot', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_category_otp: { type: 'queue', q_name: 'process_message_category_otp', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_category_transactional: { type: 'queue', q_name: 'process_message_category_transactional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_category_promotional: { type: 'queue', q_name: 'process_message_category_promotional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_general: { type: 'queue', q_name: 'process_message_general', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   process_message_campaign: { type: 'queue', q_name: 'process_message_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
@@ -633,7 +643,10 @@ const FB_CATEGORY_TO_VIVA_CATEGORY = {
   AUTO_REPLY: 'f26c0c08-94a1-4992-acc8-f5197a02cbe1',
   PAYMENT_UPDATE: '92ba13f9-b560-414b-9dfd-bc9704c40cf7',
   ALERT_UPDATE: '957e4375-3297-42c6-a9a8-6a57fd8e5045',
-  ACCOUNT_UPDATE: 'b8203a31-e439-4ea4-a270-bd211317d3ff'
+  ACCOUNT_UPDATE: 'b8203a31-e439-4ea4-a270-bd211317d3ff',
+  OTP: 'a5f15075-1a8d-4f84-a8f6-25b0f9cbd861',
+  TRANSACTIONAL: '281dfa46-488a-472c-8c07-55ce7f4b648c',
+  PROMOTIONAL: '37f8ac07-a370-4163-b713-854db656cd1b'
 }
 const FB_HEADER_TO_VIVA_HEADER = {
   video: 'Video',
