@@ -5,7 +5,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const qalllib = require('qalllib')
 const _ = require('lodash')
-const AuthService = require('./authService')
+const AuthService = require('./authService').Authentication
 const apiCallFn = (body, url, headers, http) => {
   const apiCall = q.defer()
   __logger.info('Inside saveOptin (checkContacts) api call ', { body, url })

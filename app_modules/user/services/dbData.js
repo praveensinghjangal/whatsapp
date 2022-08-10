@@ -658,6 +658,125 @@ class UserData {
       })
     return userDetails.promise
   }
+
+  getPhoneNumbersFromWabaId (wabaIdOfClient) {
+    // wabaIdOfClient="b6210d2f-acb3-4dfa-8b52-0972c8045706"
+    __logger.info('getPhoneNumbersFromWabaIde>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPhoneNumbersFromWabaId(), [wabaIdOfClient])
+      .then(result => {
+        __logger.info('getPhoneNumbersFromWabaId>>>>>>>>>>>>>', { result })
+        userDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getPhoneNumbersFromWabaId: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
+
+  updateWabizInformation (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) {
+    __logger.info('updateWabizInformation>>>>>>>>>>>>>')
+    const apiCall = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizInformation(), [wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber])
+      .then(result => {
+        __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          apiCall.resolve(result)
+        } else {
+          apiCall.resolve({ data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in updateWabizInformation: ', err)
+        apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return apiCall.promise
+  }
+
+  sendMessageToSupport (url, errorMessage) {
+    const supportEmails = q.defer()
+    const agreementStatusService = new AgreementStatusEngine()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [])
+      .then(emails => {
+        // const supportEmail = emails[0].email.split(',')
+        // const supportEmail = ['8097@yopmail.com']
+        const supportEmail = emails[0].email.split(',')
+        console.log('support emails to be send ', supportEmail)
+        return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
+      })
+      .then(result => {
+        supportEmails.resolve(result)
+      })
+      .catch(err => {
+        supportEmails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return supportEmails.promise
+  }
+
+  updateTfaPinInformation (phoneCode, phoneNumber, tfaPin) {
+    __logger.info('updateWabizInformation>>>>>>>>>>>>>')
+    const apiCall = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTfaPinInformation(), [tfaPin, phoneCode, phoneNumber])
+      .then(result => {
+        __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          apiCall.resolve(result)
+        } else {
+          apiCall.resolve({ data: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in updateWabizInformation: ', err)
+        apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return apiCall.promise
+  }
+
+  getWabaProfileSetupStatusFromUserId (userId) {
+    __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaProfileSetupStatus(), [userId])
+      .then(result => {
+        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        userDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
+
+  getEmbeddedSingupData (embeddedsingupid) {
+    __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>')
+    const userDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getEmbeddedSingupData(), [embeddedsingupid])
+      .then(result => {
+        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        userDetails.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return userDetails.promise
+  }
+
+  addEmbbeddedSingupErrorData (query, paramsArray) {
+    const addEmbbeddedSingupErrorData = q.defer()
+    console.log('query to be inserted into the ', query)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, query, paramsArray)
+      .then(result => {
+        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        addEmbbeddedSingupErrorData.resolve(result)
+      })
+      .catch(err => {
+        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        addEmbbeddedSingupErrorData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return addEmbbeddedSingupErrorData.promise
+  }
 }
 
 module.exports = UserData

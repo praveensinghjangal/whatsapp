@@ -71,4 +71,32 @@ class Audience {
   saveOptin (wabaNumber, payload) { return this.audience.saveOptin(wabaNumber, payload) }
 }
 
-module.exports = { Messaage, Template, WabaAccount, Authentication, Audience }
+class EmbeddedSignup {
+  constructor (providerId, userId, authorizationToken, accessToken) {
+    this.providerName = 'facebook'
+    this.embeddedSignup = new providers[this.providerName].EmbeddedSignup(providerId, userId, authorizationToken, accessToken)
+  }
+
+  getWabaOfClient (inputToken, wabaNumber) { return this.embeddedSignup.getWabaOfClient(inputToken, wabaNumber) }
+
+  //! we wont be using this, as we will put the system user id in env
+  getBSPsSystemUserIds (wabaNumber, businessId) { return this.embeddedSignup.getBSPsSystemUserIds(wabaNumber, businessId) }
+
+  getWabaDetailsByWabaId (wabaId, wabaNumber) { return this.embeddedSignup.getWabaDetailsByWabaId(wabaId, wabaNumber) }
+
+  addSystemUserToWabaOfClient (systemUserIdBSP, wabaIdOfClient, wabaNumber) { return this.embeddedSignup.addSystemUserToWabaOfClient(systemUserIdBSP, wabaIdOfClient, wabaNumber) }
+
+  getBussinessIdLineOfCredit (businessId) { return this.embeddedSignup.getBussinessIdLineOfCredit(businessId) }
+
+  attachCreditLineClientWaba (assignedWabaId, creditLineId) { return this.embeddedSignup.attachCreditLineClientWaba(assignedWabaId, creditLineId) }
+
+  verifyLineOfCredit (allocationConfigId) { return this.embeddedSignup.verifyLineOfCredit(allocationConfigId) }
+  subscribeAppToWaba (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.subscribeAppToWaba(wabaIdOfClient, wabaNumber) }
+  fetchAssignedUsersOfWaba (wabaIdOfClient, businessId, wabaNumber) { return this.embeddedSignup.fetchAssignedUsersOfWaba(wabaIdOfClient, businessId, wabaNumber) }
+  getPhoneNumberOfWabaId (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.getPhoneNumberOfWabaId(wabaIdOfClient, wabaNumber) }
+  requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) { return this.embeddedSignup.requestCode(wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) }
+  getSettings (wabizUrl, token) { return this.embeddedSignup.getSettings(wabizUrl, token) }
+  enableTwoStepVerification (wabizUrl, token, tfaPin) { return this.embeddedSignup.enableTwoStepVerification(wabizUrl, token, tfaPin) }
+}
+
+module.exports = { Messaage, Template, WabaAccount, Authentication, Audience, EmbeddedSignup }

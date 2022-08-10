@@ -6,11 +6,11 @@ echo $1
 echo $2
 echo $3
 echo "spawnning server"
-sleep 2
+sleep 1
 echo "configuring server"
-sleep 2
+sleep 1
 echo "spawnning fb containers"
-sleep 2
+sleep 1
 echo "all done"
-echo "private IP = 10.40.13.240" >> shell_scripts/launch_server/output/$3.log
+echo "private IP = 10.40.13.240" > shell_scripts/launch_server_code/output/$3.txt
 

@@ -11,6 +11,24 @@
       "type": "node-terminal"
     },
     {
+      "command": "npm run develop-wabaSetUpConsumer",
+      "name": "Run npm run develop-wabaSetUpConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-bussinessDetailsConsumer",
+      "name": "Run npm run develop-bussinessDetailsConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-embeddedSingupErrorConsumer",
+      "name": "Run npm run develop-embeddedSingupErrorConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
       "command": "npm run develop-google-pubsub",
       "name": "Run npm start develop-google-pubsub",
       "request": "launch",
