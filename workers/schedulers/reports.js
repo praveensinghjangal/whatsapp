@@ -5,6 +5,7 @@ const __logger = require('../../lib/logger')
 const InsertDataIntoSumarryReports = require('./reportServices')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
+const getCampaignCount = require('../../app_modules/integration/schedulers/getCampaignCount')
 // const moment = require('moment')
 
 const task = {
@@ -15,9 +16,8 @@ const task = {
     // console.log('111111111111111111111111111111111111111111111', date)
     dbService.checkTableExist(date)
       .then((data) => {
-        return InsertDataIntoSumarryReports()
-      })
-      .then((data) => {
+        InsertDataIntoSumarryReports()
+        getCampaignCount()
         return __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports', data)
       })
       .catch((error) => {
