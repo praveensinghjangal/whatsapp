@@ -308,7 +308,7 @@ const mapNewResourceToRole = () => {
 }
 const checkTableExist = (date) => {
   const messageHistory = `message_history_${date}`
-  return `select message_id from ${messageHistory}`
+  return `SELECT @${messageHistory}`
 }
 const getNewTemplateDetailsAgainstAllUser = () => {
   return `SELECT business_number, count(state), state, template_id

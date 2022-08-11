@@ -2,11 +2,9 @@ const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
 // const messageStatusOnMail = require('./misService')
-// const InsertDataIntoSumarryReports = require('./reportServices')
-const InsertTemplateSumarryReports = require('./templateServices')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
-// const getCampaignCount = require('./getCampaignCount')
+const getCampaignCount = require('./getCampaignCount')
 // const moment = require('moment')
 
 const task = {
@@ -17,9 +15,8 @@ const task = {
     console.log('111111111111111111111111111111111111111111111', date)
     dbService.checkTableExist(date)
       .then((data) => {
-        InsertTemplateSumarryReports()
-        // getCampaignCount()
-        return __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports', data)
+        __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports', data)
+        return getCampaignCount()
       })
       .catch((error) => {
         return __logger.error('inside ~function=', { err: typeof error === 'object' ? error : { error: error.toString() } })
