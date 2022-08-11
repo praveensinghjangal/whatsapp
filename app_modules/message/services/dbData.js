@@ -685,6 +685,55 @@ class MessgaeHistoryService {
       })
     return checkTableExist.promise
   }
+
+  getNewTemplateDetailsAgainstAllUser (wabaNumber) {
+    const getCountOfStatusOfWabaNumber = q.defer()
+    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(), [wabaNumber])
+      .then(result => {
+        if (result) {
+          return getCountOfStatusOfWabaNumber.resolve(result)
+        } else {
+          return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getCountOfStatusOfWabaNumber.promise
+  }
+
+  insertTemplateStatusAgainstWaba (data) {
+    const insertTemplateStatusAgainstWaba = q.defer()
+    const wabaNumbers = Object.keys(data)
+    const values = []
+    for (let i = 0; i < wabaNumbers.length; i++) {
+      const wabaNumber = wabaNumbers[i]
+      const summary = data[wabaNumber]
+      const templateId = summary.templateId
+      const totalSubmission = summary['pre process'] || 0
+      const totalMessageSent = summary.forwarded || 0
+      const totalMessageInProcess = summary['in process'] || 0
+      const totalMesageInDelivered = summary.delivered || 0
+      const totalMessageFailed = summary.failed || 0
+      const totalMessageRejected = summary.rejected || 0
+      const deliveryPercentage = Math.round((totalMesageInDelivered + Number.EPSILON * 100) / 100)
+      values.push([wabaNumber, templateId, totalSubmission, totalMessageSent, totalMessageInProcess, totalMesageInDelivered, totalMessageFailed, totalMessageRejected, deliveryPercentage])
+    }
+    console.log('finalllllllllllllllllllllllllllllllllllllllllllll', values)
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertTemplateStatusAgainstWaba(), values)
+      .then(result => {
+        if (result) {
+          return insertTemplateStatusAgainstWaba.resolve(result)
+        } else {
+          return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return insertTemplateStatusAgainstWaba.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

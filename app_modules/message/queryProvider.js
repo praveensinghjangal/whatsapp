@@ -310,6 +310,22 @@ const checkTableExist = (date) => {
   const messageHistory = `message_history_${date}`
   return `select message_id from ${messageHistory}`
 }
+const getNewTemplateDetailsAgainstAllUser = () => {
+  return `SELECT business_number, count(state), state, template_id
+  from
+  (SELECT business_number, state, message_id, created_on , template_id
+  FROM (
+    SELECT DISTINCT message_id, state, business_number, created_on ,template_id
+    FROM helo_whatsapp.message_history_220420
+    where  business_number in (?)
+    order BY status_time desc) as ids
+  group BY ids.message_id) as id
+  group by 1, 3 ;`
+}
+const insertTemplateStatusAgainstWaba = () => {
+  return `INSERT into Template_summary(waba_number,Template_Id,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,Total_message_InFailed,Total_message_Rejected,Delivered_Percentage) 
+  values (?)`
+}
 
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
@@ -339,5 +355,7 @@ module.exports = {
   getCountOfStatusOfWabaNumber,
   getNewStateDataAgainstAllUser,
   mapNewResourceToRole,
-  checkTableExist
+  checkTableExist,
+  getNewTemplateDetailsAgainstAllUser,
+  insertTemplateStatusAgainstWaba
 }
