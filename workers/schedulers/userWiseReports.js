@@ -2,7 +2,7 @@ const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
 // const messageStatusOnMail = require('./misService')
-const InsertDataIntoSumarryReports = require('./reportServices')
+const InsertDataIntoSumarryReports = require('./userwiseServices')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
 // const getCampaignCount = require('./getCampaignCount')
@@ -12,8 +12,9 @@ const task = {
   one: cron.schedule(__constants.REPORTS_SCHEDULER_TIME, () => {
     const dbService = new DbService()
     // const date = moment().format('YYMMDD')
-    const date = '220420'
+    const date = '220811'
     // console.log('111111111111111111111111111111111111111111111', date)
+    // to do :- if records present then update lese goes for insert
     dbService.checkTableExist(date)
       .then((data) => {
         InsertDataIntoSumarryReports()

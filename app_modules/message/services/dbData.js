@@ -686,10 +686,9 @@ class MessgaeHistoryService {
     return checkTableExist.promise
   }
 
-  getNewTemplateDetailsAgainstAllUser (wabaNumber) {
+  getNewTemplateDetailsAgainstAllUser (wabaNumber, currentDate) {
     const getCountOfStatusOfWabaNumber = q.defer()
-    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(), [wabaNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         if (result) {
           return getCountOfStatusOfWabaNumber.resolve(result)
@@ -713,14 +712,21 @@ class MessgaeHistoryService {
       const templateId = summary.templateId
       const totalSubmission = summary['pre process'] || 0
       const totalMessageSent = summary.forwarded || 0
-      const totalMessageInProcess = summary['in process'] || 0
-      const totalMesageInDelivered = summary.delivered || 0
+      const totalMessageInProcess = summary.Inprocess || 0
+      const totalMessageResourceAllocated = summary['resource allocated'] || 0
+      const totalMessageForwarded = summary.forwarded || 0
+      const totalMessageDeleted = summary.deleted || 0
+      const totalMessageSeen = summary.seen || 0
+      const totalMessageDelivered = summary.delivered || 0
+      const totalMessageAccepted = summary.accepted || 0
       const totalMessageFailed = summary.failed || 0
+      const totalMessagePending = summary['waiting for pending delivery'] || 0
       const totalMessageRejected = summary.rejected || 0
-      const deliveryPercentage = Math.round((totalMesageInDelivered + Number.EPSILON * 100) / 100)
-      values.push([wabaNumber, templateId, totalSubmission, totalMessageSent, totalMessageInProcess, totalMesageInDelivered, totalMessageFailed, totalMessageRejected, deliveryPercentage])
+      const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
+      values.push([wabaNumber, templateId, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
+        totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
     }
-    console.log('finalllllllllllllllllllllllllllllllllllllllllllll', values)
+    console.log('final values goes for insert or update', values)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertTemplateStatusAgainstWaba(), values)
       .then(result => {
         if (result) {

@@ -15,8 +15,8 @@ const task = {
     console.log('111111111111111111111111111111111111111111111', date)
     dbService.checkTableExist(date)
       .then((data) => {
-        __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports', data)
-        return getCampaignCount()
+        getCampaignCount()
+        return __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports', data)
       })
       .catch((error) => {
         return __logger.error('inside ~function=', { err: typeof error === 'object' ? error : { error: error.toString() } })

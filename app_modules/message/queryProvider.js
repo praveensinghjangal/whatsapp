@@ -310,21 +310,38 @@ const checkTableExist = (date) => {
   const messageHistory = `message_history_${date}`
   return `SELECT @${messageHistory}`
 }
-const getNewTemplateDetailsAgainstAllUser = () => {
-  return `SELECT business_number, count(state), state, template_id
+const getNewTemplateDetailsAgainstAllUser = (date) => {
+  const messageHistory = `message_history_${date}`
+  return `SELECT business_number, count(state), state, template_id  as "templateId"
   from
-  (SELECT business_number, state, message_id, created_on , template_id
+  (SELECT business_number, state, message_id, created_on , template_id 
   FROM (
-    SELECT DISTINCT message_id, state, business_number, created_on ,template_id
-    FROM helo_whatsapp.message_history_220420
+    SELECT DISTINCT message_id, state, business_number, created_on , template_id 
+    FROM ${messageHistory}
     where  business_number in (?)
     order BY status_time desc) as ids
   group BY ids.message_id) as id
-  group by 1, 3 ;`
+  group by 1, 3`
 }
 const insertTemplateStatusAgainstWaba = () => {
-  return `INSERT into Template_summary(waba_number,Template_Id,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,Total_message_InFailed,Total_message_Rejected,Delivered_Percentage) 
-  values (?)`
+  return `INSERT into template_summary(waba_number,template_Id,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,
+  total_message_deleted,total_message_seen,total_message_delivered,total_message_accepted, total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage) 
+  values (?)
+  ON DUPLICATE KEY
+  UPDATE total_submission= values(total_submission), 
+  total_message_sent = values(total_message_sent), 
+  total_message_Inprocess = values(total_message_Inprocess),
+  total_message_resourceAllocated = values(total_message_resourceAllocated),
+  total_message_forwarded = values(total_message_forwarded), 
+  total_message_deleted = values(total_message_deleted),
+  total_message_seen = values(total_message_seen),
+  total_message_delivered = values(total_message_delivered),
+  total_message_accepted = values(total_message_accepted),
+  total_message_failed = values(total_message_failed),
+  total_message_pending = values(total_message_pending),
+  total_message_rejected = values(total_message_rejected),
+  Delivered_Percentage = values(Delivered_Percentage), 
+  updated_on = now();`
 }
 
 module.exports = {
