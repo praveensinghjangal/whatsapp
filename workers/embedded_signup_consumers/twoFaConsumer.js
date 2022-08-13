@@ -22,9 +22,11 @@ class twoFaConsumer {
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const twoFaConsumerData = JSON.parse(mqData.content.toString())
-            const { userId, wabizurl, apiKey, providerId, systemUserToken, phoneCode, phoneNumber } = twoFaConsumerData
-            let tfaPin = Math.floor(100000 + Math.random() * 900000)
-            tfaPin = tfaPin.toString()
+            let { userId, wabizurl, apiKey, providerId, systemUserToken, phoneCode, phoneNumber, tfaPin } = twoFaConsumerData
+            if (!tfaPin) {
+              tfaPin = Math.floor(100000 + Math.random() * 900000)
+              tfaPin = tfaPin.toString()
+            }
             const userService = new UserService()
             const retryCount = twoFaConsumerData.retryCount || 0
             console.log('retry count: ', retryCount)

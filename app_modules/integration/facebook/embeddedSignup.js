@@ -301,7 +301,7 @@ class EmbeddedSignup {
     return apiCall.promise
   }
 
-  requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) {
+  requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate, tfaPin) {
     const apiCall = q.defer()
     const http = new HttpService(60000)
     const url = `${wabizUrl}${__constants.FACEBOOK_ENDPOINTS.requestCode}`
@@ -314,9 +314,9 @@ class EmbeddedSignup {
       cc: phoneCode,
       phone_number: phoneNumber,
       method: 'voice',
-      cert: phoneCertificate
+      cert: phoneCertificate,
       // "pin": "<Two-Step Verification PIN"
-      // pin: '123456'
+      pin: tfaPin
     }
     http.Post(body, 'body', url, headers, this.providerId)
       .then(data => {

@@ -70,6 +70,9 @@ class WabaContainerBindingConsumer {
             // todo: call login admin api and set the password (wabizPassword) of the admin of the container
             const defaultPassword = isPasswordSet ? wabizPassword : __constants.WABIZ_DEFAULT_PASSWORD
             let apiKey
+            let tfaPin = Math.floor(100000 + Math.random() * 900000)
+            tfaPin = tfaPin.toString()
+            wabaBindingData.tfaPin = tfaPin
             const embeddedSignupService = new integrationService.EmbeddedSignup(providerId, userId, systemUserToken)
             const authInternalFunctionService = new AuthInternalFunctionService()
             authInternalFunctionService.WabaLoginApi(__constants.WABIZ_USERNAME, defaultPassword, wabizPassword, wabizurl, systemUserToken, wabaIdOfClient, phoneCode + phoneNumber, userId, true)
@@ -79,7 +82,7 @@ class WabaContainerBindingConsumer {
                 wabaBindingData.apiKey = apiKey
                 // todo: if we are running this piece of code after 2tfa is set, we will need to pass 2tfa pin as well
                 // todo: call "Request code Api" with the token received in above step. No need to verify OTP, since it was already done in popup
-                return embeddedSignupService.requestCode(wabizurl, apiKey, phoneCode, phoneNumber, phoneCertificate)
+                return embeddedSignupService.requestCode(wabizurl, apiKey, phoneCode, phoneNumber, phoneCertificate, tfaPin)
               })
               .then(data => {
                 // todo: call "get settings api" to verify whether waba was attached to spawned container or not.
