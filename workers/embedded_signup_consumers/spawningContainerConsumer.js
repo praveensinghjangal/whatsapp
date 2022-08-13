@@ -45,6 +45,10 @@ const runScriptToSpawnContainersAndGetTheIP = (userId, wabaNumber, privateIp) =>
         text = text.replace(/ /g, '') // removes white spaces from string
         text = text.replace(/(\r\n|\n|\r)/gm, '') // removes all line breaks (new lines) from string
         text = text.split('=')[1]
+        if (!text) {
+          getIp.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: ['Private IP returned is undefined'] })
+          return getIp.promise
+        }
         getIp.resolve({ privateIp: text })
       })
     } else {

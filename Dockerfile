@@ -24,6 +24,10 @@ RUN aws --version
 
 RUN aws configure set default.region ap-south-1
 
+RUN aws configure set default.access_key AKIA43QVLSQFUWV5NKO2
+
+RUN aws configure set default.secret_key 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
+
 RUN apk add openssh
 
 RUN apk add nano
