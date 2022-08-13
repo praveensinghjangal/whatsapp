@@ -94,7 +94,7 @@ class EmbeddedSignup {
   subscribeAppToWaba (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.subscribeAppToWaba(wabaIdOfClient, wabaNumber) }
   fetchAssignedUsersOfWaba (wabaIdOfClient, businessId, wabaNumber) { return this.embeddedSignup.fetchAssignedUsersOfWaba(wabaIdOfClient, businessId, wabaNumber) }
   getPhoneNumberOfWabaId (wabaIdOfClient, wabaNumber) { return this.embeddedSignup.getPhoneNumberOfWabaId(wabaIdOfClient, wabaNumber) }
-  requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) { return this.embeddedSignup.requestCode(wabizUrl, token, phoneCode, phoneNumber, phoneCertificate) }
+  requestCode (wabizUrl, token, phoneCode, phoneNumber, phoneCertificate, tfaPin) { return this.embeddedSignup.requestCode(wabizUrl, token, phoneCode, phoneNumber, phoneCertificate, tfaPin) }
   getSettings (wabizUrl, token) { return this.embeddedSignup.getSettings(wabizUrl, token) }
   enableTwoStepVerification (wabizUrl, token, tfaPin) { return this.embeddedSignup.enableTwoStepVerification(wabizUrl, token, tfaPin) }
 }
