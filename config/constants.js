@@ -312,17 +312,25 @@ const FACEBOOK_ENDPOINTS = {
   login: '/v1/users/login',
   profilePicUpdate: '/v1/settings/profile/photo',
   getProfilePic: '/v1/settings/profile/photo?format=link',
-  getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
-  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  // getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+  getTemplateList: '/v14.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+
+  // deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  deleteTemplate: '/v14.0/:userAccountIdByProvider/message_templates?access_token=',
+
   updateAboutProfile: '/v1/settings/profile/about',
   updateBusinessProfile: '/v1/settings/business/profile',
   updateWebhook: '/v1/settings/application',
   sendMessage: '/v1/messages/',
   addTemplate: '/message_templates?access_token=',
   getMedia: '/v1/media/:MediaId',
-  getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
-  getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
-  getBSPsSystemUserIds: 'https://graph.facebook.com/v12.0/{{Business-ID}}/system_users',
+  // getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
+  getWaba: 'v14.0/:userAccountIdByProvider?access_token=',
+
+  // getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
+  getPhoneNumbersByWabaid: '/v14.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
+
+  getBSPsSystemUserIds: 'https://graph.facebook.com/v14.0/{{Business-ID}}/system_users',
   debugToken: '/debug_token?input_token=',
   getWabaDetails: '/:wabaId',
   addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']",
@@ -522,7 +530,9 @@ const CHUNK_SIZE_FOR_SAVE_OPTIN = 1000
 const DEFAULT_COUNTRY_CODE = 'IN'
 const NAME_SPACE_FB = '29642c6d_62d8_4981_8c02_8bebdebfcbed'
 const FACEBOOK_GRAPHURL = 'https://graph.facebook.com/'
-const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
+// const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
+const FACEBOOK_GRAPHURL_VERSION = 'v14.0'
+
 const HEADER_HANDLE = {
   video: '3:cmNzLWZsb3cubXA0:dmlkZW8vbXA0:ARaeTQefIvdx7preEi97FEyMthItXjjbUl-HgKwjnwNYkoRoKIXPdEX9dZtwbyAfouU3XGBzwLogL-IJSQI1MuK7UzcCsQO7xbD23Tdv-m5c8A:e:1635322172:ARasyMDonA6UQsVkQUc',
   document: '3:RkUtYXNzZXNzbWVudC5wZGY=:YXBwbGljYXRpb24vcGRm:ARbYQ0s6513RaoAfwTIj25IqGC0OgSuTCc5eLuWrjy_ALzkLOomSuIeoTPSK9lRzCZSUESTaD7fYCtGRIq3iP0gq7j5vWM8jdwEwdg0xeIu__g:e:1635322280:ARbIUJhxOCoX6fd32FU',
