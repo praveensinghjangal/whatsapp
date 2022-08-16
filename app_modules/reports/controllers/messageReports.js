@@ -86,7 +86,6 @@ const campaignSummaryReport = (req, res) => {
 const templateSummaryReport = (req, res) => {
   __logger.info('Get template summary record based on template name, template id, date', req.body)
   const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
-
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
@@ -115,6 +114,7 @@ const templateSummaryReport = (req, res) => {
 }
 const usserWiseSummaryReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const validate = new ValidatonService()
   let limit = ''
@@ -124,7 +124,7 @@ const usserWiseSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      return messageReportsServices.getusserWiseSummaryCount(userId, limit, offset)
+      return messageReportsServices.getusserWiseSummaryCount(userId, wabaPhoneNumber, limit, offset)
     })
     .then((data) => {
       if (data) {
