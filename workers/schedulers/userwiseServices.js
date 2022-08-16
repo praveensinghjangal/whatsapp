@@ -1,74 +1,70 @@
 const __logger = require('../../lib/logger')
-// const __constants = require('../../config/constants')
-// const __config = require('../../config')
-// const keysToEncrypt = require('../../lib/logger/keysToEncrypt.json')
 const DbService = require('../../app_modules/message/services/dbData')
-// const AudienceService = require('../../app_modules/audience/services/dbData')
-// const EmailService = require('../../lib/sendNotifications/email')
-// const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
-// const conversationMisService = require('./misServiceOfConversation')
-// const moment = require('moment')
-// const rejectionHandler = require('../../lib/util/rejectionHandler')
-// const _ = require('lodash')
-// const { values } = require('lodash')
-// const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
+function groupByMultipleFields (data, ...fields) {
+  if (fields.length === 0) return
+  let newData = {}
+  const [field] = fields
+  newData = groupBySingleField(data, field)
+  const remainingFields = fields.slice(1)
+  if (remainingFields.length > 0) {
+    Object.keys(newData).forEach((key) => {
+      newData[key] = groupByMultipleFields(newData[key], ...remainingFields)
+    })
+  }
+  return newData
+  function groupBySingleField (data, field) {
+    return data.reduce((acc, val) => {
+      const rest = Object.keys(val).reduce((newObj, key) => {
+        if (key !== field) {
+          newObj[key] = val[key]
+        }
+        return newObj
+      }, {})
+      if (acc[val[field]]) {
+        acc[val[field]].push(rest)
+      } else {
+        ;
+        acc[val[field]] = [rest]
+      }
+      return acc
+    }, {})
+  }
+}
 
-const InsertDataIntoSumarryReports = () => {
+const InsertDataIntoUserSumarryReports = (currentDate) => {
   const dbService = new DbService()
-  // const date = moment().utc().subtract(0, 'days').format('YYYY-MM-DD')
-  // const onedayBefore = moment().utc().subtract(360, 'days').format('YYYY-MM-DD')
   let wabaNumber
-  const wabaData = {}
-  // const states = Object.keys(__constants.MESSAGE_STATUS)
-  // const queryParam = []
-  // console.log('00000000000000000000000000000', onedayBefore, date)
+  let wabaData
   dbService.getActiveBusinessNumber()
     .then((data) => {
       if (data) {
+        __logger.info('get new state data against all user  ~function=getNewStateDataAgainstAllUser', data)
         wabaNumber = data.wabaNumber.split(',')
-        return dbService.getNewStateDataAgainstAllUser(wabaNumber)
+        return dbService.getNewStateDataAgainstAllUser(wabaNumber, currentDate)
       }
     })
     .then(data => {
-      console.log('11111111111111111111111111111111111', data)
+      console.log('@@#!$@^$%$#&$@$&!^$&@$', data)
+      __logger.info('get new active state data against all user  ~function=getNewStateDataAgainstAllUser', data)
       if (data) {
         data.forEach((value, index) => {
-          let finalvalue = 0
           if (value['count(state)']) {
-            finalvalue = value['count(state)']
-          }
-          if (!wabaData[value.business_number]) {
-            wabaData[value.business_number] = {
-              [value.state]: finalvalue
-            }
-          } else {
-            wabaData[value.business_number][value.state] = finalvalue
+            wabaData = JSON.stringify(groupByMultipleFields(data, 'messageCountry', 'business_number'))
           }
         })
-        console.log('wabaData===>', wabaData)
       }
+      console.log('wabaData===>', wabaData)
     })
     .then(() => {
-      return dbService.insertStatusAgainstWaba(wabaData)
+      console.log('11111111111111111111111111111111111111', wabaData)
+      return dbService.insertStatusAgainstWaba(JSON.parse(wabaData))
     })
     .then((data) => {
       __logger.info('MIS mail sent ~function=messageStatusOnMail', data)
     })
-    // .then(() => {
-    //   const wabaNumbers = Object.keys(wabaData)
-    //   for (let i = 0; i < wabaNumbers.length; i++) {
-    //     const wabaNumber = wabaNumbers[i]
-    //     queryParam.push([wabaNumber])
-    //     for (let j = 0; j < states.length; j++) {
-    //       const state = states[j]
-    //       queryParam[queryParam.length - 1].push(wabaData[wabaNumber][state])
-    //     }
-    //   }
-    //   console.log('333333333333333333333333333333333333', queryParam)
-    // })
     .catch((error) => {
       console.log('error in sending mis ~function=messageStatusOnMail', error)
       __logger.error('error in sending mis ~function=messageStatusOnMail', { err: typeof error === 'object' ? error : { error: error.toString() } })
     })
 }
-module.exports = InsertDataIntoSumarryReports
+module.exports = InsertDataIntoUserSumarryReports

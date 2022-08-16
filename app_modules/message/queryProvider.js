@@ -206,6 +206,7 @@ const createMessageHistoryTable = (date) => {
     status_time  timestamp NOT NULL,
     state  varchar(100) NOT NULL,
     end_consumer_number  varchar(50) DEFAULT NULL,
+    country_name varchar(50) NULL;
     business_number  varchar(50) DEFAULT NULL,
     created_on  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     is_active  tinyint(1) DEFAULT '1',
@@ -228,13 +229,13 @@ const addMessageIdMappingData = () => {
 
 const addMessageHistoryDataInMis = () => {
   return `INSERT INTO message_history (message_id,template_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number,country_name, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {
   return `INSERT INTO message_history (message_id,template_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  end_consumer_number,country_name, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
 
@@ -290,21 +291,38 @@ const getCountOfStatusOfWabaNumber = () => {
   return `select business_number ,state,count(*)  
   from message_history_220802 where business_number in (?) group by 1,2;`
 }
-const getNewStateDataAgainstAllUser = () => {
-  return `SELECT business_number, count(state), state
-  from
-  (SELECT business_number, state, message_id, created_on
+const getNewStateDataAgainstAllUser = (date) => {
+  const messageHistory = `message_history_${date}`
+  return `SELECT business_number, count(state), state , message_country as "messageCountry"
+  from 
+  (SELECT business_number, state, message_id , message_country
   FROM (
-    SELECT DISTINCT message_id, state, business_number, created_on
-    FROM helo_whatsapp.message_history
-    where  business_number in (?)
-    order BY created_on desc) as ids
-  group BY ids.message_id) as id
-  group by 1, 3 ;`
+    SELECT DISTINCT message_id, state, business_number, message_country
+    FROM ${messageHistory}
+    where  business_number in ('917666118833')
+    order BY status_time desc) as ids
+  group BY ids.message_id,message_country) as id
+  group by 1,3,4;`
 }
-const mapNewResourceToRole = () => {
-  return `INSERT into userwise_summary (waba_number,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,Total_message_InFailed,Total_message_Rejected,Delivered_Percentage) 
-  values (?)`
+const insertuserwiseDataAgainstWaba = () => {
+  return `INSERT into userwise_summary (waba_number,message_country,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,total_message_deleted,
+  total_message_seen,total_message_delivered,total_message_accepted,total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage) 
+  values ?
+  ON DUPLICATE KEY
+  UPDATE total_submission= values(total_submission), 
+  total_message_sent = values(total_message_sent), 
+  total_message_Inprocess = values(total_message_Inprocess),
+  total_message_resourceAllocated = values(total_message_resourceAllocated),
+  total_message_forwarded = values(total_message_forwarded), 
+  total_message_deleted = values(total_message_deleted),
+  total_message_seen = values(total_message_seen),
+  total_message_delivered = values(total_message_delivered),
+  total_message_accepted = values(total_message_accepted),
+  total_message_failed = values(total_message_failed),
+  total_message_pending = values(total_message_pending),
+  total_message_rejected = values(total_message_rejected),
+  Delivered_Percentage = values(Delivered_Percentage), 
+  updated_on = now();`
 }
 const checkTableExist = (date) => {
   const messageHistory = `message_history_${date}`
@@ -371,7 +389,7 @@ module.exports = {
   getActiveBusinessNumber,
   getCountOfStatusOfWabaNumber,
   getNewStateDataAgainstAllUser,
-  mapNewResourceToRole,
+  insertuserwiseDataAgainstWaba,
   checkTableExist,
   getNewTemplateDetailsAgainstAllUser,
   insertTemplateStatusAgainstWaba

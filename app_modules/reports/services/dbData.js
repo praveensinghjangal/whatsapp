@@ -178,6 +178,25 @@ class MessageReportsServices {
       })
     return doesDeliveryReportExists.promise
   }
+
+  getusserWiseSummaryCount (userId, limit, offset) {
+    __logger.info('inside getTemplateSummaryReportByTemplateId', userId, limit, offset)
+    const getusserWiseSummaryCount = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCount(), [userId, limit, offset, userId])
+      .then(result => {
+        __logger.info('getTemplateSummaryReportByTemplateId query Result', { result })
+        if (result && result[0].length > 0) {
+          return getusserWiseSummaryCount.resolve(result)
+        } else {
+          return getusserWiseSummaryCount.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+        getusserWiseSummaryCount.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return getusserWiseSummaryCount.promise
+  }
 }
 
 module.exports = MessageReportsServices

@@ -91,6 +91,9 @@ const getTemplateSummaryReportByDate = () => {
 const getTemplateSummaryReportByTemplateId = () => {
 
 }
+const getusserWiseSummaryCount = () => {
+
+}
 
 module.exports = {
   getDeliveryReportByMessageId,
@@ -101,5 +104,6 @@ module.exports = {
   getCampaignSummaryReportByDate,
   getTemplateSummaryReportByTemplateName,
   getTemplateSummaryReportByDate,
-  getTemplateSummaryReportByTemplateId
+  getTemplateSummaryReportByTemplateId,
+  getusserWiseSummaryCount
 }

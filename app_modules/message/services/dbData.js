@@ -622,10 +622,10 @@ class MessgaeHistoryService {
     return getCountOfStatusOfWabaNumber.promise
   }
 
-  getNewStateDataAgainstAllUser (wabaNumber) {
+  getNewStateDataAgainstAllUser (wabaNumber, currentDate) {
     const getCountOfStatusOfWabaNumber = q.defer()
     // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewStateDataAgainstAllUser(), [wabaNumber])
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewStateDataAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         if (result) {
           return getCountOfStatusOfWabaNumber.resolve(result)
@@ -644,19 +644,35 @@ class MessgaeHistoryService {
     const wabaNumbers = Object.keys(data)
     const values = []
     for (let i = 0; i < wabaNumbers.length; i++) {
-      const wabaNumber = wabaNumbers[i]
-      const summary = data[wabaNumber]
-      const totalSubmission = summary['pre process'] || 0
-      const totalMessageSent = summary.forwarded || 0
-      const totalMessageInProcess = summary['in process'] || 0
-      const totalMesageInDelivered = summary.delivered || 0
-      const totalMessageFailed = summary.failed || 0
-      const totalMessageRejected = summary.rejected || 0
-      const deliveryPercentage = Math.round((totalMesageInDelivered + Number.EPSILON * 100) / 100)
-      values.push([wabaNumber, totalSubmission, totalMessageSent, totalMessageInProcess, totalMesageInDelivered, totalMessageFailed, totalMessageRejected, deliveryPercentage])
+      const country = wabaNumbers[i]
+      const summary = data[country]
+      const wabaNumbers1 = Object.keys(summary)
+      for (let j = 0; j < wabaNumbers1.length; j++) {
+        const requiredJson = {}
+        const arr = summary[wabaNumbers1[j]]
+        for (let k = 0; k < arr.length; k++) {
+          requiredJson[arr[k].state] = arr[k]['count(state)']
+        }
+        const wabaNumberData = requiredJson
+        const totalSubmission = summary['pre process'] || 0
+        const totalMessageSent = wabaNumberData.forwarded || 0
+        const totalMessageInProcess = wabaNumberData.Inprocess || 0
+        const totalMessageResourceAllocated = wabaNumberData['resource allocated'] || 0
+        const totalMessageForwarded = wabaNumberData.forwarded || 0
+        const totalMessageDeleted = wabaNumberData.deleted || 0
+        const totalMessageSeen = wabaNumberData.seen || 0
+        const totalMessageDelivered = wabaNumberData.delivered || 0
+        const totalMessageAccepted = wabaNumberData.accepted || 0
+        const totalMessageFailed = wabaNumberData.failed || 0
+        const totalMessagePending = wabaNumberData['waiting for pending delivery'] || 0
+        const totalMessageRejected = wabaNumberData.rejected || 0
+        const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
+        values.push([wabaNumbers1[j], country, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
+          totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
+      }
     }
-    console.log('finalllllllllllllllllllllllllllllllllllllllllllll', values)
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.mapNewResourceToRole(), values)
+    console.log('final11111111111111111111111111', values)
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertuserwiseDataAgainstWaba(), [values])
       .then(result => {
         if (result) {
           return insertStatusAgainstWaba.resolve(result)

@@ -181,6 +181,63 @@ class validate {
     }
     return isvalid.promise
   }
+
+  usserWiseSummaryReport (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/usserWiseSummaryReport',
+      type: 'object',
+      required: true,
+      properties: {
+        country: {
+          type: 'string',
+          required: false
+        },
+        limit: {
+          type: 'string',
+          required: false,
+          pattern: __constants.VALIDATOR.number
+        },
+        page: {
+          type: 'string',
+          required: false,
+          pattern: __constants.VALIDATOR.number
+        }
+      },
+      oneOf: [
+        {
+          required:
+            ['resourceId']
+        },
+        {
+          required:
+            ['systemId']
+        }
+      ],
+      additionalProperties: false
+    }
+    const formatedError = []
+    v.addSchema(schema, '/usserWiseSummaryReport')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      console.log('formatedErr', formatedErr)
+      if (err.includes('instance is not any of')) {
+        formatedError.push('Please provide atleast one field resourceId, systemId')
+      } else if (err.includes('instance is not exactly one from [subschema 0],[subschema 1]')) {
+        formatedError.push('Please provide either  resourceId or  systemId')
+      } else {
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      trimInput.singleInputTrim(request)
+        .then(data => isvalid.resolve(data))
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
