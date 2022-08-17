@@ -81,15 +81,30 @@ const getCampaignSummaryReportByDate = () => {
 }
 
 const getTemplateSummaryReportByTemplateName = () => {
-
+  return `SELECT waba_number as "wabaNumber",template_name as "templateName", message_country as "messageCountry",total_submission as totalSubmission,total_message_sent as "totalMessageSent",total_message_Inprocess as "totalMessageInProcess",total_message_resourceAllocated as "totalMessageResourceAllocated",total_message_forwarded as "totalMessageForwarded",total_message_deleted as "totalMessageDeleted" ,
+  total_message_seen as "totalMessageSeen",total_message_delivered as "totalMessageDelivered",total_message_accepted as "totalMessageAccepted", total_message_failed as "totalMessageFailed", total_message_pending as "totalMessagePending", total_message_rejected as "totalMessageRejected" 
+  Delivered_Percentage as "deliveredPercentage" FROM template_summary where waba_number = ? and  template_name = ? 
+  ORDER BY created_on DESC limit ? offset ?;
+  select count(1) as totalCount
+  from template_summary where waba_number = ?`
 }
 
 const getTemplateSummaryReportByDate = () => {
-
+  return `SELECT waba_number as "wabaNumber", message_country as "messageCountry",total_submission as totalSubmission,total_message_sent as "totalMessageSent",total_message_Inprocess as "totalMessageInProcess",total_message_resourceAllocated as "totalMessageResourceAllocated",total_message_forwarded as "totalMessageForwarded",total_message_deleted as "totalMessageDeleted" ,
+  total_message_seen as "totalMessageSeen",total_message_delivered as "totalMessageDelivered",total_message_accepted as "totalMessageAccepted", total_message_failed as "totalMessageFailed", total_message_pending as "totalMessagePending", total_message_rejected as "totalMessageRejected" 
+  Delivered_Percentage as "deliveredPercentage" FROM template_summary where waba_number = ? and created_on BETWEEN ? AND ? 
+  ORDER BY created_on DESC limit ? offset ?;
+  select count(1) as totalCount
+  from template_summary where waba_number = ? and created_on BETWEEN ? AND ?`
 }
 
 const getTemplateSummaryReportByTemplateId = () => {
-
+  return `SELECT waba_number as "wabaNumber", message_country as "messageCountry",total_submission as totalSubmission,total_message_sent as "totalMessageSent",total_message_Inprocess as "totalMessageInProcess",total_message_resourceAllocated as "totalMessageResourceAllocated",total_message_forwarded as "totalMessageForwarded",total_message_deleted as "totalMessageDeleted" ,
+  total_message_seen as "totalMessageSeen",total_message_delivered as "totalMessageDelivered",total_message_accepted as "totalMessageAccepted", total_message_failed as "totalMessageFailed", total_message_pending as "totalMessagePending", total_message_rejected as "totalMessageRejected" 
+  Delivered_Percentage as "deliveredPercentage" FROM  where waba_number = ? and template_Id = ?
+  ORDER BY created_on DESC limit ? offset ?;
+  select count(1) as totalCount
+  from  where waba_number = ? and template_Id = ?`
 }
 const getusserWiseSummaryCount = () => {
   return `SELECT waba_number as "wabaNumber", message_country as "messageCountry",total_submission as totalSubmission,total_message_sent as "totalMessageSent",total_message_Inprocess as "totalMessageInProcess",total_message_resourceAllocated as "totalMessageResourceAllocated",total_message_forwarded as "totalMessageForwarded",total_message_deleted as "totalMessageDeleted" ,
@@ -113,7 +128,7 @@ const getusserWiseSummaryCountBasedOnDate = () => {
   Delivered_Percentage as "deliveredPercentage" FROM userwise_summary where waba_number = ? and created_on BETWEEN ? AND ? 
   ORDER BY created_on DESC limit ? offset ?;
   select count(1) as totalCount
-  from userwise_summary where waba_number = ? and `
+  from userwise_summary where waba_number = ? and created_on BETWEEN ? AND ?`
 }
 
 module.exports = {
