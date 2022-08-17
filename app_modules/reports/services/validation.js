@@ -145,12 +145,12 @@ class validate {
         },
         startDate: {
           type: 'string',
-          required: false,
+          required: true,
           pattern: __constants.VALIDATOR.timeStamp
         },
         endDate: {
           type: 'string',
-          required: false,
+          required: true,
           pattern: __constants.VALIDATOR.timeStamp,
           minLength: 1
         }
