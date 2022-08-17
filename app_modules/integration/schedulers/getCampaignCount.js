@@ -76,10 +76,11 @@ const updateCampaignCount = (data) => {
            total_ratelimit,
             delivered_message,
             deliverey_percentage,
+            update_on,
             created_on)
     values ?
     ON DUPLICATE KEY 
-    UPDATE total_sent= values(total_sent), total_inprocess = values(total_inprocess), total_resourceallocated = values(total_resourceallocated),total_forwarded=values(total_forwarded), total_seen = values(total_seen), total_deleted= values(total_deleted),total_accepted= values(total_accepted), total_failed=values(total_failed), total_pending=values(total_pending), total_rejected= values(total_rejected), total_ratelimit= values(total_ratelimit),delivered_message=values(delivered_message), deliverey_percentage = values(deliverey_percentage), created_on = created_on`
+    UPDATE total_sent= values(total_sent), total_inprocess = values(total_inprocess), total_resourceallocated = values(total_resourceallocated),total_forwarded=values(total_forwarded), total_seen = values(total_seen), total_deleted= values(total_deleted),total_accepted= values(total_accepted), total_failed=values(total_failed), total_pending=values(total_pending), total_rejected= values(total_rejected), total_ratelimit= values(total_ratelimit),delivered_message=values(delivered_message), deliverey_percentage = values(deliverey_percentage), update_on = values(update_on), created_on = created_on`
 
   __logger.info('SCHEDULER::updateCampaignCount::Inside scheduler fuction get campaign name')
   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, query, [data])
@@ -105,7 +106,7 @@ module.exports = () => {
     .then(result => {
       campaignName = result
       campaignName.forEach(element => {
-        if (element.campaignName !== null) {
+        if ((element.campaignName !== null) || (!_.isEmpty(element.campaignName))) {
           arrOfCamaignName.push(element.campaignName)
         }
       })
@@ -114,7 +115,8 @@ module.exports = () => {
     .then(result => {
       var grouped = _.groupBy(result, 'campaignName')
       campaignName.forEach(element => {
-        if (element.campaignName !== null) {
+        if (element.campaignName !== null || (!_.isEmpty(element.campaignName))) {
+          var date = moment().format('YYYY-MM-DD HH:mm:ss')
           var data = element.campaignName === null ? '1' : element.campaignName
           var grouped1 = _.groupBy(grouped[data], 'state')
           var totalSeen = grouped1[__constants.MESSAGE_STATUS.seen] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.seen][0].count
@@ -137,7 +139,8 @@ module.exports = () => {
           arrdata.push(grouped1[__constants.MESSAGE_STATUS.rateLimit] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.rateLimit][0].count)
           arrdata.push(deliveredMessage)
           arrdata.push(totalDelivered)
-          arrdata.push(moment().format('YYYY-MM-DD HH:mm:ss'))
+          arrdata.push(date)
+          arrdata.push(date)
           // finalRecord.campaignName = element.campaignName
           // finalRecord.businessNumber = element.businessNumber
           // finalRecord.totalSent = element.totalMessageSent

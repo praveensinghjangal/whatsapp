@@ -25,7 +25,7 @@ const MessageReportsServices = require('../services/dbData')
 
 const deliveryReport = (req, res) => {
   __logger.info('Get delivered message journey record based on consumer mobile number, campaign name, date, message id', req.body)
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
@@ -56,7 +56,7 @@ const deliveryReport = (req, res) => {
 
 const campaignSummaryReport = (req, res) => {
   __logger.info('Get campaign summary record based on campaign name, date', req.body)
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
@@ -85,7 +85,7 @@ const campaignSummaryReport = (req, res) => {
 
 const templateSummaryReport = (req, res) => {
   __logger.info('Get template summary record based on template name, template id, date', req.body)
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
 
   let limit = ''
   let page = ''
