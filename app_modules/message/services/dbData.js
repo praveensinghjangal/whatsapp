@@ -393,7 +393,7 @@ class MessgaeHistoryService {
   getMisRelatedData (startOfMonth, endOfMonth) {
     const promises = q.defer()
     __logger.info('inside getMisRelatedData', startOfMonth, endOfMonth)
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMisRelatedData(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMisRelatedData1(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
       .then(result => {
         if (result && result.length > 0) {
           __logger.info('>>>>>>>>> getMisRelatedData db call got array of json', result)

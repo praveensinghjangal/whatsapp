@@ -365,6 +365,13 @@ const getTemplateNameAgainstId = () => {
   return `SELECT template_name As "templateName" From message_template
   where message_template_id = ? and is_active = true`
 }
+const getMisRelatedData1 = () => {
+  return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory, DATE_FORMAT(b.created_on, '%Y-%m-%d') as createdOn,
+  b.from as wabaPhoneNumber
+  FROM billing_conversation b
+  where  b.created_on not between concat(Date(now()),' 00:00:00') and concat(Date(now()),' 23:59:59')
+  GROUP BY b.conversation_category ,b.from, DATE(b.created_on)`
+}
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -396,5 +403,6 @@ module.exports = {
   checkTableExist,
   getNewTemplateDetailsAgainstAllUser,
   insertTemplateStatusAgainstWaba,
-  getTemplateNameAgainstId
+  getTemplateNameAgainstId,
+  getMisRelatedData1
 }

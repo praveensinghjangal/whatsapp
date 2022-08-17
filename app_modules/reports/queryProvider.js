@@ -86,7 +86,7 @@ const getTemplateSummaryReportByTemplateName = () => {
   Delivered_Percentage as "deliveredPercentage" FROM template_summary where waba_number = ? and  template_name = ? 
   ORDER BY created_on DESC limit ? offset ?;
   select count(1) as totalCount
-  from template_summary where waba_number = ?`
+  from template_summary where waba_number = ? and template_name = ?`
 }
 
 const getTemplateSummaryReportByDate = () => {
