@@ -342,7 +342,7 @@ const getNewTemplateDetailsAgainstAllUser = (date) => {
   group by 1, 3`
 }
 const insertTemplateStatusAgainstWaba = () => {
-  return `INSERT into template_summary(waba_number,template_Id,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,
+  return `INSERT into template_summary(waba_number,template_Id,template_name,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,
   total_message_deleted,total_message_seen,total_message_delivered,total_message_accepted, total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage) 
   values (?)
   ON DUPLICATE KEY
@@ -361,7 +361,10 @@ const insertTemplateStatusAgainstWaba = () => {
   Delivered_Percentage = values(Delivered_Percentage), 
   updated_on = now();`
 }
-
+const getTemplateNameAgainstId = () => {
+  return `SELECT template_name As "templateName" From message_template
+  where message_template_id = ? and is_active = true`
+}
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -392,5 +395,6 @@ module.exports = {
   insertuserwiseDataAgainstWaba,
   checkTableExist,
   getNewTemplateDetailsAgainstAllUser,
-  insertTemplateStatusAgainstWaba
+  insertTemplateStatusAgainstWaba,
+  getTemplateNameAgainstId
 }

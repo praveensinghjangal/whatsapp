@@ -703,19 +703,19 @@ class MessgaeHistoryService {
   }
 
   getNewTemplateDetailsAgainstAllUser (wabaNumber, currentDate) {
-    const getCountOfStatusOfWabaNumber = q.defer()
+    const getNewTemplateDetailsAgainstAllUser = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         if (result) {
-          return getCountOfStatusOfWabaNumber.resolve(result)
+          return getNewTemplateDetailsAgainstAllUser.resolve(result)
         } else {
-          return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return getNewTemplateDetailsAgainstAllUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        return getNewTemplateDetailsAgainstAllUser.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
-    return getCountOfStatusOfWabaNumber.promise
+    return getNewTemplateDetailsAgainstAllUser.promise
   }
 
   insertTemplateStatusAgainstWaba (data) {
@@ -726,6 +726,7 @@ class MessgaeHistoryService {
       const wabaNumber = wabaNumbers[i]
       const summary = data[wabaNumber]
       const templateId = summary.templateId
+      const templateName = summary.templateName
       const totalSubmission = summary['pre process'] || 0
       const totalMessageSent = summary.forwarded || 0
       const totalMessageInProcess = summary.Inprocess || 0
@@ -739,7 +740,7 @@ class MessgaeHistoryService {
       const totalMessagePending = summary['waiting for pending delivery'] || 0
       const totalMessageRejected = summary.rejected || 0
       const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
-      values.push([wabaNumber, templateId, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
+      values.push([wabaNumber, templateId, templateName, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
         totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
     }
     console.log('final values goes for insert or update', values)
@@ -755,6 +756,23 @@ class MessgaeHistoryService {
         return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return insertTemplateStatusAgainstWaba.promise
+  }
+
+  getTemplateNameAgainstId (templateId) {
+    const getTemplateNameAgainstId = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
+      .then(result => {
+        if (result) {
+          return getTemplateNameAgainstId.resolve(result[0])
+        } else {
+          return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        console.log('000000000000000000000000000000000000000000000000000', err)
+        return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getTemplateNameAgainstId.promise
   }
 }
 

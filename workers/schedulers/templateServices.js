@@ -1,5 +1,44 @@
 const __logger = require('../../lib/logger')
 const DbService = require('../../app_modules/message/services/dbData')
+const __constants = require('../../config/constants')
+const q = require('q')
+// function getTemplateNameAgainstId (templateId) {
+//   const dbService = new DbService()
+//   dbService.getTemplateNameAgainstId(templateId)
+//     .then(data => {
+//       if (data.templateName) {
+//         console.log('9999999999999999999999999999999999999', data.templateName)
+//         return data.templateName
+//       } else {
+//         return { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} }
+//       }
+//     })
+//     .catch(err => {
+//       console.log('111111111111111111111111111111111111111111111111', err)
+//       __logger.error('Error in authorizeSmppApi :: ', err)
+//       return err
+//     })
+// }
+const getTemplateNameAgainstId = (templateId) => {
+  const getTemplateNameAgainstId = q.defer()
+  __logger.info('generateBackupCodes:')
+  const dbService = new DbService()
+  dbService.getTemplateNameAgainstId(templateId)
+    .then(data => {
+      if (data.templateName) {
+        console.log('9999999999999999999999999999999999999', data.templateName)
+        return getTemplateNameAgainstId.resolve(data.templateName)
+      } else {
+        return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
+      }
+    })
+    .catch(err => {
+      console.log('111111111111111111111111111111111111111111111111', err)
+      __logger.error('Error in authorizeSmppApi :: ', err)
+      return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+    })
+  return getTemplateNameAgainstId.promise
+}
 
 const InsertDataIntoSumarryReports = (currentDate) => {
   const dbService = new DbService()
@@ -12,10 +51,11 @@ const InsertDataIntoSumarryReports = (currentDate) => {
         return dbService.getNewTemplateDetailsAgainstAllUser(wabaNumber, currentDate)
       }
     })
-    .then((data) => {
+    .then(async (data) => {
       __logger.info('getNewTemplateDetailsAgainstAllUser ~function=getNewTemplateDetailsAgainstAllUser', data)
       if (data) {
-        data.forEach((value, index) => {
+        for (let i = 0; i < data.length; i++) {
+          const value = data[i]
           let finalvalue = 0
           if (value['count(state)']) {
             finalvalue = value['count(state)']
@@ -23,14 +63,17 @@ const InsertDataIntoSumarryReports = (currentDate) => {
           if (!wabaData[value.business_number]) {
             wabaData[value.business_number] = {
               [value.state]: finalvalue,
-              templateId: value.templateId
+              templateId: value.templateId,
+              templateName: await getTemplateNameAgainstId(value.templateId)
             }
           } else {
             wabaData[value.business_number][value.state] = finalvalue
           }
-        })
-        console.log('wabaData===>', wabaData)
+          console.log('wabaData===>', wabaData)
+        }
+        return wabaData
       }
+      return null
     })
     .then(() => {
       __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
