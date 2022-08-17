@@ -189,7 +189,7 @@ class validate {
       type: 'object',
       required: true,
       properties: {
-        country: {
+        countryName: {
           type: 'string',
           required: false
         },

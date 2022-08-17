@@ -124,7 +124,13 @@ const usserWiseSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      return messageReportsServices.getusserWiseSummaryCount(userId, wabaPhoneNumber, limit, offset)
+      if (req.query.countryName) {
+        return messageReportsServices.getusserWiseSummaryCountBasedOncountryName(userId, wabaPhoneNumber, limit, offset)
+      } else if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) {
+        return messageReportsServices.getusserWiseSummaryCountBasedOnDate(userId, wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
+      } else {
+        return messageReportsServices.getusserWiseSummaryCount(userId, wabaPhoneNumber, limit, offset)
+      }
     })
     .then((data) => {
       if (data) {
