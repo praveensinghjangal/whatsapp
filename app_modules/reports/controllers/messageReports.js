@@ -113,4 +113,34 @@ const templateSummaryReport = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport }
+const usserWiseSummaryReport = (req, res) => {
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const messageReportsServices = new MessageReportsServices()
+  const validate = new ValidatonService()
+  let limit = ''
+  let page = ''
+  validate.usserWiseSummaryReport(req.query)
+    .then(() => {
+      limit = req.query.limit ? +req.query.limit : 5
+      page = req.query.page ? +req.query.page : 1
+      const offset = limit * (page - 1)
+      if (req.query.countryName) {
+        return messageReportsServices.getusserWiseSummaryCountBasedOncountryName(userId, wabaPhoneNumber, limit, offset)
+      } else if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) {
+        return messageReportsServices.getusserWiseSummaryCountBasedOnDate(userId, wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
+      } else {
+        return messageReportsServices.getusserWiseSummaryCount(userId, wabaPhoneNumber, limit, offset)
+      }
+    })
+    .then((data) => {
+      if (data) {
+        // pagination
+        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+      }
+    })
+}
+module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport }
