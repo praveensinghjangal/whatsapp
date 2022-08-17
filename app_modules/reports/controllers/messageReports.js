@@ -25,7 +25,7 @@ const MessageReportsServices = require('../services/dbData')
 
 const deliveryReport = (req, res) => {
   __logger.info('Get delivered message journey record based on consumer mobile number, campaign name, date, message id', req.body)
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
@@ -35,14 +35,14 @@ const deliveryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, wabaPhoneNumber, limit, offset)
-      if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, wabaPhoneNumber, limit, offset)
-      if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
-      if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      // if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, wabaPhoneNumber, limit, offset)
+      // if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
+      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), currentPage: page }
+        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
@@ -56,7 +56,7 @@ const deliveryReport = (req, res) => {
 
 const campaignSummaryReport = (req, res) => {
   __logger.info('Get campaign summary record based on campaign name, date', req.body)
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
@@ -66,12 +66,12 @@ const campaignSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
-      if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getCampaignSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (!req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), currentPage: page }
+        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
@@ -85,7 +85,8 @@ const campaignSummaryReport = (req, res) => {
 
 const templateSummaryReport = (req, res) => {
   __logger.info('Get template summary record based on template name, template id, date', req.body)
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
@@ -101,7 +102,7 @@ const templateSummaryReport = (req, res) => {
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), currentPage: page }
+        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
@@ -114,7 +115,7 @@ const templateSummaryReport = (req, res) => {
 }
 const usserWiseSummaryReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const wabaPhoneNumber = req.user.wabaPhoneNumberwabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const validate = new ValidatonService()
   let limit = ''
@@ -135,7 +136,7 @@ const usserWiseSummaryReport = (req, res) => {
     .then((data) => {
       if (data) {
         // pagination
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), currentPage: page }
+        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })

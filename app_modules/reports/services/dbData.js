@@ -8,10 +8,10 @@ const queryProvider = require('../queryProvider')
 // const uniqueId = new UniqueId()
 
 class MessageReportsServices {
-  getDeliveryReportByMessageId (messageId, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getDeliveryReportByMessageId', messageId, wabaPhoneNumber, limit, offset)
+  getDeliveryReportByMessageId (messageId, consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getDeliveryReportByMessageId', startDate, endDate, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByMessageId(), [messageId, wabaPhoneNumber, limit, offset, messageId, wabaPhoneNumber])
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByMessageId(), [messageId, consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset, messageId, consumerNumber, startDate, endDate, wabaPhoneNumber])
       .then(result => {
         __logger.info('getDeliveryReportByMessageId query Result', { result })
         if (result && result[0].length > 0) {
@@ -27,67 +27,67 @@ class MessageReportsServices {
     return doesDeliveryReportExists.promise
   }
 
-  getDeliveryReportByConsumerNumber (consumerNumber, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getDeliveryReportByConsumerNumber', consumerNumber, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByConsumerNumber(), [consumerNumber, wabaPhoneNumber, limit, offset, consumerNumber, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getDeliveryReportByConsumerNumber query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
-        } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getDeliveryReportByConsumerNumber: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
-    return doesDeliveryReportExists.promise
-  }
+  // getDeliveryReportByConsumerNumber (consumerNumber, wabaPhoneNumber, limit, offset) {
+  //   __logger.info('inside getDeliveryReportByConsumerNumber', consumerNumber, wabaPhoneNumber, limit, offset)
+  //   const doesDeliveryReportExists = q.defer()
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByConsumerNumber(), [consumerNumber, wabaPhoneNumber, limit, offset, consumerNumber, wabaPhoneNumber])
+  //     .then(result => {
+  //       __logger.info('getDeliveryReportByConsumerNumber query Result', { result })
+  //       if (result && result[0].length > 0) {
+  //         doesDeliveryReportExists.resolve(result)
+  //       } else {
+  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       __logger.error('error in getDeliveryReportByConsumerNumber: ', err)
+  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+  //     })
+  //   return doesDeliveryReportExists.promise
+  // }
 
-  getDeliveryReportByCampaignName (campaignName, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getDeliveryReportByCampaignName', campaignName, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByCampaignName(), [campaignName, wabaPhoneNumber, limit, offset, campaignName, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getDeliveryReportByCampaignName query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
-        } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getDeliveryReportByCampaignName: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
-    return doesDeliveryReportExists.promise
-  }
+  // getDeliveryReportByCampaignName (campaignName, wabaPhoneNumber, limit, offset) {
+  //   __logger.info('inside getDeliveryReportByCampaignName', campaignName, wabaPhoneNumber, limit, offset)
+  //   const doesDeliveryReportExists = q.defer()
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByCampaignName(), [campaignName, wabaPhoneNumber, limit, offset, campaignName, wabaPhoneNumber])
+  //     .then(result => {
+  //       __logger.info('getDeliveryReportByCampaignName query Result', { result })
+  //       if (result && result[0].length > 0) {
+  //         doesDeliveryReportExists.resolve(result)
+  //       } else {
+  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       __logger.error('error in getDeliveryReportByCampaignName: ', err)
+  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+  //     })
+  //   return doesDeliveryReportExists.promise
+  // }
 
-  getDeliveryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getDeliveryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getDeliveryReportByDate query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
-        } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getDeliveryReportByDate: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
-    return doesDeliveryReportExists.promise
-  }
+  // getDeliveryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
+  //   __logger.info('inside getDeliveryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
+  //   const doesDeliveryReportExists = q.defer()
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
+  //     .then(result => {
+  //       __logger.info('getDeliveryReportByDate query Result', { result })
+  //       if (result && result[0].length > 0) {
+  //         doesDeliveryReportExists.resolve(result)
+  //       } else {
+  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       __logger.error('error in getDeliveryReportByDate: ', err)
+  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+  //     })
+  //   return doesDeliveryReportExists.promise
+  // }
 
-  getCampaignSummaryReportByCampaignName (campaignName, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getCampaignSummaryReportByCampaignName', campaignName, limit, offset)
+  getCampaignSummaryReportByCampaignName (campaignName, startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getCampaignSummaryReportByCampaignName', startDate, endDate, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getCampaignSummaryReportByCampaignName(), [campaignName, wabaPhoneNumber, limit, offset, campaignName, wabaPhoneNumber])
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getCampaignSummaryReportByCampaignName(), [campaignName, startDate, endDate, wabaPhoneNumber, limit, offset, campaignName, startDate, endDate, wabaPhoneNumber])
       .then(result => {
         __logger.info('getCampaignSummaryReportByCampaignName query Result', { result })
         if (result && result[0].length > 0) {
