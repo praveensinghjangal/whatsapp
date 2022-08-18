@@ -152,6 +152,9 @@ const userConversationReport = (req, res) => {
   const validate = new ValidatonService()
   let limit = ''
   let page = ''
+  if ((req.body.countryName && (req.body.startDate || req.body.endDate))) {
+    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide any one countryName or Date' })
+  }
   __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
   validate.userConversationReport(req.body)
     .then(() => {
@@ -163,7 +166,7 @@ const userConversationReport = (req, res) => {
       } else if (req.body.startDate && req.body.startDate !== undefined && req.body.endDate && req.body.endDate !== undefined) {
         return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
       } else {
-        return messageReportsServices.getuserConversationReportCount(userId, wabaPhoneNumber, limit, offset)
+        return messageReportsServices.getuserConversationReportCount(wabaPhoneNumber, limit, offset)
       }
     })
     .then((data) => {

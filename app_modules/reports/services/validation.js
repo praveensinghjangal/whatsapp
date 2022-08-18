@@ -244,7 +244,7 @@ class validate {
       properties: {
         countryName: {
           type: 'array',
-          required: true,
+          required: false,
           minItems: 1,
           items: {
             type: 'string',
