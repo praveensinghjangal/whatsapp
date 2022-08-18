@@ -373,7 +373,7 @@ const getconversationDataBasedOnWabaNumber = () => {
   GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
 }
 const insertConversationDataAgainstWaba = () => {
-  return `INSERT into conversation_summary (waba_number,country_name,business_initiated,user_initiated,referral_conversion,not_applicable,total_number) 
+  return `INSERT into conversation_summary (waba_number,country_name,user_initiated,business_initiated,referral_conversion,not_applicable,total_number) 
     values ?
     ON DUPLICATE KEY
     UPDATE business_initiated= values(business_initiated), 

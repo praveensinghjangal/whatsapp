@@ -640,6 +640,7 @@ class MessgaeHistoryService {
   }
 
   insertStatusAgainstWaba (data) {
+    console.log('**************************************', data)
     const insertStatusAgainstWaba = q.defer()
     const wabaNumbers = Object.keys(data)
     const values = []

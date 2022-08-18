@@ -79,7 +79,7 @@ const conversationMisService = () => {
     .then(() => {
       console.log('11111111111111111111111111111111111111111', wabaData)
       __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
-      return dbService.insertConversationDataAgainstWaba(wabaData)
+      return dbService.insertConversationDataAgainstWaba(JSON.parse(wabaData))
       // return dbService.insertTemplateStatusAgainstWaba(wabaData)
     })
     .then((data) => {
