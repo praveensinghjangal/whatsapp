@@ -8,9 +8,9 @@ const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 const uniqueId = new UniqueId()
 const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
 class LogConversationInternalService {
-  insertConversation (conversationId, from, to, expiresOn, type) {
+  insertConversation (conversationId, from, to, countryName, expiresOn, type) {
     const logAdded = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addConversationLog(), [uniqueId.uuid(), conversationId, from, to, type, expiresOn, from])
+    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addConversationLog(), [uniqueId.uuid(), conversationId, from, to, countryName, type, expiresOn, from])
       .then(result => {
         __logger.info('Add Result then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {

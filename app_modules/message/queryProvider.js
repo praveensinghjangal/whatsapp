@@ -247,8 +247,8 @@ const checkConversationLogExists = () => {
 
 const addConversationLog = () => {
   return 'insert into billing_conversation' +
-  '(billing_conversation_id, conversation_id, `from`, `to`, conversation_category, conversation_expires_on, created_by)' +
-  'VALUES (?,?,?,?,?,?,?)'
+  '(billing_conversation_id, conversation_id, `from`, `to`,message_country, conversation_category, conversation_expires_on, created_by)' +
+  'VALUES (?,?,?,?,?,?,?,?)'
 }
 
 const getMisRelatedData = () => {
