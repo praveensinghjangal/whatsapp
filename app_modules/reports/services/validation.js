@@ -190,8 +190,14 @@ class validate {
       required: true,
       properties: {
         countryName: {
-          type: 'string',
-          required: false
+          type: 'array',
+          required: true,
+          minItems: 1,
+          items: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 50
+          }
         },
         limit: {
           type: 'string',
@@ -237,8 +243,14 @@ class validate {
       required: true,
       properties: {
         countryName: {
-          type: 'string',
-          required: false
+          type: 'array',
+          required: true,
+          minItems: 1,
+          items: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 50
+          }
         },
         limit: {
           type: 'string',

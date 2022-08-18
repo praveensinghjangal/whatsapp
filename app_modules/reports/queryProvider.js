@@ -135,7 +135,7 @@ const getuserConversationReportCountBasedOncountryName = () => {
   not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
   waba_number = ? and  country_name = ? ORDER BY created_on DESC limit ? offset ?;
   select count(1) as totalCount
-  from conversation_summary where waba_number = ? and country_name = ?`
+  from conversation_summary where waba_number = ? and country_name IN (?)`
 }
 const getuserConversationReportCountBasedOnDate = () => {
   return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",

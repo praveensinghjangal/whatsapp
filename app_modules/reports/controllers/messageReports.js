@@ -153,15 +153,15 @@ const userConversationReport = (req, res) => {
   let limit = ''
   let page = ''
   __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
-  validate.userConversationReport(req.query)
+  validate.userConversationReport(req.body)
     .then(() => {
-      limit = req.query.limit ? +req.query.limit : 5
-      page = req.query.page ? +req.query.page : 1
+      limit = req.body.limit ? +req.body.limit : 5
+      page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
-      if (req.query.countryName) {
-        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.query.countryName, limit, offset)
-      } else if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) {
-        return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
+      if (req.body.countryName) {
+        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, limit, offset)
+      } else if (req.body.startDate && req.body.startDate !== undefined && req.body.endDate && req.body.endDate !== undefined) {
+        return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
       } else {
         return messageReportsServices.getuserConversationReportCount(userId, wabaPhoneNumber, limit, offset)
       }
