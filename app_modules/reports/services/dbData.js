@@ -179,10 +179,10 @@ class MessageReportsServices {
     return doesDeliveryReportExists.promise
   }
 
-  getusserWiseSummaryCount (userId, limit, offset) {
-    __logger.info('inside getusserWiseSummaryCount', userId, limit, offset)
+  getusserWiseSummaryCount (wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getusserWiseSummaryCount', wabaPhoneNumber, limit, offset)
     const getusserWiseSummaryCount = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCount(), [userId, limit, offset, userId])
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCount(), [wabaPhoneNumber, limit, offset, wabaPhoneNumber])
       .then(result => {
         __logger.info('getusserWiseSummaryCount query Result', { result })
         if (result && result[0].length > 0) {
@@ -198,42 +198,96 @@ class MessageReportsServices {
     return getusserWiseSummaryCount.promise
   }
 
-  getusserWiseSummaryCountBasedOncountryName (countryName, userId, limit, offset) {
-    __logger.info('inside getusserWiseSummaryCountBasedOncountryName', countryName, userId, limit, offset)
-    const getusserWiseSummaryCount = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOncountryName(), [countryName, userId, limit, offset, userId])
+  getusserWiseSummaryCountBasedOncountryName (wabaPhoneNumber, countryName, limit, offset) {
+    __logger.info('inside getusserWiseSummaryCountBasedOncountryName', countryName, wabaPhoneNumber, limit, offset)
+    const getusserWiseSummaryCountBasedOncountryName = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOncountryName(), [wabaPhoneNumber, countryName, limit, offset, wabaPhoneNumber, countryName])
       .then(result => {
         __logger.info('getusserWiseSummaryCountBasedOncountryName query Result', { result })
         if (result && result[0].length > 0) {
-          return getusserWiseSummaryCount.resolve(result)
+          return getusserWiseSummaryCountBasedOncountryName.resolve(result)
         } else {
-          return getusserWiseSummaryCount.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return getusserWiseSummaryCountBasedOncountryName.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getusserWiseSummaryCountBasedOncountryName: ', err)
-        getusserWiseSummaryCount.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        getusserWiseSummaryCountBasedOncountryName.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return getusserWiseSummaryCount.promise
+    return getusserWiseSummaryCountBasedOncountryName.promise
   }
 
-  getusserWiseSummaryCountBasedOnDate (userId, wabaPhoneNumber, limit, offset, startDate, endDate) {
-    __logger.info('inside getusserWiseSummaryCountBasedOnDate', userId, wabaPhoneNumber, limit, offset, startDate, endDate)
-    const getusserWiseSummaryCount = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOnDate(), [userId, wabaPhoneNumber, startDate, endDate, limit, offset])
+  getusserWiseSummaryCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
+    __logger.info('inside getusserWiseSummaryCountBasedOnDate', wabaPhoneNumber, limit, offset, startDate, endDate)
+    const getusserWiseSummaryCountBasedOnDate = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
       .then(result => {
         __logger.info('getusserWiseSummaryCount query Result', { result })
         if (result && result[0].length > 0) {
-          return getusserWiseSummaryCount.resolve(result)
+          return getusserWiseSummaryCountBasedOnDate.resolve(result)
         } else {
-          return getusserWiseSummaryCount.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return getusserWiseSummaryCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-        getusserWiseSummaryCount.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        getusserWiseSummaryCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return getusserWiseSummaryCount.promise
+    return getusserWiseSummaryCountBasedOnDate.promise
+  }
+
+  getuserConversationReportCountBasedOncountryName (wabaPhoneNumber, countryName, limit, offset) {
+    const getuserConversationReportCountBasedOncountryName = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOncountryName(), [wabaPhoneNumber, countryName, limit, offset, wabaPhoneNumber, countryName])
+      .then(result => {
+        __logger.info('getusserWiseSummaryCount query Result', { result })
+        if (result && result[0].length > 0) {
+          return getuserConversationReportCountBasedOncountryName.resolve(result)
+        } else {
+          return getuserConversationReportCountBasedOncountryName.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+        getuserConversationReportCountBasedOncountryName.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return getuserConversationReportCountBasedOncountryName.promise
+  }
+
+  getuserConversationReportCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
+    const getuserConversationReportCountBasedOnDate = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
+      .then(result => {
+        __logger.info('getusserWiseSummaryCount query Result', { result })
+        if (result && result[0].length > 0) {
+          return getuserConversationReportCountBasedOnDate.resolve(result)
+        } else {
+          return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+        getuserConversationReportCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return getuserConversationReportCountBasedOnDate.promise
+  }
+
+  getuserConversationReportCount (wabaPhoneNumber, limit, offset) {
+    const getuserConversationReportCountBasedOnDate = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCount(), [wabaPhoneNumber, limit, offset, wabaPhoneNumber])
+      .then(result => {
+        __logger.info('getusserWiseSummaryCount query Result', { result })
+        if (result && result[0].length > 0) {
+          return getuserConversationReportCountBasedOnDate.resolve(result)
+        } else {
+          return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+        getuserConversationReportCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return getuserConversationReportCountBasedOnDate.promise
   }
 }
 

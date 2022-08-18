@@ -84,7 +84,7 @@ const campaignSummaryReport = (req, res) => {
 }
 
 const templateSummaryReport = (req, res) => {
-  __logger.info('Get template summary record based on template name, template id, date', req.body)
+  __logger.info('Get template summary record based on template name, template id, date', req.query)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
 
   let limit = ''
@@ -116,6 +116,7 @@ const templateSummaryReport = (req, res) => {
 const usserWiseSummaryReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
   const messageReportsServices = new MessageReportsServices()
   const validate = new ValidatonService()
   let limit = ''
@@ -125,12 +126,13 @@ const usserWiseSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
+
       if (req.query.countryName) {
-        return messageReportsServices.getusserWiseSummaryCountBasedOncountryName(userId, wabaPhoneNumber, limit, offset)
+        return messageReportsServices.getusserWiseSummaryCountBasedOncountryName(wabaPhoneNumber, req.query.countryName, limit, offset)
       } else if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) {
-        return messageReportsServices.getusserWiseSummaryCountBasedOnDate(userId, wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
+        return messageReportsServices.getusserWiseSummaryCountBasedOnDate(wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
       } else {
-        return messageReportsServices.getusserWiseSummaryCount(userId, wabaPhoneNumber, limit, offset)
+        return messageReportsServices.getusserWiseSummaryCount(wabaPhoneNumber, limit, offset)
       }
     })
     .then((data) => {
@@ -143,4 +145,35 @@ const usserWiseSummaryReport = (req, res) => {
       }
     })
 }
-module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport }
+const userConversationReport = (req, res) => {
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const messageReportsServices = new MessageReportsServices()
+  const validate = new ValidatonService()
+  let limit = ''
+  let page = ''
+  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
+  validate.userConversationReport(req.query)
+    .then(() => {
+      limit = req.query.limit ? +req.query.limit : 5
+      page = req.query.page ? +req.query.page : 1
+      const offset = limit * (page - 1)
+      if (req.query.countryName) {
+        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.query.countryName, limit, offset)
+      } else if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) {
+        return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
+      } else {
+        return messageReportsServices.getuserConversationReportCount(userId, wabaPhoneNumber, limit, offset)
+      }
+    })
+    .then((data) => {
+      if (data) {
+        // pagination
+        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+      }
+    })
+}
+module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport }

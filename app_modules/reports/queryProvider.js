@@ -130,6 +130,27 @@ const getusserWiseSummaryCountBasedOnDate = () => {
   select count(1) as totalCount
   from userwise_summary where waba_number = ? and created_on BETWEEN ? AND ?`
 }
+const getuserConversationReportCountBasedOncountryName = () => {
+  return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
+  not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
+  waba_number = ? and  country_name = ? ORDER BY created_on DESC limit ? offset ?;
+  select count(1) as totalCount
+  from conversation_summary where waba_number = ? and country_name = ?`
+}
+const getuserConversationReportCountBasedOnDate = () => {
+  return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
+  not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
+  waba_number = ? and created_on BETWEEN ? AND ? ORDER BY created_on DESC limit ? offset ?;
+  select count(1) as totalCount
+  from conversation_summary where waba_number = ? and created_on BETWEEN ? AND ?`
+}
+const getuserConversationReportCount = () => {
+  return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
+not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
+waba_number = ? ORDER BY created_on DESC limit ? offset ?;
+select count(1) as totalCount
+from conversation_summary where waba_number = ?`
+}
 
 module.exports = {
   getDeliveryReportByMessageId,
@@ -143,5 +164,8 @@ module.exports = {
   getTemplateSummaryReportByTemplateId,
   getusserWiseSummaryCount,
   getusserWiseSummaryCountBasedOncountryName,
-  getusserWiseSummaryCountBasedOnDate
+  getusserWiseSummaryCountBasedOnDate,
+  getuserConversationReportCountBasedOncountryName,
+  getuserConversationReportCountBasedOnDate,
+  getuserConversationReportCount
 }
