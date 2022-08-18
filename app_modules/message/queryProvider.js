@@ -365,12 +365,23 @@ const getTemplateNameAgainstId = () => {
   return `SELECT template_name As "templateName" From message_template
   where message_template_id = ? and is_active = true`
 }
-const getMisRelatedData1 = () => {
-  return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory, DATE_FORMAT(b.created_on, '%Y-%m-%d') as createdOn,
-  b.from as wabaPhoneNumber
+const getconversationDataBasedOnWabaNumber = () => {
+  return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory,
+  b.from as wabaPhoneNumber,b.message_country as "messageCountry"
   FROM billing_conversation b
-  where  b.created_on not between concat(Date(now()),' 00:00:00') and concat(Date(now()),' 23:59:59')
-  GROUP BY b.conversation_category ,b.from, DATE(b.created_on)`
+  where b.from in (?) and b.created_on BETWEEN ? and ? 
+  GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
+}
+const insertConversationDataAgainstWaba = () => {
+  return `INSERT into conversation_summary (waba_number,country_name,business_initiated,user_initiated,referral_conversion,not_applicable,total_number) 
+    values ?
+    ON DUPLICATE KEY
+    UPDATE business_initiated= values(business_initiated), 
+    user_initiated = values(user_initiated), 
+    referral_conversion = values(referral_conversion),
+    not_applicable = values(not_applicable),
+    total_number = values(total_number),
+    updated_on = now();`
 }
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
@@ -404,5 +415,6 @@ module.exports = {
   getNewTemplateDetailsAgainstAllUser,
   insertTemplateStatusAgainstWaba,
   getTemplateNameAgainstId,
-  getMisRelatedData1
+  getconversationDataBasedOnWabaNumber,
+  insertConversationDataAgainstWaba
 }

@@ -1,8 +1,8 @@
 const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
-// const InsertDataIntoUserSumarryReports = require('./userwiseServices')
-const conversationMisService = require('./misService2')
+const InsertDataIntoUserSumarryReports = require('./userwiseServices')
+// const conversationMisService = require('./misService2')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
@@ -16,8 +16,8 @@ const task = {
     console.log('current day check into the table', currentDate)
     dbService.checkTableExist(currentDate)
       .then(() => {
-        conversationMisService()
-        // InsertDataIntoUserSumarryReports(currentDate)
+        // conversationMisService()
+        InsertDataIntoUserSumarryReports(currentDate)
         return __logger.info('sucessfully inserted data into the InsertDataIntoUserSumarryReports', currentDateAndTime)
       })
       .catch((error) => {

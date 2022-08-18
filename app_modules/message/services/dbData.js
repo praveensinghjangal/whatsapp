@@ -654,7 +654,7 @@ class MessgaeHistoryService {
           requiredJson[arr[k].state] = arr[k]['count(state)']
         }
         const wabaNumberData = requiredJson
-        const totalSubmission = summary['pre process'] || 0
+        const totalSubmission = wabaNumberData['pre process'] || 0
         const totalMessageSent = wabaNumberData.forwarded || 0
         const totalMessageInProcess = wabaNumberData.Inprocess || 0
         const totalMessageResourceAllocated = wabaNumberData['resource allocated'] || 0
@@ -773,6 +773,65 @@ class MessgaeHistoryService {
         return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getTemplateNameAgainstId.promise
+  }
+
+  getconversationDataBasedOnWabaNumber (wabaNumber, previousDateWithTime, currentdateWithTime) {
+    const getconversationDataBasedOnWabaNumber = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
+      .then(result => {
+        if (result) {
+          return getconversationDataBasedOnWabaNumber.resolve(result)
+        } else {
+          return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        console.log('000000000000000000000000000000000000000000000000000', err)
+        return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getconversationDataBasedOnWabaNumber.promise
+  }
+
+  insertConversationDataAgainstWaba (data) {
+    console.log('999999999999999999999999999', data)
+    const insertConversationDataAgainstWaba = q.defer()
+    const wabaNumbers = Object.keys(data)
+    console.log('777777777777777777777777', wabaNumbers)
+    const values = []
+    for (let i = 0; i < wabaNumbers.length; i++) {
+      const country = wabaNumbers[i]
+      const summary = data[country]
+      const wabaNumbers1 = Object.keys(summary)
+      console.log('22222222222222222222222222222222', wabaNumbers1)
+      for (let j = 0; j < wabaNumbers1.length; j++) {
+        const requiredJson = {}
+        const arr = summary[wabaNumbers1[j]]
+        for (let k = 0; k < arr.length; k++) {
+          requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
+        }
+        console.log('$#$%^&*&^%$#@', requiredJson)
+        const wabaNumberData = requiredJson
+        const totalUserInitiated = wabaNumberData.ui || 0
+        const totalBusinessInitiated = wabaNumberData.bi || 0
+        const totalReferralConversion = wabaNumberData.rc || 0
+        const toatalNotApplicable = wabaNumberData.na || 0
+        const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
+        values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
+      }
+    }
+    console.log('final11111111111111111111111111', values)
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertConversationDataAgainstWaba(), [values])
+      .then(result => {
+        if (result) {
+          return insertConversationDataAgainstWaba.resolve(result)
+        } else {
+          return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return insertConversationDataAgainstWaba.promise
   }
 }
 

@@ -26,6 +26,7 @@ const SERVER_SCRIPTS = {
   userWiseReports: './workers/schedulers/userWiseReports.js',
   templateReports: './workers/schedulers/templateReports.js',
   campaignReports: './workers/schedulers/campaignReports.js',
+  userWiseCoversationReports: './workers/schedulers/userWiseCoversationReports.js',
   audienceWebhook: './workers/message_consumers/audienceWebhook.js',
   sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js'
 }
