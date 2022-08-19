@@ -152,22 +152,23 @@ const userConversationReport = (req, res) => {
   const validate = new ValidatonService()
   let limit = ''
   let page = ''
-  if ((req.body.countryName && (req.body.startDate || req.body.endDate))) {
-    return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide any one countryName or Date' })
-  }
-  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
+  // if ((req.body.countryName && (req.body.startDate || req.body.endDate))) {
+  //   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide any one countryName or Date' })
+  // }
+  __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
       limit = req.body.limit ? +req.body.limit : 5
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
-      if (req.body.countryName) {
-        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, limit, offset)
-      } else if (req.body.startDate && req.body.startDate !== undefined && req.body.endDate && req.body.endDate !== undefined) {
-        return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
-      } else {
-        return messageReportsServices.getuserConversationReportCount(wabaPhoneNumber, limit, offset)
+      if (req.body) {
+        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
       }
+      // else if (req.body.startDate && req.body.startDate !== undefined && req.body.endDate && req.body.endDate !== undefined) {
+      //   return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
+      // } else {
+      //   return messageReportsServices.getuserConversationReportCount(wabaPhoneNumber, limit, offset)
+      // }
     })
     .then((data) => {
       if (data) {
@@ -177,6 +178,10 @@ const userConversationReport = (req, res) => {
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
     })
 }
 module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport }

@@ -244,7 +244,7 @@ class validate {
       properties: {
         countryName: {
           type: 'array',
-          required: false,
+          required: true,
           minItems: 1,
           items: {
             type: 'string',
@@ -252,38 +252,41 @@ class validate {
             maxLength: 50
           }
         },
-        limit: {
+        startDate: {
           type: 'string',
-          required: false,
-          pattern: __constants.VALIDATOR.number
+          required: true,
+          pattern: __constants.VALIDATOR.timeStamp
         },
-        page: {
+        endDate: {
           type: 'string',
-          required: false,
-          pattern: __constants.VALIDATOR.number
+          required: true,
+          pattern: __constants.VALIDATOR.timeStamp,
+          minLength: 1
         }
-      },
-      additionalProperties: false
+      }
     }
     const formatedError = []
     v.addSchema(schema, '/userConversationReport')
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      console.log('formatedErr', formatedErr)
-      if (err.includes('instance is not any of')) {
-        formatedError.push('Please provide atleast one field resourceId, systemId')
-      } else if (err.includes('instance is not exactly one from [subschema 0],[subschema 1]')) {
-        formatedError.push('Please provide either  resourceId or  systemId')
-      } else {
-        formatedError.push(formatedErr[formatedErr.length - 1])
-      }
+      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      formatedError.push(regexPatternPreetyMessage)
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      trimInput.singleInputTrim(request)
-        .then(data => isvalid.resolve(data))
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
     }
     return isvalid.promise
   }

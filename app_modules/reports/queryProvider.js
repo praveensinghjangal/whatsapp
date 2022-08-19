@@ -133,24 +133,24 @@ const getusserWiseSummaryCountBasedOnDate = () => {
 const getuserConversationReportCountBasedOncountryName = () => {
   return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
   not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
-  waba_number = ? and  country_name = ? ORDER BY created_on DESC limit ? offset ?;
+  waba_number = ? and  country_name IN (?) and (created_on BETWEEN ? and ?) ORDER BY created_on DESC limit ? offset ?;
   select count(1) as totalCount
-  from conversation_summary where waba_number = ? and country_name IN (?)`
+  from conversation_summary where waba_number = ? and country_name IN (?) and (created_on BETWEEN ? and ?)`
 }
-const getuserConversationReportCountBasedOnDate = () => {
-  return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
-  not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
-  waba_number = ? and created_on BETWEEN ? AND ? ORDER BY created_on DESC limit ? offset ?;
-  select count(1) as totalCount
-  from conversation_summary where waba_number = ? and created_on BETWEEN ? AND ?`
-}
-const getuserConversationReportCount = () => {
-  return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
-not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
-waba_number = ? ORDER BY created_on DESC limit ? offset ?;
-select count(1) as totalCount
-from conversation_summary where waba_number = ?`
-}
+// const getuserConversationReportCountBasedOnDate = () => {
+//   return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
+//   not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
+//   waba_number = ? and created_on BETWEEN ? AND ? ORDER BY created_on DESC limit ? offset ?;
+//   select count(1) as totalCount
+//   from conversation_summary where waba_number = ? and created_on BETWEEN ? AND ?`
+// }
+// const getuserConversationReportCount = () => {
+//   return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
+// not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
+// waba_number = ? ORDER BY created_on DESC limit ? offset ?;
+// select count(1) as totalCount
+// from conversation_summary where waba_number = ?`
+// }
 
 module.exports = {
   getDeliveryReportByMessageId,
@@ -165,7 +165,7 @@ module.exports = {
   getusserWiseSummaryCount,
   getusserWiseSummaryCountBasedOncountryName,
   getusserWiseSummaryCountBasedOnDate,
-  getuserConversationReportCountBasedOncountryName,
-  getuserConversationReportCountBasedOnDate,
-  getuserConversationReportCount
+  getuserConversationReportCountBasedOncountryName
+  // getuserConversationReportCountBasedOnDate,
+  // getuserConversationReportCount
 }
