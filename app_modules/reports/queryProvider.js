@@ -1,7 +1,7 @@
 // const __constants = require('../../config/constants')
 
 const getDeliveryReportByMessageId = () => {
-  return `SELECT message_id as messageId, end_consumer_number as consumerNumber, JSON_ARRAYAGG(created_on) as createdOn, JSON_ARRAYAGG(state) as state, custom_one as campaignName, DATE_FORMAT(created_on, "%m/%d/%Y") as time
+  return `SELECT message_id as messageId, end_consumer_number as consumerNumber, JSON_ARRAYAGG(created_on) as createdOn, JSON_ARRAYAGG(state) as state, state as singleState, custom_one as campaignName, DATE_FORMAT(created_on, "%m/%d/%Y") as time
   FROM (
       SELECT DISTINCT message_id, state, custom_one, end_consumer_number, created_on
       FROM message_history mh
