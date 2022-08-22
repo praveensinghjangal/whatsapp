@@ -6,5 +6,5 @@ router.get('/campaignsummaryreport', internalSessionOrTokenAuth, apiHitsAllowedM
 router.get('/deliveryreport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').deliveryReport)
 router.get('/templatesummaryreport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').templateSummaryReport)
 router.get('/userSummaryReport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').usserWiseSummaryReport)
-router.get('/userConversationReport', require('./controllers/messageReports').userConversationReport)
+router.get('/userConversationReport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').userConversationReport)
 module.exports = router
