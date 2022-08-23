@@ -2,7 +2,7 @@
 const __logger = require('../../lib/logger')
 // const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
-// const moment = require('moment')
+const moment = require('moment')
 // const _ = require('lodash')
 // const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 // handle no record for mis data as of now mis stops in case of no data but if there is 0 campagin the opt out data should go
@@ -38,10 +38,10 @@ function groupByMultipleFields (data, ...fields) {
 }
 const conversationMisService = () => {
   const dbService = new DbService()
-  // const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
-  const previousDateWithTime = '2022-03-09 00:00:00'
-  const currentdateWithTime = '2022-03-09 23:59:59'
-  // const currentdateWithTime = moment().format('YYYY-MM-DD HH:mm:ss')
+  const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
+  // const previousDateWithTime = '2022-03-09 00:00:00'
+  // const currentdateWithTime = '2022-03-09 23:59:59'
+  const currentdateWithTime = moment().format('YYYY-MM-DD HH:mm:ss')
   let wabaNumber
   let wabaData
   dbService.getActiveBusinessNumber()
@@ -59,6 +59,8 @@ const conversationMisService = () => {
         data.forEach((value, index) => {
           if (value.conversationCategory) {
             wabaData = JSON.stringify(groupByMultipleFields(data, 'messageCountry', 'wabaPhoneNumber'))
+          } else {
+
           }
         })
         // for (let i = 0; i < data.length; i++) {
