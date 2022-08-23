@@ -5,23 +5,25 @@ const getDeliveryReportByMessageId = () => {
   FROM (
       SELECT DISTINCT message_id, state, custom_one, end_consumer_number, created_on
       FROM message_history mh
-      where( message_id = ? or end_consumer_number = ?) and (created_on BETWEEN ? and ?) and business_number = ? 
+      where( message_id = ? or end_consumer_number = ? or state in (?)) and (created_on BETWEEN ? and ?) and business_number = ? 
       order BY created_on desc) as messagedetails
   group BY messagedetails.message_id
   order by message_id limit ? offset ?;
   select count(DISTINCT message_id) as totalCount
   FROM message_history mh
-  where( message_id = ? or end_consumer_number = ? ) and (created_on BETWEEN ? and ?) and business_number = ?;`
+  where( message_id = ? or end_consumer_number = ? or state in (?)) and (created_on BETWEEN ? and ?) and business_number = ?
+  order BY created_on desc;`
 }
 
-// const getDeliveryReportByConsumerNumber = () => {
+// const getDeliveryReportByStatus = () => {
 //   return `SELECT message_id as messageId, end_consumer_number as consumerNumber, JSON_ARRAYAGG(created_on) as createdOn, JSON_ARRAYAGG(state) as state, custom_one as campaignName, DATE_FORMAT(created_on, "%m/%d/%Y") as time
 //   FROM (
 //       SELECT DISTINCT message_id, state, custom_one, end_consumer_number, created_on
 //       FROM message_history mh
-//       where end_consumer_number = ? and business_number = ?
+//       where business_number = ?
 //       order BY created_on desc) as messagedetails
 //   group BY messagedetails.message_id
+//   where state in (?)
 //   order by message_id limit ? offset ?;
 //   select count(DISTINCT message_id) as totalCount
 //   FROM message_history mh

@@ -8,10 +8,10 @@ const queryProvider = require('../queryProvider')
 // const uniqueId = new UniqueId()
 
 class MessageReportsServices {
-  getDeliveryReportByMessageId (messageId, consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset) {
+  getDeliveryReportByMessageId (messageId, consumerNumber, status, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByMessageId', startDate, endDate, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByMessageId(), [messageId, consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset, messageId, consumerNumber, startDate, endDate, wabaPhoneNumber])
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByMessageId(), [messageId, consumerNumber, status, startDate, endDate, wabaPhoneNumber, limit, offset, messageId, consumerNumber, status, startDate, endDate, wabaPhoneNumber])
       .then(result => {
         __logger.info('getDeliveryReportByMessageId query Result', { result })
         if (result && result[0].length > 0) {
