@@ -29,13 +29,14 @@ const deliveryReport = (req, res) => {
   let limit = ''
   let page = ''
   const validate = new ValidatonService()
+  if (req.query && req.query.status) req.query.status = req.query.status.split(/\s*,\s*/)
   const messageReportsServices = new MessageReportsServices()
   validate.deliveryReport(req.query)
     .then(data => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       // if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, wabaPhoneNumber, limit, offset)
       // if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
       // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
