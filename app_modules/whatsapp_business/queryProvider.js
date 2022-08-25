@@ -144,7 +144,7 @@ const checkWabaNumberAlreadyExist = () => {
   user_id  as "userId",waba_profile_setup_status_id as "wabaProfileSetupStatusId"
   from waba_information wi 
   where is_active = 1
-  and wi.phone_code=? and wi.phone_number=? or wi.user_id=? and is_active = 1`
+  and wi.phone_code=? and wi.phone_number=? and is_active = 1 or wi.user_id=? and is_active = 1`
 }
 
 const getWabaNumberFromUserId = () => {

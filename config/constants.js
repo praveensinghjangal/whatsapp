@@ -1,5 +1,13 @@
+
 const APP_NAME = 'helowhatsapp'
 const DB_NAME = 'helowhatsapp'
+const UPDATE_PROFILE_CONFIGURE_DATA = {
+  // API_KEY: 'APIKEY@123',
+  MAX_TPA_TO_PROVIDER: 15,
+  TEMPLATESAllOWED: 2,
+  TPS: 10
+
+}
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
   PROD_ENV: 'production',
@@ -114,7 +122,20 @@ const TEMPLATE_BUTTON_TYPE = [{
 }]
 const PREFETCH_COUNT = +process.env.QUEUE_PREFETCH_COUNT || 25
 const MQ = {
-  process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  // pre_process_message: { type: 'queue', q_name: 'pre_process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_chatbot: { type: 'queue', q_name: 'pre_process_message_chatbot', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_category_otp: { type: 'queue', q_name: 'pre_process_message_category_otp', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_category_transactional: { type: 'queue', q_name: 'pre_process_message_category_transactional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_category_promotional: { type: 'queue', q_name: 'pre_process_message_category_promotional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_general: { type: 'queue', q_name: 'pre_process_message_general', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  pre_process_message_campaign: { type: 'queue', q_name: 'pre_process_message_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  // process_message: { type: 'queue', q_name: 'process_message', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_chatbot: { type: 'queue', q_name: 'process_message_chatbot', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_category_otp: { type: 'queue', q_name: 'process_message_category_otp', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_category_transactional: { type: 'queue', q_name: 'process_message_category_transactional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_category_promotional: { type: 'queue', q_name: 'process_message_category_promotional', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_general: { type: 'queue', q_name: 'process_message_general', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  process_message_campaign: { type: 'queue', q_name: 'process_message_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mock: { type: 'queue', q_name: 'mock_provider', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   mockSendmessageError: { type: 'queue', q_name: 'mock_sendmessage_error', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   tyntecSendmessageError: { type: 'queue', q_name: 'tyntec_sendmessage_error', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
@@ -136,8 +157,27 @@ const MQ = {
   webhookHeloCampaign: { type: 'queue', q_name: 'webhook_helo_campaign', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   webhookQueue: { type: 'queue', q_name: 'webhook_queue', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   audience_webhook: { type: 'queue', q_name: 'audience_webhook', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  send_optin_excel_stream: { type: 'queue', q_name: 'send_optin_excel_stream', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
-  default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  demoQueue: { type: 'queue', q_name: 'demoQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  demo_queue_10_sec: { type: 'queue', q_name: 'demo_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'demoQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaSetUpConsumerQueue: { type: 'queue', q_name: 'wabaSetUpConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaSetUpConsumer_queue_10_sec: { type: 'queue', q_name: 'wabaSetUpConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaSetUpConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaSetUpConsumer_queue_15_min: { type: 'queue', q_name: 'wabaSetUpConsumer_queue_15_min', q_options: { durable: true, maxPriority: 10, messageTtl: 900000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaSetUpConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  bussinessDetailsConsumerQueue: { type: 'queue', q_name: 'bussinessDetailsConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  bussinessDetailsConsumer_queue_10_sec: { type: 'queue', q_name: 'bussinessDetailsConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'bussinessDetailsConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  spawningContainerConsumerQueue: { type: 'queue', q_name: 'spawningContainerConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  spawningContainerConsumer_queue_10_sec: { type: 'queue', q_name: 'spawningContainerConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'spawningContainerConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumerQueue: { type: 'queue', q_name: 'wabaContainerBindingConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumer_queue_10_sec: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumer_queue_2_min: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_2_min', q_options: { durable: true, maxPriority: 10, messageTtl: 120000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  wabaContainerBindingConsumer_queue_15_min: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_15_min', q_options: { durable: true, maxPriority: 10, messageTtl: 900000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  twoFaConsumerQueue: { type: 'queue', q_name: 'twoFaConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  twoFaConsumer_queue_10_sec: { type: 'queue', q_name: 'twoFaConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'twoFaConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  embeddedSingupErrorConsumerQueue: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  embeddedSingupErrorConsumer_queue_10_sec: { type: 'queue', q_name: 'embeddedSingupErrorConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'embeddedSingupErrorConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  embeddedSingupErrorConsumerQueue2: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue2', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  send_optin_excel_stream: { type: 'queue', q_name: 'send_optin_excel_stream', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
+  // default: { type: 'queue', q_name: 'default', q_options: { durable: true, maxPriority: 10 }, prefetchCount: PREFETCH_COUNT, createChannel: true }
 }
 const INCOMING_MESSAGE_RETRY = {
   tyntec: 5,
@@ -175,12 +215,19 @@ const INTERNAL_END_POINTS = {
   templateList: '/helowhatsapp/api/templates/list',
   getTemplateListWithStatusId: '/helowhatsapp/api/templates?messageTemplateStatusId=',
   templateInfo: '/helowhatsapp/api/templates/:userId/:templateId',
-  toggleChatbot: '/helowhatsapp/api/business/profile/chatbot'
+  toggleChatbot: '/helowhatsapp/api/business/profile/chatbot',
+  accessInformation: '/helowhatsapp/api/business/profile/accessInformation',
+  markManagerVerified: '/helowhatsapp/api/business/profile/markManagerVerified',
+  sendBusinessForApproval: '/helowhatsapp/api/business/profile/submit',
+  setProfileStatus: '/helowhatsapp/api/business/profile/status',
+  updateProfileConfigure: '/helowhatsapp/api/business/profile/configure',
+  embeddedSignupSupportApi: '/helowhatsapp/api/users/signup/embedded/continue'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
 
 const MESSAGE_STATUS = {
+  preProcess: 'pre process',
   inProcess: 'in process',
   resourceAllocated: 'resource allocated',
   forwarded: 'forwarded',
@@ -193,6 +240,7 @@ const MESSAGE_STATUS = {
   rejected: 'rejected'
 }
 const MESSAGE_STATUS_FOR_DISPLAY = [
+  MESSAGE_STATUS.preProcess,
   MESSAGE_STATUS.inProcess,
   MESSAGE_STATUS.accepted,
   MESSAGE_STATUS.delivered,
@@ -264,16 +312,37 @@ const FACEBOOK_ENDPOINTS = {
   login: '/v1/users/login',
   profilePicUpdate: '/v1/settings/profile/photo',
   getProfilePic: '/v1/settings/profile/photo?format=link',
-  getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
-  deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  // getTemplateList: '/v12.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+  getTemplateList: '/v14.0/:userAccountIdByProvider/message_templates?fields=rejected_reason,status,name,category,language,components,last_updated_time,quality_score&access_token=',
+
+  // deleteTemplate: '/v12.0/:userAccountIdByProvider/message_templates?access_token=',
+  deleteTemplate: '/v14.0/:userAccountIdByProvider/message_templates?access_token=',
+
   updateAboutProfile: '/v1/settings/profile/about',
   updateBusinessProfile: '/v1/settings/business/profile',
   updateWebhook: '/v1/settings/application',
   sendMessage: '/v1/messages/',
   addTemplate: '/message_templates?access_token=',
   getMedia: '/v1/media/:MediaId',
-  getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
-  getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token='
+  // getWaba: 'v12.0/:userAccountIdByProvider?access_token=',
+  getWaba: 'v14.0/:userAccountIdByProvider?access_token=',
+
+  // getPhoneNumbersByWabaid: '/v12.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
+  getPhoneNumbersByWabaid: '/v14.0/:userAccountIdByProvider/phone_numbers?limit=25&fields=quality_rating,quality_score,verified_name,code_verification_status,display_phone_number&access_token=',
+
+  getBSPsSystemUserIds: 'https://graph.facebook.com/v14.0/{{Business-ID}}/system_users',
+  debugToken: '/debug_token?input_token=',
+  getWabaDetails: '/:wabaId',
+  addSystemUser: "/:wabaId/assigned_users?user={{User-ID}}&tasks=['MANAGE']",
+  getBussinessIdLineOfCredit: '/{{Business-ID}}/extendedcredits?fields=id,legal_entity_name',
+  attachCreditLineClientWaba: '/{{Credit-Line-ID}}/whatsapp_credit_sharing_and_attach?waba_id={{Assigned-WABA-ID}}&waba_currency={{WABA-Currency}}',
+  verifyLineOfCredit: '/{{Allocation-Config-ID}}?fields=receiving_credential{id}',
+  subscribeAppToWaba: '/:wabaId/subscribed_apps',
+  fetchAssignedUsersOfWaba: '/:wabaId/assigned_users?business=',
+  getPhoneNumberOfWabaId: '/:wabaId/phone_numbers?fields=verified_name,code_verification_status,quality_rating,id,display_phone_number,certificate,name_status,new_certificate,new_name_status,status',
+  requestCode: '/v1/account',
+  getSettings: '/v1/settings/application',
+  enableTFA: '/v1/settings/account/two-step'
 }
 const MESSAGE_TRANSACTION_TYPE = ['incoming', 'outgoing', '']
 const ADMIN_PANNEL_ENDPOINTS = {
@@ -338,10 +407,12 @@ const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
   [TEMPLATE_STATUS.denied.statusCode]: TEMPLATE_STATUS.pending.statusCode
 }
 const WABA_PROFILE_STATUS = {
+  // wabaSetup: { statusCode: '5a3cb0f2-cab2-11ec-9d64-0242ac120002', displayName: 'Waba Setup' },
   profileIncomplete: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c9b', displayName: 'Profile Incomplete' },
   pendingForSubmission: { statusCode: 'fdfcce74-81a3-4d41-b526-212d256f9a20', displayName: 'Pending For Submission' },
   submitted: { statusCode: '91b6a637-11bb-4f35-ace7-41e959c8fbb7', displayName: 'Submitted' },
   pendingForApproval: { statusCode: 'dce5d2a6-7ef0-4e6c-a428-55d6da50caf8', displayName: 'Pending For Approval' },
+  containerSpawned: { statusCode: '8c8cab06-cab3-11ec-9d64-0242ac120002', displayName: 'In progress' },
   rejected: { statusCode: '7933d858-7bb7-47eb-90ec-269cbecc8c7a', displayName: 'Rejected' },
   accepted: { statusCode: 'b2aacfbc-12da-4748-bae9-b4ec26e37840', displayName: 'Accepted' }
 }
@@ -350,7 +421,8 @@ const WABA_STATUS_MAPPING = {
   [WABA_PROFILE_STATUS.profileIncomplete.statusCode]: [WABA_PROFILE_STATUS.pendingForSubmission.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode],
   [WABA_PROFILE_STATUS.pendingForSubmission.statusCode]: [WABA_PROFILE_STATUS.submitted.statusCode, WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
   [WABA_PROFILE_STATUS.submitted.statusCode]: [WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.pendingForApproval.statusCode],
-  [WABA_PROFILE_STATUS.pendingForApproval.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode],
+  [WABA_PROFILE_STATUS.pendingForApproval.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode, WABA_PROFILE_STATUS.containerSpawned.statusCode], // remove accepted & rejected
+  [WABA_PROFILE_STATUS.containerSpawned.statusCode]: [WABA_PROFILE_STATUS.accepted.statusCode, WABA_PROFILE_STATUS.rejected.statusCode],
   [WABA_PROFILE_STATUS.rejected.statusCode]: [WABA_PROFILE_STATUS.profileIncomplete.statusCode, WABA_PROFILE_STATUS.pendingForSubmission.statusCode],
   [WABA_PROFILE_STATUS.accepted.statusCode]: []
 }
@@ -434,6 +506,9 @@ const DLT_PANEL_ENDPOINTS = {
   listOfPeidsOtherThanUser: '/api/panel/support/listpeidOfOtherUsers'
 
 }
+
+const FACEBOOK_MASTERDATA_ID = 'cdbf2b4e-6655-4f83-9f24-89c8a075b05c'
+const MASTERDATA = 'masterdata_'
 const SUPPORT_ROLE_ID = '9f88f381-c05d-453e-90ef-cfeff5e345ea'
 const HW_MYSQL = 'helo_whatsapp'
 const FB_REDIS_KEY_BUFFER_TIME = 1800000 // 30 minutes
@@ -455,7 +530,9 @@ const CHUNK_SIZE_FOR_SAVE_OPTIN = 1000
 const DEFAULT_COUNTRY_CODE = 'IN'
 const NAME_SPACE_FB = '29642c6d_62d8_4981_8c02_8bebdebfcbed'
 const FACEBOOK_GRAPHURL = 'https://graph.facebook.com/'
-const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
+// const FACEBOOK_GRAPHURL_VERSION = 'v12.0'
+const FACEBOOK_GRAPHURL_VERSION = 'v14.0'
+
 const HEADER_HANDLE = {
   video: '3:cmNzLWZsb3cubXA0:dmlkZW8vbXA0:ARaeTQefIvdx7preEi97FEyMthItXjjbUl-HgKwjnwNYkoRoKIXPdEX9dZtwbyAfouU3XGBzwLogL-IJSQI1MuK7UzcCsQO7xbD23Tdv-m5c8A:e:1635322172:ARasyMDonA6UQsVkQUc',
   document: '3:RkUtYXNzZXNzbWVudC5wZGY=:YXBwbGljYXRpb24vcGRm:ARbYQ0s6513RaoAfwTIj25IqGC0OgSuTCc5eLuWrjy_ALzkLOomSuIeoTPSK9lRzCZSUESTaD7fYCtGRIq3iP0gq7j5vWM8jdwEwdg0xeIu__g:e:1635322280:ARbIUJhxOCoX6fd32FU',
@@ -495,6 +572,10 @@ const REPORTS_SCHEDULER_TIME = '* */30 * * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
+const WABIZ_USERNAME = 'admin'
+// const WABIZ_DEFAULT_PASSWORD = 'Pass@123'
+const WABIZ_DEFAULT_PASSWORD = 'secret'
+const WABIZ_CUSTOM_PASSWORD_LENGTH = 10
 const OPTIN_TYPE = ['bi', 'ui']
 const OPTOUT_TEXT = 'stop'
 const FB_LANG_TO_VIVA_LANG_MAPPING = {
@@ -573,7 +654,10 @@ const FB_CATEGORY_TO_VIVA_CATEGORY = {
   AUTO_REPLY: 'f26c0c08-94a1-4992-acc8-f5197a02cbe1',
   PAYMENT_UPDATE: '92ba13f9-b560-414b-9dfd-bc9704c40cf7',
   ALERT_UPDATE: '957e4375-3297-42c6-a9a8-6a57fd8e5045',
-  ACCOUNT_UPDATE: 'b8203a31-e439-4ea4-a270-bd211317d3ff'
+  ACCOUNT_UPDATE: 'b8203a31-e439-4ea4-a270-bd211317d3ff',
+  OTP: 'a5f15075-1a8d-4f84-a8f6-25b0f9cbd861',
+  TRANSACTIONAL: '281dfa46-488a-472c-8c07-55ce7f4b648c',
+  PROMOTIONAL: '37f8ac07-a370-4163-b713-854db656cd1b'
 }
 const FB_HEADER_TO_VIVA_HEADER = {
   video: 'Video',
@@ -700,6 +784,12 @@ module.exports.PROCESS_COUNT_SCHEDULER_TIME = PROCESS_COUNT_SCHEDULER_TIME
 module.exports.PROCESS_COUNT_SCHEDULER = PROCESS_COUNT_SCHEDULER
 module.exports.WHATSAPP_SUMMARY_SUBJECT = WHATSAPP_SUMMARY_SUBJECT
 module.exports.MIS_SCHEDULER_TIME_CONVERSATION = MIS_SCHEDULER_TIME_CONVERSATION
+module.exports.UPDATE_PROFILE_CONFIGURE_DATA = UPDATE_PROFILE_CONFIGURE_DATA
+module.exports.FACEBOOK_MASTERDATA_ID = FACEBOOK_MASTERDATA_ID
+module.exports.MASTERDATA = MASTERDATA
+module.exports.WABIZ_USERNAME = WABIZ_USERNAME
+module.exports.WABIZ_DEFAULT_PASSWORD = WABIZ_DEFAULT_PASSWORD
+module.exports.WABIZ_CUSTOM_PASSWORD_LENGTH = WABIZ_CUSTOM_PASSWORD_LENGTH
 module.exports.OPTIN_TYPE = OPTIN_TYPE
 module.exports.OPTOUT_TEXT = OPTOUT_TEXT
 module.exports.FB_LANG_TO_VIVA_LANG_MAPPING = FB_LANG_TO_VIVA_LANG_MAPPING

@@ -29,6 +29,12 @@ router.post('/authorize', bearerTokenAuth, require('./controllers/authorize').au
 router.post('/authorize/support', require('./controllers/authorize').authorizeSupportUser)
 router.post('/internal/authorize', tokenBasedAuth, require('./controllers/authorize').authorize)
 router.patch('/auth/resetpassword', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/passwordManagement').resetPasssword)
+// embeddedSignup
+router.post('/signup/embedded', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSignup'))
+router.post('/signup/embeddedtest', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSingUpTest'))
+router.post('/signup/embedded/continue', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSingupContinue'))
+// router.post('/run/script', require('./controllers/runscript'))
+router.post('/signup/embedded/continue/:embeddedsingupid', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/embeddedSingupContinue'))
 
 // Oauth user data comes to these redirectURLs
 router.get('/googleRedirect', authMiddleware.authenticate(authstrategy.google.name), (req, res) => {

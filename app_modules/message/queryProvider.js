@@ -383,6 +383,16 @@ const insertConversationDataAgainstWaba = () => {
     total_number = values(total_number),
     updated_on = now();`
 }
+
+const getTemplateCategoryId = () => {
+  return `select mt.message_template_id,mt.message_template_category_id
+  ,CONCAT(wi.phone_code, wi.phone_number) as phone_number
+   from message_template mt
+  join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
+  where mt.is_active = true and wi.phone_number = ?
+   and mt.message_template_id = ?`
+}
+
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -416,5 +426,6 @@ module.exports = {
   insertTemplateStatusAgainstWaba,
   getTemplateNameAgainstId,
   getconversationDataBasedOnWabaNumber,
-  insertConversationDataAgainstWaba
+  insertConversationDataAgainstWaba,
+  getTemplateCategoryId
 }

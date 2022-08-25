@@ -430,11 +430,40 @@ class AudienceService {
     return promises.promise
   }
 
+  getAudiencesVerified (audiencesNumbers, wabaNumber) {
+    console.log('getAudiencesVerified (audiencesNumbers, wabaNumber) ---', audiencesNumbers, wabaNumber)
+    const promises = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFacebookVerifiedUsers(), [audiencesNumbers, wabaNumber])
+      .then(data => {
+        console.log('getAudiencesVerified db response -----', data)
+        promises.resolve(data)
+      })
+      .catch(err => {
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
+
   updateAsFaceBookVerified (wabaPhoneNumberId, phoneNumber, userId) {
     const isVefifiedUpdate = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAsFaceBookVerified(), [userId, wabaPhoneNumberId, phoneNumber])
       .then(result => {
         __logger.info('updateAsFaceBookVerified result then 2', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          isVefifiedUpdate.resolve(true)
+        } else {
+          isVefifiedUpdate.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => isVefifiedUpdate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return isVefifiedUpdate.promise
+  }
+
+  updateAudiencesAsFaceBookVerified (wabaPhoneNumberId, phoneNumber, userId) {
+    const isVefifiedUpdate = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudiencesAsFaceBookVerified(), [userId, wabaPhoneNumberId, phoneNumber])
+      .then(result => {
+        __logger.info('updateAudiencesAsFaceBookVerified result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           isVefifiedUpdate.resolve(true)
         } else {
@@ -461,6 +490,23 @@ class AudienceService {
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceDataToDb(), queryParam)
+      .then(result => {
+        __logger.info('added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
+        if (result && result.affectedRows && result.affectedRows > 0) {
+          audienceDataAdded.resolve(true)
+        } else {
+          audienceDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+        }
+      })
+      .catch(err => audienceDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    return audienceDataAdded.promise
+  }
+
+  addAudineceToDbInBulk (addAudiencesBody, audMappingId) {
+    __logger.info('Add audience in bulk service called ~ payload, audMappingId', addAudiencesBody, audMappingId)
+    const audienceDataAdded = q.defer()
+    // __db.mysql.batch(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), addAudiencesBody)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), [addAudiencesBody])
       .then(result => {
         __logger.info('added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
