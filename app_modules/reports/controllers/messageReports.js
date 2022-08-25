@@ -36,10 +36,11 @@ const deliveryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.messageId || req.query.consumerNumber || req.query.status) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       // if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, wabaPhoneNumber, limit, offset)
       // if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
-      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined)
+      else return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -97,9 +98,9 @@ const templateSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.templateName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.templateId || req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.templateName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       // if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, wabaPhoneNumber, limit, offset)
-      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getTemplateSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      else return messageReportsServices.getTemplateSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -156,18 +157,16 @@ const userConversationReport = (req, res) => {
   // if ((req.body.countryName && (req.body.startDate || req.body.endDate))) {
   //   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide any one countryName or Date' })
   // }
+  console.log('-----------------------------', req.body.countryName.length)
   __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
       limit = req.body.limit ? +req.body.limit : 5
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
-      if (req.body) {
-        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
-      }
-      // else if (req.body.startDate && req.body.startDate !== undefined && req.body.endDate && req.body.endDate !== undefined) {
-      //   return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
-      // } else {
+      if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
+      else return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
+      // else {
       //   return messageReportsServices.getuserConversationReportCount(wabaPhoneNumber, limit, offset)
       // }
     })

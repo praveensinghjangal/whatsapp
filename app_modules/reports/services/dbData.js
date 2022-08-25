@@ -65,24 +65,24 @@ class MessageReportsServices {
   //   return doesDeliveryReportExists.promise
   // }
 
-  // getDeliveryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
-  //   __logger.info('inside getDeliveryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
-  //   const doesDeliveryReportExists = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
-  //     .then(result => {
-  //       __logger.info('getDeliveryReportByDate query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         doesDeliveryReportExists.resolve(result)
-  //       } else {
-  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getDeliveryReportByDate: ', err)
-  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return doesDeliveryReportExists.promise
-  // }
+  getDeliveryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getDeliveryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
+    const doesDeliveryReportExists = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
+      .then(result => {
+        __logger.info('getDeliveryReportByDate query Result', { result })
+        if (result && result[0].length > 0) {
+          doesDeliveryReportExists.resolve(result)
+        } else {
+          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getDeliveryReportByDate: ', err)
+        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return doesDeliveryReportExists.promise
+  }
 
   getCampaignSummaryReportByCampaignName (campaignName, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getCampaignSummaryReportByCampaignName', startDate, endDate, limit, offset)
@@ -141,24 +141,24 @@ class MessageReportsServices {
   //   return doesDeliveryReportExists.promise
   // }
 
-  // getTemplateSummaryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
-  //   __logger.info('inside getTemplateSummaryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
-  //   const doesDeliveryReportExists = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getTemplateSummaryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
-  //     .then(result => {
-  //       __logger.info('getTemplateSummaryReportByDate query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         doesDeliveryReportExists.resolve(result)
-  //       } else {
-  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getTemplateSummaryReportByDate: ', err)
-  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return doesDeliveryReportExists.promise
-  // }
+  getTemplateSummaryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getTemplateSummaryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
+    const doesDeliveryReportExists = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getTemplateSummaryReportByDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
+      .then(result => {
+        __logger.info('getTemplateSummaryReportByDate query Result', { result })
+        if (result && result[0].length > 0) {
+          doesDeliveryReportExists.resolve(result)
+        } else {
+          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByDate: ', err)
+        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return doesDeliveryReportExists.promise
+  }
 
   getTemplateSummaryReportByTemplateId (templateId, templateName, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getTemplateSummaryReportByTemplateId', templateId, wabaPhoneNumber, limit, offset)
@@ -271,23 +271,23 @@ class MessageReportsServices {
     return getuserConversationReportCountBasedOncountryName.promise
   }
 
-  // getuserConversationReportCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
-  //   const getuserConversationReportCountBasedOnDate = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
-  //     .then(result => {
-  //       __logger.info('getusserWiseSummaryCount query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         return getuserConversationReportCountBasedOnDate.resolve(result)
-  //       } else {
-  //         return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-  //       getuserConversationReportCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return getuserConversationReportCountBasedOnDate.promise
-  // }
+  getuserConversationReportCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
+    const getuserConversationReportCountBasedOnDate = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
+      .then(result => {
+        __logger.info('getusserWiseSummaryCount query Result', { result })
+        if (result && result[0].length > 0) {
+          return getuserConversationReportCountBasedOnDate.resolve(result)
+        } else {
+          return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+        getuserConversationReportCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return getuserConversationReportCountBasedOnDate.promise
+  }
 
   // getuserConversationReportCount (wabaPhoneNumber, limit, offset) {
   //   const getuserConversationReportCountBasedOnDate = q.defer()
