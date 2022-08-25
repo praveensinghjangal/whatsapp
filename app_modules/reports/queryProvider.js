@@ -45,17 +45,18 @@ const getDeliveryReportByMessageId = () => {
 // }
 
 const getDeliveryReportByDate = () => {
-  return `SELECT message_id as messageId, end_consumer_number as consumerNumber, JSON_ARRAYAGG(created_on) as createdOn, JSON_ARRAYAGG(state) as state, custom_one as campaignName, DATE_FORMAT(created_on, "%m/%d/%Y") as time
+  return `SELECT message_id as messageId, end_consumer_number as consumerNumber, JSON_ARRAYAGG(created_on) as createdOn, JSON_ARRAYAGG(state) as state, state as singleState, custom_one as campaignName, DATE_FORMAT(created_on, "%m/%d/%Y") as time
   FROM (
       SELECT DISTINCT message_id, state, custom_one, end_consumer_number, created_on
       FROM message_history mh
-      where created_on BETWEEN ? and ? and business_number = ?
+      where (created_on BETWEEN ? and ?) and business_number = ? 
       order BY created_on desc) as messagedetails
   group BY messagedetails.message_id
   order by message_id limit ? offset ?;
   select count(DISTINCT message_id) as totalCount
   FROM message_history mh
-  where created_on BETWEEN ? and ? and business_number = ?;
+  where (created_on BETWEEN ? and ?) and business_number = ?
+  order BY created_on desc;
   `
 }
 
@@ -94,10 +95,10 @@ const getCampaignSummaryReportByDate = () => {
 const getTemplateSummaryReportByDate = () => {
   return `SELECT waba_number as "wabaNumber",template_name as tempalteName,template_Id as "templateId",total_submission as totalSubmission,total_message_sent as "totalMessageSent",total_message_Inprocess as "totalMessageInProcess",total_message_resourceAllocated as "totalMessageResourceAllocated",total_message_forwarded as "totalMessageForwarded",total_message_deleted as "totalMessageDeleted" ,
   total_message_seen as "totalMessageSeen",total_message_delivered as "totalMessageDelivered",total_message_accepted as "totalMessageAccepted", total_message_failed as "totalMessageFailed", total_message_pending as "totalMessagePending", total_message_rejected as "totalMessageRejected",
-  Delivered_Percentage as "deliveredPercentage" FROM template_summary where waba_number = ? and created_on BETWEEN ? AND ?
+  Delivered_Percentage as "deliveredPercentage" FROM template_summary where waba_number = ? and (created_on BETWEEN ? AND ?)
   ORDER BY created_on DESC limit ? offset ?;
   select count(1) as totalCount
-  from template_summary where waba_number = ? and created_on BETWEEN ? AND ?`
+  from template_summary where waba_number = ? and (created_on BETWEEN ? AND ?)`
 }
 
 const getTemplateSummaryReportByTemplateId = () => {
@@ -142,9 +143,9 @@ const getuserConversationReportCountBasedOncountryName = () => {
 const getuserConversationReportCountBasedOnDate = () => {
   return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",
   not_applicable as "notApplicable",total_number as "totalNumber" From conversation_summary where
-  waba_number = ? and created_on BETWEEN ? AND ? ORDER BY created_on DESC limit ? offset ?;
+  waba_number = ? and (created_on BETWEEN ? AND ?) ORDER BY created_on DESC limit ? offset ?;
   select count(1) as totalCount
-  from conversation_summary where waba_number = ? and created_on BETWEEN ? AND ?`
+  from conversation_summary where waba_number = ? and (created_on BETWEEN ? AND ?)`
 }
 // const getuserConversationReportCount = () => {
 //   return `SELECT waba_number as "wabaNumber", country_name as "CountryName",business_initiated as "businessInitiated",user_initiated as "userInitiated",referral_conversion as "referralConversion",

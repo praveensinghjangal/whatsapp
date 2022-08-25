@@ -237,23 +237,6 @@ class MessageReportsServices {
   }
 
   getuserConversationReportCountBasedOncountryName (wabaPhoneNumber, countryName, startDate, endDate, limit, offset) {
-    // const getuserConversationReportCountBasedOncountryName = q.defer()
-    // __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOncountryName(), [wabaPhoneNumber, countryName, startDate, endDate, limit, offset, wabaPhoneNumber, countryName, startDate, endDate])
-    //   .then(result => {
-    //     __logger.info('getusserWiseSummaryCount query Result', { result })
-    //     if (result && result[0].length > 0) {
-    //       getuserConversationReportCountBasedOncountryName.resolve(result)
-    //     } else {
-    //       console.log('----------------------------------------asjgbfasfjjhjh')
-    //       getuserConversationReportCountBasedOncountryName.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-    //     }
-    //   })
-    //   .catch(err => {
-    //     __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-    //     getuserConversationReportCountBasedOncountryName.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-    //   })
-    // return getuserConversationReportCountBasedOncountryName.promise
-
     const getuserConversationReportCountBasedOncountryName = q.defer()
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOncountryName(), [wabaPhoneNumber, countryName, startDate, endDate, limit, offset, wabaPhoneNumber, countryName, startDate, endDate])
       .then(result => {
