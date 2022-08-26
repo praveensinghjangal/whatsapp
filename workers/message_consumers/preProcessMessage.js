@@ -225,6 +225,7 @@ class PreProcessQueueConsumer {
     // if (queueObj && queueObj.q_name) {
     __db.init()
       .then(result => {
+        // check the queue name
         const queueObj = __constants.MQ[__config.mqObjectKey]
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const queue = queueObj.q_name
@@ -252,7 +253,7 @@ class PreProcessQueueConsumer {
                 payloadsToBeNotCheckedForVerified.push(payload)
               }
             }
-
+            // check verifies audience
             checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
               .then(data => {
                 const verifiedNumbers = data.verifiedNumbers

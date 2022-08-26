@@ -124,6 +124,7 @@ function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
 
         // result[0].tempOptin = moment().diff(moment(result[0].lastMessage), 'hours') <= 24
         // __logger.info('Result>>>>>>>>>>>>>>>>>.....', result[0])
+        // changes and isverfied
         dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin })
       }
     })
