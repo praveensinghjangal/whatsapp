@@ -82,7 +82,7 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
 }
 
 const getOptinByPhoneNumber = () => {
-  return `select last_message as "lastMessage" ,optin 
+  return `select last_message as "lastMessage" ,optin , isFacebookVerified as "isFacebookVerified"
   from audience aud 
   left join audience_waba_no_mapping awnm  
   on awnm.aud_mapping_id  = aud.waba_phone_number  and awnm.is_active  =true

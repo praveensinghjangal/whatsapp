@@ -202,6 +202,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
+        __logger.error('error in addMessageHistoryDataInBulk ', err)
         if (err && err.message && typeof err.message === 'string' && err.message.slice(err.message.length - 13) === "doesn't exist") {
           this.retryByCreating(msgInsertData, dataObj, true, mongoBulkObject)
             .then(result => {

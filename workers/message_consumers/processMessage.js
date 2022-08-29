@@ -150,9 +150,9 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
       .then(data => {
-        if (data.tempOptin) {
+        if (data.tempOptin && data.isFacebookVerified) {
           canSendMessage.resolve(true)
-        } else if (data.optin && templateObj) {
+        } else if (data.optin && templateObj && data.isFacebookVerified) {
           canSendMessage.resolve(true)
         } else {
           canSendMessage.resolve(false)

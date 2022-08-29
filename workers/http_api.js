@@ -27,6 +27,7 @@ class httpApiWorker {
       __logger.info(result)
       vm.runExpressServer()
     }).catch((error) => {
+      console.log('11111111111111111111111111111111111111111111111111111111', error)
       __logger.info(error)
       process.exit(1)
     })

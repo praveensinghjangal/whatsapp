@@ -179,7 +179,7 @@ const getVivaMsgIdByserviceProviderMsgId = () => {
 const addMessageHistoryDataInBulk = (date) => {
   const messageHistory = `message_history_${date}`
   return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
 
@@ -206,6 +206,7 @@ const createMessageHistoryTable = (date) => {
     status_time  timestamp NOT NULL,
     state  varchar(100) NOT NULL,
     end_consumer_number  varchar(50) DEFAULT NULL,
+    message_country varchar(50) DEFAULT NULL,
     business_number  varchar(50) DEFAULT NULL,
     created_on  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     is_active  tinyint(1) DEFAULT '1',
@@ -227,13 +228,13 @@ const addMessageIdMappingData = () => {
 
 const addMessageHistoryDataInMis = () => {
   return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {
   return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
 

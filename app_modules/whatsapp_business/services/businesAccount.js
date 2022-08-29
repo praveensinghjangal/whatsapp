@@ -303,7 +303,6 @@ class businesAccountService {
     const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
     const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
     wabaNumber = wabaNumber.substring(phoneCode.length, wabaNumber.length)
-    console.log('phoneSplittedData ==============>', phoneCode, wabaNumber)
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
@@ -439,7 +438,6 @@ class businesAccountService {
     const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
     const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
     wabaNumber = wabaNumber.substring(phoneCode.length, wabaNumber.length)
-    console.log('phoneSplittedData ==============>', phoneCode, wabaNumber)
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdAndTokenKeyByWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
@@ -776,7 +774,6 @@ class businesAccountService {
     const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
     const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
     wabaNumber = wabaNumber.substring(phoneCode.length, wabaNumber.length)
-    console.log('phoneSplittedData ==============>', phoneCode, wabaNumber)
     const wabizData = { apiKey, expireyTime, phoneCode, wabaNumber }
     const queryParam = []
     _.each(wabizData, (val) => queryParam.push(val))
