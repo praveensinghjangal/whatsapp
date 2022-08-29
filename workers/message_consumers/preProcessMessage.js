@@ -7,7 +7,7 @@ const q = require('q')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const AudienceService = require('../../app_modules/audience/services/dbData')
-const integrationService = require('../../app_modules/integration')
+// const integrationService = require('../../app_modules/integration')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 const UniqueId = require('../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../lib/util/rejectionHandler')
@@ -141,8 +141,9 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         }
       }
       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
-      const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
-      return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
+      // changes  write now
+      // const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+      // return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
       // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
 
       // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
@@ -151,6 +152,12 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // todo: for numbers not present in db => create new entries in audiences table
     })
     .then((optinData) => {
+      optinData = [
+        {
+          input: '+919892735541',
+          status: 'valid',
+          wa_id: '917666118833'
+        }]
       // optinData = [
       //   {
       //     input: '+917666220077',
@@ -210,6 +217,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
+      console.log('11111111111111111111111111111111111111111111111111', err)
       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
@@ -221,6 +229,7 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId,
   const saveAndSendMessageStatusForNotVerfiedNumber = q.defer()
   const messageHistoryService = new MessageHistoryService()
   const redirectService = new RedirectService()
+  console.log('111111111111111111111111111111111111111111111111111', payload)
   const statusData = {
     messageId: payload.messageId,
     serviceProviderId: serviceProviderId,
@@ -309,14 +318,14 @@ class PreProcessQueueConsumer {
               })
               .then((sendToQueueRes) => {
                 __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
-                if (notVerifiedNumbers) {
+                if (notVerifiedNumbers.length) {
                   return saveAndSendMessageStatusForNotVerfiedNumber(notVerifiedPayloadArr)
                 } else {
                   return true
                 }
               })
               .then((data) => {
-                console.log('=================== final final LAst final')
+                console.log('=================== final final LAst final', { data })
                 __logger.info('sendMessageToQueue :: message sentt to queue then 3', { data })
                 rmqObject.channel[queue].ack(mqData)
                 // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
