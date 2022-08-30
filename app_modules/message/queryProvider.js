@@ -3,8 +3,8 @@ const __constants = require('../../config/constants')
 const addMessageHistoryData = (date) => {
   const messageHistory = `message_history_${date}`
   return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const getMessageTableDataWithId = (date) => {
@@ -17,7 +17,7 @@ const getMessageTableDataWithId = (date) => {
 }
 
 const getMessageIdByServiceProviderMsgId = () => {
-  return `select message_id as "messageId" , service_provider_message_id as "serviceProviderMessageId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour", date
+  return `select message_id as "messageId" , service_provider_message_id as "serviceProviderMessageId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber",message_country as "countryName" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour", date
   from message_id_mapping_data
   where is_active = 1 and service_provider_message_id = ? limit 1`
 }
@@ -229,7 +229,7 @@ const addMessageIdMappingData = () => {
 const addMessageHistoryDataInMis = () => {
   return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
   end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {

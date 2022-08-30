@@ -11,6 +11,7 @@ const HttpService = require('../../lib/http_service')
 // const integrationService = require('./../../app_modules/integration')
 const audienceFetchController = require('../../app_modules/audience/controllers/fetchAudienceData')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 
 const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, statusName = null) => {
   const statusSent = q.defer()
@@ -23,6 +24,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: (isSyncstatus) ? __constants.MESSAGE_STATUS.pending : (statusName ? __constants.MESSAGE_STATUS[statusName] : __constants.MESSAGE_STATUS.resourceAllocated),
     endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,

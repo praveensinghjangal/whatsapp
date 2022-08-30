@@ -78,6 +78,7 @@ class MessgaeHistoryService {
     let msgId = ''
     let bnNum = ''
     let ecNum = ''
+    let countryName = ''
     const custom = {}
     let tempDate
     __logger.info('Add message history service called', dataObj)
@@ -96,6 +97,7 @@ class MessgaeHistoryService {
         msgId = dbData.messageId
         bnNum = dbData.businessNumber ? dbData.businessNumber : dataObj.businessNumber
         ecNum = dbData.endConsumerNumber ? dbData.endConsumerNumber : dataObj.endConsumerNumber
+        countryName = dbData.countryName ? dbData.countryName : dataObj.countryName
         const queryParam = []
         custom.customOne = dbData.customOne || dataObj.customOne || null
         custom.customTwo = dbData.customTwo || dataObj.customTwo || null
@@ -103,19 +105,20 @@ class MessgaeHistoryService {
         custom.customFour = dbData.customFour || dataObj.customFour || null
         const messageHistoryData = {
           messageId: msgId,
-          serviceProviderMessageId: dataObj.serviceProviderMessageId,
+          serviceProviderMessageId: dataObj.serviceProviderMessageId || null,
           serviceProviderId: __config.service_provider_id.facebook,
           deliveryChannel: dataObj.deliveryChannel ? dataObj.deliveryChannel : __constants.DELIVERY_CHANNEL.whatsapp,
           statusTime: moment.utc(dataObj.statusTime).format('YYYY-MM-DDTHH:mm:ss'),
           state: dataObj.state,
           endConsumerNumber: ecNum,
+          countryName: countryName,
           businessNumber: bnNum,
           errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]',
           customOne: custom.customOne,
           customTwo: custom.customTwo,
           customThree: custom.customThree,
           customFour: custom.customFour,
-          conversationId: dataObj.conversationId
+          conversationId: dataObj.conversationId || null
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         if (!isSecondAttemp) {
