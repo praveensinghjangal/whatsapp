@@ -7,15 +7,9 @@ const moment = require('moment')
 // const __config = require('../../config')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
-
-// const sendTotwoFaConsumer10secQueue = (message, queueObj) => {
-//   const messageRouted = q.defer()
-//   queueObj.sendToQueue(__constants.MQ.twoFaConsumer_queue_10_sec, JSON.stringify(message))
-//     .then(queueResponse => messageRouted.resolve('done!'))
-//     .catch(err => messageRouted.reject(err))
-//   return messageRouted.promise
-// }
-const saveAndSendMessageStatus = (payload, serviceProviderId) => {
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
+const qalllib = require('qalllib')
+const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId) => {
   const statusSent = q.defer()
   const messageHistoryService = new MessageHistoryService()
   const redirectService = new RedirectService()
@@ -26,6 +20,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.rejected,
     endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
@@ -47,6 +42,22 @@ const saveAndSendMessageStatus = (payload, serviceProviderId) => {
     .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
   return statusSent.promise
 }
+
+const saveAndSendMessageStatusformFacebookerrorQueue = (payload) => {
+  const saveAndSendMessageStatusformFacebookerrorQueue = q.defer()
+  qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, payload, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, serviceProviderId)
+    .then(data => {
+      saveAndSendMessageStatusformFacebookerrorQueue.resolve([...data.resolve, ...data.reject])
+    })
+    .catch(function (error) {
+      const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
+      errorToTelegram.send(error, telegramErrorMessage)
+      console.log('errror', error)
+      return saveAndSendMessageStatusformFacebookerrorQueue.reject(error)
+    })
+    .done()
+  return saveAndSendMessageStatusformFacebookerrorQueue.promise
+}
 class facebookErrorConsumer {
   startServer () {
     const queue = __constants.MQ.facebookErrorConsumer.q_name
@@ -57,21 +68,21 @@ class facebookErrorConsumer {
           try {
             const mqDataReceived = mqData
             const messageData = JSON.parse(mqData.content.toString())
-            __logger.info('facebook outgoing queue consumer::received:', { mqData })
-            __logger.info('facebook outgoing queue consumer:: messageData received:', messageData)
-            saveAndSendMessageStatus(messageData.payload, messageData.config.servicProviderId)
+            __logger.info('facebook error queue consumer::received:', { mqData })
+            __logger.info('facebook error queue consumer:: messageData received:', messageData)
+            saveAndSendMessageStatusformFacebookerrorQueue(messageData.payload, messageData.config.servicProviderId)
               .then(sendMessageRespose => {
-                __logger.error('facebook outgoing queue consumer::error: ', sendMessageRespose)
+                __logger.error('facebook error queue consumer::error: ', sendMessageRespose)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
-                const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook outgoing queue consumer::error:'
-                __logger.error('facebook outgoing queue consumer::error: ', err)
+                const telegramErrorMessage = 'sendAfterToFacebookerrorQueue ~ facebook error queue consumer::error:'
+                __logger.error('facebook error queue consumer::error: ', err)
                 errorToTelegram.send(err, telegramErrorMessage)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
           } catch (err) {
-            const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook queue::error while parsing: '
+            const telegramErrorMessage = 'sendToFacebookerrorQueue ~ facebook queue::error while parsing: '
             errorToTelegram.send(err, telegramErrorMessage)
             __logger.error('facebook queue consumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
@@ -79,9 +90,9 @@ class facebookErrorConsumer {
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook queue::Main error in catch block'
+        const telegramErrorMessage = 'sendToFacebookerrorQueue ~ facebook queue::Main error in catch block'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('facebook outgoing queue consumer::error: ', err)
+        __logger.error('facebook error queue consumer::error: ', err)
         process.exit(1)
       })
 
