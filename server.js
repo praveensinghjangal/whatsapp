@@ -32,7 +32,8 @@ const SERVER_SCRIPTS = {
   wabaContainerBindingConsumer: './workers/embedded_signup_consumers/wabaContainerBindingConsumer.js',
   embeddedSingupErrorConsumer: './workers/embedded_signup_consumers/embeddedSingupErrorConsumer.js',
   twoFaConsumer: './workers/embedded_signup_consumers/twoFaConsumer.js',
-  sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js'
+  sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js',
+  facebookErrorQueuesConsumer: './workers/message_consumers/facebookErrorConsumer.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

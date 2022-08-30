@@ -222,7 +222,7 @@ const createMessageHistoryTable = (date) => {
 
 const addMessageIdMappingData = () => {
   return `INSERT INTO message_id_mapping_data
-  (message_id, service_provider_message_id, end_consumer_number, business_number, custom_one, custom_two, custom_three, custom_four, date)
+  (message_id, service_provider_message_id, end_consumer_number,message_country, business_number, custom_one, custom_two, custom_three, custom_four, date)
   VALUES (?,?,?,?,?,?,?,?,?)`
 }
 

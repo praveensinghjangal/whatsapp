@@ -8,7 +8,7 @@ const moment = require('moment')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
-const qalllib = require('qalllib')
+// const qalllib = require('qalllib')
 const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId) => {
   const statusSent = q.defer()
   const messageHistoryService = new MessageHistoryService()
@@ -28,8 +28,8 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
     customFour: payload.whatsapp.customFour || null,
     date: payload.date
   }
-  const mappingData = [payload.messageId, payload.to, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
-  messageHistoryService.addMessageHistoryDataService(mappingData)
+  // const mappingData = [payload.messageId, payload.to, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
+  messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
       statusData.to = statusData.businessNumber
       statusData.from = statusData.endConsumerNumber
@@ -45,12 +45,13 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
 
 const saveAndSendMessageStatusformFacebookerrorQueue = (payload, servicProviderId) => {
   const saveAndSendMessageStatusformFacebookerrorQueue = q.defer()
-  qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, payload, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, servicProviderId)
+  // qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, [payload], __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, servicProviderId)
+  saveAndSendMessageStatusForNotVerfiedNumber(payload, servicProviderId)
     .then(data => {
-      saveAndSendMessageStatusformFacebookerrorQueue.resolve([...data.resolve, ...data.reject])
+      return saveAndSendMessageStatusformFacebookerrorQueue.resolve(data)
     })
     .catch(function (error) {
-      const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
+      const telegramErrorMessage = 'facebookErrorConsumer ~ saveAndSendMessageStatusformFacebookerrorQueue function ~ error in saveAndSendMessageStatusformFacebookerrorQueue'
       errorToTelegram.send(error, telegramErrorMessage)
       console.log('errror', error)
       return saveAndSendMessageStatusformFacebookerrorQueue.reject(error)
@@ -72,7 +73,7 @@ class facebookErrorConsumer {
             __logger.info('facebook error queue consumer:: messageData received:', messageData)
             saveAndSendMessageStatusformFacebookerrorQueue(messageData.payload, messageData.config.servicProviderId)
               .then(sendMessageRespose => {
-                __logger.error('facebook error queue consumer::error: ', sendMessageRespose)
+                __logger.info('facebook error queue consumer::error: ', sendMessageRespose)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
