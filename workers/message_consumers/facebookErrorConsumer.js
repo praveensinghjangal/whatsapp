@@ -43,9 +43,9 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
   return statusSent.promise
 }
 
-const saveAndSendMessageStatusformFacebookerrorQueue = (payload) => {
+const saveAndSendMessageStatusformFacebookerrorQueue = (payload, servicProviderId) => {
   const saveAndSendMessageStatusformFacebookerrorQueue = q.defer()
-  qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, payload, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, serviceProviderId)
+  qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, payload, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, servicProviderId)
     .then(data => {
       saveAndSendMessageStatusformFacebookerrorQueue.resolve([...data.resolve, ...data.reject])
     })
