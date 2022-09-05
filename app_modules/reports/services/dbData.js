@@ -85,13 +85,31 @@ class MessageReportsServices {
   }
 
   getCampaignSummaryReportByCampaignName (campaignName, startDate, endDate, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getCampaignSummaryReportByCampaignName', startDate, endDate, limit, offset)
+    __logger.info('inside getCampaignSummaryReportByCampaignName', startDate, endDate, limit, offset, wabaPhoneNumber)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getCampaignSummaryReportByCampaignName(), [campaignName, startDate, endDate, wabaPhoneNumber, limit, offset, campaignName, startDate, endDate, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getCampaignSummaryReportByCampaignName query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        campaignName: campaignName
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
+      .then(data => {
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(data)
         } else {
           return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
@@ -106,11 +124,28 @@ class MessageReportsServices {
   getCampaignSummaryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getCampaignSummaryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getCampaignSummaryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getCampaignSummaryReportByDate query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
+      .then(data => {
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(data)
         } else {
           return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
