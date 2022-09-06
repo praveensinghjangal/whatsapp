@@ -83,7 +83,7 @@ module.exports = () => {
     totalRejected: '',
     totalRateLimit: '',
     deliveredMessage: '',
-    totalDeliverd: '',
+    delivereyPercentage: '',
     createdOn: ''
   }
   const statusUpdated = q.defer()
@@ -115,7 +115,7 @@ module.exports = () => {
           finalRecord.totalRejected = campaignName[__constants.MESSAGE_STATUS.rejected] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.rejected]
           finalRecord.totalRateLimit = campaignName[__constants.MESSAGE_STATUS.rateLimit] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.rateLimit]
           finalRecord.deliveredMessage = deliveredMessage
-          finalRecord.totalDeliverd = totalDelivered
+          finalRecord.delivereyPercentage = totalDelivered
           finalRecord.createdOn = date
           arrOfCamaignName.push(finalRecord)
         }
