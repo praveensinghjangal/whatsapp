@@ -343,6 +343,8 @@ const controller = (req, res) => {
     .then(msgAdded => {
       // this is need to remove it
       if (!msgAdded) return []
+      // this is only update status not in queue
+      // note change the name
       return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
     .then(res => {
