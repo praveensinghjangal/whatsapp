@@ -3,18 +3,38 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
+const encrypyDecrypt = require('encrypy-decrypt')
 // const ValidatonService = require('../services/validation')
 // const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 // const uniqueId = new UniqueId()
 
 class MessageReportsServices {
-  getDeliveryReportByMessageId (messageId, consumerNumber, status, startDate, endDate, wabaPhoneNumber, limit, offset) {
+  getDeliveryReportByMessageId (messageId, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByMessageId', startDate, endDate, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByMessageId(), [messageId, consumerNumber, status, startDate, endDate, wabaPhoneNumber, limit, offset, messageId, consumerNumber, status, startDate, endDate, wabaPhoneNumber])
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        messageId: messageId
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
         __logger.info('getDeliveryReportByMessageId query Result', { result })
-        if (result && result[0].length > 0) {
+        if (result && result[0] && result[0].totalCount.length > 0) {
           doesDeliveryReportExists.resolve(result)
         } else {
           return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
@@ -27,51 +47,108 @@ class MessageReportsServices {
     return doesDeliveryReportExists.promise
   }
 
-  // getDeliveryReportByConsumerNumber (consumerNumber, wabaPhoneNumber, limit, offset) {
-  //   __logger.info('inside getDeliveryReportByConsumerNumber', consumerNumber, wabaPhoneNumber, limit, offset)
-  //   const doesDeliveryReportExists = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByConsumerNumber(), [consumerNumber, wabaPhoneNumber, limit, offset, consumerNumber, wabaPhoneNumber])
-  //     .then(result => {
-  //       __logger.info('getDeliveryReportByConsumerNumber query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         doesDeliveryReportExists.resolve(result)
-  //       } else {
-  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getDeliveryReportByConsumerNumber: ', err)
-  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return doesDeliveryReportExists.promise
-  // }
+  getDeliveryReportByConsumerNumber (consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getDeliveryReportByConsumerNumber', consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset)
+    var phoneNumber = encrypyDecrypt.encryptKeysInObj(consumerNumber, __constants.ENTITY_NAME.MESSAGES)
+    const doesDeliveryReportExists = q.defer()
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        senderPhoneNumber: phoneNumber
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
+      .then(result => {
+        __logger.info('getDeliveryReportByConsumerNumber query Result', { result })
+        if (result && result[0] && result[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(result)
+        } else {
+          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getDeliveryReportByConsumerNumber: ', err)
+        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return doesDeliveryReportExists.promise
+  }
 
-  // getDeliveryReportByCampaignName (campaignName, wabaPhoneNumber, limit, offset) {
-  //   __logger.info('inside getDeliveryReportByCampaignName', campaignName, wabaPhoneNumber, limit, offset)
-  //   const doesDeliveryReportExists = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByCampaignName(), [campaignName, wabaPhoneNumber, limit, offset, campaignName, wabaPhoneNumber])
-  //     .then(result => {
-  //       __logger.info('getDeliveryReportByCampaignName query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         doesDeliveryReportExists.resolve(result)
-  //       } else {
-  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getDeliveryReportByCampaignName: ', err)
-  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return doesDeliveryReportExists.promise
-  // }
+  getDeliveryReportByStatus (status, startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getDeliveryReportByCampaignName', status, wabaPhoneNumber, limit, offset)
+    const doesDeliveryReportExists = q.defer()
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        currentStatus: { $in: status }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
+      .then(result => {
+        __logger.info('getDeliveryReportByCampaignName query Result', { result })
+        if (result && result[0] && result[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(result)
+        } else {
+          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getDeliveryReportByCampaignName: ', err)
+        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return doesDeliveryReportExists.promise
+  }
 
   getDeliveryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getDeliveryReportByDate(), [startDate, endDate, wabaPhoneNumber, limit, offset, startDate, endDate, wabaPhoneNumber])
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
         __logger.info('getDeliveryReportByDate query Result', { result })
-        if (result && result[0].length > 0) {
+        if (result && result[0] && result[0].totalCount.length > 0) {
           doesDeliveryReportExists.resolve(result)
         } else {
           return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })

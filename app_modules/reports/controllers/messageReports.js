@@ -36,16 +36,15 @@ const deliveryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.messageId || req.query.consumerNumber || req.query.status) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      // if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, wabaPhoneNumber, limit, offset)
-      // if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
-      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined)
+      if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.status) return messageReportsServices.getDeliveryReportByStatus(req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       else return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+        const pagination = { totalPage: Math.ceil(data[0].totalCount[0].count / limit), totalCount: data[0].totalCount[0].count, currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0].data, pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
