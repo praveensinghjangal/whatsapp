@@ -235,33 +235,68 @@ class MessageReportsServices {
     return doesDeliveryReportExists.promise
   }
 
-  // getTemplateSummaryReportByTemplateName (templateName, wabaPhoneNumber, limit, offset) {
-  //   __logger.info('inside getTemplateSummaryReportByTemplateName', templateName, wabaPhoneNumber, limit, offset)
-  //   const doesDeliveryReportExists = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getTemplateSummaryReportByTemplateName(), [templateName, wabaPhoneNumber, limit, offset, templateName, wabaPhoneNumber])
-  //     .then(result => {
-  //       __logger.info('getTemplateSummaryReportByTemplateName query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         doesDeliveryReportExists.resolve(result)
-  //       } else {
-  //         return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getTemplateSummaryReportByTemplateName: ', err)
-  //       doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return doesDeliveryReportExists.promise
-  // }
+  getTemplateSummaryReportByTemplateName (templateName, startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getTemplateSummaryReportByTemplateName', templateName, wabaPhoneNumber, limit, offset)
+    const doesDeliveryReportExists = q.defer()
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        templateName: templateName
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
+      .then(data => {
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(data)
+        } else {
+          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getTemplateSummaryReportByTemplateName: ', err)
+        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return doesDeliveryReportExists.promise
+  }
 
   getTemplateSummaryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getTemplateSummaryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getTemplateSummaryReportByDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
-      .then(result => {
-        __logger.info('getTemplateSummaryReportByDate query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
+      .then(data => {
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(data)
         } else {
           return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
@@ -273,14 +308,32 @@ class MessageReportsServices {
     return doesDeliveryReportExists.promise
   }
 
-  getTemplateSummaryReportByTemplateId (templateId, templateName, startDate, endDate, wabaPhoneNumber, limit, offset) {
+  getTemplateSummaryReportByTemplateId (templateId, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getTemplateSummaryReportByTemplateId', templateId, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportExists = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getTemplateSummaryReportByTemplateId(), [templateId, templateName, startDate, endDate, wabaPhoneNumber, limit, offset, templateId, templateName, startDate, endDate, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getTemplateSummaryReportByTemplateId query Result', { result })
-        if (result && result[0].length > 0) {
-          doesDeliveryReportExists.resolve(result)
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        templateId: templateId
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
+      .then(data => {
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          doesDeliveryReportExists.resolve(data)
         } else {
           return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
@@ -351,11 +404,30 @@ class MessageReportsServices {
 
   getuserConversationReportCountBasedOncountryName (wabaPhoneNumber, countryName, startDate, endDate, limit, offset) {
     const getuserConversationReportCountBasedOncountryName = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOncountryName(), [wabaPhoneNumber, countryName, startDate, endDate, limit, offset, wabaPhoneNumber, countryName, startDate, endDate])
-      .then(result => {
-        __logger.info('getusserWiseSummaryCount query Result', { result })
-        if (result && result[0].length > 0) {
-          return getuserConversationReportCountBasedOncountryName.resolve(result)
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        countryName: { $in: countryName }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
+      .then(data => {
+        __logger.info('getusserWiseSummaryCount query Result', { data })
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          return getuserConversationReportCountBasedOncountryName.resolve(data)
         } else {
           return getuserConversationReportCountBasedOncountryName.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
@@ -369,11 +441,29 @@ class MessageReportsServices {
 
   getuserConversationReportCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
     const getuserConversationReportCountBasedOnDate = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
-      .then(result => {
-        __logger.info('getusserWiseSummaryCount query Result', { result })
-        if (result && result[0].length > 0) {
-          return getuserConversationReportCountBasedOnDate.resolve(result)
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
+      .then(data => {
+        __logger.info('getusserWiseSummaryCount query Result', { data })
+        if (data && data[0] && data[0].totalCount.length > 0) {
+          return getuserConversationReportCountBasedOnDate.resolve(data)
         } else {
           return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }

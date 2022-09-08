@@ -90,7 +90,9 @@ const ENTITY_NAME = {
   MESSAGES: 'messages',
   MESSAGE_STATUS: 'message_status',
   MESSAGE_STATUS_ERROR: 'message_status_error',
-  CAMPAIGNAME_SUMMARY_REPORT: 'campaignname_summary_report'
+  CAMPAIGNAME_SUMMARY_REPORT: 'campaignname_summary_report',
+  CONVERSATION_SUMMARY: 'conversation_summary',
+  TEMEPLATE_SUMMARY: 'template_summary'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
