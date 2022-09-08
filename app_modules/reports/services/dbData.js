@@ -4,6 +4,7 @@ const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
 const queryProvider = require('../queryProvider')
 const encrypyDecrypt = require('encrypy-decrypt')
+const mongoConfig = require('../../../config/keysToEncrypt.json')
 // const ValidatonService = require('../services/validation')
 // const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 // const uniqueId = new UniqueId()
@@ -49,13 +50,13 @@ class MessageReportsServices {
 
   getDeliveryReportByConsumerNumber (consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByConsumerNumber', consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset)
-    var phoneNumber = encrypyDecrypt.encryptKeysInObj(consumerNumber, __constants.ENTITY_NAME.MESSAGES)
+    var phoneNumber = encrypyDecrypt.encryptKeysInObj({ senderPhoneNumber: consumerNumber }, mongoConfig[__constants.ENTITY_NAME.MESSAGES])
     const doesDeliveryReportExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
         createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
-        senderPhoneNumber: phoneNumber
+        senderPhoneNumber: phoneNumber.senderPhoneNumber
       }
     },
     {
