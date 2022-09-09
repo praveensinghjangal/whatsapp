@@ -12,7 +12,7 @@ const getCampaignName = () => {
 
   var findParam = [{
     $match: {
-      createdOn: { $gte: new Date(`${date}T00:00:00.000Z`), $lte: new Date(`${date}T23:59:59.999Z`) }
+      createdOn: { $gte: new Date(`${date}T00:00:00.000`), $lte: new Date(`${date}T23:59:59.999`) }
     }
   },
   {

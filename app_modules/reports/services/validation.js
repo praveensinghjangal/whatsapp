@@ -37,12 +37,12 @@ class validate {
         startDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp
+          pattern: __constants.VALIDATOR.timeStampSummary
         },
         endDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
+          pattern: __constants.VALIDATOR.timeStampSummary,
           minLength: 1
         },
         limit: {
@@ -65,7 +65,7 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
         var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
@@ -106,12 +106,12 @@ class validate {
         startDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp
+          pattern: __constants.VALIDATOR.timeStampSummary
         },
         endDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
+          pattern: __constants.VALIDATOR.timeStampSummary,
           minLength: 1
         },
         limit: {
@@ -134,7 +134,7 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
         var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
@@ -179,12 +179,12 @@ class validate {
         startDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp
+          pattern: __constants.VALIDATOR.timeStampSummary
         },
         endDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
+          pattern: __constants.VALIDATOR.timeStampSummary,
           minLength: 1
         },
         limit: {
@@ -207,7 +207,7 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
         var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
@@ -304,12 +304,12 @@ class validate {
         startDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp
+          pattern: __constants.VALIDATOR.timeStampSummary
         },
         endDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
+          pattern: __constants.VALIDATOR.timeStampSummary,
           minLength: 1
         },
         limit: {
@@ -332,7 +332,60 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+        formatedError.push(regexPatternPreetyMessage)
+      } else {
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  downloadSummary (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/downloadCampaignSummary',
+      type: 'object',
+      required: true,
+      properties: {
+        startDate: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.timeStampSummary
+        },
+        endDate: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.timeStampSummary,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/downloadCampaignSummary')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      if (err.includes('does not match pattern "^[0-9]+$"')) {
+        var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
+        formatedError.push(regexPatternPreetyPaginationMessage)
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
         var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
