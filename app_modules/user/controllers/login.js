@@ -30,7 +30,6 @@ const apiResponses = require('api-responses')
 
 const controller = (req, res) => {
   __logger.info('Inside login')
-
   const validate = new ValidatonService()
   const userService = new UserService()
   const password = req.body.password

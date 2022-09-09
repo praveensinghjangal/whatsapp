@@ -36,15 +36,15 @@ const deliveryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.consumerNumber, req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      // if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, wabaPhoneNumber, limit, offset)
-      // if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, wabaPhoneNumber, limit, offset)
-      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      else if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      else if (req.query.status) return messageReportsServices.getDeliveryReportByStatus(req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      else return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+        const pagination = { totalPage: Math.ceil(data[0].totalCount[0].count / limit), totalCount: data[0].totalCount[0].count, currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0].data, pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
@@ -72,8 +72,8 @@ const campaignSummaryReport = (req, res) => {
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+        const pagination = { totalPage: Math.ceil(data[0].totalCount[0].count / limit), totalCount: data[0].totalCount[0].count, currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0].data, pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
@@ -97,14 +97,14 @@ const templateSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 5
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.templateName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      // if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, wabaPhoneNumber, limit, offset)
-      // if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) return messageReportsServices.getTemplateSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      else if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      else return messageReportsServices.getTemplateSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+        const pagination = { totalPage: Math.ceil(data[0].totalCount[0].count / limit), totalCount: data[0].totalCount[0].count, currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0].data, pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
@@ -153,29 +153,20 @@ const userConversationReport = (req, res) => {
   const validate = new ValidatonService()
   let limit = ''
   let page = ''
-  // if ((req.body.countryName && (req.body.startDate || req.body.endDate))) {
-  //   return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide any one countryName or Date' })
-  // }
   __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
       limit = req.body.limit ? +req.body.limit : 5
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
-      if (req.body) {
-        return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
-      }
-      // else if (req.body.startDate && req.body.startDate !== undefined && req.body.endDate && req.body.endDate !== undefined) {
-      //   return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
-      // } else {
-      //   return messageReportsServices.getuserConversationReportCount(wabaPhoneNumber, limit, offset)
-      // }
+      if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
+      else return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
     })
     .then((data) => {
       if (data) {
         // pagination
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
+        const pagination = { totalPage: Math.ceil(data[0].totalCount[0].count / limit), totalCount: data[0].totalCount[0].count, currentPage: page }
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0].data, pagination } })
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }

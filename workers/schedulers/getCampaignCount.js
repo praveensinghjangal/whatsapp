@@ -6,14 +6,35 @@ const __logger = require('../../lib/logger')
 const moment = require('moment')
 
 const getCampaignName = () => {
-  const date = moment().format('YYMMDD')
+  const date = moment().format('YYYY-MM-DD')
   const promises = q.defer()
-  const query = `select count(distinct mh.message_id) as totalMessageSent ,mh.custom_one as campaignName, mh.business_number as businessNumber
-  from message_history_${date} mh
-  group by custom_one`
-
   __logger.info('SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name')
-  __db.mysql.query(__constants.HW_MYSQL_NAME, query, [])
+
+  var findParam = [{
+    $match: {
+      createdOn: { $gte: new Date(`${date}T00:00:00.000Z`), $lte: new Date(`${date}T23:59:59.999Z`) }
+    }
+  },
+  {
+    $group: {
+      _id: { currentStatus: '$currentStatus', campaignName: '$customOne', wabaPhoneNumber: '$wabaPhoneNumber' },
+      sc: { $sum: 1 }
+    }
+  },
+  {
+    $group: {
+      _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', campaignName: '$_id.campaignName' },
+      totalMessageSent: { $sum: '$sc' },
+      status: {
+        $push: {
+          name: '$_id.currentStatus',
+          count: '$sc'
+        }
+      }
+    }
+  },
+  { $sort: { total: -1 } }]
+  __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, findParam)
     .then(result => {
       if (result && result.length > 0) {
         return promises.resolve(result)
@@ -28,62 +49,10 @@ const getCampaignName = () => {
   return promises.promise
 }
 
-const getCampaignTotalCount = (arrOfCamaignName) => {
-  const date = moment().format('YYMMDD')
-  const promises = q.defer()
-  const query = `SELECT custom_one as campaignName, count(state) as count, state
-  from
-  (SELECT custom_one, state, message_id, created_on
-  FROM (
-      SELECT DISTINCT message_id, state, custom_one, created_on
-      FROM message_history_${date} mh
-      where custom_one in (?)
-      order BY created_on desc) as ids
-  group BY ids.message_id) as id
-  group by 1, 3 ;`
-
-  __logger.info('SCHEDULER::getCampaignCount::Inside scheduler fuction get campaign name')
-  __db.mysql.query(__constants.HW_MYSQL_NAME, query, [arrOfCamaignName])
-    .then(result => {
-      if (result && result.length > 0) {
-        return promises.resolve(result)
-      } else {
-        return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignCount::Inside scheduler fuction get campaign name' })
-      }
-    })
-    .catch(err => {
-      __logger.error('SCHEDULER::get process count of campaign cron::get process count of campaign cron ~getCampaignCount  error: ', err)
-      promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-    })
-  return promises.promise
-}
-
 const updateCampaignCount = (data) => {
   const promises = q.defer()
-  const query = `insert into campaign_summary(
-      campaign_name,
-      business_number,
-      total_sent,
-      total_inprocess,
-       total_resourceallocated,
-        total_forwarded,
-         total_seen,
-          total_deleted,
-          total_accepted,
-          total_failed,
-          total_pending,
-          total_rejected,
-           total_ratelimit,
-            delivered_message,
-            deliverey_percentage,
-            update_on,
-            created_on)
-    values ?
-    ON DUPLICATE KEY 
-    UPDATE total_sent= values(total_sent), total_inprocess = values(total_inprocess), total_resourceallocated = values(total_resourceallocated),total_forwarded=values(total_forwarded), total_seen = values(total_seen), total_deleted= values(total_deleted),total_accepted= values(total_accepted), total_failed=values(total_failed), total_pending=values(total_pending), total_rejected= values(total_rejected), total_ratelimit= values(total_ratelimit),delivered_message=values(delivered_message), deliverey_percentage = values(deliverey_percentage), update_on = values(update_on), created_on = created_on`
-
   __logger.info('SCHEDULER::updateCampaignCount::Inside scheduler fuction get campaign name')
-  __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, query, [data])
+  __db.mongo.__campaignBulkInsert(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, data)
     .then(result => {
       if (result && result.length > 0) {
         return promises.resolve(result)
@@ -96,73 +65,65 @@ const updateCampaignCount = (data) => {
     })
   return promises.promise
 }
-
 module.exports = () => {
   let campaignName
   const arrOfCamaignName = []
-  const finalRecord = []
+  const finalRecord = {
+    campaignName: '',
+    wabaPhoneNumber: '',
+    totalSent: '',
+    totalInprocess: '',
+    totalResourceAllocated: '',
+    totalForwarded: '',
+    totalSeen: '',
+    totalDeleted: '',
+    totalAccepted: '',
+    totalFailed: '',
+    totalPending: '',
+    totalRejected: '',
+    totalRateLimit: '',
+    deliveredMessage: '',
+    delivereyPercentage: '',
+    createdOn: ''
+  }
   const statusUpdated = q.defer()
   getCampaignName()
     .then(result => {
-      campaignName = result
-      campaignName.forEach(element => {
-        if ((element.campaignName !== null) || (!_.isEmpty(element.campaignName))) {
-          arrOfCamaignName.push(element.campaignName)
-        }
-      })
-      return getCampaignTotalCount(arrOfCamaignName)
-    })
-    .then(result => {
-      var grouped = _.groupBy(result, 'campaignName')
-      campaignName.forEach(element => {
-        if (element.campaignName !== null || (!_.isEmpty(element.campaignName))) {
-          var date = moment().format('YYYY-MM-DD HH:mm:ss')
-          var data = element.campaignName === null ? '1' : element.campaignName
-          var grouped1 = _.groupBy(grouped[data], 'state')
-          var totalSeen = grouped1[__constants.MESSAGE_STATUS.seen] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.seen][0].count
-          var totalDeleted = grouped1[__constants.MESSAGE_STATUS.deleted] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.deleted][0].count
-          var deliveredMessage = grouped1[__constants.MESSAGE_STATUS.delivered] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.delivered][0].count
+      result.forEach(element => {
+        if ((element._id.campaignName !== null) || (!_.isEmpty(element._id.campaignName))) {
+          element.status.forEach(statusCount => {
+            element[statusCount.name] = statusCount.count
+          })
+          campaignName = element
+          var date = new Date()
+          var totalSeen = campaignName[__constants.MESSAGE_STATUS.seen] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.seen]
+          var totalDeleted = campaignName[__constants.MESSAGE_STATUS.deleted] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.deleted]
+          var deliveredMessage = campaignName[__constants.MESSAGE_STATUS.delivered] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.delivered]
           var totalDelivered = Math.round(((parseInt(totalSeen) + parseInt(deliveredMessage) + parseInt(totalDeleted)) * 100) / element.totalMessageSent).toFixed(2)
-          var arrdata = []
-          arrdata.push(element.campaignName === null ? 'null' : element.campaignName)
-          arrdata.push(element.businessNumber)
-          arrdata.push(element.totalMessageSent)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.inProcess] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.inProcess][0].count)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.resourceAllocated] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.resourceAllocated][0].count)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.forwarded] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.forwarded][0].count)
-          arrdata.push(totalSeen)
-          arrdata.push(totalDeleted)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.accepted] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.accepted][0].count)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.failed] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.failed][0].count)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.pending] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.pending][0].count)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.rejected] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.rejected][0].count)
-          arrdata.push(grouped1[__constants.MESSAGE_STATUS.rateLimit] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.rateLimit][0].count)
-          arrdata.push(deliveredMessage)
-          arrdata.push(totalDelivered)
-          arrdata.push(date)
-          arrdata.push(date)
-          // finalRecord.campaignName = element.campaignName
-          // finalRecord.businessNumber = element.businessNumber
-          // finalRecord.totalSent = element.totalMessageSent
-          // finalRecord.totalInprocess = grouped1[__constants.MESSAGE_STATUS.inProcess] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.inProcess][0].count
-          // finalRecord.totalResourceAllocated = grouped1[__constants.MESSAGE_STATUS.resourceAllocated] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.resourceAllocated][0].count
-          // finalRecord.totalForwarded = grouped1[__constants.MESSAGE_STATUS.forwarded] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.forwarded][0].count
-          // finalRecord.totalSeen = grouped1[__constants.MESSAGE_STATUS.seen] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.seen][0].count
-          // finalRecord.totalDeleted = grouped1[__constants.MESSAGE_STATUS.deleted] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.deleted][0].count
-          // finalRecord.totalAccepted = grouped1[__constants.MESSAGE_STATUS.accepted] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.accepted][0].count
-          // finalRecord.totalFailed = grouped1[__constants.MESSAGE_STATUS.failed] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.failed][0].count
-          // finalRecord.totalPending = grouped1[__constants.MESSAGE_STATUS.pending] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.pending][0].count
-          // finalRecord.totalRejected = grouped1[__constants.MESSAGE_STATUS.rejected] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.rejected][0].count
-          // finalRecord.totalRateLimit = grouped1[__constants.MESSAGE_STATUS.rateLimit] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.rateLimit][0].count
-          // finalRecord.deliverdMessage = grouped1[__constants.MESSAGE_STATUS.delivered] === undefined ? '0' : grouped1[__constants.MESSAGE_STATUS.delivered][0].count
-          // finalRecord.totalDeliverd = parseInt(finalRecord.totalSeen) + parseInt(finalRecord.deliverdMessage) + parseInt(finalRecord.totalDeleted)
-          // finalRecord.totalUndelivered = parseInt(finalRecord.totalInprocess) + parseInt(finalRecord.totalResourceAllocated) + parseInt(finalRecord.totalForwarded) + parseInt(finalRecord.totalAccepted) + parseInt(finalRecord.totalFailed) + parseInt(finalRecord.totalPending) + parseInt(finalRecord.totalFailed) + parseInt(finalRecord.totalRejected) + parseInt(finalRecord.totalRateLimit)
-          finalRecord.push(arrdata)
+
+          finalRecord.campaignName = campaignName._id.campaignName
+          finalRecord.wabaPhoneNumber = campaignName._id.wabaPhoneNumber
+          finalRecord.totalSent = campaignName.totalMessageSent
+          finalRecord.totalInprocess = campaignName[__constants.MESSAGE_STATUS.inProcess] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.inProcess]
+          finalRecord.totalResourceAllocated = campaignName[__constants.MESSAGE_STATUS.resourceAllocated] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.resourceAllocated]
+          finalRecord.totalForwarded = campaignName[__constants.MESSAGE_STATUS.forwarded] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.forwarded]
+          finalRecord.totalSeen = totalSeen
+          finalRecord.totalDeleted = totalDeleted
+          finalRecord.totalAccepted = campaignName[__constants.MESSAGE_STATUS.accepted] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.accepted]
+          finalRecord.totalFailed = campaignName[__constants.MESSAGE_STATUS.failed] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.failed]
+          finalRecord.totalPending = campaignName[__constants.MESSAGE_STATUS.pending] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.pending]
+          finalRecord.totalRejected = campaignName[__constants.MESSAGE_STATUS.rejected] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.rejected]
+          finalRecord.totalRateLimit = campaignName[__constants.MESSAGE_STATUS.rateLimit] === undefined ? '0' : campaignName[__constants.MESSAGE_STATUS.rateLimit]
+          finalRecord.deliveredMessage = deliveredMessage
+          finalRecord.delivereyPercentage = totalDelivered
+          finalRecord.createdOn = date
+          arrOfCamaignName.push(finalRecord)
         }
       })
     })
     .then(result => {
-      updateCampaignCount(finalRecord)
+      if (arrOfCamaignName.length > 0) updateCampaignCount(arrOfCamaignName)
+      else return statusUpdated.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
       return statusUpdated.resolve(true)
     })
     .catch(err => {

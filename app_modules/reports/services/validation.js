@@ -55,19 +55,7 @@ class validate {
           required: false,
           pattern: __constants.VALIDATOR.number
         }
-      },
-      oneOf: [
-        {
-          required: ['consumerNumber']
-        },
-        {
-          required: ['messageId']
-        },
-        {
-          required: ['status']
-        }
-      ],
-      additionalProperties: false
+      }
     }
     const formatedError = []
     v.addSchema(schema, '/deliveryReport')
@@ -80,10 +68,6 @@ class validate {
       } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
         var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
-      } else if (err.includes('instance is not any of')) {
-        formatedError.push('Please provide atleast one field consumerNumber, messageId', 'status')
-      } else if (err.includes('instance is not exactly one from [subschema 0],[subschema 1]')) {
-        formatedError.push('Please provide either consumerNumber, messageId or status')
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
       }
@@ -213,16 +197,7 @@ class validate {
           required: false,
           pattern: __constants.VALIDATOR.number
         }
-      },
-      oneOf: [
-        {
-          required: ['templateId']
-        },
-        {
-          required: ['templateName']
-        }
-      ],
-      additionalProperties: false
+      }
     }
     const formatedError = []
     v.addSchema(schema, '/templateSummaryReport')
@@ -235,10 +210,6 @@ class validate {
       } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
         var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
-      } else if (err.includes('instance is not any of')) {
-        formatedError.push('Please provide atleast one field templateId, templateName')
-      } else if (err.includes('instance is not exactly one from [subschema 0],[subschema 1]')) {
-        formatedError.push('Please provide either templateId or templateName')
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
       }
@@ -323,11 +294,10 @@ class validate {
       properties: {
         countryName: {
           type: 'array',
-          required: true,
-          minItems: 1,
+          required: false,
           items: {
             type: 'string',
-            minLength: 1,
+            required: false,
             maxLength: 50
           }
         },
@@ -359,7 +329,6 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      console.log('------------------------', formatedErr)
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
