@@ -97,7 +97,10 @@ const ENTITY_NAME = {
   SEGMENT: 'segment',
   MESSAGES: 'messages',
   MESSAGE_STATUS: 'message_status',
-  MESSAGE_STATUS_ERROR: 'message_status_error'
+  MESSAGE_STATUS_ERROR: 'message_status_error',
+  CONEVRSATION_DATA: 'conversation_summary',
+  TEMPLATE_SUMMARRY: 'template_summary'
+
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -569,7 +572,7 @@ const LOG_CONVERSATION_ON_TYPE_MAPPING = {
 }
 const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Messages Sent: ( | Total Conversations Created: ) | From: [ to ]'
 const MIS_SCHEDULER_TIME = '00 30 08 * * *'
-const REPORTS_SCHEDULER_TIME = '* */30 * * * *'
+const REPORTS_SCHEDULER_TIME = '* */5 * * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'

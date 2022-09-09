@@ -435,6 +435,25 @@ class MessgaeHistoryService {
     return addedUpdated.promise
   }
 
+  addUpdateCountsAgainst (updateObject) {
+    __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+    const addedUpdated = q.defer()
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMPLATE_SUMMARRY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
+      .then(data => {
+        __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+        if (data && data.result && data.result.ok > 0) {
+          addedUpdated.resolve(true)
+        } else {
+          addedUpdated.reject({ type: __constants.RESPONSE_MESSAGES.FAILED, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=addUpdateCounts.---->>>>> ', err)
+        addedUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return addedUpdated.promise
+  }
+
   addStatusToMessage (statusData, messageId) {
     __logger.info('inside ~function = addStatusToMessage. Updating status of the message', statusData, messageId)
     const addMessageStatusData = q.defer()
@@ -711,8 +730,29 @@ class MessgaeHistoryService {
 
   getNewTemplateDetailsAgainstAllUser (wabaNumber, currentDate) {
     const getNewTemplateDetailsAgainstAllUser = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date('2022-05-20' + 'T00:00:00.000Z'), $lte: new Date('2222-04-20' + 'T23:59:59.999Z') } } },
+      {
+        $group: {
+          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', day: { $substr: ['$createdOn', 0, 10] }, templateId: '$templateId' },
+          sc: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day', templateId: '$_id.templateId' },
+          total: { $sum: '$sc' },
+          status: {
+            $push: {
+              name: '$_id.currentStatus',
+              count: '$sc'
+            }
+          }
+        }
+      },
+      { $sort: { total: -1 } }])
+    // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
+        console.log('111111111111111111111111111111111111111111', result)
         if (result) {
           return getNewTemplateDetailsAgainstAllUser.resolve(result)
         } else {
@@ -766,17 +806,20 @@ class MessgaeHistoryService {
   }
 
   getTemplateNameAgainstId (templateId) {
+    console.log('ggetTemplateNameAgainstIdet', templateId)
     const getTemplateNameAgainstId = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
       .then(result => {
         if (result) {
+          console.log('ggetTemplateNameAgainstIdet result', result)
           return getTemplateNameAgainstId.resolve(result[0])
         } else {
+          console.log('ggetTemplateNameAgainstIdet result', templateId)
           return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        console.log('000000000000000000000000000000000000000000000000000', err)
+        console.log('getTemplateNameAgainstId error', err)
         return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getTemplateNameAgainstId.promise
@@ -784,8 +827,10 @@ class MessgaeHistoryService {
 
   getconversationDataBasedOnWabaNumber (wabaNumber, previousDateWithTime, currentdateWithTime) {
     const getconversationDataBasedOnWabaNumber = q.defer()
+    console.log('getconversationDataBasedOnWabaNumber', wabaNumber, previousDateWithTime, currentdateWithTime)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', result)
         if (result) {
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
@@ -799,40 +844,59 @@ class MessgaeHistoryService {
     return getconversationDataBasedOnWabaNumber.promise
   }
 
-  insertConversationDataAgainstWaba (data) {
-    console.log('999999999999999999999999999', data)
+  insertConversationDataAgainstWaba (dataIncoming) {
+    console.log('999999999999999999999999999', dataIncoming)
     const insertConversationDataAgainstWaba = q.defer()
-    const wabaNumbers = Object.keys(data)
+    const wabaNumbers = Object.keys(dataIncoming)
     console.log('777777777777777777777777', wabaNumbers)
-    const values = []
+    const dataValue = []
     for (let i = 0; i < wabaNumbers.length; i++) {
-      const country = wabaNumbers[i]
-      const summary = data[country]
-      const wabaNumbers1 = Object.keys(summary)
-      console.log('22222222222222222222222222222222', wabaNumbers1)
-      for (let j = 0; j < wabaNumbers1.length; j++) {
-        const requiredJson = {}
-        const arr = summary[wabaNumbers1[j]]
-        for (let k = 0; k < arr.length; k++) {
-          requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
-        }
-        console.log('$#$%^&*&^%$#@', requiredJson)
-        const wabaNumberData = requiredJson
-        const totalUserInitiated = wabaNumberData.ui || 0
-        const totalBusinessInitiated = wabaNumberData.bi || 0
-        const totalReferralConversion = wabaNumberData.rc || 0
-        const toatalNotApplicable = wabaNumberData.na || 0
-        const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
-        values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
+      const wabanumber = wabaNumbers[i]
+      const data = dataIncoming[wabanumber]
+      const dataInsert = {
+        userInitiated: 0,
+        notApplicable: 0,
+        businessInitiated: 0,
+        referralConversion: 0,
+        totalcount: 0
       }
+      dataInsert.wabaPhoneNumber = wabanumber
+      dataInsert.userInitiated = data.ui || 0
+      dataInsert.businessInitiated = data.bi || 0
+      dataInsert.notApplicable = data.na || 0
+      dataInsert.referralConversion = data.na || 0
+      dataInsert.countryName = data.countryName || null
+      dataInsert.totalcount = dataInsert.userInitiated + dataInsert.businessInitiated + dataInsert.notApplicable + dataInsert.referralConversion || 0
+      dataInsert.createdOn = new Date()
+      dataValue.push(dataInsert)
     }
-    console.log('final11111111111111111111111111', values)
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertConversationDataAgainstWaba(), [values])
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', dataValue)
+    //   const country = wabaNumbers[i]
+    //   const summary = data[country]
+    //   const wabaNumbers1 = Object.keys(summary)
+    //   console.log('22222222222222222222222222222222', wabaNumbers1)
+    //   for (let j = 0; j < wabaNumbers1.length; j++) {
+    //     const requiredJson = {}
+    //     const arr = summary[wabaNumbers1[j]]
+    //     for (let k = 0; k < arr.length; k++) {
+    //       requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
+    //     }
+    //     console.log('$#$%^&*&^%$#@', requiredJson)
+    //     const wabaNumberData = requiredJson
+    //     const totalUserInitiated = wabaNumberData.ui || 0
+    //     const totalBusinessInitiated = wabaNumberData.bi || 0
+    //     const totalReferralConversion = wabaNumberData.rc || 0
+    //     const toatalNotApplicable = wabaNumberData.na || 0
+    //     const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
+    //     values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
+    //   }
+    // }
+    __db.mongo.__insertMany(__constants.DB_NAME, __constants.ENTITY_NAME.CONEVRSATION_DATA, dataValue)
       .then(result => {
         if (result) {
           return insertConversationDataAgainstWaba.resolve(result)
         } else {
-          return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
       })
       .catch(err => {

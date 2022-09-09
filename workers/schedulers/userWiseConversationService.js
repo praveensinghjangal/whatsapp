@@ -1,49 +1,33 @@
 // const q = require('q')
 const __logger = require('../../lib/logger')
 // const __constants = require('../../config/constants')
+// const _ = require('lodash')
 const DbService = require('../../app_modules/message/services/dbData')
-const moment = require('moment')
+// const moment = require('moment')
+// const e = require('connect-timeout')
+
 // const _ = require('lodash')
 // const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 // handle no record for mis data as of now mis stops in case of no data but if there is 0 campagin the opt out data should go
-function groupByMultipleFields (data, ...fields) {
-  if (fields.length === 0) return
-  let newData = {}
-  const [field] = fields
-  newData = groupBySingleField(data, field)
-  const remainingFields = fields.slice(1)
-  if (remainingFields.length > 0) {
-    Object.keys(newData).forEach((key) => {
-      newData[key] = groupByMultipleFields(newData[key], ...remainingFields)
-    })
-  }
-  return newData
-  function groupBySingleField (data, field) {
-    return data.reduce((acc, val) => {
-      const rest = Object.keys(val).reduce((newObj, key) => {
-        if (key !== field) {
-          newObj[key] = val[key]
-        }
-        return newObj
-      }, {})
-      if (acc[val[field]]) {
-        acc[val[field]].push(rest)
-      } else {
-        ;
-        acc[val[field]] = [rest]
-      }
-      return acc
-    }, {})
-  }
-}
+// const bodyCreator = (array) => {
+//   const merged = array.reduce((r, { wabaPhoneNumber, ...rest }) => {
+//     const key = `${wabaPhoneNumber}`
+//     r[key] = r[key] || { wabaPhoneNumber, ui: 0, bi: 0, rc: 0, na: 0 }
+//     r[key][rest.conversationCategory] = rest.conversationCategoryCount
+//     r[key].total = r[key].total ? r[key].total + rest.conversationCategoryCount : rest.conversationCategoryCount
+//    return r
+//   }, {})
+//   const arrayObject = merged
+//   return arrayObject
+// }
 const conversationMisService = () => {
   const dbService = new DbService()
-  const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
-  // const previousDateWithTime = '2022-03-09 00:00:00'
-  // const currentdateWithTime = '2022-03-09 23:59:59'
-  const currentdateWithTime = moment().format('YYYY-MM-DD HH:mm:ss')
+  // const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
+  const previousDateWithTime = '2020-01-01 00:00:00'
+  const currentdateWithTime = '2022-09-09 23:59:59'
+  // const currentdateWithTime = moment().format('YYYY-MM-DD HH:mm:ss')
   let wabaNumber
-  let wabaData
+  const wabaData = {}
   dbService.getActiveBusinessNumber()
     .then((data) => {
       if (data) {
@@ -53,35 +37,35 @@ const conversationMisService = () => {
       }
     })
     .then((data) => {
-      __logger.info('getNewTemplateDetailsAgainstAllUser ~function=getNewTemplateDetailsAgainstAllUser', data)
       if (data) {
-        console.log('0000000000000000000000000000000000000000000', data)
-        data.forEach((value, index) => {
-          if (value.conversationCategory) {
-            wabaData = JSON.stringify(groupByMultipleFields(data, 'messageCountry', 'wabaPhoneNumber'))
-          } else {
-
+        for (let i = 0; i < data.length; i++) {
+          const value = data[i]
+          let finalvalue = 0
+          let countryName1 = 0
+          if (value.conversationCategoryCount) {
+            finalvalue = value.conversationCategoryCount
           }
-        })
-        // for (let i = 0; i < data.length; i++) {
-        //   const value = data[i]
-        //   let finalvalue = 0
-        //   if (value.conversationCategoryCount) {
-        //     finalvalue = value.conversationCategoryCount
-        //   }
-        //   if (!wabaData[value.wabaPhoneNumber]) {
-        //     wabaData[value.wabaPhoneNumber] = {
-        //       [value.conversationCategory]: finalvalue
-        //     }
-        //   } else {
-        //     wabaData[value.wabaPhoneNumber][value.conversationCategory] = finalvalue
-        //   }
+          if (value.messageCountry) {
+            countryName1 = value.messageCountry
+          } else countryName1 = null
+          if (!wabaData[value.wabaPhoneNumber]) {
+            wabaData[value.wabaPhoneNumber] = {
+              [value.conversationCategory]: finalvalue,
+              countryName: countryName1
+            }
+          } else {
+            wabaData[value.wabaPhoneNumber][value.conversationCategory] = finalvalue
+          }
+        }
+        return wabaData
+      } else {
+
       }
     })
     .then(() => {
-      console.log('11111111111111111111111111111111111111111', wabaData)
+      console.log('111111111111111111111111111111100000000000000000000000', wabaData)
       __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
-      return dbService.insertConversationDataAgainstWaba(JSON.parse(wabaData))
+      return dbService.insertConversationDataAgainstWaba(wabaData)
       // return dbService.insertTemplateStatusAgainstWaba(wabaData)
     })
     .then((data) => {
