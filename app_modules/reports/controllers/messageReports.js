@@ -7,6 +7,8 @@ const __logger = require('../../../lib/logger')
 // const __config = require('../../../config')
 // const __db = require('../../../lib/db')
 const MessageReportsServices = require('../services/dbData')
+// const __config = require('../../../config')
+const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 
 /**
  * @memberof -GET-SET-OPTIN-&-Template-Controller-
@@ -176,4 +178,24 @@ const userConversationReport = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport }
+
+const downloadDlr = (req, res) => {
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  validate.downloadDlr(req.query)
+    .then(validateData => {
+      console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
+      validateData.userId = userId
+      validateData.wabaPhoneNumber = wabaPhoneNumber
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ validateData', validateData)
+      return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(validateData))
+    })
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadDlr }

@@ -904,6 +904,78 @@ class MessgaeHistoryService {
       })
     return insertConversationDataAgainstWaba.promise
   }
+
+  getUserStatusCountPerDayAgainstWaba (startDate, endDate, wabaNumber) {
+    console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
+    __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
+    const messageTemplate = q.defer()
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
+      {
+
+        $match: {
+          createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        }
+      },
+      {
+        $group: {
+          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: wabaNumber, day: { $substr: ['$createdOn', 0, 10] } },
+          sc: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day' },
+          total: { $sum: '$sc' },
+          status: {
+            $push: {
+              name: '$_id.currentStatus',
+              count: '$sc'
+            }
+          }
+        }
+      },
+      { $sort: { total: -1 } }
+    ])
+      .then(data => {
+        console.log('getUserStatusCountPerDayAgainstWaba', data)
+        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
+        if (data && data.length > 0) {
+          console.log('getUserStatusCountPerDayAgainstWaba', data)
+          messageTemplate.resolve(data || null)
+        } else {
+          console.log('getUserStatusCountPerDayAgainstWaba nodata')
+          messageTemplate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('getUserStatusCountPerDayAgainstWaba err', err)
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        messageTemplate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return messageTemplate.promise
+  }
+
+  countOfDataAgainstWabaAndUserId (startDate, endDate, wabaNumber) {
+    const countOfDataAgainstWabaAndUserId = q.defer()
+    console.log('countOfDataAgainstWabaAndUserId parameters', startDate, endDate, wabaNumber)
+    __db.mongo.__count(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { wabaPhoneNumber: wabaNumber, createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) } })
+      .then(data => {
+        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
+        if (data > 0) {
+          console.log('countOfDataAgainstWabaAndUserId data', data)
+          countOfDataAgainstWabaAndUserId.resolve({ data: data, count: true })
+        } else {
+          console.log('countOfDataAgainstWabaAndUserId error')
+          countOfDataAgainstWabaAndUserId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('countOfDataAgainstWabaAndUserId error')
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        countOfDataAgainstWabaAndUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return countOfDataAgainstWabaAndUserId.promise
+  }
 }
 
 module.exports = MessgaeHistoryService

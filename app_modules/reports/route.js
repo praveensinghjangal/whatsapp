@@ -7,4 +7,5 @@ router.get('/deliveryreport', internalSessionOrTokenAuth, apiHitsAllowedMiddlewa
 router.get('/templatesummaryreport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').templateSummaryReport)
 router.get('/userSummaryReport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').usserWiseSummaryReport)
 router.post('/userConversationReport', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').userConversationReport)
+router.post('/downloadDlr', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadDlr)
 module.exports = router
