@@ -63,46 +63,46 @@ function getNumberOfTimeToGetData (pullPageSize, datasetSize) {
     }
   }
 }
-const createFiles = (data, pathName, fileName) => {
-  console.log('createFiles  paratemeters', data, pathName, fileName)
-  return new Promise((resolve, reject) => {
-    try {
-      const createFiles = q.defer()
-      __logger.info('writing in filepath', { pathName, dir: fileName })
-      fs.mkdir(pathName, { recursive: true }, async (err) => {
-        if (err) {
-          if (err.code === 'EEXIST') {
-            __logger.info('folder already exist')
-            createFiles.reject()
-          } else {
-            __logger.error('Error in creating directory', { path: pathName, error: err })
-            createFiles.reject('Error in creating directory numbers_csv')
-          }
-        }
-        let rows
-        if (!fs.existsSync(fileName)) {
-          rows = json2csv(data, { header: true })
-        } else {
-          // Rows without headers.
-          // removing header row
-          // data.splice(0,1)
-          rows = json2csv(data, { header: false })
-        }
-        fs.appendFile(fileName, rows, (err) => {
-          if (err) throw new Error('error appending file' + fileName)
-          __logger.debug('FILE DATA Appended SUCCESSFULLY!: ' + pathName + ' , ' + fileName)
-          fs.appendFileSync(fileName, '\r\n')
-          rows = []
-          resolve(true)
-        })
-      })
-    } catch (err) {
-      console.log('createFiles err', err)
-      __logger.error('Error in uploadDataInDB ' + err)
-      reject(err)
-    }
-  })
-}
+// const createFiles = (data, pathName, fileName) => {
+//   console.log('createFiles  paratemeters', data, pathName, fileName)
+//   return new Promise((resolve, reject) => {
+//     try {
+//       const createFiles = q.defer()
+//       __logger.info('writing in filepath', { pathName, dir: fileName })
+//       fs.mkdir(pathName, { recursive: true }, async (err) => {
+//         if (err) {
+//           if (err.code === 'EEXIST') {
+//             __logger.info('folder already exist')
+//             createFiles.reject()
+//           } else {
+//             __logger.error('Error in creating directory', { path: pathName, error: err })
+//             createFiles.reject('Error in creating directory numbers_csv')
+//           }
+//         }
+//         let rows
+//         if (!fs.existsSync(fileName)) {
+//           rows = json2csv(data, { header: true })
+//         } else {
+//           // Rows without headers.
+//           // removing header row
+//           // data.splice(0,1)
+//           rows = json2csv(data, { header: false })
+//         }
+//         fs.appendFile(fileName, rows, (err) => {
+//           if (err) throw new Error('error appending file' + fileName)
+//           __logger.debug('FILE DATA Appended SUCCESSFULLY!: ' + pathName + ' , ' + fileName)
+//           fs.appendFileSync(fileName, '\r\n')
+//           rows = []
+//           resolve(true)
+//         })
+//       })
+//     } catch (err) {
+//       console.log('createFiles err', err)
+//       __logger.error('Error in uploadDataInDB ' + err)
+//       reject(err)
+//     }
+//   })
+// }
 // const createFiles = (data, pathName, fileName) => {
 // //   const createFiles = q.defer()
 // //   const result = json2csv(data, { header: true })
