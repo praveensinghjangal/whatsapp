@@ -324,6 +324,7 @@ const controller = (req, res) => {
             customThree: singleMessage.whatsapp.customThree || null,
             customFour: singleMessage.whatsapp.customFour || null,
             currentStatus: __constants.MESSAGE_STATUS.preProcess,
+            templateId: singleMessage.whatsapp.template.templateId || null,
             currentStatusTime: new Date(),
             createdOn: new Date(),
             status: [
