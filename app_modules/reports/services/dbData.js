@@ -2,12 +2,8 @@ const q = require('q')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const __db = require('../../../lib/db')
-const queryProvider = require('../queryProvider')
 const encrypyDecrypt = require('encrypy-decrypt')
 const mongoConfig = require('../../../config/keysToEncrypt.json')
-// const ValidatonService = require('../services/validation')
-// const UniqueId = require('../../../lib/util/uniqueIdGenerator')
-// const uniqueId = new UniqueId()
 
 class MessageReportsServices {
   getDeliveryReportByMessageId (messageId, startDate, endDate, wabaPhoneNumber, limit, offset) {
@@ -51,7 +47,7 @@ class MessageReportsServices {
   getDeliveryReportByConsumerNumber (consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByConsumerNumber', consumerNumber, startDate, endDate, wabaPhoneNumber, limit, offset)
     var phoneNumber = encrypyDecrypt.encryptKeysInObj({ senderPhoneNumber: consumerNumber }, mongoConfig[__constants.ENTITY_NAME.MESSAGES])
-    const doesDeliveryReportExists = q.defer()
+    const doesDeliveryReportByConsumerNumberExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -75,21 +71,21 @@ class MessageReportsServices {
       .then(result => {
         __logger.info('getDeliveryReportByConsumerNumber query Result', { result })
         if (result && result[0] && result[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(result)
+          doesDeliveryReportByConsumerNumberExists.resolve(result)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesDeliveryReportByConsumerNumberExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getDeliveryReportByConsumerNumber: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesDeliveryReportByConsumerNumberExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesDeliveryReportByConsumerNumberExists.promise
   }
 
   getDeliveryReportByStatus (status, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByCampaignName', status, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
+    const doesDeliveryReportByStatusExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -113,21 +109,21 @@ class MessageReportsServices {
       .then(result => {
         __logger.info('getDeliveryReportByCampaignName query Result', { result })
         if (result && result[0] && result[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(result)
+          doesDeliveryReportByStatusExists.resolve(result)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesDeliveryReportByStatusExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getDeliveryReportByCampaignName: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesDeliveryReportByStatusExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesDeliveryReportByStatusExists.promise
   }
 
   getDeliveryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getDeliveryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
+    const doesDeliveryReportByDateExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -150,21 +146,21 @@ class MessageReportsServices {
       .then(result => {
         __logger.info('getDeliveryReportByDate query Result', { result })
         if (result && result[0] && result[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(result)
+          doesDeliveryReportByDateExists.resolve(result)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesDeliveryReportByDateExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getDeliveryReportByDate: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesDeliveryReportByDateExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesDeliveryReportByDateExists.promise
   }
 
   getCampaignSummaryReportByCampaignName (campaignName, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getCampaignSummaryReportByCampaignName', startDate, endDate, limit, offset, wabaPhoneNumber)
-    const doesDeliveryReportExists = q.defer()
+    const doesCampaignSummaryReportByCampaignNameExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -187,21 +183,21 @@ class MessageReportsServices {
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
       .then(data => {
         if (data && data[0] && data[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(data)
+          doesCampaignSummaryReportByCampaignNameExists.resolve(data)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesCampaignSummaryReportByCampaignNameExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getCampaignSummaryReportByCampaignName: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesCampaignSummaryReportByCampaignNameExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesCampaignSummaryReportByCampaignNameExists.promise
   }
 
   getCampaignSummaryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getCampaignSummaryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
+    const doesCampaignSummaryReportByDateExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -223,21 +219,21 @@ class MessageReportsServices {
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
       .then(data => {
         if (data && data[0] && data[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(data)
+          doesCampaignSummaryReportByDateExists.resolve(data)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesCampaignSummaryReportByDateExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getCampaignSummaryReportByDate: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesCampaignSummaryReportByDateExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesCampaignSummaryReportByDateExists.promise
   }
 
   getTemplateSummaryReportByTemplateName (templateName, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getTemplateSummaryReportByTemplateName', templateName, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
+    const doesTemplateSummaryReportByTemplateNameExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -260,21 +256,21 @@ class MessageReportsServices {
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
         if (data && data[0] && data[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(data)
+          doesTemplateSummaryReportByTemplateNameExists.resolve(data)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesTemplateSummaryReportByTemplateNameExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getTemplateSummaryReportByTemplateName: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesTemplateSummaryReportByTemplateNameExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesTemplateSummaryReportByTemplateNameExists.promise
   }
 
   getTemplateSummaryReportByDate (startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getTemplateSummaryReportByDate', startDate, endDate, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
+    const doesTemplateSummaryReportByDateExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -296,21 +292,21 @@ class MessageReportsServices {
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
         if (data && data[0] && data[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(data)
+          doesTemplateSummaryReportByDateExists.resolve(data)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesTemplateSummaryReportByDateExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getTemplateSummaryReportByDate: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesTemplateSummaryReportByDateExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesTemplateSummaryReportByDateExists.promise
   }
 
   getTemplateSummaryReportByTemplateId (templateId, startDate, endDate, wabaPhoneNumber, limit, offset) {
     __logger.info('inside getTemplateSummaryReportByTemplateId', templateId, wabaPhoneNumber, limit, offset)
-    const doesDeliveryReportExists = q.defer()
+    const doesTemplateSummaryReportByTemplateIdExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -333,77 +329,77 @@ class MessageReportsServices {
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
         if (data && data[0] && data[0].totalCount.length > 0) {
-          doesDeliveryReportExists.resolve(data)
+          doesTemplateSummaryReportByTemplateIdExists.resolve(data)
         } else {
-          return doesDeliveryReportExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesTemplateSummaryReportByTemplateIdExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-        doesDeliveryReportExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesTemplateSummaryReportByTemplateIdExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return doesDeliveryReportExists.promise
+    return doesTemplateSummaryReportByTemplateIdExists.promise
   }
 
-  getusserWiseSummaryCount (wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getusserWiseSummaryCount', wabaPhoneNumber, limit, offset)
-    const getusserWiseSummaryCount = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCount(), [wabaPhoneNumber, limit, offset, wabaPhoneNumber])
-      .then(result => {
-        __logger.info('getusserWiseSummaryCount query Result', { result })
-        if (result && result[0].length > 0) {
-          return getusserWiseSummaryCount.resolve(result)
-        } else {
-          return getusserWiseSummaryCount.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-        getusserWiseSummaryCount.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
-    return getusserWiseSummaryCount.promise
-  }
+  // getUserWiseSummaryCount (wabaPhoneNumber, limit, offset) {
+  //   __logger.info('inside getusserWiseSummaryCount', wabaPhoneNumber, limit, offset)
+  //   const doesUserWiseSummaryCountExists = q.defer()
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCount(), [wabaPhoneNumber, limit, offset, wabaPhoneNumber])
+  //     .then(result => {
+  //       __logger.info('getusserWiseSummaryCount query Result', { result })
+  //       if (result && result[0].length > 0) {
+  //         return doesUserWiseSummaryCountExists.resolve(result)
+  //       } else {
+  //         return doesUserWiseSummaryCountExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+  //       doesUserWiseSummaryCountExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+  //     })
+  //   return doesUserWiseSummaryCountExists.promise
+  // }
 
-  getusserWiseSummaryCountBasedOncountryName (wabaPhoneNumber, countryName, limit, offset) {
-    __logger.info('inside getusserWiseSummaryCountBasedOncountryName', countryName, wabaPhoneNumber, limit, offset)
-    const getusserWiseSummaryCountBasedOncountryName = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOncountryName(), [wabaPhoneNumber, countryName, limit, offset, wabaPhoneNumber, countryName])
-      .then(result => {
-        __logger.info('getusserWiseSummaryCountBasedOncountryName query Result', { result })
-        if (result && result[0].length > 0) {
-          return getusserWiseSummaryCountBasedOncountryName.resolve(result)
-        } else {
-          return getusserWiseSummaryCountBasedOncountryName.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getusserWiseSummaryCountBasedOncountryName: ', err)
-        getusserWiseSummaryCountBasedOncountryName.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
-    return getusserWiseSummaryCountBasedOncountryName.promise
-  }
+  // getUserWiseSummaryCountBasedOncountryName (wabaPhoneNumber, countryName, limit, offset) {
+  //   __logger.info('inside getUserWiseSummaryCountBasedOncountryName', countryName, wabaPhoneNumber, limit, offset)
+  //   const doesUserWiseSummaryCountBasedOncountryNameExists = q.defer()
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getUserWiseSummaryCountBasedOncountryName(), [wabaPhoneNumber, countryName, limit, offset, wabaPhoneNumber, countryName])
+  //     .then(result => {
+  //       __logger.info('getUserWiseSummaryCountBasedOncountryName query Result', { result })
+  //       if (result && result[0].length > 0) {
+  //         return doesUserWiseSummaryCountBasedOncountryNameExists.resolve(result)
+  //       } else {
+  //         return doesUserWiseSummaryCountBasedOncountryNameExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       __logger.error('error in getUserWiseSummaryCountBasedOncountryName: ', err)
+  //       doesUserWiseSummaryCountBasedOncountryNameExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+  //     })
+  //   return doesUserWiseSummaryCountBasedOncountryNameExists.promise
+  // }
 
-  getusserWiseSummaryCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
-    __logger.info('inside getusserWiseSummaryCountBasedOnDate', wabaPhoneNumber, limit, offset, startDate, endDate)
-    const getusserWiseSummaryCountBasedOnDate = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
-      .then(result => {
-        __logger.info('getusserWiseSummaryCount query Result', { result })
-        if (result && result[0].length > 0) {
-          return getusserWiseSummaryCountBasedOnDate.resolve(result)
-        } else {
-          return getusserWiseSummaryCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-        getusserWiseSummaryCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
-    return getusserWiseSummaryCountBasedOnDate.promise
-  }
+  // getusserWiseSummaryCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
+  //   __logger.info('inside getusserWiseSummaryCountBasedOnDate', wabaPhoneNumber, limit, offset, startDate, endDate)
+  //   const getusserWiseSummaryCountBasedOnDate = q.defer()
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getusserWiseSummaryCountBasedOnDate(), [wabaPhoneNumber, startDate, endDate, limit, offset, wabaPhoneNumber, startDate, endDate])
+  //     .then(result => {
+  //       __logger.info('getusserWiseSummaryCount query Result', { result })
+  //       if (result && result[0].length > 0) {
+  //         return getusserWiseSummaryCountBasedOnDate.resolve(result)
+  //       } else {
+  //         return getusserWiseSummaryCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
+  //       getusserWiseSummaryCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+  //     })
+  //   return getusserWiseSummaryCountBasedOnDate.promise
+  // }
 
   getuserConversationReportCountBasedOncountryName (wabaPhoneNumber, countryName, startDate, endDate, limit, offset) {
-    const getuserConversationReportCountBasedOncountryName = q.defer()
+    const doesUserConversationReportCountBasedOncountryNameExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -425,22 +421,22 @@ class MessageReportsServices {
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
       .then(data => {
-        __logger.info('getusserWiseSummaryCount query Result', { data })
+        __logger.info('getuserConversationReportCountBasedOncountryName query Result', { data })
         if (data && data[0] && data[0].totalCount.length > 0) {
-          return getuserConversationReportCountBasedOncountryName.resolve(data)
+          return doesUserConversationReportCountBasedOncountryNameExists.resolve(data)
         } else {
-          return getuserConversationReportCountBasedOncountryName.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesUserConversationReportCountBasedOncountryNameExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
-        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-        getuserConversationReportCountBasedOncountryName.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        __logger.error('error in getuserConversationReportCountBasedOncountryName: ', err)
+        doesUserConversationReportCountBasedOncountryNameExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return getuserConversationReportCountBasedOncountryName.promise
+    return doesUserConversationReportCountBasedOncountryNameExists.promise
   }
 
   getuserConversationReportCountBasedOnDate (wabaPhoneNumber, limit, offset, startDate, endDate) {
-    const getuserConversationReportCountBasedOnDate = q.defer()
+    const doesUserConversationReportCountBasedOnDateExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -461,41 +457,24 @@ class MessageReportsServices {
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
       .then(data => {
-        __logger.info('getusserWiseSummaryCount query Result', { data })
+        __logger.info('getuserConversationReportCountBasedOnDate query Result', { data })
         if (data && data[0] && data[0].totalCount.length > 0) {
-          return getuserConversationReportCountBasedOnDate.resolve(data)
+          return doesUserConversationReportCountBasedOnDateExists.resolve(data)
         } else {
-          return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesUserConversationReportCountBasedOnDateExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
-        __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-        getuserConversationReportCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        __logger.error('error in getuserConversationReportCountBasedOnDate: ', err)
+        doesUserConversationReportCountBasedOnDateExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return getuserConversationReportCountBasedOnDate.promise
+    return doesUserConversationReportCountBasedOnDateExists.promise
   }
 
-  // getuserConversationReportCount (wabaPhoneNumber, limit, offset) {
-  //   const getuserConversationReportCountBasedOnDate = q.defer()
-  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getuserConversationReportCount(), [wabaPhoneNumber, limit, offset, wabaPhoneNumber])
-  //     .then(result => {
-  //       __logger.info('getusserWiseSummaryCount query Result', { result })
-  //       if (result && result[0].length > 0) {
-  //         return getuserConversationReportCountBasedOnDate.resolve(result)
-  //       } else {
-  //         return getuserConversationReportCountBasedOnDate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
-  //       }
-  //     })
-  //     .catch(err => {
-  //       __logger.error('error in getTemplateSummaryReportByTemplateId: ', err)
-  //       getuserConversationReportCountBasedOnDate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-  //     })
-  //   return getuserConversationReportCountBasedOnDate.promise
-  // }
   downloadCampaignSummary (wabaPhoneNumber, startDate, endDate) {
     __logger.info('inside downloadCampaignSummary', startDate, endDate, wabaPhoneNumber)
 
-    const downloadSummary = q.defer()
+    const doesDownloadCampaignSummaryExists = q.defer()
     const pipeline = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -504,7 +483,7 @@ class MessageReportsServices {
     },
     {
       $project: {
-        'campaign Name': '$campaignName',
+        'Campaign Name': '$campaignName',
         'Phone Number': '$wabaPhoneNumber',
         'Total Sent': '$totalSent',
         'Total Inprocess': '$totalInprocess',
@@ -518,7 +497,7 @@ class MessageReportsServices {
         'Total Rejected': '$totalRejected',
         'Total Rate Limit': '$totalRateLimit',
         'Delivered Message': '$deliveredMessage',
-        'Deliverey Percentage': '$delivereyPercentage',
+        'Delivery Percentage': '$delivereyPercentage',
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
       }
     }
@@ -527,22 +506,22 @@ class MessageReportsServices {
       .then(data => {
         __logger.info('downloadCampaignSummary query Result', { })
         if (data && data.length > 0) {
-          return downloadSummary.resolve(data)
+          return doesDownloadCampaignSummaryExists.resolve(data)
         } else {
-          return downloadSummary.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesDownloadCampaignSummaryExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in downloadCampaignSummary: ', err)
-        downloadSummary.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesDownloadCampaignSummaryExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return downloadSummary.promise
+    return doesDownloadCampaignSummaryExists.promise
   }
 
   downloadTemplateSummary (wabaPhoneNumber, startDate, endDate) {
     __logger.info('inside downloadTemplateSummary', startDate, endDate, wabaPhoneNumber)
 
-    const downloadSummary = q.defer()
+    const doesDownloadTemplateSummaryExists = q.defer()
     const pipeline = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -565,7 +544,7 @@ class MessageReportsServices {
         'Total Pending': '$totalMessagePending',
         'Total Rejected': '$totalMessageRejected',
         'Delivered Message': '$totalMessageDelivered',
-        'Deliverey Percentage': '$deliveredPercentage',
+        'Delivery Percentage': '$deliveredPercentage',
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
       }
     }
@@ -574,21 +553,21 @@ class MessageReportsServices {
       .then(data => {
         __logger.info('downloadTemplateSummary query Result', { })
         if (data && data.length > 0) {
-          return downloadSummary.resolve(data)
+          return doesDownloadTemplateSummaryExists.resolve(data)
         } else {
-          return downloadSummary.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesDownloadTemplateSummaryExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in downloadTemplateSummary: ', err)
-        downloadSummary.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesDownloadTemplateSummaryExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return downloadSummary.promise
+    return doesDownloadTemplateSummaryExists.promise
   }
 
   downloadUserConversationSummary (wabaPhoneNumber, startDate, endDate) {
     __logger.info('inside downloadUserConversationSummary', startDate, endDate, wabaPhoneNumber)
-    const downloadSummary = q.defer()
+    const doesDownloadUserConversationSummaryExists = q.defer()
     const pipeline = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
@@ -597,7 +576,7 @@ class MessageReportsServices {
     },
     {
       $project: {
-        'Countru Name': '$countryName',
+        'Country Name': '$countryName',
         'Phone Number': '$wabaPhoneNumber',
         'User Initiated': '$userInitiated',
         'Business Initiated': '$businessInitiated',
@@ -612,16 +591,81 @@ class MessageReportsServices {
       .then(data => {
         __logger.info('downloadUserConversationSummary query Result', { })
         if (data && data.length > 0) {
-          return downloadSummary.resolve(data)
+          return doesDownloadUserConversationSummaryExists.resolve(data)
         } else {
-          return downloadSummary.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          return doesDownloadUserConversationSummaryExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
         __logger.error('error in downloadUserConversationSummary: ', err)
-        downloadSummary.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        doesDownloadUserConversationSummaryExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return downloadSummary.promise
+    return doesDownloadUserConversationSummaryExists.promise
+  }
+
+  getCampaignName () {
+  // const date = moment().format('YYYY-MM-DD')
+    const date = '2022-02-14'
+
+    const promises = q.defer()
+    __logger.info('SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name')
+
+    var findParam = [{
+      $match: {
+        createdOn: { $gte: new Date(`${date}T00:00:00.000`), $lte: new Date(`${date}T23:59:59.999`) }
+      }
+    },
+    {
+      $group: {
+        _id: { currentStatus: '$currentStatus', campaignName: '$customOne', wabaPhoneNumber: '$wabaPhoneNumber' },
+        sc: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', campaignName: '$_id.campaignName' },
+        totalMessageSent: { $sum: '$sc' },
+        status: {
+          $push: {
+            name: '$_id.currentStatus',
+            count: '$sc'
+          }
+        }
+      }
+    },
+    { $sort: { total: -1 } }]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, findParam)
+      .then(result => {
+        if (result && result.length > 0) {
+          return promises.resolve(result)
+        } else {
+          return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
+        }
+      })
+      .catch(err => {
+        __logger.error('SCHEDULER::get campaign cron::get campaign name & total message cron ~getCampaignName  error: ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
+
+  updateCampaignCount (data) {
+    const promises = q.defer()
+    __logger.info('SCHEDULER::updateCampaignCount::Inside scheduler fuction insert campaign records')
+    __db.mongo.__campaignBulkInsert(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, data)
+      .then(result => {
+        if (result && result.ok === 1) {
+          return promises.resolve(result)
+        } else {
+          return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::updateCampaignCount::Inside scheduler fuction insert campaign records' })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        __logger.error('SCHEDULER::update template cron::update template cron ~updateCampaignCount  error: ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
   }
 }
 
