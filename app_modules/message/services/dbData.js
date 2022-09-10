@@ -438,7 +438,7 @@ class MessgaeHistoryService {
   addUpdateCountsAgainst (updateObject) {
     __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
-    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMPLATE_SUMMARRY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
       .then(data => {
         __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
@@ -810,7 +810,7 @@ class MessgaeHistoryService {
     const getTemplateNameAgainstId = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
       .then(result => {
-        if (result) {
+        if (result && result.length) {
           console.log('ggetTemplateNameAgainstIdet result', result)
           return getTemplateNameAgainstId.resolve(result[0])
         } else {
@@ -832,8 +832,10 @@ class MessgaeHistoryService {
       .then(result => {
         console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', result)
         if (result) {
+          console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
+          console.log('111111111111111111111111111111111111111111111111111111111111')
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
@@ -851,7 +853,7 @@ class MessgaeHistoryService {
     console.log('777777777777777777777777', wabaNumbers)
     const dataValue = []
     for (let i = 0; i < wabaNumbers.length; i++) {
-      const wabanumber = wabaNumbers[i]
+      const wabanumber = wabaNumbers[i] || null
       const data = dataIncoming[wabanumber]
       const dataInsert = {
         userInitiated: 0,

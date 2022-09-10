@@ -24,6 +24,7 @@ const rateLimit = (req, res, next) => {
       req.userConfig.tps = 0
       consumekey += '_mss'
     }
+    req.userConfig.tps = 1000
     this.noOfHitsAllowedConfig = new RateLimiterRedis({
       storeClient: redisConnectionObject,
       keyPrefix: 'TPS',

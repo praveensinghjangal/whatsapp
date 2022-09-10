@@ -37,7 +37,7 @@ const conversationMisService = () => {
       }
     })
     .then((data) => {
-      if (data) {
+      if (data && data.length > 0) {
         for (let i = 0; i < data.length; i++) {
           const value = data[i]
           let finalvalue = 0
@@ -59,13 +59,15 @@ const conversationMisService = () => {
         }
         return wabaData
       } else {
-
+        return false
       }
     })
-    .then(() => {
+    .then((data) => {
       console.log('111111111111111111111111111111100000000000000000000000', wabaData)
       __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
-      return dbService.insertConversationDataAgainstWaba(wabaData)
+      if (data) {
+        return dbService.insertConversationDataAgainstWaba(wabaData)
+      }
       // return dbService.insertTemplateStatusAgainstWaba(wabaData)
     })
     .then((data) => {

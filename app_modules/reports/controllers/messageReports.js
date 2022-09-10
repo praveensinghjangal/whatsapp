@@ -185,6 +185,7 @@ const userConversationReport = (req, res) => {
 }
 
 const downloadCampaignSummary = (req, res) => {
+  console.log('123111111111111111111111111111111111111111111111111111111111111111111')
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
@@ -292,7 +293,6 @@ const downloadUserConversationReport = (req, res) => {
     })
 }
 
-module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport }
 const downloadDlr = (req, res) => {
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -312,4 +312,5 @@ const downloadDlr = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadDlr }
+
+module.exports = { downloadDlr, deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport }
