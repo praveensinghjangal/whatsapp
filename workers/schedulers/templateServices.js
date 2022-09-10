@@ -3,7 +3,7 @@ const DbService = require('../../app_modules/message/services/dbData')
 const __constants = require('../../config/constants')
 const q = require('q')
 const qalllib = require('qalllib')
-const tempaletName = require('../../lib/util/getTemplateAgainstId')
+const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateNameAgainstId
 
 // const getTemplateNameAgainstId = (templateId) => {
 //   console.log('9999999999999999999999999999999999999999999999999999999999999999999', templateId)
@@ -95,7 +95,7 @@ const upsertCounts = async singleUserDayStatusData => {
   dataObject.deliveredPercentage = Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2) === 'Infinity' ? '0' : Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2)
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
   console.log('222222222222222222222222222222222222222222222222222222222222222', dataObject)
-  dataObject.templateName = tempaletName(dataObject.templateId)
+  dataObject.templateName = await tempaletName(dataObject.templateId)
   // getTemplateNameAgainstId(dataObject.templateId)
   // dataObject.templateName = data
   // .then((data)=>{
@@ -104,11 +104,15 @@ const upsertCounts = async singleUserDayStatusData => {
   //   return dbService.addUpdateCountsAgainst(dataObject, {})
   // })
   console.log('+++++++++++++++++++++++++++++++++++++++++++', dataObject)
-  dbService.addUpdateCountsAgainst(dataObject, {})
+  dbService.addUpdateCountsAgainst(dataObject)
     .then(upserted => {
+      console.log('upserted ++++++++++++++++++++++++++++++++++++++++++', upserted)
       return dataUpserted.resolve(upserted)
     })
-    .catch((error) => dataUpserted.reject(error))
+    .catch((error) => {
+      console.log('!@#$%^&*()!@#$%^&*(!@#$%^&*(!@#$%^&*()!@#$%^&*(', error)
+      dataUpserted.reject(error)
+    })
   return dataUpserted.promise
 }
 
