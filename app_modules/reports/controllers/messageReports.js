@@ -7,6 +7,11 @@ const __logger = require('../../../lib/logger')
 // const __config = require('../../../config')
 // const __db = require('../../../lib/db')
 const MessageReportsServices = require('../services/dbData')
+// const fastcsv = require('fast-csv')
+const fs = require('fs')
+var uuid4 = require('uuid4')
+const json2csv = require('json2csv').parse
+var rimraf = require('rimraf')
 // const __config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 
@@ -179,6 +184,115 @@ const userConversationReport = (req, res) => {
     })
 }
 
+const downloadCampaignSummary = (req, res) => {
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const messageReportsServices = new MessageReportsServices()
+  const uuid = uuid4()
+  fs.mkdirSync(`public/uploads/${uuid}`)
+  const validate = new ValidatonService()
+  __logger.info('Get download Campaig nSummary date', userId, req.query)
+  validate.downloadSummary(req.query)
+    .then(() => {
+      return messageReportsServices.downloadCampaignSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+    })
+    .then(async (data) => {
+      if (data) {
+        const result = json2csv(data, { header: true })
+        fs.writeFile(`public/uploads/${uuid}/campaignSummary.csv`, result, function (err, data) {
+          if (err) { throw err } else {
+            res.download(`public/uploads/${uuid}/campaignSummary.csv`, (err) => {
+              if (err) throw err
+              // fs.unlinkSync(`public/uploads/${uuid}`)
+              rimraf(`public/uploads/${uuid}`, function () {
+                __logger.debug('delete file for upload folder')
+              })
+            })
+          }
+        })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+      }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+const downloadTemplateSummary = (req, res) => {
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const messageReportsServices = new MessageReportsServices()
+  const uuid = uuid4()
+  fs.mkdirSync(`public/uploads/${uuid}`)
+  const validate = new ValidatonService()
+  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
+  validate.downloadSummary(req.query)
+    .then(() => {
+      return messageReportsServices.downloadTemplateSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+    })
+    .then(async (data) => {
+      if (data) {
+        const result = json2csv(data, { header: true })
+        fs.writeFile(`public/uploads/${uuid}/templateSummary.csv`, result, function (err, data) {
+          if (err) { throw err } else {
+            res.download(`public/uploads/${uuid}/templateSummary.csv`, (err) => {
+              if (err) throw err
+              // fs.unlinkSync(`public/uploads/${uuid}`)
+              rimraf(`public/uploads/${uuid}`, function () {
+                __logger.debug('delete file for upload folder')
+              })
+            })
+          }
+        })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+      }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+const downloadUserConversationReport = (req, res) => {
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const messageReportsServices = new MessageReportsServices()
+  const uuid = uuid4()
+  fs.mkdirSync(`public/uploads/${uuid}`)
+  const validate = new ValidatonService()
+  __logger.info('download User conversation report by date', userId, req.query)
+  validate.downloadSummary(req.query)
+    .then(() => {
+      return messageReportsServices.downloadUserConversationSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+    })
+    .then(async (data) => {
+      if (data) {
+        const result = json2csv(data, { header: true })
+        fs.writeFile(`public/uploads/${uuid}/userConversationSummary.csv`, result, function (err, data) {
+          if (err) { throw err } else {
+            res.download(`public/uploads/${uuid}/userConversationSummary.csv`, (err) => {
+              if (err) throw err
+              // fs.unlinkSync(`public/uploads/${uuid}`)
+              rimraf(`public/uploads/${uuid}`, function () {
+                __logger.debug('delete file for upload folder')
+              })
+            })
+          }
+        })
+      } else {
+        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+      }
+    })
+    .catch(err => {
+      __logger.error('error: ', err)
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport }
 const downloadDlr = (req, res) => {
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'

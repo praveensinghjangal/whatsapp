@@ -111,7 +111,7 @@
     "humanize-plus": "1.8.2",
     "jsdoc": "^3.6.6",
     "jsdoc-http-plugin": "^0.3.2",
-    "json2csv": "^5.0.7",
+    "json2csv": "3.11.2",
     "jsonschema": "1.2.6",
     "jsonwebtoken": "8.5.1",
     "jwt-simple": "0.5.5",
