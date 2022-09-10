@@ -492,6 +492,137 @@ class MessageReportsServices {
   //     })
   //   return getuserConversationReportCountBasedOnDate.promise
   // }
+  downloadCampaignSummary (wabaPhoneNumber, startDate, endDate) {
+    __logger.info('inside downloadCampaignSummary', startDate, endDate, wabaPhoneNumber)
+
+    const downloadSummary = q.defer()
+    const pipeline = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $project: {
+        'campaign Name': '$campaignName',
+        'Phone Number': '$wabaPhoneNumber',
+        'Total Sent': '$totalSent',
+        'Total Inprocess': '$totalInprocess',
+        'Total Resource Allocated': '$totalResourceAllocated',
+        'Total Forwarded': '$totalForwarded',
+        'Total Seen': '$totalSeen',
+        'Total Deleted': '$totalDeleted',
+        'Total Accepted': '$totalAccepted',
+        'Total Failed': '$totalFailed',
+        'Total Pending': '$totalPending',
+        'Total Rejected': '$totalRejected',
+        'Total Rate Limit': '$totalRateLimit',
+        'Delivered Message': '$deliveredMessage',
+        'Deliverey Percentage': '$delivereyPercentage',
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pipeline)
+      .then(data => {
+        __logger.info('downloadCampaignSummary query Result', { })
+        if (data && data.length > 0) {
+          return downloadSummary.resolve(data)
+        } else {
+          return downloadSummary.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in downloadCampaignSummary: ', err)
+        downloadSummary.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return downloadSummary.promise
+  }
+
+  downloadTemplateSummary (wabaPhoneNumber, startDate, endDate) {
+    __logger.info('inside downloadTemplateSummary', startDate, endDate, wabaPhoneNumber)
+
+    const downloadSummary = q.defer()
+    const pipeline = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $project: {
+        'Template id': '$campaignName',
+        'Template Name': '$templateName',
+        'Phone Number': '$wabaPhoneNumber',
+        'Total Sent': '$totalMessageSent',
+        'Total Inprocess': '$totalMessageInProcess',
+        'Total Resource Allocated': '$totalMessageResourceAllocated',
+        'Total Forwarded': '$totalMessageForwarded',
+        'Total Seen': '$totalMessageSeen',
+        'Total Deleted': '$totalMessageDeleted',
+        'Total Accepted': '$totalMessageAccepted',
+        'Total Failed': '$totalMessageFailed',
+        'Total Pending': '$totalMessagePending',
+        'Total Rejected': '$totalMessageRejected',
+        'Delivered Message': '$totalMessageDelivered',
+        'Deliverey Percentage': '$deliveredPercentage',
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pipeline)
+      .then(data => {
+        __logger.info('downloadTemplateSummary query Result', { })
+        if (data && data.length > 0) {
+          return downloadSummary.resolve(data)
+        } else {
+          return downloadSummary.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in downloadTemplateSummary: ', err)
+        downloadSummary.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return downloadSummary.promise
+  }
+
+  downloadUserConversationSummary (wabaPhoneNumber, startDate, endDate) {
+    __logger.info('inside downloadUserConversationSummary', startDate, endDate, wabaPhoneNumber)
+    const downloadSummary = q.defer()
+    const pipeline = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+      }
+    },
+    {
+      $project: {
+        'Countru Name': '$countryName',
+        'Phone Number': '$wabaPhoneNumber',
+        'User Initiated': '$userInitiated',
+        'Business Initiated': '$businessInitiated',
+        'Referral Conversion': '$referralConversion',
+        'Not Applicable': '$notApplicable',
+        'Total Count': '$totalcount',
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pipeline)
+      .then(data => {
+        __logger.info('downloadUserConversationSummary query Result', { })
+        if (data && data.length > 0) {
+          return downloadSummary.resolve(data)
+        } else {
+          return downloadSummary.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in downloadUserConversationSummary: ', err)
+        downloadSummary.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return downloadSummary.promise
+  }
 }
 
 module.exports = MessageReportsServices
