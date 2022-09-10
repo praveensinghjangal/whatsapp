@@ -201,7 +201,6 @@ const downloadCampaignSummary = (req, res) => {
           if (err) { throw err } else {
             res.download(`public/uploads/${uuid}/campaignSummary.csv`, (err) => {
               if (err) throw err
-              // fs.unlinkSync(`public/uploads/${uuid}`)
               rimraf(`public/uploads/${uuid}`, function () {
                 __logger.debug('delete file for upload folder')
               })
@@ -237,7 +236,6 @@ const downloadTemplateSummary = (req, res) => {
           if (err) { throw err } else {
             res.download(`public/uploads/${uuid}/templateSummary.csv`, (err) => {
               if (err) throw err
-              // fs.unlinkSync(`public/uploads/${uuid}`)
               rimraf(`public/uploads/${uuid}`, function () {
                 __logger.debug('delete file for upload folder')
               })
@@ -273,7 +271,6 @@ const downloadUserConversationReport = (req, res) => {
           if (err) { throw err } else {
             res.download(`public/uploads/${uuid}/userConversationSummary.csv`, (err) => {
               if (err) throw err
-              // fs.unlinkSync(`public/uploads/${uuid}`)
               rimraf(`public/uploads/${uuid}`, function () {
                 __logger.debug('delete file for upload folder')
               })
