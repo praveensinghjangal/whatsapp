@@ -3,26 +3,28 @@ const DbService = require('../../app_modules/message/services/dbData')
 const __constants = require('../../config/constants')
 const q = require('q')
 const qalllib = require('qalllib')
-const getTemplateNameAgainstId = (templateId) => {
-  console.log('9999999999999999999999999999999999999999999999999999999999999999999', templateId)
-  const getTemplateNameAgainstId = q.defer()
-  __logger.info('getTemplateNameAgainstId:')
-  const dbService = new DbService()
-  dbService.getTemplateNameAgainstId(templateId)
-    .then(data => {
-      console.log('5555555555555555555555555555555555555555555555555555555')
-      if (data.templateName) {
-        return getTemplateNameAgainstId.resolve(data.templateName)
-      } else {
-        return getTemplateNameAgainstId.resolve(null)
-      }
-    })
-    .catch(err => {
-      __logger.error('Error in getTemplateNameAgainstId :: ', err)
-      return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
-    })
-  return getTemplateNameAgainstId.promise
-}
+const tempaletName = require('../../lib/util/getTemplateAgainstId')
+
+// const getTemplateNameAgainstId = (templateId) => {
+//   console.log('9999999999999999999999999999999999999999999999999999999999999999999', templateId)
+//   const getTemplateNameAgainstId = q.defer()
+//   __logger.info('getTemplateNameAgainstId:')
+//   const dbService = new DbService()
+//   dbService.getTemplateNameAgainstId(templateId)
+//     .then(data => {
+//       console.log('5555555555555555555555555555555555555555555555555555555')
+//       if (data.templateName) {
+//         return getTemplateNameAgainstId.resolve(data.templateName)
+//       } else {
+//         return getTemplateNameAgainstId.resolve(null)
+//       }
+//     })
+//     .catch(err => {
+//       __logger.error('Error in getTemplateNameAgainstId :: ', err)
+//       return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
+//     })
+//   return getTemplateNameAgainstId.promise
+// }
 
 const upsertCounts = async singleUserDayStatusData => {
   const dataUpserted = q.defer()
@@ -93,7 +95,7 @@ const upsertCounts = async singleUserDayStatusData => {
   dataObject.deliveredPercentage = Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2) === 'Infinity' ? '0' : Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2)
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
   console.log('222222222222222222222222222222222222222222222222222222222222222', dataObject)
-  dataObject.templateName = await getTemplateNameAgainstId(dataObject.templateId)
+  dataObject.templateName = tempaletName(dataObject.templateId)
   // getTemplateNameAgainstId(dataObject.templateId)
   // dataObject.templateName = data
   // .then((data)=>{
