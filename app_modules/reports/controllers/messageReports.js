@@ -14,6 +14,7 @@ const json2csv = require('json2csv').parse
 var rimraf = require('rimraf')
 // const __config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
+const DbService = require('../../message/services/dbData')
 
 /**
  * @memberof -GET-SET-OPTIN-&-Template-Controller-
@@ -296,15 +297,22 @@ const downloadUserConversationReport = (req, res) => {
 const downloadDlr = (req, res) => {
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const dbService = new DbService()
+  let sendToQueueData
   // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   validate.downloadDlr(req.query)
     .then(validateData => {
       console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
       validateData.userId = userId
       // validateData.wabaPhoneNumber = wabaPhoneNumber
-      validateData.wabaPhoneNumber = '919222296666'
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ validateData', validateData)
-      return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(validateData))
+      validateData.wabaPhoneNumber = '917666118833'
+      validateData.DownloadStatus = __constants.DOWNLOAD_STATUS.inProcess
+      sendToQueueData = validateData
+
+      return dbService.updateDownloadFileAgainstWabaIdandUserId(validateData)
+    })
+    .then((data) => {
+      return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(sendToQueueData))
     })
     .then(data => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
@@ -314,4 +322,21 @@ const downloadDlr = (req, res) => {
     })
 }
 
-module.exports = { downloadDlr, deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport }
+const getdownloadlist = (req, res) => {
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const dbService = new DbService()
+  // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  validate.getdownloadlist(req.user)
+    .then((data) => {
+      return dbService.getdownloadlist(userId, wabaPhoneNumber)
+    })
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = { downloadDlr, deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport, getdownloadlist }

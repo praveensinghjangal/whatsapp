@@ -11,4 +11,5 @@ router.get('/campaignsummary/download', internalSessionOrTokenAuth, apiHitsAllow
 router.get('/templatesummary/download', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadTemplateSummary)
 router.get('/userConversationReport/download', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadUserConversationReport)
 router.post('/downloadDlr', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadDlr)
+router.get('/getdownloadlist', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').getdownloadlist)
 module.exports = router

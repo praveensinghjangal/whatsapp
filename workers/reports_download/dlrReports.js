@@ -123,6 +123,7 @@ class dlrReportsDownlaod {
             const mqDataReceived = mqData
             const messageData = JSON.parse(mqData.content.toString())
             const dbService = new DbService()
+            let pathName, fileName
             // dbService.getAllUserStatusCountPerDay
             __logger.info('dlr_reports_downloads_queue::received:', { mqData })
             __logger.info('dlr_reports_downloads_queue:: messageData received:', messageData)
@@ -139,14 +140,12 @@ class dlrReportsDownlaod {
                   const numberOfTimes = getNumberOfTimeToGetData(lowLimit, count)
                   for (let i = 0; i < numberOfTimes; i++) {
                     skipPage = i * lowLimit
-                    const pathName = './app_modules/download'
-                    const fileName = `${messageData.startDate}_${messageData.endDate}_${messageData.wabaPhoneNumber}_${messageData.userId}_${Math.floor(i / part)}.csv`
+                    pathName = './app_modules/download'
+                    fileName = `${messageData.startDate}_${messageData.endDate}_${messageData.wabaPhoneNumber}_${messageData.userId}_${Math.floor(i / part)}.csv`
                     const data = await dbService.getUserStatusCountPerDayAgainstWaba(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, skipPage, lowLimit)
-                    // console.log('6666666666666666666666666666666666666666666', dirname)
-                    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@*****************************', data)
                     const result = json2csv(data, { header: true })
                     // await createFiles(data, pathName, fileName)
-                    console.log('1111111111111111111111111111111111111111111111111111111111', `${pathName}/${fileName}`)
+                    // console.log('1111111111111111111111111111111111111111111111111111111111', `${pathName}/${fileName}`)
                     fs.writeFile(`${pathName}/${fileName}`, result, function (err, result) {
                       if (err) {
                         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create', data: {} })
@@ -154,8 +153,13 @@ class dlrReportsDownlaod {
                     })
                   }
                 } else {
-                  return true
+                  __logger.error('error in sending mis ~function=messageStatusOnMail', { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create file messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber', data: {} })
                 }
+              })
+              .then((data) => {
+                // wabaNumber, userId, startDate, endDate, fileName, path
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName)
+                return dbService.updateStatusAgainstWabaAndUser(messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName)
               })
               .then((data) => {
                 __logger.info('getAllUserStatusCountPerDay: data', data)

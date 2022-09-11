@@ -907,7 +907,7 @@ class MessgaeHistoryService {
     return insertConversationDataAgainstWaba.promise
   }
 
-  getUserStatusCountPerDayAgainstWaba (startDate, endDate, wabaNumber) {
+  getUserStatusCountPerDayAgainstWaba (startDate, endDate, wabaNumber, skipPage, lowLimit) {
     console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
     __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
     const getUserStatusCountPerDayAgainstWaba = q.defer()
@@ -937,7 +937,7 @@ class MessgaeHistoryService {
     //   },
     //   { $sort: { total: -1 } }
     // ])
-    // senderPhoneNumber: 1 is unable to encypt
+    // need to add skip and limit in fine
     __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1 })
       .then(data => {
         console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
@@ -978,6 +978,65 @@ class MessgaeHistoryService {
         countOfDataAgainstWabaAndUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return countOfDataAgainstWabaAndUserId.promise
+  }
+
+  updateDownloadFileAgainstWabaIdandUserId (validateData) {
+    const updateDownloadFileAgainstWabaIdandUserId = q.defer()
+    __db.mongo.__insert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, validateData)
+      .then(data => {
+        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
+        if (data && data.insertedCount > 0) {
+          console.log('countOfDataAgainstWabaAndUserId data', data)
+          updateDownloadFileAgainstWabaIdandUserId.resolve(data)
+        } else {
+          console.log('countOfDataAgainstWabaAndUserId error')
+          updateDownloadFileAgainstWabaIdandUserId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('countOfDataAgainstWabaAndUserId error')
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        updateDownloadFileAgainstWabaIdandUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return updateDownloadFileAgainstWabaIdandUserId.promise
+  }
+
+  updateStatusAgainstWabaAndUser (wabaNumber, userId, startDate, endDate, fileName, path) {
+    // messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName
+    const updateStatusAgainstWabaAndUser = q.defer()
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
+      .then(data => {
+        __logger.info('data ~function=updateStatusAgainstWabaAndUser', data)
+        if (data) {
+          console.log('updateStatusAgainstWabaAndUser data', data)
+          updateStatusAgainstWabaAndUser.resolve(data)
+        } else {
+          console.log('updateStatusAgainstWabaAndUser error')
+          updateStatusAgainstWabaAndUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('updateStatusAgainstWabaAndUser error')
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        updateStatusAgainstWabaAndUser.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return updateStatusAgainstWabaAndUser.promise
+  }
+
+  getdownloadlist (userId, wabaPhoneNumber) {
+    const getdownloadlist = q.defer()
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, userId: userId }, { startDate: 1, endDate: 1, DownloadStatus: 1, filename: 1, path: 1 })
+      .then(result => {
+        if (result) {
+          getdownloadlist.resolve(result)
+        } else {
+          getdownloadlist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+        }
+      })
+      .catch(err => {
+        getdownloadlist.reject({ type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
+      })
+    return getdownloadlist.promise
   }
 }
 

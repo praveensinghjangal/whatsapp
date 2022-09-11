@@ -1,12 +1,16 @@
 
 const APP_NAME = 'helowhatsapp'
-const DB_NAME = 'whatsapp1'
+const DB_NAME = 'helowhatsapp'
 const UPDATE_PROFILE_CONFIGURE_DATA = {
   // API_KEY: 'APIKEY@123',
   MAX_TPA_TO_PROVIDER: 15,
   TEMPLATESAllOWED: 2,
   TPS: 10
 
+}
+const DOWNLOAD_STATUS = {
+  inProcess: 'InProcess',
+  completed: 'Completed'
 }
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
@@ -97,6 +101,7 @@ const ENTITY_NAME = {
   SEGMENT: 'segment',
   MESSAGES: 'messages',
   MESSAGE_STATUS: 'message_status',
+  DOWNLOAD_STATUS: 'download_status',
   MESSAGE_STATUS_ERROR: 'message_status_error',
   CAMPAIGNAME_SUMMARY_REPORT: 'campaignname_summary_report',
   CONVERSATION_SUMMARY: 'conversation_summary',
@@ -805,3 +810,4 @@ module.exports.FB_TEMPLATE_REDIS_KEY_FOLDER = FB_TEMPLATE_REDIS_KEY_FOLDER
 module.exports.STREAM_OPTIN_BATCH_SIZE = STREAM_OPTIN_BATCH_SIZE
 module.exports.SEND_OPTIN_BATCH_ACK_IN_SECS = SEND_OPTIN_BATCH_ACK_IN_SECS
 module.exports.REPORTS_SCHEDULER_TIME = REPORTS_SCHEDULER_TIME
+module.exports.DOWNLOAD_STATUS = DOWNLOAD_STATUS

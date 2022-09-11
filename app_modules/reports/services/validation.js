@@ -463,6 +463,53 @@ class validate {
     }
     return isvalid.promise
   }
+
+  getdownloadlist (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getdownloadlist',
+      type: 'object',
+      required: true,
+      properties: {
+        user_id: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        wabaPhoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getdownloadlist')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
 }
 
 module.exports = validate
