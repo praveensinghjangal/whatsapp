@@ -3,11 +3,12 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 const DbService = require('../../app_modules/message/services/dbData')
-const { dirname } = require('path')
+// const { dirname } = require('path')
 const fs = require('fs')
-const q = require('q')
-const fse = require('fs-extra')
+// const q = require('q')
+// const fse = require('fs-extra')
 const json2csv = require('json2csv').parse
+const rejectionHandler = require('../../lib/util/rejectionHandler')
 // const moment = require('moment')
 // const __config = require('../../config')
 // const MessageHistoryService = require('../../app_modules/message/services/dbData')
@@ -16,44 +17,44 @@ const json2csv = require('json2csv').parse
 // const qalllib = require('qalllib')
 
 /// check wether the file is present or not
-const filesPresent = (startDate, endDate, wabaPhoneNumber, userId) => {
-  //   dirname = pwd
-  //    const directoryPath = '/home/shivamsingh/Desktop/Projects/platform-api/download'
-  console.log('33333333333333333333333333333333333333333', startDate, endDate, wabaPhoneNumber, userId)
-  const pathName = (dirname, `../download/${startDate}/${endDate}/${userId}/${wabaPhoneNumber}`)
-  //    path_name = __dirname, `../public/reports/smpp/${system_id}/${year}/${month}/${day}`
-  const filesPresentInPath = q.defer()
-  if (fs.existsSync(pathName)) {
-    console.log('44444444444444444444444444444444444444444')
-    filesPresentInPath.resolve(true)
-  } else {
-    console.log('filesPresent existsSync')
-    filesPresentInPath.resolve(false)
-  }
-  return filesPresentInPath.promise
-}
-const copyFiles = (startDate, endDate, wabaPhoneNumber, userId) => {
-  console.log('6666666666666666666666666666666666666666666 copyFiles', startDate, endDate, wabaPhoneNumber, userId)
-  const filesPresentInPath = q.defer()
-  const srcPath = (dirname, `../download/${startDate}/${endDate}/${userId}/${wabaPhoneNumber}`)
-  const destPath = (dirname, `../download/${startDate}/${endDate}/${userId}/${wabaPhoneNumber}/copy`)
-  fse.copy(srcPath, destPath)
-    .then((data) => {
-      console.log('copyFiles', data)
-      if (data) {
-        console.log('777777777777777777777777777777777777777777777777777', data)
-        filesPresentInPath.resolve(true)
-      } else {
-        console.log('888888888888888888888888888888888888888888')
-        filesPresentInPath.reject(false)
-      }
-    })
-    .catch((error) => {
-      console.log('copyFiles function error', error)
-      filesPresentInPath.reject(error)
-    })
-  return filesPresentInPath.promise
-}
+// const filesPresent = (startDate, endDate, wabaPhoneNumber, userId) => {
+//   //   dirname = pwd
+//   //    const directoryPath = '/home/shivamsingh/Desktop/Projects/platform-api/download'
+//   console.log('33333333333333333333333333333333333333333', startDate, endDate, wabaPhoneNumber, userId)
+//   const pathName = (`/home/shivamsingh/Desktop/Projects/platform-api/app_modules/download/${startDate}/${endDate}/${userId}/${wabaPhoneNumber}`)
+//   //    path_name = __dirname, `../public/reports/smpp/${system_id}/${year}/${month}/${day}`
+//   const filesPresentInPath = q.defer()
+//   if (fs.existsSync(pathName)) {
+//     console.log('44444444444444444444444444444444444444444')
+//     filesPresentInPath.resolve(true)
+//   } else {
+//     console.log('filesPresent existsSync')
+//     filesPresentInPath.resolve(false)
+//   }
+//   return filesPresentInPath.promise
+// }
+// const copyFiles = (startDate, endDate, wabaPhoneNumber, userId) => {
+//   console.log('6666666666666666666666666666666666666666666 copyFiles', startDate, endDate, wabaPhoneNumber, userId)
+//   const filesPresentInPath = q.defer()
+//   const srcPath = (`/home/shivamsingh/Desktop/Projects/platform-api/app_modules/download/${startDate}/${endDate}/${userId}/${wabaPhoneNumber}`)
+//   const destPath = (`/home/shivamsingh/Desktop/Projects/platform-api/app_modules/download/${startDate}/${endDate}/${userId}/${wabaPhoneNumber}/copy`)
+//   fse.copy(srcPath, destPath)
+//     .then((data) => {
+//       console.log('copyFiles', data)
+//       if (data) {
+//         console.log('777777777777777777777777777777777777777777777777777', data)
+//         filesPresentInPath.resolve(true)
+//       } else {
+//         console.log('888888888888888888888888888888888888888888')
+//         filesPresentInPath.reject(false)
+//       }
+//     })
+//     .catch((error) => {
+//       console.log('copyFiles function error', error)
+//       filesPresentInPath.reject(error)
+//     })
+//   return filesPresentInPath.promise
+// }
 function getNumberOfTimeToGetData (pullPageSize, datasetSize) {
   if (datasetSize != null) {
     if (datasetSize >= 0) {
@@ -125,19 +126,7 @@ class dlrReportsDownlaod {
             // dbService.getAllUserStatusCountPerDay
             __logger.info('dlr_reports_downloads_queue::received:', { mqData })
             __logger.info('dlr_reports_downloads_queue:: messageData received:', messageData)
-            console.log('111111111111111111111111', mqDataReceived)
-            console.log('222222222222222222222222', messageData)
-            filesPresent(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
-              .then((presentfile) => {
-                console.log('filesPresent data', presentfile)
-                if (presentfile) {
-                  console.log('5555555555555555555555555555', presentfile)
-                  return copyFiles(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
-                } else {
-                  console.log('99999999999999999999999')
-                  return dbService.countOfDataAgainstWabaAndUserId(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
-                }
-              })
+            dbService.countOfDataAgainstWabaAndUserId(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
               .then(async (data) => {
                 console.log('********************************', data)
                 if (data.count) {
@@ -150,14 +139,19 @@ class dlrReportsDownlaod {
                   const numberOfTimes = getNumberOfTimeToGetData(lowLimit, count)
                   for (let i = 0; i < numberOfTimes; i++) {
                     skipPage = i * lowLimit
-                    const pathName = '/home/shivamsingh/Desktop/Projects/platform-api/app_modules/download'
-                    const fileName = `/part_${messageData.wabaPhoneNumber}_${Math.floor(i / part)}.csv`
+                    const pathName = './app_modules/download'
+                    const fileName = `${messageData.startDate}_${messageData.endDate}_${messageData.wabaPhoneNumber}_${messageData.userId}_${Math.floor(i / part)}.csv`
                     const data = await dbService.getUserStatusCountPerDayAgainstWaba(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, skipPage, lowLimit)
+                    // console.log('6666666666666666666666666666666666666666666', dirname)
+                    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@*****************************', data)
                     const result = json2csv(data, { header: true })
-                    fs.writeFile(`${pathName}/${fileName}.csv`, result, function (err, result) {
-                      if (err) console.log('error', err)
-                    })
                     // await createFiles(data, pathName, fileName)
+                    console.log('1111111111111111111111111111111111111111111111111111111111', `${pathName}/${fileName}`)
+                    fs.writeFile(`${pathName}/${fileName}`, result, function (err, result) {
+                      if (err) {
+                        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create', data: {} })
+                      }
+                    })
                   }
                 } else {
                   return true
@@ -165,10 +159,10 @@ class dlrReportsDownlaod {
               })
               .then((data) => {
                 __logger.info('getAllUserStatusCountPerDay: data', data)
-                console.log('sucesssssssssssssssssssssssssssssssssssssssssssssss', data)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
+                console.log('errorrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err)
                 const telegramErrorMessage = ' ~ facebook error queue consumer::error:'
                 __logger.error('dlr_reports_downloads_queue:::error: ', err)
                 errorToTelegram.send(err, telegramErrorMessage)

@@ -910,51 +910,52 @@ class MessgaeHistoryService {
   getUserStatusCountPerDayAgainstWaba (startDate, endDate, wabaNumber) {
     console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
     __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
-    const messageTemplate = q.defer()
-    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
-      {
-
-        $match: {
-          createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
-        }
-      },
-      {
-        $group: {
-          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: wabaNumber, day: { $substr: ['$createdOn', 0, 10] } },
-          sc: { $sum: 1 }
-        }
-      },
-      {
-        $group: {
-          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day' },
-          total: { $sum: '$sc' },
-          status: {
-            $push: {
-              name: '$_id.currentStatus',
-              count: '$sc'
-            }
-          }
-        }
-      },
-      { $sort: { total: -1 } }
-    ])
+    const getUserStatusCountPerDayAgainstWaba = q.defer()
+    // __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
+    //   {
+    //     $match: {
+    //       createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    //     }
+    //   },
+    //   {
+    //     $group: {
+    //       _id: { currentStatus: '$currentStatus', wabaPhoneNumber: wabaNumber, day: { $substr: ['$createdOn', 0, 10] } },
+    //       sc: { $sum: 1 }
+    //     }
+    //   },
+    //   {
+    //     $group: {
+    //       _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day' },
+    //       total: { $sum: '$sc' },
+    //       status: {
+    //         $push: {
+    //           name: '$_id.currentStatus',
+    //           count: '$sc'
+    //         }
+    //       }
+    //     }
+    //   },
+    //   { $sort: { total: -1 } }
+    // ])
+    // senderPhoneNumber: 1 is unable to encypt
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1 })
       .then(data => {
-        console.log('getUserStatusCountPerDayAgainstWaba', data)
+        console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
         if (data && data.length > 0) {
-          console.log('getUserStatusCountPerDayAgainstWaba', data)
-          messageTemplate.resolve(data || null)
+          console.log('getUserStatusCountPerDayAgainstWaba daaaaaaaaaaaaaaaaaaaaaaaaaataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+          getUserStatusCountPerDayAgainstWaba.resolve(data || null)
         } else {
-          console.log('getUserStatusCountPerDayAgainstWaba nodata')
-          messageTemplate.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+          console.log('getUserStatusCountPerDayAgainstWaba no dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+          getUserStatusCountPerDayAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: ['no data present between this record'] })
         }
       })
       .catch(err => {
         console.log('getUserStatusCountPerDayAgainstWaba err', err)
         __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
-        messageTemplate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        getUserStatusCountPerDayAgainstWaba.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-    return messageTemplate.promise
+    return getUserStatusCountPerDayAgainstWaba.promise
   }
 
   countOfDataAgainstWabaAndUserId (startDate, endDate, wabaNumber) {

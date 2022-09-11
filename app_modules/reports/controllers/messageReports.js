@@ -296,12 +296,13 @@ const downloadUserConversationReport = (req, res) => {
 const downloadDlr = (req, res) => {
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   validate.downloadDlr(req.query)
     .then(validateData => {
       console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
       validateData.userId = userId
-      validateData.wabaPhoneNumber = wabaPhoneNumber
+      // validateData.wabaPhoneNumber = wabaPhoneNumber
+      validateData.wabaPhoneNumber = '919222296666'
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ validateData', validateData)
       return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(validateData))
     })
