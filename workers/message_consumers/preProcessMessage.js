@@ -7,7 +7,7 @@ const q = require('q')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const AudienceService = require('../../app_modules/audience/services/dbData')
-// const integrationService = require('../../app_modules/integration')
+const integrationService = require('../../app_modules/integration')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 const UniqueId = require('../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../lib/util/rejectionHandler')
@@ -158,35 +158,35 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         console.log('11111111111111111111111111111111111111111111111111111111111', toNumbersThatNeedsToBeChecked)
         notVerifiedPhoneNumber.push(...toNumbersThatNeedsToBeChecked)
       }
+      // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
+      // // get all the audiences not present in db's audiences table
+      // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+      //   const toNumber = toNumbersThatNeedsToBeChecked[i]
+      //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
+      //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+      //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+      //   }
+      // }
+      // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
+      // changes  write now
+      const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+      return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
+
+      // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
+
+      // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
+
+      // todo: for numbers already present in db =>  make their status isFacebookVerified to true in our db
+      // todo: for numbers not present in db => create new entries in audiences table
     })
-  // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-  // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
-  // // get all the audiences not present in db's audiences table
-  // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-  //   const toNumber = toNumbersThatNeedsToBeChecked[i]
-  //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
-  //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
-  //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
-  //   }
-  // }
-  // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
-  // changes  write now
-  // const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
-  // return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
-
-  // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
-
-  // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
-
-  // todo: for numbers already present in db =>  make their status isFacebookVerified to true in our db
-  // todo: for numbers not present in db => create new entries in audiences table
     .then((optinData) => {
-      optinData = [
-        {
-          input: '+918169979302',
-          status: 'invalid',
-          wa_id: '918169979302'
-        }]
+      // optinData = [
+      //   {
+      //     input: '+918169979302',
+      //     status: 'invalid',
+      //     wa_id: '918169979302'
+      //   }]
       // optinData = [
       //   {
       //     input: '+917666220077',

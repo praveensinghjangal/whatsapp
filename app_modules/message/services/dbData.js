@@ -728,9 +728,9 @@ class MessgaeHistoryService {
     return checkTableExist.promise
   }
 
-  getNewTemplateDetailsAgainstAllUser (wabaNumber, currentDate) {
+  getNewTemplateDetailsAgainstAllUser (currentDate) {
     const getNewTemplateDetailsAgainstAllUser = q.defer()
-    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date('2022-05-20' + 'T00:00:00.000Z'), $lte: new Date('2222-04-20' + 'T23:59:59.999Z') } } },
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date(currentDate + 'T00:00:00.000Z'), $lte: new Date(currentDate + 'T23:59:59.999Z') } } },
       {
         $group: {
           _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', day: { $substr: ['$createdOn', 0, 10] }, templateId: '$templateId' },

@@ -116,11 +116,11 @@ const upsertCounts = async singleUserDayStatusData => {
   return dataUpserted.promise
 }
 
-const InsertDataIntoSumarryReports = (currentDate) => {
+const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  let wabaNumber
+  // let wabaNumber
   // dbService.getActiveBusinessNumber()
-  dbService.getNewTemplateDetailsAgainstAllUser(wabaNumber, currentDate)
+  dbService.getNewTemplateDetailsAgainstAllUser()
     .then(allUserData => {
       console.log('66666666666666666666666666666666666666666666666666666', allUserData)
       return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, [])

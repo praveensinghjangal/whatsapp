@@ -603,9 +603,9 @@ class MessageReportsServices {
     return doesDownloadUserConversationSummaryExists.promise
   }
 
-  getCampaignName () {
-  // const date = moment().format('YYYY-MM-DD')
-    const date = '2022-02-14'
+  getCampaignName (date) {
+    // const date = moment().format('YYYY-MM-DD')
+    // const date = '2022-02-14'
 
     const promises = q.defer()
     __logger.info('SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name')

@@ -3,7 +3,7 @@ const __logger = require('../../lib/logger')
 // const __constants = require('../../config/constants')
 // const _ = require('lodash')
 const DbService = require('../../app_modules/message/services/dbData')
-// const moment = require('moment')
+const moment = require('moment')
 // const e = require('connect-timeout')
 
 // const _ = require('lodash')
@@ -22,10 +22,10 @@ const DbService = require('../../app_modules/message/services/dbData')
 // }
 const conversationMisService = () => {
   const dbService = new DbService()
-  // const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
-  const previousDateWithTime = '2020-01-01 00:00:00'
-  const currentdateWithTime = '2022-09-09 23:59:59'
-  // const currentdateWithTime = moment().format('YYYY-MM-DD HH:mm:ss')
+  const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
+  // const previousDateWithTime = '2020-01-01 00:00:00'
+  // const currentdateWithTime = '2022-09-09 23:59:59'
+  const currentdateWithTime = moment().format('YYYY-MM-DD 23:59:59')
   let wabaNumber
   const wabaData = {}
   dbService.getActiveBusinessNumber()
