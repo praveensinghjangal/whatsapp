@@ -9,24 +9,6 @@ const MessageReportsServices = require('../../app_modules/reports/services/dbDat
 const createCampaignSummaryReport = () => {
   let campaignName
   const arrOfCamaignName = []
-  const finalRecord = {
-    campaignName: '',
-    wabaPhoneNumber: '',
-    totalSent: '',
-    totalInprocess: '',
-    totalResourceAllocated: '',
-    totalForwarded: '',
-    totalSeen: '',
-    totalDeleted: '',
-    totalAccepted: '',
-    totalFailed: '',
-    totalPending: '',
-    totalRejected: '',
-    totalRateLimit: '',
-    deliveredMessage: '',
-    delivereyPercentage: '',
-    createdOn: ''
-  }
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
   const date = moment().format('YYYY-MM-DD')
@@ -34,6 +16,24 @@ const createCampaignSummaryReport = () => {
     .then(result => {
       result.forEach(element => {
         if ((element._id.campaignName !== null) || (!_.isEmpty(element._id.campaignName))) {
+          const finalRecord = {
+            campaignName: '',
+            wabaPhoneNumber: '',
+            totalSent: '',
+            totalInprocess: '',
+            totalResourceAllocated: '',
+            totalForwarded: '',
+            totalSeen: '',
+            totalDeleted: '',
+            totalAccepted: '',
+            totalFailed: '',
+            totalPending: '',
+            totalRejected: '',
+            totalRateLimit: '',
+            deliveredMessage: '',
+            delivereyPercentage: '',
+            createdOn: ''
+          }
           element.status.forEach(statusCount => {
             element[statusCount.name] = statusCount.count
           })

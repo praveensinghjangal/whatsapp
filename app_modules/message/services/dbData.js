@@ -438,7 +438,7 @@ class MessgaeHistoryService {
   addUpdateCountsAgainst (updateObject) {
     __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
-    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date, templateId: updateObject.templateId }, updateObject)
       .then(data => {
         __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
@@ -846,7 +846,7 @@ class MessgaeHistoryService {
     return getconversationDataBasedOnWabaNumber.promise
   }
 
-  insertConversationDataAgainstWaba (dataIncoming) {
+  insertConversationDataAgainstWaba (dataIncoming, date) {
     console.log('999999999999999999999999999', dataIncoming)
     const insertConversationDataAgainstWaba = q.defer()
     const wabaNumbers = Object.keys(dataIncoming)
@@ -860,6 +860,7 @@ class MessgaeHistoryService {
         notApplicable: 0,
         businessInitiated: 0,
         referralConversion: 0,
+        date: date,
         totalcount: 0
       }
       dataInsert.wabaPhoneNumber = wabanumber
@@ -872,6 +873,7 @@ class MessgaeHistoryService {
       dataInsert.createdOn = new Date()
       dataValue.push(dataInsert)
     }
+
     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', dataValue)
     //   const country = wabaNumbers[i]
     //   const summary = data[country]
@@ -893,7 +895,9 @@ class MessgaeHistoryService {
     //     values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
     //   }
     // }
-    __db.mongo.__insertMany(__constants.DB_NAME, __constants.ENTITY_NAME.CONEVRSATION_DATA, dataValue)
+    // __updateWithInsert
+    // __constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed
+    __db.mongo.__bulkinsertWithBulkUpdate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, dataValue)
       .then(result => {
         if (result) {
           return insertConversationDataAgainstWaba.resolve(result)
@@ -938,7 +942,7 @@ class MessgaeHistoryService {
     //   { $sort: { total: -1 } }
     // ])
     // need to add skip and limit in fine
-    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1 })
+    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1 }, { createdOn: -1 }, skipPage, lowLimit)
       .then(data => {
         console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)

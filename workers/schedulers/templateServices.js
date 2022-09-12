@@ -4,6 +4,7 @@ const __constants = require('../../config/constants')
 const q = require('q')
 const qalllib = require('qalllib')
 const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateNameAgainstId
+const moment = require('moment')
 
 // const getTemplateNameAgainstId = (templateId) => {
 //   console.log('9999999999999999999999999999999999999999999999999999999999999999999', templateId)
@@ -27,12 +28,14 @@ const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateN
 // }
 
 const upsertCounts = async singleUserDayStatusData => {
+  const date = moment().format('YYYY-MM-DD')
   const dataUpserted = q.defer()
   const dbService = new DbService()
   console.log('999999999999999999999999999999999999999999', singleUserDayStatusData)
   const dataObject = {
     wabaPhoneNumber: singleUserDayStatusData._id.wabaPhoneNumber,
-    date: new Date(singleUserDayStatusData._id.day),
+    templateDate: new Date(singleUserDayStatusData._id.day),
+    date: date,
     createdOn: new Date(),
     templateId: singleUserDayStatusData._id.templateId,
     totalMessageSent: 0,

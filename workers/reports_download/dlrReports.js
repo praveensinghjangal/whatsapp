@@ -148,7 +148,7 @@ class dlrReportsDownlaod {
                     // console.log('1111111111111111111111111111111111111111111111111111111111', `${pathName}/${fileName}`)
                     fs.writeFile(`${pathName}/${fileName}`, result, function (err, result) {
                       if (err) {
-                        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create', data: {} })
+                        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create for', data: {} })
                       }
                     })
                   }

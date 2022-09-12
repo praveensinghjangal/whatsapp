@@ -3,6 +3,8 @@ const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const util = require('util')
+const q = require('q')
+// const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // const HttpService = require('../../../lib/http_service')
 // const __config = require('../../../config')
 // const __db = require('../../../lib/db')
@@ -42,7 +44,7 @@ const deliveryReport = (req, res) => {
   const messageReportsServices = new MessageReportsServices()
   validate.deliveryReport(req.query)
     .then(data => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
@@ -73,7 +75,7 @@ const campaignSummaryReport = (req, res) => {
   const messageReportsServices = new MessageReportsServices()
   validate.campaignSummaryReport(req.query)
     .then(data => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
@@ -103,7 +105,7 @@ const templateSummaryReport = (req, res) => {
   const messageReportsServices = new MessageReportsServices()
   validate.templateSummaryReport(req.query)
     .then(data => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
@@ -133,7 +135,7 @@ const usserWiseSummaryReport = (req, res) => {
   let page = ''
   validate.usserWiseSummaryReport(req.query)
     .then(() => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
 
@@ -165,7 +167,7 @@ const userConversationReport = (req, res) => {
   __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
-      limit = req.body.limit ? +req.body.limit : 5
+      limit = req.body.limit ? +req.body.limit : 10
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
       if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
@@ -296,13 +298,13 @@ const downloadUserConversationReport = (req, res) => {
     })
 }
 
-const downloadDlr = (req, res) => {
+const downloadDlrRequest = (req, res) => {
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const dbService = new DbService()
   let sendToQueueData
   // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
-  validate.downloadDlr(req.query)
+  validate.downloadDlrRequest(req.query)
     .then(validateData => {
       console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
       validateData.userId = userId
@@ -317,7 +319,7 @@ const downloadDlr = (req, res) => {
       return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(sendToQueueData))
     })
     .then(data => {
-      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.DOWNLOAD_STATUS.inProcess })
     })
     .catch(err => {
       return __util.send(res, { type: err.type, err: err.err })
@@ -341,4 +343,41 @@ const getdownloadlist = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { downloadDlr, deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport, getdownloadlist }
+const filesPresent = (pathName) => {
+  //   dirname = pwd
+  //    const directoryPath = '/home/shivamsingh/Desktop/Projects/platform-api/download'
+  //    path_name = __dirname, `../public/reports/smpp/${system_id}/${year}/${month}/${day}`
+  const filesPresentInPath = q.defer()
+  if (fs.existsSync(pathName)) {
+    console.log('44444444444444444444444444444444444444444')
+    filesPresentInPath.resolve(true)
+  } else {
+    console.log('filesPresent existsSync')
+    filesPresentInPath.resolve(false)
+  }
+  return filesPresentInPath.promise
+}
+const downloadDlr = (req, res) => {
+  const validate = new ValidatonService()
+  // const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  // const dbService = new DbService()
+  let download
+  validate.downloadDlr(req.query)
+    .then((validate) => {
+      download = `${validate.path}/${validate.fileName}`
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', download)
+      return filesPresent(download)
+    })
+    .then((data) => {
+      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', data)
+      if (data) {
+        return res.download(download)
+      } else {
+        return __util.send({ type: __constants.RESPONSE_MESSAGES.NOT_FOUND, err: 'File Not Found', data: {} })
+      }
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = { downloadDlr, downloadDlrRequest, deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport, getdownloadlist }

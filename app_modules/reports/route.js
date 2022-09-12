@@ -9,6 +9,7 @@ router.post('/userConversationReport', internalSessionOrTokenAuth, apiHitsAllowe
 router.get('/campaignsummary/download', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadCampaignSummary)
 router.get('/templatesummary/download', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadTemplateSummary)
 router.get('/userConversationReport/download', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadUserConversationReport)
-router.post('/downloadDlr', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadDlr)
+router.post('/downloadDlrRequest', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadDlrRequest)
 router.get('/getdownloadlist', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').getdownloadlist)
+router.get('/downloadDlr', internalSessionOrTokenAuth, apiHitsAllowedMiddleware, require('./controllers/messageReports').downloadDlr)
 module.exports = router

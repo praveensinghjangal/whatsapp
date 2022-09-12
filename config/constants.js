@@ -271,7 +271,7 @@ const VALIDATOR = {
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
-  timeStampSummary: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]$',
+  timeStampSummary: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$',
   aplphaNumericWithUnderscore: '^[a-z0-9_]+$',
   fileExtType: /^(jpg|jpeg|png)$/,
   url: /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/,
@@ -579,7 +579,7 @@ const LOG_CONVERSATION_ON_TYPE_MAPPING = {
 }
 const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Messages Sent: ( | Total Conversations Created: ) | From: [ to ]'
 const MIS_SCHEDULER_TIME = '00 30 08 * * *'
-const REPORTS_SCHEDULER_TIME = '* 30 * * * *'
+const REPORTS_SCHEDULER_TIME = '* */2 * * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
