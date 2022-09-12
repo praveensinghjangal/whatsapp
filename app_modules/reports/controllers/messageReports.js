@@ -36,7 +36,7 @@ const deliveryReport = (req, res) => {
   const messageReportsServices = new MessageReportsServices()
   validate.deliveryReport(req.query)
     .then(data => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
@@ -67,7 +67,7 @@ const campaignSummaryReport = (req, res) => {
   const messageReportsServices = new MessageReportsServices()
   validate.campaignSummaryReport(req.query)
     .then(data => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
@@ -97,7 +97,7 @@ const templateSummaryReport = (req, res) => {
   const messageReportsServices = new MessageReportsServices()
   validate.templateSummaryReport(req.query)
     .then(data => {
-      limit = req.query.limit ? +req.query.limit : 5
+      limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
@@ -128,7 +128,7 @@ const userConversationReport = (req, res) => {
   __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
-      limit = req.body.limit ? +req.body.limit : 5
+      limit = req.body.limit ? +req.body.limit : 10
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
       if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)

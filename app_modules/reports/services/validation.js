@@ -65,8 +65,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -134,8 +134,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -207,8 +207,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -332,8 +332,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$""')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -385,8 +385,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
