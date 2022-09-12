@@ -159,11 +159,12 @@ class dlrReportsDownlaod {
               })
               .then((data) => {
                 // wabaNumber, userId, startDate, endDate, fileName, path
-                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName)
-                return dbService.updateStatusAgainstWabaAndUser(messageData.uuid, fileName, pathName)
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
+                return dbService.updateStatusAgainstWabaAndUser(messageData.uniqueId, fileName, pathName)
               })
               .then((data) => {
                 __logger.info('getAllUserStatusCountPerDay: data', data)
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
