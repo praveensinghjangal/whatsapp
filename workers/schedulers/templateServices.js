@@ -70,7 +70,6 @@ const upsertCounts = async singleUserDayStatusData => {
         break
       case __constants.MESSAGE_STATUS.forwarded:
         dataObject.totalMessageForwarded = singleStatus.count
-        dataObject.totalMessageSent = singleStatus.count
         break
       case __constants.MESSAGE_STATUS.deleted:
         dataObject.totalMessageDeleted = singleStatus.count
@@ -95,6 +94,7 @@ const upsertCounts = async singleUserDayStatusData => {
         break
     }
   })
+  dataObject.totalMessageSent = dataObject.total
   dataObject.deliveredPercentage = Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2) === 'Infinity' ? '0' : Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2)
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
   console.log('222222222222222222222222222222222222222222222222222222222222222', dataObject)
@@ -123,7 +123,9 @@ const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
   // let wabaNumber
   // dbService.getActiveBusinessNumber()
-  dbService.getNewTemplateDetailsAgainstAllUser()
+  // const currentDate = '2022-05-25'
+  const currentDate = moment().format('YYYY-MM-DD')
+  dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
     .then(allUserData => {
       console.log('66666666666666666666666666666666666666666666666666666', allUserData)
       return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, [])
