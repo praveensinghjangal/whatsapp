@@ -499,7 +499,7 @@ class MessageReportsServices {
         'Total Pending': '$totalPending',
         'Total Rate Limit': '$totalRateLimit',
         'Delivery Percentage': '$delivereyPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } }
       }
     }
     ]
@@ -531,7 +531,7 @@ class MessageReportsServices {
     },
     {
       $project: {
-        'Template id': '$campaignName',
+        'Template id': '$templateId',
         'Template Name': '$templateName',
         'Phone Number': '$wabaPhoneNumber',
         'Total Sent': '$totalMessageSent',
@@ -547,7 +547,7 @@ class MessageReportsServices {
         'Total Deleted': '$totalMessageDeleted',
         'Total Pending': '$totalMessagePending',
         'Delivery Percentage': '$deliveredPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } }
       }
     }
     ]
