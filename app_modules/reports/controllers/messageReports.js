@@ -125,38 +125,7 @@ const templateSummaryReport = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-const usserWiseSummaryReport = (req, res) => {
-  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
-  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
-  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
-  const messageReportsServices = new MessageReportsServices()
-  const validate = new ValidatonService()
-  let limit = ''
-  let page = ''
-  validate.usserWiseSummaryReport(req.query)
-    .then(() => {
-      limit = req.query.limit ? +req.query.limit : 10
-      page = req.query.page ? +req.query.page : 1
-      const offset = limit * (page - 1)
 
-      if (req.query.countryName) {
-        return messageReportsServices.getusserWiseSummaryCountBasedOncountryName(wabaPhoneNumber, req.query.countryName, limit, offset)
-      } else if (req.query.startDate && req.query.startDate !== undefined && req.query.endDate && req.query.endDate !== undefined) {
-        return messageReportsServices.getusserWiseSummaryCountBasedOnDate(wabaPhoneNumber, limit, offset, req.query.startDate, req.query.endDate)
-      } else {
-        return messageReportsServices.getusserWiseSummaryCount(wabaPhoneNumber, limit, offset)
-      }
-    })
-    .then((data) => {
-      if (data) {
-        // pagination
-        const pagination = { totalPage: Math.ceil(data[1][0].totalCount / limit), totalCount: data[1][0].totalCount, currentPage: page }
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
-      } else {
-        return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
-      }
-    })
-}
 const userConversationReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
@@ -204,7 +173,6 @@ const downloadCampaignSummary = (req, res) => {
     .then((data) => {
       if (data) {
         filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.campaignSummary.csv`
-        console.log('[[[[[[[[[[[[[[[[[[[[[[[[[[[[[', filePath)
         const result = json2csv(data, { header: true })
         return writeFile(filePath, result)
       } else {
@@ -387,4 +355,4 @@ const downloadDlr = (req, res) => {
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
-module.exports = { downloadDlr, downloadDlrRequest, deliveryReport, campaignSummaryReport, templateSummaryReport, usserWiseSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport, getdownloadlist }
+module.exports = { downloadDlr, downloadDlrRequest, deliveryReport, campaignSummaryReport, templateSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport, getdownloadlist }
