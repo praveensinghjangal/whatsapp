@@ -172,7 +172,7 @@ const downloadCampaignSummary = (req, res) => {
     })
     .then((data) => {
       if (data) {
-        filePath = filePath + '/campaignSummary.csv'
+        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.campaignSummary.csv`
         const result = json2csv(data, { header: true })
         return writeFile(filePath, result)
       } else {
@@ -209,7 +209,7 @@ const downloadTemplateSummary = (req, res) => {
     })
     .then(async (data) => {
       if (data) {
-        filePath = filePath + '/templateSummary.csv'
+        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.templateSummary.csv`
         const result = json2csv(data, { header: true })
         return writeFile(filePath, result)
       } else {
@@ -246,7 +246,7 @@ const downloadUserConversationReport = (req, res) => {
     })
     .then(async (data) => {
       if (data) {
-        filePath = filePath + '/userConversationSummary.csv'
+        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.userConversationSummary.csv`
         const result = json2csv(data, { header: true })
         return writeFile(filePath, result)
       } else {
@@ -271,14 +271,20 @@ const downloadDlrRequest = (req, res) => {
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const dbService = new DbService()
+  const uuid = uuid4()
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let sendToQueueData
   // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   validate.downloadDlrRequest(req.query)
     .then(validateData => {
       console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
       validateData.userId = userId
-      // validateData.wabaPhoneNumber = wabaPhoneNumber
-      validateData.wabaPhoneNumber = '917666118833'
+      validateData.wabaPhoneNumber = wabaPhoneNumber
+      const startDate = validateData.startDate.slice(0, 10)
+      const endDate = validateData.endDate.slice(0, 10)
+      // validateData.wabaPhoneNumber = '917666118833'
+      validateData.uniqueId = uuid
+      validateData.filename = `${startDate}_${endDate}_${validateData.wabaPhoneNumber}`
       validateData.DownloadStatus = __constants.DOWNLOAD_STATUS.inProcess
       sendToQueueData = validateData
 
@@ -333,7 +339,7 @@ const downloadDlr = (req, res) => {
   let download
   validate.downloadDlr(req.query)
     .then((validate) => {
-      download = `${validate.path}/${validate.fileName}`
+      download = `${validate.path}/${validate.fileNameInServer}`
       console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', download)
       return filesPresent(download)
     })

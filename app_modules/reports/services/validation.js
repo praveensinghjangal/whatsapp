@@ -523,7 +523,7 @@ class validate {
           required: true,
           minLength: 1
         },
-        fileName: {
+        fileNameInServer: {
           type: 'string',
           required: true,
           minLength: 1

@@ -1005,10 +1005,10 @@ class MessgaeHistoryService {
     return updateDownloadFileAgainstWabaIdandUserId.promise
   }
 
-  updateStatusAgainstWabaAndUser (wabaNumber, userId, startDate, endDate, fileName, path) {
+  updateStatusAgainstWabaAndUser (uuid, fileNameInServer, path) {
     // messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName
     const updateStatusAgainstWabaAndUser = q.defer()
-    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { uniqueId: uuid }, { fileNameInServer: fileNameInServer, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
       .then(data => {
         __logger.info('data ~function=updateStatusAgainstWabaAndUser', data)
         if (data) {
@@ -1029,9 +1029,9 @@ class MessgaeHistoryService {
 
   getdownloadlist (userId, wabaPhoneNumber) {
     const getdownloadlist = q.defer()
-    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, userId: userId }, { startDate: 1, endDate: 1, DownloadStatus: 1, filename: 1, path: 1 })
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, userId: userId }, { startDate: 1, endDate: 1, DownloadStatus: 1, filename: 1, fileNameInServer: 1, path: 1 })
       .then(result => {
-        if (result) {
+        if (result && result.length > 0) {
           getdownloadlist.resolve(result)
         } else {
           getdownloadlist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })

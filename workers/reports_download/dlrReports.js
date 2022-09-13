@@ -127,6 +127,7 @@ class dlrReportsDownlaod {
             // dbService.getAllUserStatusCountPerDay
             __logger.info('dlr_reports_downloads_queue::received:', { mqData })
             __logger.info('dlr_reports_downloads_queue:: messageData received:', messageData)
+            console.log('#######################################################', messageData)
             dbService.countOfDataAgainstWabaAndUserId(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
               .then(async (data) => {
                 console.log('********************************', data)
@@ -141,7 +142,7 @@ class dlrReportsDownlaod {
                   for (let i = 0; i < numberOfTimes; i++) {
                     skipPage = i * lowLimit
                     pathName = './app_modules/download'
-                    fileName = `${messageData.startDate}_${messageData.endDate}_${messageData.wabaPhoneNumber}_${messageData.userId}_${Math.floor(i / part)}.csv`
+                    fileName = `${messageData.filename}_${Math.floor(i / part)}.csv`
                     const data = await dbService.getUserStatusCountPerDayAgainstWaba(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, skipPage, lowLimit)
                     const result = json2csv(data, { header: true })
                     // await createFiles(data, pathName, fileName)
@@ -158,11 +159,12 @@ class dlrReportsDownlaod {
               })
               .then((data) => {
                 // wabaNumber, userId, startDate, endDate, fileName, path
-                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName)
-                return dbService.updateStatusAgainstWabaAndUser(messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName)
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
+                return dbService.updateStatusAgainstWabaAndUser(messageData.uniqueId, fileName, pathName)
               })
               .then((data) => {
                 __logger.info('getAllUserStatusCountPerDay: data', data)
+                console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
