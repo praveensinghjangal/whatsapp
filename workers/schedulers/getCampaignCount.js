@@ -3,7 +3,7 @@ const _ = require('lodash')
 // const __db = require('../../lib/db')
 const __constants = require('../../config/constants')
 const __logger = require('../../lib/logger')
-// const moment = require('moment')
+const moment = require('moment')
 const MessageReportsServices = require('../../app_modules/reports/services/dbData')
 
 const createCampaignSummaryReport = () => {
@@ -11,8 +11,7 @@ const createCampaignSummaryReport = () => {
   const arrOfCamaignName = []
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
-  const date = '2022-05-25'
-  // const date = moment().format('YYYY-MM-DD')
+  const date = moment().format('YYYY-MM-DD')
   messageReportsServices.getCampaignName(date)
     .then(result => {
       result.forEach(element => {
