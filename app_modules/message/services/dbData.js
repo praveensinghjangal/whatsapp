@@ -78,6 +78,7 @@ class MessgaeHistoryService {
     let msgId = ''
     let bnNum = ''
     let ecNum = ''
+    let countryName = ''
     const custom = {}
     let tempDate
     __logger.info('Add message history service called', dataObj)
@@ -96,6 +97,7 @@ class MessgaeHistoryService {
         msgId = dbData.messageId
         bnNum = dbData.businessNumber ? dbData.businessNumber : dataObj.businessNumber
         ecNum = dbData.endConsumerNumber ? dbData.endConsumerNumber : dataObj.endConsumerNumber
+        countryName = dbData.countryName ? dbData.countryName : dataObj.countryName
         const queryParam = []
         custom.customOne = dbData.customOne || dataObj.customOne || null
         custom.customTwo = dbData.customTwo || dataObj.customTwo || null
@@ -103,19 +105,20 @@ class MessgaeHistoryService {
         custom.customFour = dbData.customFour || dataObj.customFour || null
         const messageHistoryData = {
           messageId: msgId,
-          serviceProviderMessageId: dataObj.serviceProviderMessageId,
+          serviceProviderMessageId: dataObj.serviceProviderMessageId || null,
           serviceProviderId: __config.service_provider_id.facebook,
           deliveryChannel: dataObj.deliveryChannel ? dataObj.deliveryChannel : __constants.DELIVERY_CHANNEL.whatsapp,
           statusTime: moment.utc(dataObj.statusTime).format('YYYY-MM-DDTHH:mm:ss'),
           state: dataObj.state,
           endConsumerNumber: ecNum,
+          countryName: countryName,
           businessNumber: bnNum,
           errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]',
           customOne: custom.customOne,
           customTwo: custom.customTwo,
           customThree: custom.customThree,
           customFour: custom.customFour,
-          conversationId: dataObj.conversationId
+          conversationId: dataObj.conversationId || null
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         if (!isSecondAttemp) {
@@ -133,7 +136,9 @@ class MessgaeHistoryService {
         }
         return queryParam
       })
-      .then(queryParamArr => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(dataObj.date || tempDate), queryParamArr))
+      .then(queryParamArr => {
+        return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(dataObj.date || tempDate), queryParamArr)
+      })
       .then(result => {
         __logger.info('Add Result then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -202,6 +207,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
+        __logger.error('error in addMessageHistoryDataInBulk ', err)
         if (err && err.message && typeof err.message === 'string' && err.message.slice(err.message.length - 13) === "doesn't exist") {
           this.retryByCreating(msgInsertData, dataObj, true, mongoBulkObject)
             .then(result => {
@@ -414,6 +420,25 @@ class MessgaeHistoryService {
     __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
     __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
+      .then(data => {
+        __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+        if (data && data.result && data.result.ok > 0) {
+          addedUpdated.resolve(true)
+        } else {
+          addedUpdated.reject({ type: __constants.RESPONSE_MESSAGES.FAILED, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=addUpdateCounts.---->>>>> ', err)
+        addedUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return addedUpdated.promise
+  }
+
+  addUpdateCountsAgainst (updateObject) {
+    __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+    const addedUpdated = q.defer()
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date, templateId: updateObject.templateId }, updateObject)
       .then(data => {
         __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
@@ -703,10 +728,31 @@ class MessgaeHistoryService {
     return checkTableExist.promise
   }
 
-  getNewTemplateDetailsAgainstAllUser (wabaNumber, currentDate) {
+  getNewTemplateDetailsAgainstAllUser (currentDate) {
     const getNewTemplateDetailsAgainstAllUser = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date(currentDate + 'T00:00:00.000Z'), $lte: new Date(currentDate + 'T23:59:59.999Z') } } },
+      {
+        $group: {
+          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', day: { $substr: ['$createdOn', 0, 10] }, templateId: '$templateId' },
+          sc: { $sum: 1 }
+        }
+      },
+      {
+        $group: {
+          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day', templateId: '$_id.templateId' },
+          total: { $sum: '$sc' },
+          status: {
+            $push: {
+              name: '$_id.currentStatus',
+              count: '$sc'
+            }
+          }
+        }
+      },
+      { $sort: { total: -1 } }])
+    // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
+        console.log('111111111111111111111111111111111111111111', result)
         if (result) {
           return getNewTemplateDetailsAgainstAllUser.resolve(result)
         } else {
@@ -760,17 +806,20 @@ class MessgaeHistoryService {
   }
 
   getTemplateNameAgainstId (templateId) {
+    console.log('ggetTemplateNameAgainstIdet', templateId)
     const getTemplateNameAgainstId = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
       .then(result => {
-        if (result) {
+        if (result && result.length) {
+          console.log('ggetTemplateNameAgainstIdet result', result)
           return getTemplateNameAgainstId.resolve(result[0])
         } else {
+          console.log('ggetTemplateNameAgainstIdet result', templateId)
           return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        console.log('000000000000000000000000000000000000000000000000000', err)
+        console.log('getTemplateNameAgainstId error', err)
         return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getTemplateNameAgainstId.promise
@@ -778,11 +827,15 @@ class MessgaeHistoryService {
 
   getconversationDataBasedOnWabaNumber (wabaNumber, previousDateWithTime, currentdateWithTime) {
     const getconversationDataBasedOnWabaNumber = q.defer()
+    console.log('getconversationDataBasedOnWabaNumber', wabaNumber, previousDateWithTime, currentdateWithTime)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', result)
         if (result) {
+          console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
+          console.log('111111111111111111111111111111111111111111111111111111111111')
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
@@ -793,46 +846,201 @@ class MessgaeHistoryService {
     return getconversationDataBasedOnWabaNumber.promise
   }
 
-  insertConversationDataAgainstWaba (data) {
-    console.log('999999999999999999999999999', data)
+  insertConversationDataAgainstWaba (dataIncoming, date) {
+    console.log('999999999999999999999999999', dataIncoming)
     const insertConversationDataAgainstWaba = q.defer()
-    const wabaNumbers = Object.keys(data)
+    const wabaNumbers = Object.keys(dataIncoming)
     console.log('777777777777777777777777', wabaNumbers)
-    const values = []
+    const dataValue = []
     for (let i = 0; i < wabaNumbers.length; i++) {
-      const country = wabaNumbers[i]
-      const summary = data[country]
-      const wabaNumbers1 = Object.keys(summary)
-      console.log('22222222222222222222222222222222', wabaNumbers1)
-      for (let j = 0; j < wabaNumbers1.length; j++) {
-        const requiredJson = {}
-        const arr = summary[wabaNumbers1[j]]
-        for (let k = 0; k < arr.length; k++) {
-          requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
-        }
-        console.log('$#$%^&*&^%$#@', requiredJson)
-        const wabaNumberData = requiredJson
-        const totalUserInitiated = wabaNumberData.ui || 0
-        const totalBusinessInitiated = wabaNumberData.bi || 0
-        const totalReferralConversion = wabaNumberData.rc || 0
-        const toatalNotApplicable = wabaNumberData.na || 0
-        const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
-        values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
+      const wabanumber = wabaNumbers[i] || null
+      const data = dataIncoming[wabanumber]
+      const dataInsert = {
+        userInitiated: 0,
+        notApplicable: 0,
+        businessInitiated: 0,
+        referralConversion: 0,
+        date: date,
+        totalcount: 0
       }
+      dataInsert.wabaPhoneNumber = wabanumber
+      dataInsert.userInitiated = data.ui || 0
+      dataInsert.businessInitiated = data.bi || 0
+      dataInsert.notApplicable = data.na || 0
+      dataInsert.referralConversion = data.na || 0
+      dataInsert.countryName = data.countryName || null
+      dataInsert.totalcount = dataInsert.userInitiated + dataInsert.businessInitiated + dataInsert.notApplicable + dataInsert.referralConversion || 0
+      dataInsert.createdOn = new Date()
+      dataValue.push(dataInsert)
     }
-    console.log('final11111111111111111111111111', values)
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertConversationDataAgainstWaba(), [values])
+
+    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', dataValue)
+    //   const country = wabaNumbers[i]
+    //   const summary = data[country]
+    //   const wabaNumbers1 = Object.keys(summary)
+    //   console.log('22222222222222222222222222222222', wabaNumbers1)
+    //   for (let j = 0; j < wabaNumbers1.length; j++) {
+    //     const requiredJson = {}
+    //     const arr = summary[wabaNumbers1[j]]
+    //     for (let k = 0; k < arr.length; k++) {
+    //       requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
+    //     }
+    //     console.log('$#$%^&*&^%$#@', requiredJson)
+    //     const wabaNumberData = requiredJson
+    //     const totalUserInitiated = wabaNumberData.ui || 0
+    //     const totalBusinessInitiated = wabaNumberData.bi || 0
+    //     const totalReferralConversion = wabaNumberData.rc || 0
+    //     const toatalNotApplicable = wabaNumberData.na || 0
+    //     const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
+    //     values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
+    //   }
+    // }
+    // __updateWithInsert
+    // __constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed
+    __db.mongo.__bulkinsertWithBulkUpdate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, dataValue)
       .then(result => {
         if (result) {
           return insertConversationDataAgainstWaba.resolve(result)
         } else {
-          return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
       })
       .catch(err => {
         return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return insertConversationDataAgainstWaba.promise
+  }
+
+  getUserStatusCountPerDayAgainstWaba (startDate, endDate, wabaNumber, skipPage, lowLimit) {
+    console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
+    __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
+    const getUserStatusCountPerDayAgainstWaba = q.defer()
+    // __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
+    //   {
+    //     $match: {
+    //       createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+    //     }
+    //   },
+    //   {
+    //     $group: {
+    //       _id: { currentStatus: '$currentStatus', wabaPhoneNumber: wabaNumber, day: { $substr: ['$createdOn', 0, 10] } },
+    //       sc: { $sum: 1 }
+    //     }
+    //   },
+    //   {
+    //     $group: {
+    //       _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day' },
+    //       total: { $sum: '$sc' },
+    //       status: {
+    //         $push: {
+    //           name: '$_id.currentStatus',
+    //           count: '$sc'
+    //         }
+    //       }
+    //     }
+    //   },
+    //   { $sort: { total: -1 } }
+    // ])
+    // need to add skip and limit in fine
+    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1 }, { createdOn: -1 }, skipPage, lowLimit)
+      .then(data => {
+        console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
+        if (data && data.length > 0) {
+          console.log('getUserStatusCountPerDayAgainstWaba daaaaaaaaaaaaaaaaaaaaaaaaaataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
+          getUserStatusCountPerDayAgainstWaba.resolve(data || null)
+        } else {
+          console.log('getUserStatusCountPerDayAgainstWaba no dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+          getUserStatusCountPerDayAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: ['no data present between this record'] })
+        }
+      })
+      .catch(err => {
+        console.log('getUserStatusCountPerDayAgainstWaba err', err)
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        getUserStatusCountPerDayAgainstWaba.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return getUserStatusCountPerDayAgainstWaba.promise
+  }
+
+  countOfDataAgainstWabaAndUserId (startDate, endDate, wabaNumber) {
+    const countOfDataAgainstWabaAndUserId = q.defer()
+    console.log('countOfDataAgainstWabaAndUserId parameters', startDate, endDate, wabaNumber)
+    __db.mongo.__count(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { wabaPhoneNumber: wabaNumber, createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) } })
+      .then(data => {
+        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
+        if (data > 0) {
+          console.log('countOfDataAgainstWabaAndUserId data', data)
+          countOfDataAgainstWabaAndUserId.resolve({ data: data, count: true })
+        } else {
+          console.log('countOfDataAgainstWabaAndUserId error')
+          countOfDataAgainstWabaAndUserId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('countOfDataAgainstWabaAndUserId error')
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        countOfDataAgainstWabaAndUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return countOfDataAgainstWabaAndUserId.promise
+  }
+
+  updateDownloadFileAgainstWabaIdandUserId (validateData) {
+    const updateDownloadFileAgainstWabaIdandUserId = q.defer()
+    __db.mongo.__insert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, validateData)
+      .then(data => {
+        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
+        if (data && data.insertedCount > 0) {
+          console.log('countOfDataAgainstWabaAndUserId data', data)
+          updateDownloadFileAgainstWabaIdandUserId.resolve(data)
+        } else {
+          console.log('countOfDataAgainstWabaAndUserId error')
+          updateDownloadFileAgainstWabaIdandUserId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('countOfDataAgainstWabaAndUserId error')
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        updateDownloadFileAgainstWabaIdandUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return updateDownloadFileAgainstWabaIdandUserId.promise
+  }
+
+  updateStatusAgainstWabaAndUser (wabaNumber, userId, startDate, endDate, fileName, path) {
+    // messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName
+    const updateStatusAgainstWabaAndUser = q.defer()
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
+      .then(data => {
+        __logger.info('data ~function=updateStatusAgainstWabaAndUser', data)
+        if (data) {
+          console.log('updateStatusAgainstWabaAndUser data', data)
+          updateStatusAgainstWabaAndUser.resolve(data)
+        } else {
+          console.log('updateStatusAgainstWabaAndUser error')
+          updateStatusAgainstWabaAndUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        console.log('updateStatusAgainstWabaAndUser error')
+        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        updateStatusAgainstWabaAndUser.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return updateStatusAgainstWabaAndUser.promise
+  }
+
+  getdownloadlist (userId, wabaPhoneNumber) {
+    const getdownloadlist = q.defer()
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, userId: userId }, { startDate: 1, endDate: 1, DownloadStatus: 1, filename: 1, path: 1 })
+      .then(result => {
+        if (result) {
+          getdownloadlist.resolve(result)
+        } else {
+          getdownloadlist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
+        }
+      })
+      .catch(err => {
+        getdownloadlist.reject({ type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
+      })
+    return getdownloadlist.promise
   }
 }
 

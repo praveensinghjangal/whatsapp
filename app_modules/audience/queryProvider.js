@@ -82,7 +82,7 @@ const getAudienceTableDataByPhoneNumber = wabaPhoneNumber => {
 }
 
 const getOptinByPhoneNumber = () => {
-  return `select last_message as "lastMessage" ,optin 
+  return `select last_message as "lastMessage" ,optin , isFacebookVerified as "isFacebookVerified"
   from audience aud 
   left join audience_waba_no_mapping awnm  
   on awnm.aud_mapping_id  = aud.waba_phone_number  and awnm.is_active  =true
@@ -186,6 +186,13 @@ const getFacebookVerifiedUser = () => {
   and a.phone_number = ? and awnm.waba_phone_number = ?`
 }
 
+const getFacebookVerifiedUsers = () => {
+  console.log('getFacebookVerifiedUsers')
+  return `select a.phone_number as phoneNumber , a.optin as optin, a.isFacebookVerified, awnm.waba_phone_number as wabaPhoneNumber,a.waba_phone_number as wabaPhoneNumberId from audience a 
+  inner join audience_waba_no_mapping awnm on awnm.aud_mapping_id = a.waba_phone_number where a.is_active = true 
+  and a.phone_number in (?) and awnm.waba_phone_number = ?`
+}
+
 const updateAsFaceBookVerified = () => {
   console.log('updateAsFaceBookVerified')
   return `update audience  
@@ -193,11 +200,32 @@ const updateAsFaceBookVerified = () => {
   where waba_phone_number = ? and phone_number = ?  and is_active = 1`
 }
 
+const updateAudiencesAsFaceBookVerified = () => {
+  console.log('updateAudiencesAsFaceBookVerified')
+  return `update audience  
+  set isFacebookVerified = 1, updated_on = now(),updated_by = ?
+  where waba_phone_number = ? and phone_number in (?)  and is_active = 1`
+}
+
 const addAudienceDataToDb = () => {
   console.log('addAudienceDataToDb')
   return `INSERT INTO audience 
   (audience_id, phone_number, channel, created_by,isFacebookVerified,countryCode,waba_phone_number)
   VALUES(?, ?, ?, ?, ?, ?, ?)`
+}
+
+// const addAudineceToDbInBulk = () => {
+//   console.log('addAudineceToDbInBulk')
+//   return `INSERT INTO audience
+//   (audience_id, phone_number, channel, created_by,isFacebookVerified,countryCode,waba_phone_number)
+//   VALUES(?, ?, ?, ?, ?, ?, ?)`
+// }
+
+const addAudineceToDbInBulk = () => {
+  console.log('addAudineceToDbInBulk')
+  return `INSERT INTO audience 
+  (audience_id, phone_number, channel, created_by,isFacebookVerified,countryCode,waba_phone_number)
+  VALUES ?`
 }
 
 module.exports = {
@@ -222,6 +250,9 @@ module.exports = {
   updateWabaNoMappingData,
   getAllOptOutUser,
   getFacebookVerifiedUser,
+  getFacebookVerifiedUsers,
   updateAsFaceBookVerified,
-  addAudienceDataToDb
+  updateAudiencesAsFaceBookVerified,
+  addAudienceDataToDb,
+  addAudineceToDbInBulk
 }

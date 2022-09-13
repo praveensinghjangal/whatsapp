@@ -6,7 +6,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const _ = require('lodash')
 const getStatusMapping = require('../service/getStatusMapping')
-const AuthService = require('../facebook/authService')
+const AuthService = require('../facebook/authService').Authentication
 const DataMapper = require('./dataMapper')
 
 class InternalFunctions {

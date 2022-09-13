@@ -65,8 +65,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -134,8 +134,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -207,8 +207,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -332,8 +332,8 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$""')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
@@ -385,12 +385,157 @@ class validate {
       if (err.includes('does not match pattern "^[0-9]+$"')) {
         var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid number')
         formatedError.push(regexPatternPreetyPaginationMessage)
-      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9] [0-2][0-9]:[0-9][0-9]Z$"')) {
-        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-ddThh:MM:ss')
+      } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$"')) {
+        var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
         formatedError.push(regexPatternPreetyMessage)
       } else {
         formatedError.push(formatedErr[formatedErr.length - 1])
       }
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  downloadDlrRequest (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/downloadDlrRequest',
+      type: 'object',
+      required: true,
+      properties: {
+        startDate: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.timeStampSummary,
+          minLength: 1
+        },
+        endDate: {
+          type: 'string',
+          required: true,
+          pattern: __constants.VALIDATOR.timeStampSummary,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/downloadDlrRequest')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      if (err.includes('^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]$')) {
+        var regexPatternPreetyPaginationMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date')
+        formatedError.push(regexPatternPreetyPaginationMessage)
+      // } else if (err.includes('does not match pattern "^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$"')) {
+      //   var regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
+      //   formatedError.push(regexPatternPreetyMessage)
+      } else {
+        formatedError.push(formatedErr[formatedErr.length - 1])
+      }
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  getdownloadlist (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/getdownloadlist',
+      type: 'object',
+      required: true,
+      properties: {
+        user_id: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        },
+        wabaPhoneNumber: {
+          type: 'string',
+          required: true,
+          minLength: 1,
+          maxLength: 50
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/getdownloadlist')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+
+      formatedError.push(formatedErr[formatedErr.length - 1])
+    })
+    if (formatedError.length > 0) {
+      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+    } else {
+      if (request.startDate > request.endDate) {
+        formatedError.push('startDate can not be greater than endDate!')
+      }
+      if (formatedError.length > 0) {
+        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
+      } else {
+        trimInput.singleInputTrim(request)
+        request.startDate = decodeURI(request.startDate)
+        request.endDate = decodeURI(request.endDate)
+        isvalid.resolve(request)
+      }
+    }
+    return isvalid.promise
+  }
+
+  downloadDlr (request) {
+    const isvalid = q.defer()
+    const schema = {
+      id: '/downloadDlr',
+      type: 'object',
+      required: true,
+      properties: {
+        path: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        },
+        fileName: {
+          type: 'string',
+          required: true,
+          minLength: 1
+        }
+      }
+    }
+    const formatedError = []
+    v.addSchema(schema, '/downloadDlr')
+    const error = _.map(v.validate(request, schema).errors, 'stack')
+    _.each(error, function (err) {
+      const formatedErr = err.split('.')
+      formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })

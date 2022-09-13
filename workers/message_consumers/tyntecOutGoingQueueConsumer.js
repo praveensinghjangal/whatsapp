@@ -7,7 +7,7 @@ const moment = require('moment')
 const __config = require('../../config')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
-
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMessageId) => {
   const statusSent = q.defer()
   const messageHistoryService = new MessageHistoryService()
@@ -20,6 +20,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.forwarded,
     endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,

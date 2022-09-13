@@ -286,6 +286,13 @@
                                         "from": "911234567890",
                                         "interactive": {
                                             "type": "list",
+                                            "header":{
+                                                "type":"text",
+                                                "text":"This is header"
+                                            },
+                                             "footer":{
+                                                "text":"This is footer"
+                                            },
                                             "body": {
                                                 "text": "Please select from the below services"
                                             },
@@ -630,6 +637,13 @@
                                         "from": "911234567890",
                                         "interactive": {
                                             "type": "list",
+                                            "header":{
+                                                "type":"text",
+                                                "text":"This is header"
+                                            },
+                                             "footer":{
+                                                "text":"This is footer"
+                                            },
                                             "body": {
                                                 "text": "Please select from the below services"
                                             },

@@ -6,7 +6,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const DataMapper = require('./dataMapper')
 const urlValidator = require('../../../lib/util/url')
-const AuthService = require('../facebook/authService')
+const AuthService = require('../facebook/authService').Authentication
 class WabaAccount {
   constructor (maxConcurrent, userId) {
     this.userId = userId
@@ -162,7 +162,9 @@ class WabaAccount {
           return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: defaultAccountUpdated.statusCode, data: {} })
         }
       })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        return deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   }
 

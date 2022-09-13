@@ -5,7 +5,7 @@ const __constants = require('../../config/constants')
 const __db = require('../../lib/db')
 const integrationService = require('../../app_modules/integration')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
-
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 const sendToErrorQueue = (message, queueObj) => {
   const messageRouted = q.defer()
   queueObj.sendToQueue(__constants.MQ.mockSendmessageError, JSON.stringify(message))
@@ -49,6 +49,7 @@ class MessageConsumer {
                   statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
                   state: __constants.MESSAGE_STATUS.seen,
                   endConsumerNumber: messageData.payload.to,
+                  countryName: phoneCodeAndPhoneSeprator(messageData.payload.to).countryName,
                   businessNumber: messageData.payload.whatsapp.from
                 }
                 return messageHistoryService.addMessageHistoryDataService(statusData)

@@ -3,37 +3,37 @@ const _ = require('lodash')
 // const __db = require('../../lib/db')
 const __constants = require('../../config/constants')
 const __logger = require('../../lib/logger')
-// const moment = require('moment')
+const moment = require('moment')
 const MessageReportsServices = require('../../app_modules/reports/services/dbData')
 
 const createCampaignSummaryReport = () => {
   let campaignName
   const arrOfCamaignName = []
-
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
-  messageReportsServices.getCampaignName()
+  const date = moment().format('YYYY-MM-DD')
+  messageReportsServices.getCampaignName(date)
     .then(result => {
       result.forEach(element => {
-        const finalRecord = {
-          campaignName: '',
-          wabaPhoneNumber: '',
-          totalSent: '',
-          totalInprocess: '',
-          totalResourceAllocated: '',
-          totalForwarded: '',
-          totalSeen: '',
-          totalDeleted: '',
-          totalAccepted: '',
-          totalFailed: '',
-          totalPending: '',
-          totalRejected: '',
-          totalRateLimit: '',
-          deliveredMessage: '',
-          delivereyPercentage: '',
-          createdOn: ''
-        }
         if ((element._id.campaignName !== null) || (!_.isEmpty(element._id.campaignName))) {
+          const finalRecord = {
+            campaignName: '',
+            wabaPhoneNumber: '',
+            totalSent: '',
+            totalInprocess: '',
+            totalResourceAllocated: '',
+            totalForwarded: '',
+            totalSeen: '',
+            totalDeleted: '',
+            totalAccepted: '',
+            totalFailed: '',
+            totalPending: '',
+            totalRejected: '',
+            totalRateLimit: '',
+            deliveredMessage: '',
+            delivereyPercentage: '',
+            createdOn: ''
+          }
           element.status.forEach(statusCount => {
             element[statusCount.name] = statusCount.count
           })

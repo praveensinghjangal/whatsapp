@@ -8,6 +8,7 @@ if (process.env.NODE_ENV === 'development') require('dotenv').config({ path: pro
 
 const SERVER_SCRIPTS = {
   http_api: './workers/http_api.js',
+  preProcessQueueConsumer: './workers/message_consumers/preProcessMessage.js',
   processQueueConsumer: './workers/message_consumers/processMessage.js',
   mockQueueConsumer: './workers/message_consumers/mockQueueConsumer.js',
   tyntecOutGoingQueueConsumer: './workers/message_consumers/tyntecOutGoingQueueConsumer.js',
@@ -28,7 +29,16 @@ const SERVER_SCRIPTS = {
   campaignReports: './workers/schedulers/campaignReports.js',
   userWiseCoversationReports: './workers/schedulers/userWiseCoversationReports.js',
   audienceWebhook: './workers/message_consumers/audienceWebhook.js',
-  sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js'
+  demoWorker: './workers/embedded_signup_consumers/dummy_consumer.js',
+  wabaSetUpConsumer: './workers/embedded_signup_consumers/wabaSetUpConsumer.js',
+  bussinessDetailsConsumer: './workers/embedded_signup_consumers/bussinessDetailsConsumer.js',
+  spawningContainerConsumer: './workers/embedded_signup_consumers/spawningContainerConsumer.js',
+  wabaContainerBindingConsumer: './workers/embedded_signup_consumers/wabaContainerBindingConsumer.js',
+  embeddedSingupErrorConsumer: './workers/embedded_signup_consumers/embeddedSingupErrorConsumer.js',
+  twoFaConsumer: './workers/embedded_signup_consumers/twoFaConsumer.js',
+  sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js',
+  facebookErrorQueuesConsumer: './workers/message_consumers/facebookErrorConsumer.js',
+  reportsDownloadConsumer: './workers/reports_download/dlrReports.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

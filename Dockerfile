@@ -8,6 +8,10 @@ WORKDIR /app
 
 RUN apk add git
 
+RUN apk add bash
+
+RUN apk add nano
+
 RUN apk add --no-cache \
         python3 \
         py3-pip \
@@ -20,7 +24,13 @@ RUN aws --version
 
 RUN aws configure set default.region ap-south-1
 
+RUN aws configure set default.access_key AKIA43QVLSQFUWV5NKO2
+
+RUN aws configure set default.secret_key 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
+
 RUN apk add openssh
+
+RUN apk add nano
 
 RUN npm install --production
 

@@ -5,6 +5,7 @@
   "version": "0.2.0",
   "configurations": [
 
+
     {
       "command": "npm run develop",
       "name": "Run npm run develop",
@@ -12,8 +13,38 @@
       "type": "node-terminal"
     },
     {
-      "command": "npm run develop-s-userWiseReports",
-      "name": "Run npm run develop-s-userWiseReports",
+      "command": "npm run develop-reportsDownloadConsumer",
+      "name": "npm run develop-reportsDownloadConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-preProcessQueueConsumerGeneral",
+      "name": "Run npm run develop-preProcessQueueConsumerGeneral",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-wabaSetUpConsumer",
+      "name": "Run npm run develop-wabaSetUpConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-wabaSetUpConsumer",
+      "name": "Run npm run develop-wabaSetUpConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-facebookErrorQueuesConsumer",
+      "name": "Run npm run develop-facebookErrorQueuesConsumer",
+      "request": "launch",
+      "type": "node-terminal"
+    },
+    {
+      "command": "npm run develop-embeddedSingupErrorConsumer",
+      "name": "Run npm run develop-embeddedSingupErrorConsumer",
       "request": "launch",
       "type": "node-terminal"
     },

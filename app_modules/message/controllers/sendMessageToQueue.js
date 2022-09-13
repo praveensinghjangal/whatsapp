@@ -97,7 +97,7 @@ const saveAndSendMessageStatus = (payload) => {
     messageId: payload.messageId,
     deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
-    state: __constants.MESSAGE_STATUS.inProcess,
+    state: __constants.MESSAGE_STATUS.preProcess,
     from: payload.to,
     to: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
@@ -128,16 +128,22 @@ const checkIfNoExists = (number) => {
 const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   const messageSent = q.defer()
   data.authToken = headers.authorization
+  data.vivaReqId = headers.vivaReqId
   const queueData = {
     config: config.provider_config[providerId],
     payload: data
   }
   queueData.config.userId = userId
   queueData.config.maxTpsToProvider = maxTpsToProvider
-  const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
-  rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.process_message, JSON.stringify(queueData), planPriority)
-    .then(queueResponse => saveAndSendMessageStatus(data))
-    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour }))
+  // const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
+  // let queueObj = __constants.MQ.process_message
+  // if (data && data.isCampaign) {
+  //   queueObj = __constants.MQ.process_message_campaign
+  // }
+  // rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
+  //   .then(queueResponse =>
+  saveAndSendMessageStatus(data)
+    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, queueData }))
     .catch(err => {
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
       errorToTelegram.send(err, telegramErrorMessage)
@@ -206,6 +212,25 @@ const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
   return sendSingleMessage.promise
 }
 
+const getTemplateCategory = (wabaPhoneNumber, templateId) => {
+  const messageSent = q.defer()
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
+    .then((data) => {
+      console.log('insisisisisisdeeeee data', data)
+      if (data.length > 0) {
+        messageSent.resolve({ categoryId: data[0].message_template_category_id })
+      } else {
+        messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
+      }
+    })
+    .catch((err) => {
+      console.log('errorrrrr', err)
+      messageSent.reject(err)
+    })
+
+  return messageSent.promise
+}
+
 /**
  * @memberof -WhatsApp-Message-Controller-SendMessage-
  * @name SendMessageInQueue
@@ -222,11 +247,14 @@ const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
  */
 
 const controller = (req, res) => {
-  __logger.info('sendMessageToQueue :: API to send message called')
+  __logger.info('sendMessageToQueue :: API to send message called', req.body)
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
+  let sendToQueueRes
+  let finalObjToBeSent
   let userRedisData
+  let templateCategory = ''
   // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
@@ -237,7 +265,35 @@ const controller = (req, res) => {
   }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
   validate.sendMessageToQueue(req.body)
-    .then(data => checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null))
+    .then(data => {
+      if (data && data[0] && !data[0].isCampaign && !data[0].isChatBot && data[0].whatsapp && data[0].whatsapp.contentType === 'template') {
+        // all templates have same templateId => already validated above
+        // it shoud neither be isCampaign nor isChatBot
+        // check the category of the template
+        return getTemplateCategory(data[0].whatsapp.from, data[0].whatsapp.template.templateId)
+      }
+      return true
+    })
+    .then(data => {
+      if (data && data.categoryId) {
+        // data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b' // promotional
+        // message is a template
+        switch (data.categoryId) {
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.OTP:
+            templateCategory = 'category_otp'
+            break
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.TRANSACTIONAL:
+            templateCategory = 'category_transactional'
+            break
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.PROMOTIONAL:
+            templateCategory = 'category_promotional'
+            break
+          default:
+            templateCategory = 'general'
+        }
+      }
+      return checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null)
+    })
     .then(data => {
       userRedisData = data
       return getBulkTemplates(req.body, req.user.wabaPhoneNumber)
@@ -254,26 +310,27 @@ const controller = (req, res) => {
         const msgInsertData = []
         const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
-          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,
             serviceProviderMessageId: null,
             serviceProviderId: req.user.providerId,
             deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
             senderPhoneNumber: singleMessage.to,
-            countryOfPhoneNumber: phoneCodeAndPhoneSeprator(singleMessage.to).countryName,
+            countryName: phoneCodeAndPhoneSeprator(singleMessage.to).countryName,
             wabaPhoneNumber: singleMessage.whatsapp.from,
             customOne: singleMessage.whatsapp.customOne || null,
             customTwo: singleMessage.whatsapp.customTwo || null,
             customThree: singleMessage.whatsapp.customThree || null,
             customFour: singleMessage.whatsapp.customFour || null,
-            currentStatus: __constants.MESSAGE_STATUS.inProcess,
+            currentStatus: __constants.MESSAGE_STATUS.preProcess,
+            templateId: singleMessage.whatsapp.template.templateId || null,
             currentStatusTime: new Date(),
             createdOn: new Date(),
             status: [
               {
                 senderPhoneNumber: singleMessage.to,
-                eventType: __constants.MESSAGE_STATUS.inProcess,
+                eventType: __constants.MESSAGE_STATUS.preProcess,
                 eventId: uniqueId.uuid(),
                 messageId: singleMessage.messageId,
                 sendTime: new Date()
@@ -285,15 +342,52 @@ const controller = (req, res) => {
       }
     })
     .then(msgAdded => {
+      // this is need to remove it
       if (!msgAdded) return []
+      // this is only update status not in queue
+      // note change the name
       return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
     })
-    .then(sendToQueueRes => {
+    .then(res => {
+      sendToQueueRes = res
       console.log('=================== final final LAst final')
       __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
+        return false
+      } else {
+        finalObjToBeSent = {
+          config: sendToQueueRes[0].queueData.config
+        }
+        const payloadArray = []
+        sendToQueueRes = sendToQueueRes.map(resData => {
+          payloadArray.push(resData.queueData.payload)
+          delete resData.queueData
+          return resData
+        })
+        finalObjToBeSent.payload = payloadArray
+        const planPriority = payloadArray && payloadArray[0] && payloadArray[0].redisData.planPriority ? payloadArray[0].redisData.planPriority : null
+        // let queueObj = __constants.MQ.pre_process_message
+        let queueObj = __constants.MQ.pre_process_message_general
+        if (payloadArray[0] && payloadArray[0].isCampaign) {
+          queueObj = require('../../../lib/util/rabbitmqHelper')('pre_process_message_campaign', req.user.user_id, payloadArray[0].whatsapp.from)
+          // queueObj = __constants.MQ.pre_process_message_campaign
+        } else if (payloadArray[0] && payloadArray[0].isChatBot) {
+          queueObj = __constants.MQ.pre_process_message_chatbot
+        } else {
+          if (!templateCategory) {
+            templateCategory = 'general'
+          }
+          queueObj = __constants.MQ[`pre_process_message_${templateCategory}`]
+        }
+        return rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(finalObjToBeSent), planPriority)
+      }
+    })
+    .then(data => {
+      if (data === false) {
+        // data is false
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
       } else {
+        // success
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes, ...rejected] })
       }
     })

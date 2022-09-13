@@ -3,6 +3,11 @@ const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const util = require('util')
+const q = require('q')
+// const rejectionHandler = require('../../../lib/util/rejectionHandler')
+// const HttpService = require('../../../lib/http_service')
+// const __config = require('../../../config')
+// const __db = require('../../../lib/db')
 const MessageReportsServices = require('../services/dbData')
 var rimraf = require('rimraf')
 const fs = require('fs')
@@ -10,6 +15,9 @@ const writeFile = util.promisify(fs.writeFile)
 const rimRaf = util.promisify(rimraf)
 var uuid4 = require('uuid4')
 const json2csv = require('json2csv').parse
+// const __config = require('../../../config')
+const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
+const DbService = require('../../message/services/dbData')
 
 /**
  * @memberof -GET-SET-OPTIN-&-Template-Controller-
@@ -255,9 +263,90 @@ const downloadUserConversationReport = (req, res) => {
       return __logger.debug('delete userConversationSummary file for createdFileCSV folder')
     })
     .catch(err => {
-      __logger.error('error: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
-module.exports = { deliveryReport, campaignSummaryReport, templateSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport }
+const downloadDlrRequest = (req, res) => {
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const dbService = new DbService()
+  let sendToQueueData
+  // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  validate.downloadDlrRequest(req.query)
+    .then(validateData => {
+      console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
+      validateData.userId = userId
+      // validateData.wabaPhoneNumber = wabaPhoneNumber
+      validateData.wabaPhoneNumber = '917666118833'
+      validateData.DownloadStatus = __constants.DOWNLOAD_STATUS.inProcess
+      sendToQueueData = validateData
+
+      return dbService.updateDownloadFileAgainstWabaIdandUserId(validateData)
+    })
+    .then((data) => {
+      return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(sendToQueueData))
+    })
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.DOWNLOAD_STATUS.inProcess })
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+
+const getdownloadlist = (req, res) => {
+  const validate = new ValidatonService()
+  const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  const dbService = new DbService()
+  // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+  validate.getdownloadlist(req.user)
+    .then((data) => {
+      return dbService.getdownloadlist(userId, wabaPhoneNumber)
+    })
+    .then(data => {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: data })
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+const filesPresent = (pathName) => {
+  //   dirname = pwd
+  //    const directoryPath = '/home/shivamsingh/Desktop/Projects/platform-api/download'
+  //    path_name = __dirname, `../public/reports/smpp/${system_id}/${year}/${month}/${day}`
+  const filesPresentInPath = q.defer()
+  if (fs.existsSync(pathName)) {
+    console.log('44444444444444444444444444444444444444444')
+    filesPresentInPath.resolve(true)
+  } else {
+    console.log('filesPresent existsSync')
+    filesPresentInPath.resolve(false)
+  }
+  return filesPresentInPath.promise
+}
+const downloadDlr = (req, res) => {
+  const validate = new ValidatonService()
+  // const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  // const dbService = new DbService()
+  let download
+  validate.downloadDlr(req.query)
+    .then((validate) => {
+      download = `${validate.path}/${validate.fileName}`
+      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', download)
+      return filesPresent(download)
+    })
+    .then((data) => {
+      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', data)
+      if (data) {
+        return res.download(download)
+      } else {
+        return __util.send({ type: __constants.RESPONSE_MESSAGES.NOT_FOUND, err: 'File Not Found', data: {} })
+      }
+    })
+    .catch(err => {
+      return __util.send(res, { type: err.type, err: err.err })
+    })
+}
+module.exports = { downloadDlr, downloadDlrRequest, deliveryReport, campaignSummaryReport, templateSummaryReport, userConversationReport, downloadCampaignSummary, downloadTemplateSummary, downloadUserConversationReport, getdownloadlist }

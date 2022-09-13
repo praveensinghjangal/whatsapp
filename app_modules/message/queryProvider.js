@@ -3,8 +3,8 @@ const __constants = require('../../config/constants')
 const addMessageHistoryData = (date) => {
   const messageHistory = `message_history_${date}`
   return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const getMessageTableDataWithId = (date) => {
@@ -17,7 +17,7 @@ const getMessageTableDataWithId = (date) => {
 }
 
 const getMessageIdByServiceProviderMsgId = () => {
-  return `select message_id as "messageId" , service_provider_message_id as "serviceProviderMessageId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour", date
+  return `select message_id as "messageId" , service_provider_message_id as "serviceProviderMessageId", business_number as "businessNumber", end_consumer_number as "endConsumerNumber",message_country as "countryName" , custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour", date
   from message_id_mapping_data
   where is_active = 1 and service_provider_message_id = ? limit 1`
 }
@@ -178,8 +178,8 @@ const getVivaMsgIdByserviceProviderMsgId = () => {
 
 const addMessageHistoryDataInBulk = (date) => {
   const messageHistory = `message_history_${date}`
-  return `INSERT INTO ${messageHistory} (message_id,template_id,service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
 
@@ -206,7 +206,7 @@ const createMessageHistoryTable = (date) => {
     status_time  timestamp NOT NULL,
     state  varchar(100) NOT NULL,
     end_consumer_number  varchar(50) DEFAULT NULL,
-    country_name varchar(50) NULL;
+    message_country varchar(50) DEFAULT NULL,
     business_number  varchar(50) DEFAULT NULL,
     created_on  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     is_active  tinyint(1) DEFAULT '1',
@@ -223,19 +223,19 @@ const createMessageHistoryTable = (date) => {
 
 const addMessageIdMappingData = () => {
   return `INSERT INTO message_id_mapping_data
-  (message_id,template_id, service_provider_message_id, end_consumer_number, business_number, custom_one, custom_two, custom_three, custom_four, date)
-  VALUES (?,?,?,?,?,?,?,?,?,?)`
+  (message_id, service_provider_message_id, end_consumer_number,message_country, business_number, custom_one, custom_two, custom_three, custom_four, date)
+  VALUES (?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInMis = () => {
-  return `INSERT INTO message_history (message_id,template_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number,country_name, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {
-  return `INSERT INTO message_history (message_id,template_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number,country_name, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four)
   VALUES ? `
 }
 
@@ -383,6 +383,16 @@ const insertConversationDataAgainstWaba = () => {
     total_number = values(total_number),
     updated_on = now();`
 }
+
+const getTemplateCategoryId = () => {
+  return `select mt.message_template_id,mt.message_template_category_id
+  ,CONCAT(wi.phone_code, wi.phone_number) as phone_number
+   from message_template mt
+  join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
+  where mt.is_active = true and wi.phone_number = ?
+   and mt.message_template_id = ?`
+}
+
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -416,5 +426,6 @@ module.exports = {
   insertTemplateStatusAgainstWaba,
   getTemplateNameAgainstId,
   getconversationDataBasedOnWabaNumber,
-  insertConversationDataAgainstWaba
+  insertConversationDataAgainstWaba,
+  getTemplateCategoryId
 }
