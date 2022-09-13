@@ -616,7 +616,7 @@ class MessageReportsServices {
     },
     {
       $group: {
-        _id: { currentStatus: '$currentStatus', campaignName: '$customOne', wabaPhoneNumber: '$wabaPhoneNumber' },
+        _id: { currentStatus: '$currentStatus', campaignName: '$customTwo', wabaPhoneNumber: '$wabaPhoneNumber' },
         sc: { $sum: 1 }
       }
     },
