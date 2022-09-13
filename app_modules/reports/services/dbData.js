@@ -486,17 +486,18 @@ class MessageReportsServices {
         'Campaign Name': '$campaignName',
         'Phone Number': '$wabaPhoneNumber',
         'Total Sent': '$totalSent',
+        'Total Preprocess': '$totalPreprocess',
         'Total Inprocess': '$totalInprocess',
         'Total Resource Allocated': '$totalResourceAllocated',
         'Total Forwarded': '$totalForwarded',
+        'Total Accepted': '$totalAccepted',
+        'Total Delivered Message': '$deliveredMessage',
+        'Total Failed': '$totalFailed',
+        'Total Rejected': '$totalRejected',
         'Total Seen': '$totalSeen',
         'Total Deleted': '$totalDeleted',
-        'Total Accepted': '$totalAccepted',
-        'Total Failed': '$totalFailed',
         'Total Pending': '$totalPending',
-        'Total Rejected': '$totalRejected',
         'Total Rate Limit': '$totalRateLimit',
-        'Delivered Message': '$deliveredMessage',
         'Delivery Percentage': '$delivereyPercentage',
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
       }
@@ -534,16 +535,17 @@ class MessageReportsServices {
         'Template Name': '$templateName',
         'Phone Number': '$wabaPhoneNumber',
         'Total Sent': '$totalMessageSent',
+        'Total Preprocess': '$totalMessagePreProcess',
         'Total Inprocess': '$totalMessageInProcess',
         'Total Resource Allocated': '$totalMessageResourceAllocated',
         'Total Forwarded': '$totalMessageForwarded',
+        'Total Accepted': '$totalMessageAccepted',
+        'Total Delivered Message': '$totalMessageDelivered',
+        'Total Failed': '$totalMessageFailed',
+        'Total Rejected': '$totalMessageRejected',
         'Total Seen': '$totalMessageSeen',
         'Total Deleted': '$totalMessageDeleted',
-        'Total Accepted': '$totalMessageAccepted',
-        'Total Failed': '$totalMessageFailed',
         'Total Pending': '$totalMessagePending',
-        'Total Rejected': '$totalMessageRejected',
-        'Delivered Message': '$totalMessageDelivered',
         'Delivery Percentage': '$deliveredPercentage',
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
       }
@@ -604,16 +606,12 @@ class MessageReportsServices {
   }
 
   getCampaignName (date) {
-    // const date = moment().format('YYYY-MM-DD')
-    const date2 = '2022-02-14'
-    const date1 = '2022-09-14'
-
     const promises = q.defer()
     __logger.info('SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name')
 
     var findParam = [{
       $match: {
-        createdOn: { $gte: new Date(`${date2}T00:00:00.000`), $lte: new Date(`${date1}T23:59:59.999`) }
+        createdOn: { $gte: new Date(`${date}T00:00:00.000`), $lte: new Date(`${date}T23:59:59.999`) }
       }
     },
     {
