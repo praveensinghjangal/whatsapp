@@ -27,7 +27,8 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date || null
+    date: payload.date || null,
+    campName: payload.whatsapp.campName || null
   }
   const mappingData = [payload.messageId, serviceProviderMessageId, payload.to, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
   messageHistoryService.addMessageIdMappingData(mappingData)

@@ -80,6 +80,7 @@ class MessgaeHistoryService {
     let ecNum = ''
     let countryName = ''
     const custom = {}
+    let campName = null
     let tempDate
     __logger.info('Add message history service called', dataObj)
     validate.addMessageHistory(dataObj)
@@ -103,6 +104,7 @@ class MessgaeHistoryService {
         custom.customTwo = dbData.customTwo || dataObj.customTwo || null
         custom.customThree = dbData.customThree || dataObj.customThree || null
         custom.customFour = dbData.customFour || dataObj.customFour || null
+        campName = dataObj.campName || null
         const messageHistoryData = {
           messageId: msgId,
           serviceProviderMessageId: dataObj.serviceProviderMessageId || null,
@@ -118,7 +120,8 @@ class MessgaeHistoryService {
           customTwo: custom.customTwo,
           customThree: custom.customThree,
           customFour: custom.customFour,
-          conversationId: dataObj.conversationId || null
+          conversationId: dataObj.conversationId || null,
+          campName: campName
         }
         _.each(messageHistoryData, val => queryParam.push(val))
         if (!isSecondAttemp) {
@@ -142,7 +145,7 @@ class MessgaeHistoryService {
       .then(result => {
         __logger.info('Add Result then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
-          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum, custom })
+          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum, custom, campName })
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }

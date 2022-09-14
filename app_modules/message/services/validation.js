@@ -136,6 +136,12 @@ class validate {
                 minLength: 1,
                 maxLength: 50
               },
+              campName: {
+                type: 'string',
+                required: false,
+                minLength: 1,
+                maxLength: 50
+              },
               interactive: {
                 type: 'object',
                 required: false,

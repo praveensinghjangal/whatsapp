@@ -3,15 +3,15 @@ const __constants = require('../../config/constants')
 const addMessageHistoryData = (date) => {
   const messageHistory = `message_history_${date}`
   return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id, camp_name)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const getMessageTableDataWithId = (date) => {
   const messageHistory = `message_history_${date}`
   return `SELECT message_id as "messageId",
   delivery_channel as "deliveryChannel",status_time  as "statusTime", state, 
-  end_consumer_number as "endConsumerNumber", business_number as  "businessNumber", custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour"
+  end_consumer_number as "endConsumerNumber", business_number as  "businessNumber", custom_one as "customOne", custom_two  as "customTwo", custom_three as "customThree", custom_four as "customFour", camp_name as campName
   FROM ${messageHistory}
   where message_id =? order by id desc`
 }
@@ -179,7 +179,7 @@ const getVivaMsgIdByserviceProviderMsgId = () => {
 const addMessageHistoryDataInBulk = (date) => {
   const messageHistory = `message_history_${date}`
   return `INSERT INTO ${messageHistory} (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, camp_name)
   VALUES ? `
 }
 
@@ -218,6 +218,7 @@ const createMessageHistoryTable = (date) => {
     custom_three  varchar(50) DEFAULT NULL,
     custom_four  varchar(50) DEFAULT NULL,
     conversation_id varchar(100) DEFAULT NULL NULL,
+    camp_name  varchar(50) DEFAULT NULL,
     PRIMARY KEY (id)) `
 }
 
@@ -229,13 +230,13 @@ const addMessageIdMappingData = () => {
 
 const addMessageHistoryDataInMis = () => {
   return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id)
-  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, conversation_id, camp_name)
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInBulkInMis = () => {
   return `INSERT INTO message_history (message_id, service_provider_message_id,service_provider_id, delivery_channel, status_time, state,
-  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four)
+  end_consumer_number,message_country, business_number, errors, custom_one, custom_two, custom_three , custom_four, camp_name)
   VALUES ? `
 }
 

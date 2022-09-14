@@ -125,7 +125,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -197,7 +198,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -217,7 +219,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -233,7 +236,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -359,7 +363,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 ]
                             }
@@ -476,7 +481,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -548,7 +554,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -568,7 +575,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -584,7 +592,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 },
                                 {
@@ -713,7 +722,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     },
                                     {
                                         "messageId": "ac706042-b7cd-42d4-9a19-d2178db275d0",
@@ -723,7 +733,8 @@
                                         "customOne": "customOne",
                                         "customTwo": "customTwo",
                                         "customThree": "three",
-                                        "customFour": "customFour"
+                                        "customFour": "customFour",
+                                        "campName": "campName"
                                     }
                                 ]
                             }
@@ -17425,7 +17436,10 @@
                 },
                 "customFour": {
                     "type": "string"
-                }
+                },
+                "campName": {
+                    "type": "string"
+                }  
             },
             "required": [
                 "from",

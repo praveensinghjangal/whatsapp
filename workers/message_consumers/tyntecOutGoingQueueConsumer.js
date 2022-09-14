@@ -25,7 +25,8 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
-    customFour: payload.whatsapp.customFour || null
+    customFour: payload.whatsapp.customFour || null,
+    campName: payload.whatsapp.campName || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {

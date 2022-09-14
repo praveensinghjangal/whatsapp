@@ -103,7 +103,8 @@ const saveAndSendMessageStatus = (payload) => {
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
-    customFour: payload.whatsapp.customFour || null
+    customFour: payload.whatsapp.customFour || null,
+    campName: payload.whatsapp.campName || null
   }
   redirectService.webhookPost(statusData.to, statusData)
     .then(data => statusSent.resolve(data))
@@ -143,7 +144,7 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   // rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
   //   .then(queueResponse =>
   saveAndSendMessageStatus(data)
-    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, queueData }))
+    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, campName: data.whatsapp.campName || null, queueData }))
     .catch(err => {
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
       errorToTelegram.send(err, telegramErrorMessage)
@@ -310,7 +311,7 @@ const controller = (req, res) => {
         const msgInsertData = []
         const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
-          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null, singleMessage.whatsapp.campName || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,
             serviceProviderMessageId: null,
@@ -323,6 +324,7 @@ const controller = (req, res) => {
             customTwo: singleMessage.whatsapp.customTwo || null,
             customThree: singleMessage.whatsapp.customThree || null,
             customFour: singleMessage.whatsapp.customFour || null,
+            campName: singleMessage.whatsapp.campName || null,
             currentStatus: __constants.MESSAGE_STATUS.preProcess,
             templateId: singleMessage.whatsapp.template.templateId || null,
             currentStatusTime: new Date(),

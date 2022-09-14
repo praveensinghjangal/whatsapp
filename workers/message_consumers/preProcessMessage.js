@@ -32,7 +32,8 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date
+    date: payload.date,
+    campName: payload.whatsapp.campName || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -294,7 +295,8 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date
+    date: payload.date,
+    campName: payload.whatsapp.campName || null
   }
   console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', statusData)
   messageHistoryService.addMessageHistoryDataService(statusData)
