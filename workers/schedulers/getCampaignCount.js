@@ -39,7 +39,6 @@ const createCampaignSummaryReport = () => {
             element[statusCount.name] = statusCount.count
           })
           campaignName = element
-          var date = new Date()
           var totalSeen = campaignName[__constants.MESSAGE_STATUS.seen] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.seen]
           var totalDeleted = campaignName[__constants.MESSAGE_STATUS.deleted] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.deleted]
           var deliveredMessage = campaignName[__constants.MESSAGE_STATUS.delivered] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.delivered]
@@ -61,7 +60,8 @@ const createCampaignSummaryReport = () => {
           finalRecord.totalRateLimit = campaignName[__constants.MESSAGE_STATUS.rateLimit] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.rateLimit]
           finalRecord.deliveredMessage = deliveredMessage
           finalRecord.delivereyPercentage = totalDelivered
-          finalRecord.createdOn = date
+          finalRecord.createdOn = new Date(campaignName._id.day)
+          finalRecord.updatedOn = new Date()
           arrOfCamaignName.push(finalRecord)
         }
       })
