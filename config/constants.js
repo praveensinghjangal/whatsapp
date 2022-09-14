@@ -1,7 +1,7 @@
 
 const APP_NAME = 'helowhatsapp'
-// const DB_NAME = 'helowhatsapp'
-const DB_NAME = 'whatsapp1'
+const DB_NAME = 'helowhatsapp'
+// const DB_NAME = 'whatsapp1'
 const UPDATE_PROFILE_CONFIGURE_DATA = {
   // API_KEY: 'APIKEY@123',
   MAX_TPA_TO_PROVIDER: 15,
