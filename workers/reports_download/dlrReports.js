@@ -124,11 +124,33 @@ class dlrReportsDownlaod {
             const messageData = JSON.parse(mqData.content.toString())
             const dbService = new DbService()
             let pathName, fileName
+            const templateId = {}
             // dbService.getAllUserStatusCountPerDay
             __logger.info('dlr_reports_downloads_queue::received:', { mqData })
             __logger.info('dlr_reports_downloads_queue:: messageData received:', messageData)
             console.log('#######################################################', messageData)
-            dbService.countOfDataAgainstWabaAndUserId(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
+            dbService.getTemplateIdandTemplateNameAgainstUser(messageData.userId)
+              . then((data) => {
+                console.log('1111111111111111111111111111111111111111111111111111111111111111', data)
+                if (data) {
+                  for (let i = 0; i < data.length; i++) {
+                    const value = data[i]
+                    console.log('222222222222222222222222222222222', value)
+                    let templatename
+                    if (value.templateName) {
+                      templatename = value.templateName
+                    }
+                    if (!templateId[value.templateId]) {
+                      templateId[value.templateId] = templatename
+                    }
+                    console.log('33333333333333333333333333333333333', templateId)
+                  }
+                }
+              })
+              .then(() => {
+                console.log('22222222222222222222222222222222222222222222222222222', templateId)
+                return dbService.countOfDataAgainstWabaAndUserId(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
+              })
               .then(async (data) => {
                 console.log('********************************', data)
                 if (data.count) {
@@ -144,6 +166,19 @@ class dlrReportsDownlaod {
                     pathName = './app_modules/download'
                     fileName = `${messageData.filename}_${Math.floor(i / part)}.csv`
                     const data = await dbService.getUserStatusCountPerDayAgainstWaba(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, skipPage, lowLimit)
+                    if (data.length > 0) {
+                      for (let i = 0; i < data.length; i++) {
+                        const value = data[i]
+                        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', value)
+                        if (value.templateId) {
+                          value.templateName = templateId['value.templateId'] || null
+                        } else {
+                          value.templateId = null
+                          value.templateName = null
+                        }
+                      }
+                    }
+                    console.log('final dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
                     const result = json2csv(data, { header: true })
                     // await createFiles(data, pathName, fileName)
                     // console.log('1111111111111111111111111111111111111111111111111111111111', `${pathName}/${fileName}`)
