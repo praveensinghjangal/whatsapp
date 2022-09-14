@@ -210,7 +210,6 @@ const createMessageHistoryTable = (date) => {
     business_number  varchar(50) DEFAULT NULL,
     created_on  timestamp NULL DEFAULT CURRENT_TIMESTAMP,
     is_active  tinyint(1) DEFAULT '1',
-    template_id varchar(50) DEFAULT NULL,
     service_provider_message_id  varchar(250) DEFAULT NULL,
     errors  json DEFAULT NULL,
     custom_one  varchar(50) DEFAULT NULL,
