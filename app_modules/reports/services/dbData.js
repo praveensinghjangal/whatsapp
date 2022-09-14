@@ -499,7 +499,8 @@ class MessageReportsServices {
         'Total Pending': '$totalPending',
         'Total Rate Limit': '$totalRateLimit',
         'Delivery Percentage': '$delivereyPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
+        _id: 0
       }
     }
     ]
@@ -547,7 +548,8 @@ class MessageReportsServices {
         'Total Deleted': '$totalMessageDeleted',
         'Total Pending': '$totalMessagePending',
         'Delivery Percentage': '$deliveredPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
+        _id: 0
       }
     }
     ]
@@ -585,7 +587,8 @@ class MessageReportsServices {
         'Referral Conversion': '$referralConversion',
         'Not Applicable': '$notApplicable',
         'Total Count': '$totalcount',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } },
+        _id: 0
       }
     }
     ]
