@@ -443,7 +443,6 @@ class MessgaeHistoryService {
     const addedUpdated = q.defer()
     __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, summaryDate: updateObject.summaryDate, templateId: updateObject.templateId }, updateObject)
       .then(data => {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', data)
         __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
           addedUpdated.resolve(true)
@@ -583,25 +582,24 @@ class MessgaeHistoryService {
     return billingConversation.promise
   }
 
-  getUserDetailsAgainstWabaNumber (uniquewabaNumber) {
-    const getUserDetailsAgainstWabaNumber = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getUserDetailsAgainstWabaNumber(), uniquewabaNumber)
-      .then(result => {
-        if (result) {
-          return getUserDetailsAgainstWabaNumber.resolve(result[0])
-        } else {
-          return getUserDetailsAgainstWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
-        }
-      })
-      .catch(err => {
-        return getUserDetailsAgainstWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return getUserDetailsAgainstWabaNumber.promise
-  }
+  // getUserDetailsAgainstWabaNumber (uniquewabaNumber) {
+  //   const getUserDetailsAgainstWabaNumber = q.defer()
+  //   __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getUserDetailsAgainstWabaNumber(), uniquewabaNumber)
+  //     .then(result => {
+  //       if (result) {
+  //         return getUserDetailsAgainstWabaNumber.resolve(result[0])
+  //       } else {
+  //         return getUserDetailsAgainstWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       return getUserDetailsAgainstWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+  //     })
+  //   return getUserDetailsAgainstWabaNumber.promise
+  // }
 
   addDataToUserWiseSummray (allUserDetails) {
     const addDataToUserWiseSummray = q.defer()
-    console.log('1111111111111111111111111111111111111111111111', allUserDetails)
     __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addDataToUserWiseSummray(), allUserDetails)
       .then(result => {
         if (result) {
@@ -618,7 +616,6 @@ class MessgaeHistoryService {
 
   getActiveBusinessNumber () {
     const getActiveBusinessNumber = q.defer()
-    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
     // __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getActiveBusinessNumber())
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getActiveBusinessNumber())
       .then(result => {
@@ -716,21 +713,21 @@ class MessgaeHistoryService {
   //   return insertStatusAgainstWaba.promise
   // }
 
-  checkTableExist (date) {
-    const checkTableExist = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.checkTableExist(date))
-      .then(result => {
-        if (result) {
-          return checkTableExist.resolve()
-        } else {
-          return checkTableExist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'ER_NO_SUCH_TABLE' })
-        }
-      })
-      .catch(err => {
-        return checkTableExist.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return checkTableExist.promise
-  }
+  // checkTableExist (date) {
+  //   const checkTableExist = q.defer()
+  //   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.checkTableExist(date))
+  //     .then(result => {
+  //       if (result) {
+  //         return checkTableExist.resolve()
+  //       } else {
+  //         return checkTableExist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'ER_NO_SUCH_TABLE' })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       return checkTableExist.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+  //     })
+  //   return checkTableExist.promise
+  // }
 
   getNewTemplateDetailsAgainstAllUser (currentDate) {
     const getNewTemplateDetailsAgainstAllUserPromise = q.defer()
@@ -835,27 +832,21 @@ class MessgaeHistoryService {
     console.log('getconversationDataBasedOnWabaNumber', wabaNumber, previousDateWithTime, currentdateWithTime)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', result)
         if (result) {
-          console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
-          console.log('111111111111111111111111111111111111111111111111111111111111')
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        console.log('000000000000000000000000000000000000000000000000000', err)
         return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getconversationDataBasedOnWabaNumber.promise
   }
 
   insertConversationDataAgainstWaba (dataIncoming, date) {
-    console.log('999999999999999999999999999', dataIncoming)
     const insertConversationDataAgainstWaba = q.defer()
     const wabaNumbers = Object.keys(dataIncoming)
-    console.log('777777777777777777777777', wabaNumbers)
     const dataValue = []
     for (let i = 0; i < wabaNumbers.length; i++) {
       const wabanumber = wabaNumbers[i] || null
@@ -878,12 +869,9 @@ class MessgaeHistoryService {
       dataInsert.createdOn = new Date()
       dataValue.push(dataInsert)
     }
-
-    console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', dataValue)
     //   const country = wabaNumbers[i]
     //   const summary = data[country]
     //   const wabaNumbers1 = Object.keys(summary)
-    //   console.log('22222222222222222222222222222222', wabaNumbers1)
     //   for (let j = 0; j < wabaNumbers1.length; j++) {
     //     const requiredJson = {}
     //     const arr = summary[wabaNumbers1[j]]

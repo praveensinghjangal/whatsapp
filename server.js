@@ -24,7 +24,6 @@ const SERVER_SCRIPTS = {
   processCountScheduler: './workers/schedulers/processCounts',
   misScheduler: './workers/schedulers/mis',
   misSchedulerConversation: './workers/schedulers/misOfConversation',
-  userWiseReports: './workers/schedulers/userWiseReports.js',
   templateReports: './workers/schedulers/templateReports.js',
   campaignReports: './workers/schedulers/campaignReports.js',
   userWiseCoversationReports: './workers/schedulers/userWiseCoversationReports.js',

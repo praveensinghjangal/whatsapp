@@ -43,7 +43,6 @@
     "start-all-workers": "npm run develop-processQueueConsumer & npm run develop-tyntecOutGoingQueueConsumer & npm run develop-tyntecIncoming & npm run develop-tyntecMessageStatus & npm run develop-facebookOutGoingQueueConsumer & npm run develop-facebookIncoming & npm run develop-facebookMessageStatus & npm run develop-retrySendingPayload",
     "develop-s-processCount": "NODE_ENV=development WORKER_TYPE=processCountScheduler node server.js",
     "develop-s-mis": "NODE_ENV=development WORKER_TYPE=misScheduler node server.js",
-    "develop-s-userWiseReports": "NODE_ENV=development WORKER_TYPE=userWiseReports node server.js",
     "develop-s-templateReports": "NODE_ENV=development WORKER_TYPE=templateReports node server.js",
     "develop-s-campaignReports": "NODE_ENV=development WORKER_TYPE=campaignReports node server.js",
     "develop-s-userWiseCoversationReports": "NODE_ENV=development WORKER_TYPE=userWiseCoversationReports node server.js",

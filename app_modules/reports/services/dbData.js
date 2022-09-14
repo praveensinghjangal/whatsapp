@@ -619,7 +619,7 @@ class MessageReportsServices {
     },
     {
       $group: {
-        _id: { currentStatus: '$currentStatus', campaignName: '$customTwo', Date: { $dateToString: { format: '%Y-%m-%dT%H:%m:%S.000Z', date: '$createdOn' } }, wabaPhoneNumber: '$wabaPhoneNumber' },
+        _id: { currentStatus: '$currentStatus', campaignName: '$campName', Date: { $dateToString: { format: '%Y-%m-%dT%H:%m:%S.000Z', date: '$createdOn' } }, wabaPhoneNumber: '$wabaPhoneNumber' },
         sc: { $sum: 1 }
       }
     },

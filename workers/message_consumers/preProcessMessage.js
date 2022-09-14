@@ -135,7 +135,6 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
             alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
           }
           verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-          console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
           // get all the audiences not present in db's audiences table
           for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
             const toNumber = toNumbersThatNeedsToBeChecked[i]

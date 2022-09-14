@@ -278,7 +278,6 @@ const downloadDlrRequest = (req, res) => {
   // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   validate.downloadDlrRequest(req.query)
     .then(validateData => {
-      console.log('reeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', req.query)
       validateData.userId = userId
       validateData.wabaPhoneNumber = wabaPhoneNumber
       const startDate = validateData.startDate.slice(0, 10)
@@ -345,7 +344,6 @@ const downloadDlr = (req, res) => {
       return filesPresent(download)
     })
     .then((data) => {
-      console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~', data)
       if (data) {
         return res.download(download)
       } else {

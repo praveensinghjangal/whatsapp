@@ -217,14 +217,14 @@ const createMessageHistoryTable = (date) => {
     custom_three  varchar(50) DEFAULT NULL,
     custom_four  varchar(50) DEFAULT NULL,
     conversation_id varchar(100) DEFAULT NULL NULL,
-    camp_name  varchar(50) DEFAULT NULL,
+    camp_name  varchar(100) DEFAULT NULL,
     PRIMARY KEY (id)) `
 }
 
 const addMessageIdMappingData = () => {
   return `INSERT INTO message_id_mapping_data
   (message_id, service_provider_message_id, end_consumer_number,message_country, business_number, custom_one, custom_two, custom_three, custom_four, date)
-  VALUES (?,?,?,?,?,?,?,?,?)`
+  VALUES (?,?,?,?,?,?,?,?,?,?)`
 }
 
 const addMessageHistoryDataInMis = () => {
