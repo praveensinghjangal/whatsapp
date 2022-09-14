@@ -916,33 +916,6 @@ class MessgaeHistoryService {
     console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
     __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
     const getUserStatusCountPerDayAgainstWaba = q.defer()
-    // __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
-    //   {
-    //     $match: {
-    //       createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
-    //     }
-    //   },
-    //   {
-    //     $group: {
-    //       _id: { currentStatus: '$currentStatus', wabaPhoneNumber: wabaNumber, day: { $substr: ['$createdOn', 0, 10] } },
-    //       sc: { $sum: 1 }
-    //     }
-    //   },
-    //   {
-    //     $group: {
-    //       _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day' },
-    //       total: { $sum: '$sc' },
-    //       status: {
-    //         $push: {
-    //           name: '$_id.currentStatus',
-    //           count: '$sc'
-    //         }
-    //       }
-    //     }
-    //   },
-    //   { $sort: { total: -1 } }
-    // ])
-    // need to add skip and limit in fine
     __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, _id: 0 }, { createdOn: -1 }, skipPage, lowLimit)
       .then(data => {
         console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
