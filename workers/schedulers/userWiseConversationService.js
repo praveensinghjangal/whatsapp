@@ -37,7 +37,7 @@ const conversationMisService = () => {
         console.log('1111111111111111111', wabaNumber, previousDateWithTime, currentdateWithTime)
         return dbService.getconversationDataBasedOnWabaNumber(wabaNumber, previousDateWithTime, currentdateWithTime)
       } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'No active waba number', data: {} })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'No active waba numbers in platform', data: {} })
       }
     })
     .then((data) => {

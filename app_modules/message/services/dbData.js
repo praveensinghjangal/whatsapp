@@ -438,8 +438,9 @@ class MessgaeHistoryService {
   addUpdateCountsAgainst (updateObject) {
     __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
-    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date, templateId: updateObject.templateId }, updateObject)
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, summaryDate: updateObject.summaryDate, templateId: updateObject.templateId }, updateObject)
       .then(data => {
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', data)
         __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
           addedUpdated.resolve(true)
@@ -630,87 +631,87 @@ class MessgaeHistoryService {
     return getActiveBusinessNumber.promise
   }
 
-  getCountOfStatusOfWabaNumber (wabaNumber) {
-    const getCountOfStatusOfWabaNumber = q.defer()
-    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getCountOfStatusOfWabaNumber(), [wabaNumber])
-      .then(result => {
-        if (result) {
-          return getCountOfStatusOfWabaNumber.resolve(result)
-        } else {
-          return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
-        }
-      })
-      .catch(err => {
-        return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return getCountOfStatusOfWabaNumber.promise
-  }
+  // getCountOfStatusOfWabaNumber (wabaNumber) {
+  //   const getCountOfStatusOfWabaNumber = q.defer()
+  //   // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+  //   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getCountOfStatusOfWabaNumber(), [wabaNumber])
+  //     .then(result => {
+  //       if (result) {
+  //         return getCountOfStatusOfWabaNumber.resolve(result)
+  //       } else {
+  //         return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+  //     })
+  //   return getCountOfStatusOfWabaNumber.promise
+  // }
 
-  getNewStateDataAgainstAllUser (wabaNumber, currentDate) {
-    const getCountOfStatusOfWabaNumber = q.defer()
-    // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewStateDataAgainstAllUser(currentDate), [wabaNumber])
-      .then(result => {
-        if (result) {
-          return getCountOfStatusOfWabaNumber.resolve(result)
-        } else {
-          return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
-        }
-      })
-      .catch(err => {
-        return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return getCountOfStatusOfWabaNumber.promise
-  }
+  // getNewStateDataAgainstAllUser (wabaNumber, currentDate) {
+  //   const getCountOfStatusOfWabaNumber = q.defer()
+  //   // console.log('1111111111111111111111111111111111111111111111', allUserDetails)
+  //   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewStateDataAgainstAllUser(currentDate), [wabaNumber])
+  //     .then(result => {
+  //       if (result) {
+  //         return getCountOfStatusOfWabaNumber.resolve(result)
+  //       } else {
+  //         return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       return getCountOfStatusOfWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+  //     })
+  //   return getCountOfStatusOfWabaNumber.promise
+  // }
 
-  insertStatusAgainstWaba (data) {
-    console.log('**************************************', data)
-    const insertStatusAgainstWaba = q.defer()
-    const wabaNumbers = Object.keys(data)
-    const values = []
-    for (let i = 0; i < wabaNumbers.length; i++) {
-      const country = wabaNumbers[i]
-      const summary = data[country]
-      const wabaNumbers1 = Object.keys(summary)
-      for (let j = 0; j < wabaNumbers1.length; j++) {
-        const requiredJson = {}
-        const arr = summary[wabaNumbers1[j]]
-        for (let k = 0; k < arr.length; k++) {
-          requiredJson[arr[k].state] = arr[k]['count(state)']
-        }
-        const wabaNumberData = requiredJson
-        const totalSubmission = wabaNumberData['pre process'] || 0
-        const totalMessageSent = wabaNumberData.forwarded || 0
-        const totalMessageInProcess = wabaNumberData.Inprocess || 0
-        const totalMessageResourceAllocated = wabaNumberData['resource allocated'] || 0
-        const totalMessageForwarded = wabaNumberData.forwarded || 0
-        const totalMessageDeleted = wabaNumberData.deleted || 0
-        const totalMessageSeen = wabaNumberData.seen || 0
-        const totalMessageDelivered = wabaNumberData.delivered || 0
-        const totalMessageAccepted = wabaNumberData.accepted || 0
-        const totalMessageFailed = wabaNumberData.failed || 0
-        const totalMessagePending = wabaNumberData['waiting for pending delivery'] || 0
-        const totalMessageRejected = wabaNumberData.rejected || 0
-        const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
-        values.push([wabaNumbers1[j], country, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
-          totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
-      }
-    }
-    console.log('final11111111111111111111111111', values)
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertuserwiseDataAgainstWaba(), [values])
-      .then(result => {
-        if (result) {
-          return insertStatusAgainstWaba.resolve(result)
-        } else {
-          return insertStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
-        }
-      })
-      .catch(err => {
-        return insertStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return insertStatusAgainstWaba.promise
-  }
+  // insertStatusAgainstWaba (data) {
+  //   console.log('**************************************', data)
+  //   const insertStatusAgainstWaba = q.defer()
+  //   const wabaNumbers = Object.keys(data)
+  //   const values = []
+  //   for (let i = 0; i < wabaNumbers.length; i++) {
+  //     const country = wabaNumbers[i]
+  //     const summary = data[country]
+  //     const wabaNumbers1 = Object.keys(summary)
+  //     for (let j = 0; j < wabaNumbers1.length; j++) {
+  //       const requiredJson = {}
+  //       const arr = summary[wabaNumbers1[j]]
+  //       for (let k = 0; k < arr.length; k++) {
+  //         requiredJson[arr[k].state] = arr[k]['count(state)']
+  //       }
+  //       const wabaNumberData = requiredJson
+  //       const totalSubmission = wabaNumberData['pre process'] || 0
+  //       const totalMessageSent = wabaNumberData.forwarded || 0
+  //       const totalMessageInProcess = wabaNumberData.Inprocess || 0
+  //       const totalMessageResourceAllocated = wabaNumberData['resource allocated'] || 0
+  //       const totalMessageForwarded = wabaNumberData.forwarded || 0
+  //       const totalMessageDeleted = wabaNumberData.deleted || 0
+  //       const totalMessageSeen = wabaNumberData.seen || 0
+  //       const totalMessageDelivered = wabaNumberData.delivered || 0
+  //       const totalMessageAccepted = wabaNumberData.accepted || 0
+  //       const totalMessageFailed = wabaNumberData.failed || 0
+  //       const totalMessagePending = wabaNumberData['waiting for pending delivery'] || 0
+  //       const totalMessageRejected = wabaNumberData.rejected || 0
+  //       const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
+  //       values.push([wabaNumbers1[j], country, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
+  //         totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
+  //     }
+  //   }
+  //   console.log('final11111111111111111111111111', values)
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertuserwiseDataAgainstWaba(), [values])
+  //     .then(result => {
+  //       if (result) {
+  //         return insertStatusAgainstWaba.resolve(result)
+  //       } else {
+  //         return insertStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       return insertStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+  //     })
+  //   return insertStatusAgainstWaba.promise
+  // }
 
   checkTableExist (date) {
     const checkTableExist = q.defer()
@@ -729,18 +730,18 @@ class MessgaeHistoryService {
   }
 
   getNewTemplateDetailsAgainstAllUser (currentDate) {
-    const getNewTemplateDetailsAgainstAllUser = q.defer()
+    const getNewTemplateDetailsAgainstAllUserPromise = q.defer()
     /// group by day chnages
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date(currentDate + 'T00:00:00.000Z'), $lte: new Date(currentDate + 'T23:59:59.999Z') } } },
       {
         $group: {
-          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', day: { $substr: ['$createdOn', 0, 10] }, templateId: '$templateId' },
+          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', templateId: '$templateId' },
           sc: { $sum: 1 }
         }
       },
       {
         $group: {
-          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.day', templateId: '$_id.templateId' },
+          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', templateId: '$_id.templateId' },
           total: { $sum: '$sc' },
           status: {
             $push: {
@@ -753,58 +754,58 @@ class MessgaeHistoryService {
       { $sort: { total: -1 } }])
     // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
-        console.log('111111111111111111111111111111111111111111', result)
+        console.log('getNewTemplateDetailsAgainstAllUser result ', result)
         if (result) {
-          return getNewTemplateDetailsAgainstAllUser.resolve(result)
+          return getNewTemplateDetailsAgainstAllUserPromise.resolve(result)
         } else {
-          return getNewTemplateDetailsAgainstAllUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return getNewTemplateDetailsAgainstAllUserPromise.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        return getNewTemplateDetailsAgainstAllUser.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        return getNewTemplateDetailsAgainstAllUserPromise.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
-    return getNewTemplateDetailsAgainstAllUser.promise
+    return getNewTemplateDetailsAgainstAllUserPromise.promise
   }
 
-  insertTemplateStatusAgainstWaba (data) {
-    const insertTemplateStatusAgainstWaba = q.defer()
-    const wabaNumbers = Object.keys(data)
-    const values = []
-    for (let i = 0; i < wabaNumbers.length; i++) {
-      const wabaNumber = wabaNumbers[i]
-      const summary = data[wabaNumber]
-      const templateId = summary.templateId
-      const templateName = summary.templateName
-      const totalSubmission = summary['pre process'] || 0
-      const totalMessageSent = summary.forwarded || 0
-      const totalMessageInProcess = summary.Inprocess || 0
-      const totalMessageResourceAllocated = summary['resource allocated'] || 0
-      const totalMessageForwarded = summary.forwarded || 0
-      const totalMessageDeleted = summary.deleted || 0
-      const totalMessageSeen = summary.seen || 0
-      const totalMessageDelivered = summary.delivered || 0
-      const totalMessageAccepted = summary.accepted || 0
-      const totalMessageFailed = summary.failed || 0
-      const totalMessagePending = summary['waiting for pending delivery'] || 0
-      const totalMessageRejected = summary.rejected || 0
-      const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
-      values.push([wabaNumber, templateId, templateName, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
-        totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
-    }
-    console.log('final values goes for insert or update', values)
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertTemplateStatusAgainstWaba(), values)
-      .then(result => {
-        if (result) {
-          return insertTemplateStatusAgainstWaba.resolve(result)
-        } else {
-          return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
-        }
-      })
-      .catch(err => {
-        return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return insertTemplateStatusAgainstWaba.promise
-  }
+  // insertTemplateStatusAgainstWaba (data) {
+  //   const insertTemplateStatusAgainstWaba = q.defer()
+  //   const wabaNumbers = Object.keys(data)
+  //   const values = []
+  //   for (let i = 0; i < wabaNumbers.length; i++) {
+  //     const wabaNumber = wabaNumbers[i]
+  //     const summary = data[wabaNumber]
+  //     const templateId = summary.templateId
+  //     const templateName = summary.templateName
+  //     const totalSubmission = summary['pre process'] || 0
+  //     const totalMessageSent = summary.forwarded || 0
+  //     const totalMessageInProcess = summary.Inprocess || 0
+  //     const totalMessageResourceAllocated = summary['resource allocated'] || 0
+  //     const totalMessageForwarded = summary.forwarded || 0
+  //     const totalMessageDeleted = summary.deleted || 0
+  //     const totalMessageSeen = summary.seen || 0
+  //     const totalMessageDelivered = summary.delivered || 0
+  //     const totalMessageAccepted = summary.accepted || 0
+  //     const totalMessageFailed = summary.failed || 0
+  //     const totalMessagePending = summary['waiting for pending delivery'] || 0
+  //     const totalMessageRejected = summary.rejected || 0
+  //     const deliveryPercentage = Math.round((totalMessageDelivered + Number.EPSILON * 100) / 100).toFixed(2)
+  //     values.push([wabaNumber, templateId, templateName, totalSubmission, totalMessageSent, totalMessageInProcess, totalMessageResourceAllocated, totalMessageForwarded, totalMessageDeleted,
+  //       totalMessageSeen, totalMessageDelivered, totalMessageAccepted, totalMessageFailed, totalMessagePending, totalMessageRejected, deliveryPercentage])
+  //   }
+  //   console.log('final values goes for insert or update', values)
+  //   __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.insertTemplateStatusAgainstWaba(), values)
+  //     .then(result => {
+  //       if (result) {
+  //         return insertTemplateStatusAgainstWaba.resolve(result)
+  //       } else {
+  //         return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+  //       }
+  //     })
+  //     .catch(err => {
+  //       return insertTemplateStatusAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+  //     })
+  //   return insertTemplateStatusAgainstWaba.promise
+  // }
 
   getTemplateNameAgainstId (templateId) {
     console.log('ggetTemplateNameAgainstIdet', templateId)

@@ -4,17 +4,14 @@ const __constants = require('../../config/constants')
 const q = require('q')
 const qalllib = require('qalllib')
 const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateNameAgainstId
-const moment = require('moment')
 
-const upsertCounts = async singleUserDayStatusData => {
-  const date = moment().format('YYYY-MM-DD')
+const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   const dataUpserted = q.defer()
   const dbService = new DbService()
-  console.log('999999999999999999999999999999999999999999', singleUserDayStatusData)
+  console.log('upsertCounts parameters ', singleUserDayStatusData)
   const dataObject = {
     wabaPhoneNumber: singleUserDayStatusData._id.wabaPhoneNumber,
-    templateDate: new Date(singleUserDayStatusData._id.day),
-    date: date,
+    summaryDate: currentDate,
     createdOn: new Date(),
     templateId: singleUserDayStatusData._id.templateId,
     totalMessageSent: 0,
@@ -33,7 +30,7 @@ const upsertCounts = async singleUserDayStatusData => {
     deliveredPercentage: 0,
     templateName: null
   }
-  console.log('888888888888888888888888888888888888888888888888888888888888', dataObject)
+  console.log('dataobject valueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', dataObject)
   singleUserDayStatusData.status.forEach(singleStatus => {
     switch (singleStatus.name) {
       case __constants.MESSAGE_STATUS.preProcess:
@@ -91,11 +88,13 @@ const upsertCounts = async singleUserDayStatusData => {
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  const currentDate = moment().format('YYYY-MM-DD')
+  // const currentDate = moment().format('YYYY-MM-DD')
+  const currentDate = '2022-08-01'
+  console.log('InsertDataIntoSumarryReports parameters', currentDate)
   dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
     .then(allUserData => {
-      console.log('66666666666666666666666666666666666666666666666666666', allUserData)
-      return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, [])
+      console.log('getNewTemplateDetailsAgainstAllUser  alluserData', allUserData)
+      return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, currentDate)
     })
     .then(processed => {
       console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', processed)

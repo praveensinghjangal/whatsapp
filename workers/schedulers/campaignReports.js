@@ -8,7 +8,7 @@ const getCampaignCount = require('./getCampaignCount')
 // const moment = require('moment')
 
 const task = {
-  one: cron.schedule(__constants.REPORTS_SCHEDULER_TIME, () => {
+  one: cron.schedule(__constants.CAMP_REPORTS_SCHEDULER_TIME, () => {
     // const dbService = new DbService()
     // const date = moment().format('YYMMDD')
     // const date = '220420'
