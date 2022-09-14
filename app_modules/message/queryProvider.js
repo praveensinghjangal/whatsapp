@@ -392,6 +392,12 @@ const getTemplateCategoryId = () => {
   where mt.is_active = true and wi.phone_number = ?
    and mt.message_template_id = ?`
 }
+const getTemplateIdandTemplateNameAgainstUser = () => {
+  return `select DISTINCT message_template_id as "templateId", template_name as "templateName"  from message_template mt 
+  left join waba_information wi on wi.waba_information_id = mt.message_template_id and wi.is_active = true
+  left join users u on u.user_id = wi.user_id and u.user_id = ? and u.is_active = true
+  where mt.is_active = true `
+}
 
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
@@ -427,5 +433,6 @@ module.exports = {
   getTemplateNameAgainstId,
   getconversationDataBasedOnWabaNumber,
   insertConversationDataAgainstWaba,
-  getTemplateCategoryId
+  getTemplateCategoryId,
+  getTemplateIdandTemplateNameAgainstUser
 }

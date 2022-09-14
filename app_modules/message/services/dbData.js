@@ -942,7 +942,7 @@ class MessgaeHistoryService {
     //   { $sort: { total: -1 } }
     // ])
     // need to add skip and limit in fine
-    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1 }, { createdOn: -1 }, skipPage, lowLimit)
+    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1 }, { createdOn: -1 }, skipPage, lowLimit)
       .then(data => {
         console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
@@ -965,6 +965,7 @@ class MessgaeHistoryService {
   countOfDataAgainstWabaAndUserId (startDate, endDate, wabaNumber) {
     const countOfDataAgainstWabaAndUserId = q.defer()
     console.log('countOfDataAgainstWabaAndUserId parameters', startDate, endDate, wabaNumber)
+    console.warn('----------------------- query :: ', { wabaPhoneNumber: wabaNumber, createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) } })
     __db.mongo.__count(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { wabaPhoneNumber: wabaNumber, createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) } })
       .then(data => {
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
@@ -1041,6 +1042,22 @@ class MessgaeHistoryService {
         getdownloadlist.reject({ type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
       })
     return getdownloadlist.promise
+  }
+
+  getTemplateIdandTemplateNameAgainstUser (userId) {
+    const getTemplateIdandTemplateNameAgainstUser = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateIdandTemplateNameAgainstUser(), [userId])
+      .then(result => {
+        if (result) {
+          return getTemplateIdandTemplateNameAgainstUser.resolve(result)
+        } else {
+          return getTemplateIdandTemplateNameAgainstUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getTemplateIdandTemplateNameAgainstUser.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getTemplateIdandTemplateNameAgainstUser.promise
   }
 }
 
