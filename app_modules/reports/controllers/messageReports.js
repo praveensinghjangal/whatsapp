@@ -174,6 +174,7 @@ const downloadCampaignSummary = (req, res) => {
       if (data) {
         filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.campaignSummary.csv`
         const result = json2csv(data, { header: true })
+
         return writeFile(filePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })

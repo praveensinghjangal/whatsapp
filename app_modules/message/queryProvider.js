@@ -271,97 +271,99 @@ const getDataOnBasisOfWabaNumberFromBillingCoversation = () => {
   where b.created_on between ? and ? and b.from = ?
   GROUP BY b.conversation_category`
 }
-const getUserDetailsAgainstWabaNumber = () => {
-  return `select  GROUP_CONCAT(wi.user_id) as userId, business_name as businessName 
-  from waba_information wi where CONCAT(phone_code ,phone_number) IN (?)`
-}
-const addDataToUserWiseSummray = () => {
-  return `Insert into userwise_summary 
-  (serial_no,user_id,waba_id,waba_name,
-  waba_number,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,
-  Total_message_InFailed,Total_message_Rejected) 
-  values (?,?,?,?,?,?,?,?,?,?,?,?)`
-}
+// const getUserDetailsAgainstWabaNumber = () => {
+//   return `select  GROUP_CONCAT(wi.user_id) as userId, business_name as businessName
+//   from waba_information wi where CONCAT(phone_code ,phone_number) IN (?)`
+// }
+// const addDataToUserWiseSummray = () => {
+//   return `Insert into userwise_summary
+//   (serial_no,user_id,waba_id,waba_name,
+//   waba_number,Total_submission,Total_message_sent,Total_message_Inprocess,Total_message_Delivered,
+//   Total_message_InFailed,Total_message_Rejected)
+//   values (?,?,?,?,?,?,?,?,?,?,?,?)`
+// }
 const getActiveBusinessNumber = () => {
   return `select GROUP_CONCAT(phone_code ,phone_number) as wabaNumber , GROUP_CONCAT(user_id) as user_id,
   GROUP_CONCAT(waba_information_id) as wabaId, GROUP_CONCAT(business_name) as wabaName
   from waba_information
   where is_active = true`
 }
-const getCountOfStatusOfWabaNumber = () => {
-  return `select business_number ,state,count(*)  
-  from message_history_220802 where business_number in (?) group by 1,2;`
-}
-const getNewStateDataAgainstAllUser = (date) => {
-  const messageHistory = `message_history_${date}`
-  return `SELECT business_number, count(state), state , message_country as "messageCountry"
-  from 
-  (SELECT business_number, state, message_id , message_country
-  FROM (
-    SELECT DISTINCT message_id, state, business_number, message_country
-    FROM ${messageHistory}
-    where  business_number in ('917666118833')
-    order BY status_time desc) as ids
-  group BY ids.message_id,message_country) as id
-  group by 1,3,4;`
-}
-const insertuserwiseDataAgainstWaba = () => {
-  return `INSERT into userwise_summary (waba_number,message_country,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,total_message_deleted,
-  total_message_seen,total_message_delivered,total_message_accepted,total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage) 
-  values ?
-  ON DUPLICATE KEY
-  UPDATE total_submission= values(total_submission), 
-  total_message_sent = values(total_message_sent), 
-  total_message_Inprocess = values(total_message_Inprocess),
-  total_message_resourceAllocated = values(total_message_resourceAllocated),
-  total_message_forwarded = values(total_message_forwarded), 
-  total_message_deleted = values(total_message_deleted),
-  total_message_seen = values(total_message_seen),
-  total_message_delivered = values(total_message_delivered),
-  total_message_accepted = values(total_message_accepted),
-  total_message_failed = values(total_message_failed),
-  total_message_pending = values(total_message_pending),
-  total_message_rejected = values(total_message_rejected),
-  Delivered_Percentage = values(Delivered_Percentage), 
-  updated_on = now();`
-}
-const checkTableExist = (date) => {
-  const messageHistory = `message_history_${date}`
-  return `SELECT @${messageHistory}`
-}
-const getNewTemplateDetailsAgainstAllUser = (date) => {
-  const messageHistory = `message_history_${date}`
-  return `SELECT business_number, count(state), state, template_id  as "templateId"
-  from
-  (SELECT business_number, state, message_id, created_on , template_id 
-  FROM (
-    SELECT DISTINCT message_id, state, business_number, created_on , template_id 
-    FROM ${messageHistory}
-    where  business_number in (?)
-    order BY status_time desc) as ids
-  group BY ids.message_id) as id
-  group by 1, 3`
-}
-const insertTemplateStatusAgainstWaba = () => {
-  return `INSERT into template_summary(waba_number,template_Id,template_name,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,
-  total_message_deleted,total_message_seen,total_message_delivered,total_message_accepted, total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage) 
-  values (?)
-  ON DUPLICATE KEY
-  UPDATE total_submission= values(total_submission), 
-  total_message_sent = values(total_message_sent), 
-  total_message_Inprocess = values(total_message_Inprocess),
-  total_message_resourceAllocated = values(total_message_resourceAllocated),
-  total_message_forwarded = values(total_message_forwarded), 
-  total_message_deleted = values(total_message_deleted),
-  total_message_seen = values(total_message_seen),
-  total_message_delivered = values(total_message_delivered),
-  total_message_accepted = values(total_message_accepted),
-  total_message_failed = values(total_message_failed),
-  total_message_pending = values(total_message_pending),
-  total_message_rejected = values(total_message_rejected),
-  Delivered_Percentage = values(Delivered_Percentage), 
-  updated_on = now();`
-}
+// const getCountOfStatusOfWabaNumber = () => {
+//   return `select business_number ,state,count(*)
+//   from message_history_220802 where business_number in (?) group by 1,2;`
+// }
+// const getNewStateDataAgainstAllUser = (date) => {
+//   const messageHistory = `message_history_${date}`
+//   return `SELECT business_number, count(state), state , message_country as "messageCountry"
+//   from
+//   (SELECT business_number, state, message_id , message_country
+//   FROM (
+//     SELECT DISTINCT message_id, state, business_number, message_country
+//     FROM ${messageHistory}
+//     where  business_number in ('917666118833')
+//     order BY status_time desc) as ids
+//   group BY ids.message_id,message_country) as id
+//   group by 1,3,4;`
+// }
+// const insertuserwiseDataAgainstWaba = () => {
+//   return `INSERT into userwise_summary (waba_number,message_country,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,total_message_deleted,
+//   total_message_seen,total_message_delivered,total_message_accepted,total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage)
+//   values ?
+//   ON DUPLICATE KEY
+//   UPDATE total_submission= values(total_submission),
+//   total_message_sent = values(total_message_sent),
+//   total_message_Inprocess = values(total_message_Inprocess),
+//   total_message_resourceAllocated = values(total_message_resourceAllocated),
+//   total_message_forwarded = values(total_message_forwarded),
+//   total_message_deleted = values(total_message_deleted),
+//   total_message_seen = values(total_message_seen),
+//   total_message_delivered = values(total_message_delivered),
+//   total_message_accepted = values(total_message_accepted),
+//   total_message_failed = values(total_message_failed),
+//   total_message_pending = values(total_message_pending),
+//   total_message_rejected = values(total_message_rejected),
+//   Delivered_Percentage = values(Delivered_Percentage),
+//   updated_on = now();`
+// }
+// const checkTableExist = (date) => {
+//   const messageHistory = `message_history_${date}`
+//   return `SELECT @${messageHistory}`
+// }
+// not in use this function
+// const getNewTemplateDetailsAgainstAllUser = (date) => {
+//   const messageHistory = `message_history_${date}`
+//   return `SELECT business_number, count(state), state, template_id  as "templateId"
+//   from
+//   (SELECT business_number, state, message_id, created_on , template_id
+//   FROM (
+//     SELECT DISTINCT message_id, state, business_number, created_on , template_id
+//     FROM ${messageHistory}
+//     where  business_number in (?)
+//     order BY status_time desc) as ids
+//   group BY ids.message_id) as id
+//   group by 1, 3`
+// }
+// not in use
+// const insertTemplateStatusAgainstWaba = () => {
+//   return `INSERT into template_summary(waba_number,template_Id,template_name,total_submission,total_message_sent,total_message_Inprocess,total_message_resourceAllocated,total_message_forwarded,
+//   total_message_deleted,total_message_seen,total_message_delivered,total_message_accepted, total_message_failed,total_message_pending,total_message_rejected,Delivered_Percentage)
+//   values (?)
+//   ON DUPLICATE KEY
+//   UPDATE total_submission= values(total_submission),
+//   total_message_sent = values(total_message_sent),
+//   total_message_Inprocess = values(total_message_Inprocess),
+//   total_message_resourceAllocated = values(total_message_resourceAllocated),
+//   total_message_forwarded = values(total_message_forwarded),
+//   total_message_deleted = values(total_message_deleted),
+//   total_message_seen = values(total_message_seen),
+//   total_message_delivered = values(total_message_delivered),
+//   total_message_accepted = values(total_message_accepted),
+//   total_message_failed = values(total_message_failed),
+//   total_message_pending = values(total_message_pending),
+//   total_message_rejected = values(total_message_rejected),
+//   Delivered_Percentage = values(Delivered_Percentage),
+//   updated_on = now();`
+// }
 const getTemplateNameAgainstId = () => {
   return `SELECT template_name As "templateName" From message_template
   where message_template_id = ? and is_active = true`
@@ -373,17 +375,17 @@ const getconversationDataBasedOnWabaNumber = () => {
   where b.from in (?) and b.created_on BETWEEN ? and ? 
   GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
 }
-const insertConversationDataAgainstWaba = () => {
-  return `INSERT into conversation_summary (waba_number,country_name,user_initiated,business_initiated,referral_conversion,not_applicable,total_number) 
-    values ?
-    ON DUPLICATE KEY
-    UPDATE business_initiated= values(business_initiated), 
-    user_initiated = values(user_initiated), 
-    referral_conversion = values(referral_conversion),
-    not_applicable = values(not_applicable),
-    total_number = values(total_number),
-    updated_on = now();`
-}
+// const insertConversationDataAgainstWaba = () => {
+//   return `INSERT into conversation_summary (waba_number,country_name,user_initiated,business_initiated,referral_conversion,not_applicable,total_number)
+//     values ?
+//     ON DUPLICATE KEY
+//     UPDATE business_initiated= values(business_initiated),
+//     user_initiated = values(user_initiated),
+//     referral_conversion = values(referral_conversion),
+//     not_applicable = values(not_applicable),
+//     total_number = values(total_number),
+//     updated_on = now();`
+// }
 
 const getTemplateCategoryId = () => {
   return `select mt.message_template_id,mt.message_template_category_id
@@ -392,6 +394,12 @@ const getTemplateCategoryId = () => {
   join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
   where mt.is_active = true and wi.phone_number = ?
    and mt.message_template_id = ?`
+}
+const getTemplateIdandTemplateNameAgainstUser = () => {
+  return `select DISTINCT message_template_id as "templateId", template_name as "templateName"  from message_template mt 
+  left join waba_information wi on wi.waba_information_id = mt.message_template_id and wi.is_active = true
+  left join users u on u.user_id = wi.user_id and u.user_id = ? and u.is_active = true
+  where mt.is_active = true `
 }
 
 module.exports = {
@@ -416,17 +424,9 @@ module.exports = {
   checkConversationLogExists,
   getMisRelatedData,
   getWabaNameByWabaNumber,
-  getUserDetailsAgainstWabaNumber,
-  addDataToUserWiseSummray,
   getActiveBusinessNumber,
-  getCountOfStatusOfWabaNumber,
-  getNewStateDataAgainstAllUser,
-  insertuserwiseDataAgainstWaba,
-  checkTableExist,
-  getNewTemplateDetailsAgainstAllUser,
-  insertTemplateStatusAgainstWaba,
   getTemplateNameAgainstId,
   getconversationDataBasedOnWabaNumber,
-  insertConversationDataAgainstWaba,
-  getTemplateCategoryId
+  getTemplateCategoryId,
+  getTemplateIdandTemplateNameAgainstUser
 }
