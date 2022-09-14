@@ -495,9 +495,6 @@ class MessageReportsServices {
         'Total Failed': '$totalFailed',
         'Total Rejected': '$totalRejected',
         'Total Seen': '$totalSeen',
-        'Total Deleted': '$totalDeleted',
-        'Total Pending': '$totalPending',
-        'Total Rate Limit': '$totalRateLimit',
         'Delivery Percentage': '$delivereyPercentage',
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
         _id: 0
@@ -545,8 +542,6 @@ class MessageReportsServices {
         'Total Failed': '$totalMessageFailed',
         'Total Rejected': '$totalMessageRejected',
         'Total Seen': '$totalMessageSeen',
-        'Total Deleted': '$totalMessageDeleted',
-        'Total Pending': '$totalMessagePending',
         'Delivery Percentage': '$deliveredPercentage',
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
         _id: 0
