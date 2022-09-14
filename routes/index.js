@@ -10,6 +10,7 @@ const templates = require('../app_modules/templates/route')
 const plans = require('../app_modules/plans/route')
 const audience = require('../app_modules/audience/route')
 const frontEnd = require('../app_modules/front_end/route')
+const report = require('../app_modules/reports/route')
 const headerManipulator = require('../middlewares/headerManipulator')
 const masterData = require('../app_modules/masterData/facebook/route')
 
@@ -42,6 +43,7 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/plans', plans)
   app.use(apiUrlPrefix + '/audience', audience)
   app.use(apiUrlPrefix + '/frontEnd', frontEnd)
+  app.use(apiUrlPrefix + '/report', report)
   app.use(apiUrlPrefix + '/masterData', masterData)
   require('../lib/swagger')(app, '/' + __config.api_prefix + '/api')
 }

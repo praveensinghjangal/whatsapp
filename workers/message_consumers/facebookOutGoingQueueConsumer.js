@@ -8,7 +8,7 @@ const __config = require('../../config')
 const MessageHistoryService = require('../../app_modules/message/services/dbData')
 const RedirectService = require('../../app_modules/integration/service/redirectService')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
-
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMessageId) => {
   const statusSent = q.defer()
   const messageHistoryService = new MessageHistoryService()
@@ -21,14 +21,16 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.forwarded,
     endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date || null
+    date: payload.date || null,
+    campName: payload.whatsapp.campName || null
   }
-  const mappingData = [payload.messageId, serviceProviderMessageId, payload.to, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
+  const mappingData = [payload.messageId, serviceProviderMessageId, payload.to, phoneCodeAndPhoneSeprator(payload.to).countryName, payload.whatsapp.from, statusData.customOne, statusData.customTwo, statusData.customThree, statusData.customFour, statusData.date]
   messageHistoryService.addMessageIdMappingData(mappingData)
     .then(statusDataAdded => {
       return messageHistoryService.addMessageHistoryDataService(statusData)

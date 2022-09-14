@@ -124,7 +124,7 @@ function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
 
         // result[0].tempOptin = moment().diff(moment(result[0].lastMessage), 'hours') <= 24
         // __logger.info('Result>>>>>>>>>>>>>>>>>.....', result[0])
-        dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin })
+        dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin, isFacebookVerified: result[0].isFacebookVerified })
       }
     })
     .catch(err => {

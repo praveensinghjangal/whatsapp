@@ -7,7 +7,7 @@ const MessageHistoryService = require('../../app_modules/message/services/dbData
 const moment = require('moment')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
 const LogConversation = require('../../app_modules/message/services/logConversation')
-
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 const sendToFacebookMessageStatusQueue = (message, queueObj) => {
   const messageRouted = q.defer()
   __logger.info('inside sendToFacebookMessageStatusQueue', { message })
@@ -86,6 +86,7 @@ class FacebookConsumer {
               state: messageData.status,
               errors: messageData.errors,
               endConsumerNumber: messageData.from,
+              countryName: phoneCodeAndPhoneSeprator(messageData.from).countryName,
               businessNumber: messageData.businessNumber,
               conversationId: null
             }
@@ -103,11 +104,13 @@ class FacebookConsumer {
               .then(statusDataAdded => {
                 statusData.messageId = statusDataAdded.messageId
                 statusData.to = statusDataAdded.businessNumber
+
                 statusData.from = statusDataAdded.endConsumerNumber
                 statusData.customOne = statusDataAdded.custom.customOne
                 statusData.customTwo = statusDataAdded.custom.customTwo
                 statusData.customThree = statusDataAdded.custom.customThree
                 statusData.customFour = statusDataAdded.custom.customFour
+                statusData.campName = statusDataAdded.campName
                 delete messageData.retryCount
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber

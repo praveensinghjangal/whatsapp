@@ -13,7 +13,8 @@ const UniqueId = require('../../lib/util/uniqueIdGenerator')
 const rejectionHandler = require('../../lib/util/rejectionHandler')
 const _ = require('lodash')
 const qalllib = require('qalllib')
-
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
+/// only for single or for multiple ???????
 const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, statusName = null) => {
   const statusSent = q.defer()
   const messageHistoryService = new MessageHistoryService()
@@ -25,12 +26,14 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: __constants.MESSAGE_STATUS.inProcess,
     endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date
+    date: payload.date,
+    campName: payload.whatsapp.campName || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -52,7 +55,6 @@ const sendToQueue = (data, config, currentQueueName) => {
     config: config,
     payload: data
   }
-
   let queueObj = __constants.MQ.process_message_general
   if (currentQueueName.includes('chatbot')) {
     queueObj = __constants.MQ.process_message_chatbot
@@ -92,7 +94,7 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
     .done()
   return sendSingleMessage.promise
 }
-
+// insert not veridfied with rejetced status
 const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersThatNeedsToBeChecked) => {
   const messageStatus = q.defer()
   const audienceService = new AudienceService()
@@ -102,50 +104,75 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
   const addAudiencesBody = []
   let verifiedNumbers = []
   let audMappingId
-
+  const notVerifiedPhoneNumber = []
+  let audienceData
   if (!toNumbersThatNeedsToBeChecked.length) {
-    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked })
+    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     return messageStatus.promise
   }
-
   audienceService.getWabaPhoneNumber(fromNumber)
     .then(data => {
       if (data && data.audMappingId) {
         audMappingId = data.audMappingId
         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
       } else {
-        rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
       }
     })
     .then(data => {
+      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data)
       // notVerifiedAudiences = (audiences not present in payloadsToBeCheckedForVerified + audiences not verified in data)
       const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
       const phoneNumbersPresentInDB = []
       const phoneNumbersToBeCheckedWithFb = []
-      for (let i = 0; i < data.length; i++) {
-        phoneNumbersPresentInDB.push(data[i].phoneNumber)
-        if (!data[i].isFacebookVerified) {
-          notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
-          phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
-        } else {
-          alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
+      if (data.length) {
+        for (let i = 0; i < data.length; i++) {
+          phoneNumbersPresentInDB.push(data[i].phoneNumber)
+          if (!data[i].isFacebookVerified) {
+            notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
+            phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
+          } else {
+            alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
+          }
+          verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+          // get all the audiences not present in db's audiences table
+          for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+            const toNumber = toNumbersThatNeedsToBeChecked[i]
+            if (!phoneNumbersPresentInDB.includes(toNumber)) {
+              phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+              notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+            }
+          }
         }
-      }
-
-      verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-
-      // get all the audiences not present in db's audiences table
-      for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-        const toNumber = toNumbersThatNeedsToBeChecked[i]
-        if (!phoneNumbersPresentInDB.includes(toNumber)) {
-          phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
-          notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+        if (data.length !== toNumbersThatNeedsToBeChecked.length) {
+          for (let i = 0; i < data.length; i++) {
+            if (!toNumbersThatNeedsToBeChecked.includes(data[i].phoneNumber)) {
+              notVerifiedPhoneNumber.push(data[i].phoneNumber)
+            }
+          }
+          // const numberNotInAudience = _.differenceBy(toNumbersThatNeedsToBeChecked, data)
+          // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', numberNotInAudience)
+          // notVerifiedPhoneNumber.push(numberNotInAudience)
         }
+      } else {
+        console.log('11111111111111111111111111111111111111111111111111111111111', toNumbersThatNeedsToBeChecked)
+        notVerifiedPhoneNumber.push(...toNumbersThatNeedsToBeChecked)
       }
-
+      // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
+      // // get all the audiences not present in db's audiences table
+      // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+      //   const toNumber = toNumbersThatNeedsToBeChecked[i]
+      //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
+      //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+      //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+      //   }
+      // }
       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
+      // changes  write now
       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
       return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
+
       // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
 
       // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
@@ -154,6 +181,12 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // todo: for numbers not present in db => create new entries in audiences table
     })
     .then((optinData) => {
+      // optinData = [
+      //   {
+      //     input: '+918169979302',
+      //     status: 'invalid',
+      //     wa_id: '918169979302'
+      //   }]
       // optinData = [
       //   {
       //     input: '+917666220077',
@@ -166,16 +199,21 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       //     wa_id: '918097353703'
       //   }
       // ]
+      console.log('optin data', optinData)
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
         const contactNumber = optinData[i].wa_id // without "+"
+        console.log('********************************', contactNumber)
         if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
             updateAudiencesBody.push(contactNumber)
+            console.log('##################################################', contactNumber)
             verifiedNumbers.push(contactNumber)
+          } else {
+            notVerifiedPhoneNumber.push(contactNumber)
           }
         } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
-          const audienceData = {
+          audienceData = {
             audienceId: uniqueId.uuid(),
             phoneNumber: contactNumber,
             channel: __constants.DELIVERY_CHANNEL.whatsapp,
@@ -195,7 +233,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
           addAudiencesBody.push(queryParam)
         }
       }
-
+      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', verifiedNumbers)
       if (updateAudiencesBody && updateAudiencesBody.length) {
         return audienceService.updateAudiencesAsFaceBookVerified(audMappingId, updateAudiencesBody, messageData.config.userId)
       }
@@ -209,9 +247,11 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return true
     })
     .then(data => {
-      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers })
+      console.log('@@@@@!@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', verifiedNumbers, notVerifiedPhoneNumber)
+      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
+      console.log('11111111111111111111111111111111111111111111111111', err)
       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
@@ -220,11 +260,65 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
   return messageStatus.promise
 }
 
+const setStatusToRejectedForNonVerifiedNumbers = (notVerifiedPayloadArr, serviceProviderId) => {
+  const setStatusToRejected = q.defer()
+  qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, notVerifiedPayloadArr, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, serviceProviderId)
+    .then(data => {
+      setStatusToRejected.resolve([...data.resolve, ...data.reject])
+    })
+    .catch(function (error) {
+      const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
+      errorToTelegram.send(error, telegramErrorMessage)
+      console.log('errror', error)
+      return setStatusToRejected.reject(error)
+    })
+    .done()
+  return setStatusToRejected.promise
+}
+
+const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId) => {
+  const saveAndSendMessageStatusForNotVerfiedNumber = q.defer()
+  const messageHistoryService = new MessageHistoryService()
+  const redirectService = new RedirectService()
+  console.log('111111111111111111111111111111111111111111111111111', payload)
+  const statusData = {
+    messageId: payload.messageId,
+    serviceProviderId: serviceProviderId,
+    deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+    statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
+    state: __constants.MESSAGE_STATUS.rejected,
+    endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
+    businessNumber: payload.whatsapp.from,
+    customOne: payload.whatsapp.customOne || null,
+    customTwo: payload.whatsapp.customTwo || null,
+    customThree: payload.whatsapp.customThree || null,
+    customFour: payload.whatsapp.customFour || null,
+    date: payload.date,
+    campName: payload.whatsapp.campName || null
+  }
+  console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', statusData)
+  messageHistoryService.addMessageHistoryDataService(statusData)
+    .then(statusDataAdded => {
+      statusData.to = statusData.businessNumber
+      statusData.from = statusData.endConsumerNumber
+      delete statusData.serviceProviderId
+      delete statusData.businessNumber
+      delete statusData.endConsumerNumber
+      // return true
+      return redirectService.webhookPost(statusData.to, statusData)
+    })
+    .then(data => saveAndSendMessageStatusForNotVerfiedNumber.resolve(data))
+    .catch(err => saveAndSendMessageStatusForNotVerfiedNumber.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  return saveAndSendMessageStatusForNotVerfiedNumber.promise
+}
+
 class PreProcessQueueConsumer {
   startServer () {
     // if (queueObj && queueObj.q_name) {
     __db.init()
       .then(result => {
+        // check the queue name
         const queueObj = __constants.MQ[__config.mqObjectKey]
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const queue = queueObj.q_name
@@ -240,21 +334,29 @@ class PreProcessQueueConsumer {
             // check for audiences only if we pass "isOptin" flag, bcoz we need to add them in audiences if they are not in audiences.
             // if isOptin is false, then we need to check the optin of audiences (audiences needs to be present, so no need to call save optin)
             const config = messageData.config
+            let payloadsToBeCheckedForNotVerified = []
             const payloadArr = messageData.payload
             const fromNumber = payloadArr[0].whatsapp.from
             let finalPayloadArr = []
+            let notVerifiedPayloadArr = []
+            let notVerifiedNumbers
             for (let i = 0; i < payloadArr.length; i++) {
               const payload = payloadArr[i]
               if (payload.isOptin) {
                 toNumbersThatNeedsToBeChecked.push(payload.to)
                 payloadsToBeCheckedForVerified.push(payload)
+                payloadsToBeCheckedForNotVerified.push(payload)
               } else {
                 payloadsToBeNotCheckedForVerified.push(payload)
+                payloadsToBeCheckedForNotVerified.push(payload)
               }
             }
-
+            console.log('444444444444444444444444444444444444444444444444444', toNumbersThatNeedsToBeChecked)
             checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
               .then(data => {
+                console.log('2222222222222222222222222222222222222222222222222222222222', data.verifiedNumbers)
+                console.log('3333333333333333333333333333333333333333333333333333333333', data.notVerifiedAudeienceNumbers)
+                notVerifiedNumbers = data.notVerifiedAudeienceNumbers
                 const verifiedNumbers = data.verifiedNumbers
                 payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
                   if (verifiedNumbers.includes(payload.to)) {
@@ -263,13 +365,40 @@ class PreProcessQueueConsumer {
                     return false
                   }
                 })
+                payloadsToBeCheckedForNotVerified = payloadsToBeCheckedForNotVerified.filter(payload => {
+                  if (notVerifiedNumbers.includes(payload.to)) {
+                    return true
+                  } else {
+                    return false
+                  }
+                })
                 finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
+                notVerifiedPayloadArr = payloadsToBeCheckedForNotVerified
+                console.log('finalPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', finalPayloadArr)
+                console.log('notVerifiedPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', notVerifiedPayloadArr)
+                return { finalPayloadArr, notVerifiedPayloadArr }
                 // console.log('finalPayloadArr', finalPayloadArr)
-                return sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey)
               })
-              .then(sendToQueueRes => {
-                console.log('=================== final final LAst final')
+              .then((sendToQueueRes) => {
                 __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
+                if (notVerifiedNumbers && notVerifiedNumbers.length) {
+                  return setStatusToRejectedForNonVerifiedNumbers(notVerifiedPayloadArr, config.servicProviderId)
+                  // return saveAndSendMessageStatusForNotVerfiedNumber(notVerifiedPayloadArr, config.servicProviderId)
+                } else {
+                  return true
+                }
+              })
+              .then(() => {
+                console.log('-------------------finalPayloadArr', finalPayloadArr)
+                if (finalPayloadArr && finalPayloadArr.length) {
+                  return sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey)
+                } else {
+                  return true
+                }
+              })
+              .then((data) => {
+                console.log('=================== final final LAst final', { data })
+                __logger.info('sendMessageToQueue :: message sentt to queue then 3', { data })
                 rmqObject.channel[queue].ack(mqData)
                 // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
                 //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [] })

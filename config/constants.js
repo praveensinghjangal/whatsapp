@@ -1,12 +1,17 @@
 
 const APP_NAME = 'helowhatsapp'
 const DB_NAME = 'helowhatsapp'
+// const DB_NAME = 'whatsapp1'
 const UPDATE_PROFILE_CONFIGURE_DATA = {
   // API_KEY: 'APIKEY@123',
   MAX_TPA_TO_PROVIDER: 15,
   TEMPLATESAllOWED: 2,
   TPS: 10
 
+}
+const DOWNLOAD_STATUS = {
+  inProcess: 'InProcess',
+  completed: 'Completed'
 }
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
@@ -97,7 +102,11 @@ const ENTITY_NAME = {
   SEGMENT: 'segment',
   MESSAGES: 'messages',
   MESSAGE_STATUS: 'message_status',
-  MESSAGE_STATUS_ERROR: 'message_status_error'
+  DOWNLOAD_STATUS: 'download_status',
+  MESSAGE_STATUS_ERROR: 'message_status_error',
+  CAMPAIGNAME_SUMMARY_REPORT: 'campaignname_summary_report',
+  CONVERSATION_SUMMARY: 'conversation_summary',
+  TEMEPLATE_SUMMARY: 'template_summary'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -172,6 +181,8 @@ const MQ = {
   wabaContainerBindingConsumer_queue_2_min: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_2_min', q_options: { durable: true, maxPriority: 10, messageTtl: 120000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   wabaContainerBindingConsumer_queue_15_min: { type: 'queue', q_name: 'wabaContainerBindingConsumer_queue_15_min', q_options: { durable: true, maxPriority: 10, messageTtl: 900000, deadLetterExchange: '', deadLetterRoutingKey: 'wabaContainerBindingConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   twoFaConsumerQueue: { type: 'queue', q_name: 'twoFaConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  facebookErrorConsumer: { type: 'queue', q_name: 'fb_sendmessage_error', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
+  reportsDownloadConsumer: { type: 'queue', q_name: 'dlr_reports_download', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   twoFaConsumer_queue_10_sec: { type: 'queue', q_name: 'twoFaConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'twoFaConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   embeddedSingupErrorConsumerQueue: { type: 'queue', q_name: 'embeddedSingupErrorConsumerQueue', q_options: { durable: true }, prefetchCount: PREFETCH_COUNT, createChannel: true },
   embeddedSingupErrorConsumer_queue_10_sec: { type: 'queue', q_name: 'embeddedSingupErrorConsumer_queue_10_sec', q_options: { durable: true, maxPriority: 10, messageTtl: 10000, deadLetterExchange: '', deadLetterRoutingKey: 'embeddedSingupErrorConsumerQueue' }, prefetchCount: PREFETCH_COUNT, createChannel: true },
@@ -261,6 +272,7 @@ const VALIDATOR = {
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
+  timeStampSummary: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$',
   aplphaNumericWithUnderscore: '^[a-z0-9_]+$',
   fileExtType: /^(jpg|jpeg|png)$/,
   url: /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/,
@@ -568,6 +580,9 @@ const LOG_CONVERSATION_ON_TYPE_MAPPING = {
 }
 const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Messages Sent: ( | Total Conversations Created: ) | From: [ to ]'
 const MIS_SCHEDULER_TIME = '00 30 08 * * *'
+const CAMP_REPORTS_SCHEDULER_TIME = '*/29 * * * *'
+const TEMPLATE_REPORTS_SCHEDULER_TIME = '*/30 * * * *'
+const CONVERSATION_REPORTS_SCHEDULER_TIME = '*/31 * * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
@@ -669,6 +684,7 @@ const FB_TEMPLATE_REDIS_KEY_FOLDER = 'fb_viva_template_name_mapping:'
 const STREAM_OPTIN_BATCH_SIZE = 3500
 // const SEND_OPTIN_BATCH_ACK_IN_SECS = 180 // 3 minutes
 const SEND_OPTIN_BATCH_ACK_IN_SECS = 120 // 2 minutes
+const FILEPATH = 'public/createdFileCSV'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -797,3 +813,8 @@ module.exports.FB_HEADER_TO_VIVA_HEADER = FB_HEADER_TO_VIVA_HEADER
 module.exports.FB_TEMPLATE_REDIS_KEY_FOLDER = FB_TEMPLATE_REDIS_KEY_FOLDER
 module.exports.STREAM_OPTIN_BATCH_SIZE = STREAM_OPTIN_BATCH_SIZE
 module.exports.SEND_OPTIN_BATCH_ACK_IN_SECS = SEND_OPTIN_BATCH_ACK_IN_SECS
+module.exports.CAMP_REPORTS_SCHEDULER_TIME = CAMP_REPORTS_SCHEDULER_TIME
+module.exports.TEMPLATE_REPORTS_SCHEDULER_TIME = TEMPLATE_REPORTS_SCHEDULER_TIME
+module.exports.CONVERSATION_REPORTS_SCHEDULER_TIME = CONVERSATION_REPORTS_SCHEDULER_TIME
+module.exports.FILEPATH = FILEPATH
+module.exports.DOWNLOAD_STATUS = DOWNLOAD_STATUS

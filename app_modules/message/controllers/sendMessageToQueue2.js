@@ -258,13 +258,14 @@ const controller = (req, res) => {
         const msgInsertData = []
         const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
-          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.inProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,
             serviceProviderMessageId: null,
             serviceProviderId: req.user.providerId,
             deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
             senderPhoneNumber: singleMessage.to,
+            countryName: phoneCodeAndPhoneSeprator(singleMessage.to).countryName,
             wabaPhoneNumber: singleMessage.whatsapp.from,
             customOne: singleMessage.whatsapp.customOne || null,
             customTwo: singleMessage.whatsapp.customTwo || null,

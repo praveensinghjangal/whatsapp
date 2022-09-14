@@ -11,6 +11,7 @@ const HttpService = require('../../lib/http_service')
 // const integrationService = require('./../../app_modules/integration')
 const audienceFetchController = require('../../app_modules/audience/controllers/fetchAudienceData')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
+const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 
 const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, statusName = null) => {
   const statusSent = q.defer()
@@ -23,12 +24,14 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
     state: (isSyncstatus) ? __constants.MESSAGE_STATUS.pending : (statusName ? __constants.MESSAGE_STATUS[statusName] : __constants.MESSAGE_STATUS.resourceAllocated),
     endConsumerNumber: payload.to,
+    countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date
+    date: payload.date,
+    campName: payload.whatsapp.campName || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -150,9 +153,9 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
       .then(data => {
-        if (data.tempOptin) {
+        if (data.tempOptin && data.isFacebookVerified) {
           canSendMessage.resolve(true)
-        } else if (data.optin && templateObj) {
+        } else if (data.optin && templateObj && data.isFacebookVerified) {
           canSendMessage.resolve(true)
         } else {
           canSendMessage.resolve(false)

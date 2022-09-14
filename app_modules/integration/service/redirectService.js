@@ -28,6 +28,7 @@ const sendToHeloCampaign = (payload) => {
 }
 
 const sendToUser = (payload) => {
+  __logger.info('Inside sendToUser', payload)
   const userId = payload.userId || null
   const webhookPostUrl = payload.webhookPostUrl || null
   const wabaNumber = payload.wabaNumber || null
