@@ -943,7 +943,7 @@ class MessgaeHistoryService {
     //   { $sort: { total: -1 } }
     // ])
     // need to add skip and limit in fine
-    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1 }, { createdOn: -1 }, skipPage, lowLimit)
+    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, _id: -1 }, { createdOn: -1 }, skipPage, lowLimit)
       .then(data => {
         console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
