@@ -6,27 +6,6 @@ const qalllib = require('qalllib')
 const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateNameAgainstId
 const moment = require('moment')
 
-// const getTemplateNameAgainstId = (templateId) => {
-//   console.log('9999999999999999999999999999999999999999999999999999999999999999999', templateId)
-//   const getTemplateNameAgainstId = q.defer()
-//   __logger.info('getTemplateNameAgainstId:')
-//   const dbService = new DbService()
-//   dbService.getTemplateNameAgainstId(templateId)
-//     .then(data => {
-//       console.log('5555555555555555555555555555555555555555555555555555555')
-//       if (data.templateName) {
-//         return getTemplateNameAgainstId.resolve(data.templateName)
-//       } else {
-//         return getTemplateNameAgainstId.resolve(null)
-//       }
-//     })
-//     .catch(err => {
-//       __logger.error('Error in getTemplateNameAgainstId :: ', err)
-//       return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
-//     })
-//   return getTemplateNameAgainstId.promise
-// }
-
 const upsertCounts = async singleUserDayStatusData => {
   const date = moment().format('YYYY-MM-DD')
   const dataUpserted = q.defer()
@@ -53,8 +32,6 @@ const upsertCounts = async singleUserDayStatusData => {
     total: singleUserDayStatusData.total,
     deliveredPercentage: 0,
     templateName: null
-    // templateName: getTemplateNameAgainstId(singleUserDayStatusData._id.templateId),
-    // deliveredPercentage : Math.round((parseInt(totalMessageSeen) + parseInt(totalMessageDelivered) + parseInt(totalMessageDeleted) + Number.EPSILON * 100)/parseInt(totalMessageSent)).toFixed(2)
   }
   console.log('888888888888888888888888888888888888888888888888888888888888', dataObject)
   singleUserDayStatusData.status.forEach(singleStatus => {
@@ -99,13 +76,6 @@ const upsertCounts = async singleUserDayStatusData => {
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
   console.log('222222222222222222222222222222222222222222222222222222222222222', dataObject)
   dataObject.templateName = await tempaletName(dataObject.templateId)
-  // getTemplateNameAgainstId(dataObject.templateId)
-  // dataObject.templateName = data
-  // .then((data)=>{
-  //   console.log('1000000000000000000000000000000000',data)
-  //   dataObject.templateName = data
-  //   return dbService.addUpdateCountsAgainst(dataObject, {})
-  // })
   console.log('+++++++++++++++++++++++++++++++++++++++++++', dataObject)
   dbService.addUpdateCountsAgainst(dataObject)
     .then(upserted => {
@@ -121,9 +91,6 @@ const upsertCounts = async singleUserDayStatusData => {
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  // let wabaNumber
-  // dbService.getActiveBusinessNumber()
-  // const currentDate = '2022-05-25'
   const currentDate = moment().format('YYYY-MM-DD')
   dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
     .then(allUserData => {
@@ -145,34 +112,4 @@ const InsertDataIntoSumarryReports = () => {
     })
     .done()
 }
-// .then(async (data) => {
-//   __logger.info('getNewTemplateDetailsAgainstAllUser ~function=getNewTemplateDetailsAgainstAllUser', data)
-//   if (data) {
-//     for (let i = 0; i < data.length; i++) {
-//       const value = data[i]
-//       let finalvalue = 0
-//       if (value['count(state)']) {
-//         finalvalue = value['count(state)']
-//       }
-//       if (!wabaData[value.business_number]) {
-//         wabaData[value.business_number] = {
-//           [value.state]: finalvalue,
-//           templateId: value.templateId,
-//           templateName: await getTemplateNameAgainstId(value.templateId)
-//         }
-//       } else {
-//         wabaData[value.business_number][value.state] = finalvalue
-//       }
-//     }
-//     return wabaData
-//   }
-//   return null
-// })
-// .then(() => {
-//   __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
-//   return dbService.insertTemplateStatusAgainstWaba(wabaData)
-// })
-// .then((data) => {
-//   __logger.info('successfully inserted data into the table ~function=InsertDataIntoSumarryReports', data)
-// })
 module.exports = InsertDataIntoSumarryReports
