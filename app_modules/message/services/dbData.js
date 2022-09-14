@@ -730,6 +730,7 @@ class MessgaeHistoryService {
 
   getNewTemplateDetailsAgainstAllUser (currentDate) {
     const getNewTemplateDetailsAgainstAllUser = q.defer()
+    /// group by day chnages
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date(currentDate + 'T00:00:00.000Z'), $lte: new Date(currentDate + 'T23:59:59.999Z') } } },
       {
         $group: {
