@@ -499,7 +499,8 @@ class MessageReportsServices {
         'Total Pending': '$totalPending',
         'Total Rate Limit': '$totalRateLimit',
         'Delivery Percentage': '$delivereyPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
+        _id: 0
       }
     }
     ]
@@ -531,7 +532,7 @@ class MessageReportsServices {
     },
     {
       $project: {
-        'Template id': '$campaignName',
+        'Template id': '$templateId',
         'Template Name': '$templateName',
         'Phone Number': '$wabaPhoneNumber',
         'Total Sent': '$totalMessageSent',
@@ -547,7 +548,8 @@ class MessageReportsServices {
         'Total Deleted': '$totalMessageDeleted',
         'Total Pending': '$totalMessagePending',
         'Delivery Percentage': '$deliveredPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
+        _id: 0
       }
     }
     ]
@@ -585,7 +587,8 @@ class MessageReportsServices {
         'Referral Conversion': '$referralConversion',
         'Not Applicable': '$notApplicable',
         'Total Count': '$totalcount',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } }
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } },
+        _id: 0
       }
     }
     ]
@@ -616,13 +619,13 @@ class MessageReportsServices {
     },
     {
       $group: {
-        _id: { currentStatus: '$currentStatus', campaignName: '$customOne', wabaPhoneNumber: '$wabaPhoneNumber' },
+        _id: { currentStatus: '$currentStatus', campaignName: '$customTwo', Date: { $dateToString: { format: '%Y-%m-%dT%H:%m:%S.000Z', date: '$createdOn' } }, wabaPhoneNumber: '$wabaPhoneNumber' },
         sc: { $sum: 1 }
       }
     },
     {
       $group: {
-        _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', campaignName: '$_id.campaignName' },
+        _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.Date', campaignName: '$_id.campaignName' },
         totalMessageSent: { $sum: '$sc' },
         status: {
           $push: {
