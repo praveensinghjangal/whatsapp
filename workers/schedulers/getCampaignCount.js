@@ -62,7 +62,7 @@ const createCampaignSummaryReport = () => {
           finalRecord.deliveredMessage = deliveredMessage
           finalRecord.delivereyPercentage = totalDelivered
           finalRecord.campaignSummaryDate = campaignSummaryDate
-          finalRecord.createdOn = new Date(campaignName._id.day)
+          finalRecord.createdOn = new Date(campaignName.day)
           finalRecord.updatedOn = new Date()
           arrOfCamaignName.push(finalRecord)
         }
