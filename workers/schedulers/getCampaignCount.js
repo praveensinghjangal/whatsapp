@@ -12,7 +12,6 @@ const createCampaignSummaryReport = () => {
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
   const date = moment().format('YYYY-MM-DD')
-  const campaignSummaryDate = moment().format('YYYYMMDD')
   messageReportsServices.getCampaignName(date)
     .then(result => {
       result.forEach(element => {
@@ -61,7 +60,7 @@ const createCampaignSummaryReport = () => {
           finalRecord.totalRateLimit = campaignName[__constants.MESSAGE_STATUS.rateLimit] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.rateLimit]
           finalRecord.deliveredMessage = deliveredMessage
           finalRecord.delivereyPercentage = totalDelivered
-          finalRecord.campaignSummaryDate = campaignSummaryDate
+          finalRecord.summaryDate = date
           finalRecord.createdOn = new Date(campaignName.day)
           finalRecord.updatedOn = new Date()
           arrOfCamaignName.push(finalRecord)

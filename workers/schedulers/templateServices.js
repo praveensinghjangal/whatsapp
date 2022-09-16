@@ -4,7 +4,7 @@ const __constants = require('../../config/constants')
 const q = require('q')
 const qalllib = require('qalllib')
 const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateNameAgainstId
-const moment = require('moment')
+// const moment = require('moment')
 const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   const dataUpserted = q.defer()
   const dbService = new DbService()
@@ -69,7 +69,8 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
     }
   })
   dataObject.totalMessageSent = dataObject.total
-  dataObject.deliveredPercentage = Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2) === 'Infinity' ? '0' : Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2)
+  // doubt
+  dataObject.deliveredPercentage = Math.round((((dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted) / dataObject.totalMessageSent) * 100 + Number.EPSILON) * 100) / 100
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
   console.log('222222222222222222222222222222222222222222222222222222222222222', dataObject)
   dataObject.templateName = await tempaletName(dataObject.templateId)
@@ -88,8 +89,8 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  const currentDate = moment().format('YYYY-MM-DD')
-  // const currentDate = '2022-08-01'
+  // const currentDate = moment().format('YYYY-MM-DD')
+  const currentDate = '2022-08-02'
   console.log('InsertDataIntoSumarryReports parameters', currentDate)
   dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
     .then(allUserData => {

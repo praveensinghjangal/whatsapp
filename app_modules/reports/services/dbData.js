@@ -20,14 +20,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { createdOn: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -60,14 +60,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { createdOn: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -99,14 +99,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { createdOn: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -137,14 +137,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { createdOn: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -163,12 +163,12 @@ class MessageReportsServices {
   }
 
   getCampaignSummaryReportByCampaignName (campaignName, startDate, endDate, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getCampaignSummaryReportByCampaignName', startDate, endDate, limit, offset, wabaPhoneNumber)
+    __logger.info('inside getCampaignSummaryReportByCampaignName', campaignName, startDate, endDate, limit, offset, wabaPhoneNumber)
     const doesCampaignSummaryReportByCampaignNameExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        summaryDate: { $gte: startDate, $lte: endDate },
         campaignName: campaignName
       }
     },
@@ -176,14 +176,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
       .then(data => {
@@ -206,21 +206,21 @@ class MessageReportsServices {
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        summaryDate: { $gte: startDate, $lte: endDate }
       }
     },
     {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
       .then(data => {
@@ -243,7 +243,7 @@ class MessageReportsServices {
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        summaryDate: { $gte: startDate, $lte: endDate },
         templateName: templateName
       }
     },
@@ -251,14 +251,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
@@ -281,21 +281,21 @@ class MessageReportsServices {
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        summaryDate: { $gte: startDate, $lte: endDate }
       }
     },
     {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
@@ -318,7 +318,7 @@ class MessageReportsServices {
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        summaryDate: { $gte: startDate, $lte: endDate },
         templateId: templateId
       }
     },
@@ -326,14 +326,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
@@ -412,7 +412,7 @@ class MessageReportsServices {
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        summaryDate: { $gte: startDate, $lte: endDate },
         countryName: { $in: countryName }
       }
     },
@@ -420,14 +420,14 @@ class MessageReportsServices {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
       .then(data => {
@@ -450,21 +450,21 @@ class MessageReportsServices {
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        summaryDate: { $gte: startDate, $lte: endDate }
       }
     },
     {
       $facet: {
         data: [
           { $skip: offset },
-          { $limit: limit }
+          { $limit: limit },
+          { $sort: { summaryDate: 1 } }
         ],
         totalCount: [
           { $count: 'count' }
         ]
       }
-    },
-    { $sort: { createdOn: 1 } }
+    }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
       .then(data => {
