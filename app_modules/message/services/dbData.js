@@ -908,7 +908,7 @@ class MessgaeHistoryService {
     console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
     __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
     const getUserStatusCountPerDayAgainstWaba = q.defer()
-    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, _id: 0 }, { createdOn: -1 }, skipPage, lowLimit)
+    __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, campName: 1, _id: 0 }, { createdOn: -1 }, skipPage, lowLimit)
       .then(data => {
         console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
@@ -953,10 +953,10 @@ class MessgaeHistoryService {
 
   updateDownloadFileAgainstWabaIdandUserId (validateData) {
     const updateDownloadFileAgainstWabaIdandUserId = q.defer()
-    __db.mongo.__insert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, validateData)
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { DownloadStatus: __constants.DOWNLOAD_STATUS.completed, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber, uniqueId: validateData.uniqueId, filename: validateData.filename })
       .then(data => {
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
-        if (data && data.insertedCount > 0) {
+        if (data) {
           console.log('countOfDataAgainstWabaAndUserId data', data)
           updateDownloadFileAgainstWabaIdandUserId.resolve(data)
         } else {

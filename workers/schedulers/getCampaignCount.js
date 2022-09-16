@@ -16,6 +16,7 @@ const createCampaignSummaryReport = () => {
   messageReportsServices.getCampaignName(date)
     .then(result => {
       result.forEach(element => {
+        // gopal changes comit by shivam
         if ((element._id.campaignName !== null) || (!_.isEmpty(element._id.campaignName))) {
           const finalRecord = {
             campaignName: '',

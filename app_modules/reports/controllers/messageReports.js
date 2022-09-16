@@ -282,12 +282,10 @@ const downloadDlrRequest = (req, res) => {
       validateData.wabaPhoneNumber = wabaPhoneNumber
       const startDate = validateData.startDate.slice(0, 10)
       const endDate = validateData.endDate.slice(0, 10)
-      // validateData.wabaPhoneNumber = '917666118833'
+      // validateData.wabaPhoneNumber = '918080800808'
       validateData.uniqueId = uuid
       validateData.filename = `${startDate}_${endDate}_${validateData.wabaPhoneNumber}`
-      validateData.DownloadStatus = __constants.DOWNLOAD_STATUS.inProcess
       sendToQueueData = validateData
-
       return dbService.updateDownloadFileAgainstWabaIdandUserId(validateData)
     })
     .then((data) => {
