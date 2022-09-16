@@ -120,7 +120,6 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       }
     })
     .then(data => {
-      console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', data)
       // notVerifiedAudiences = (audiences not present in payloadsToBeCheckedForVerified + audiences not verified in data)
       const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
       const phoneNumbersPresentInDB = []
@@ -155,7 +154,6 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
           // notVerifiedPhoneNumber.push(numberNotInAudience)
         }
       } else {
-        console.log('11111111111111111111111111111111111111111111111111111111111', toNumbersThatNeedsToBeChecked)
         notVerifiedPhoneNumber.push(...toNumbersThatNeedsToBeChecked)
       }
       // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
@@ -199,15 +197,12 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       //     wa_id: '918097353703'
       //   }
       // ]
-      console.log('optin data', optinData)
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
         const contactNumber = optinData[i].wa_id // without "+"
-        console.log('********************************', contactNumber)
         if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
             updateAudiencesBody.push(contactNumber)
-            console.log('##################################################', contactNumber)
             verifiedNumbers.push(contactNumber)
           } else {
             notVerifiedPhoneNumber.push(contactNumber)
@@ -233,7 +228,6 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
           addAudiencesBody.push(queryParam)
         }
       }
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', verifiedNumbers)
       if (updateAudiencesBody && updateAudiencesBody.length) {
         return audienceService.updateAudiencesAsFaceBookVerified(audMappingId, updateAudiencesBody, messageData.config.userId)
       }
@@ -247,7 +241,6 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return true
     })
     .then(data => {
-      console.log('@@@@@!@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', verifiedNumbers, notVerifiedPhoneNumber)
       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
@@ -280,7 +273,6 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
   const saveAndSendMessageStatusForNotVerfiedNumber = q.defer()
   const messageHistoryService = new MessageHistoryService()
   const redirectService = new RedirectService()
-  console.log('111111111111111111111111111111111111111111111111111', payload)
   const statusData = {
     messageId: payload.messageId,
     serviceProviderId: serviceProviderId,
@@ -297,7 +289,6 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
     date: payload.date,
     campName: payload.whatsapp.campName || null
   }
-  console.log('&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&', statusData)
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
       statusData.to = statusData.businessNumber
@@ -351,11 +342,8 @@ class PreProcessQueueConsumer {
                 payloadsToBeCheckedForNotVerified.push(payload)
               }
             }
-            console.log('444444444444444444444444444444444444444444444444444', toNumbersThatNeedsToBeChecked)
             checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
               .then(data => {
-                console.log('2222222222222222222222222222222222222222222222222222222222', data.verifiedNumbers)
-                console.log('3333333333333333333333333333333333333333333333333333333333', data.notVerifiedAudeienceNumbers)
                 notVerifiedNumbers = data.notVerifiedAudeienceNumbers
                 const verifiedNumbers = data.verifiedNumbers
                 payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
@@ -389,7 +377,6 @@ class PreProcessQueueConsumer {
                 }
               })
               .then(() => {
-                console.log('-------------------finalPayloadArr', finalPayloadArr)
                 if (finalPayloadArr && finalPayloadArr.length) {
                   return sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey)
                 } else {
@@ -397,7 +384,6 @@ class PreProcessQueueConsumer {
                 }
               })
               .then((data) => {
-                console.log('=================== final final LAst final', { data })
                 __logger.info('sendMessageToQueue :: message sentt to queue then 3', { data })
                 rmqObject.channel[queue].ack(mqData)
                 // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
