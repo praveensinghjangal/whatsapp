@@ -26,7 +26,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -65,7 +66,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -103,7 +105,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -140,7 +143,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
@@ -178,7 +182,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
       .then(data => {
@@ -214,7 +219,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pineLine)
       .then(data => {
@@ -251,7 +257,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
@@ -287,7 +294,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
@@ -324,7 +332,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pineLine)
       .then(data => {
@@ -417,7 +426,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
       .then(data => {
@@ -453,7 +463,8 @@ class MessageReportsServices {
           { $count: 'count' }
         ]
       }
-    }
+    },
+    { $sort: { createdOn: 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pineLine)
       .then(data => {
@@ -499,7 +510,8 @@ class MessageReportsServices {
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
         _id: 0
       }
-    }
+    },
+    { $sort: { 'Date (MM/DD/YYYY)': 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CAMPAIGNAME_SUMMARY_REPORT, pipeline)
       .then(data => {
@@ -546,7 +558,8 @@ class MessageReportsServices {
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
         _id: 0
       }
-    }
+    },
+    { $sort: { 'Date (MM/DD/YYYY)': 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, pipeline)
       .then(data => {
@@ -585,7 +598,8 @@ class MessageReportsServices {
         'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } },
         _id: 0
       }
-    }
+    },
+    { $sort: { 'Date (MM/DD/YYYY)': 1 } }
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, pipeline)
       .then(data => {
