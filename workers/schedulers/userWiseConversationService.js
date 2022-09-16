@@ -24,8 +24,8 @@ const rejectionHandler = require('../../lib/util/rejectionHandler')
 const conversationMisService = () => {
   const dbService = new DbService()
   const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
-  // const previousDateWithTime = '2020-01-01 00:00:00'
-  // const currentdateWithTime = '2022-09-09 23:59:59'
+  // const previousDateWithTime = '2022-09-06 00:00:00'
+  // const currentdateWithTime = '2022-09-06 23:59:59'
   const currentdateWithTime = moment().format('YYYY-MM-DD 23:59:59')
   const date = moment().format('YYYY-MM-DD')
   let wabaNumber
@@ -34,7 +34,6 @@ const conversationMisService = () => {
     .then((data) => {
       if (data) {
         wabaNumber = data.wabaNumber.split(',')
-        console.log('1111111111111111111', wabaNumber, previousDateWithTime, currentdateWithTime)
         return dbService.getconversationDataBasedOnWabaNumber(wabaNumber, previousDateWithTime, currentdateWithTime)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'No active waba numbers in platform', data: {} })
@@ -46,8 +45,16 @@ const conversationMisService = () => {
           const value = data[i]
           let finalvalue = 0
           let countryName1 = 0
+          let finalDate
           if (value.conversationCategoryCount) {
             finalvalue = value.conversationCategoryCount
+          } else {
+            finalvalue = 0
+          }
+          if (value.summaryDate) {
+            finalDate = value.summaryDate
+          } else {
+            finalDate = null
           }
           if (value.messageCountry) {
             countryName1 = value.messageCountry
@@ -55,7 +62,8 @@ const conversationMisService = () => {
           if (!wabaData[value.wabaPhoneNumber]) {
             wabaData[value.wabaPhoneNumber] = {
               [value.conversationCategory]: finalvalue,
-              countryName: countryName1
+              countryName: countryName1,
+              summaryDate: finalDate
             }
           } else {
             wabaData[value.wabaPhoneNumber][value.conversationCategory] = finalvalue
@@ -67,7 +75,6 @@ const conversationMisService = () => {
       }
     })
     .then((data) => {
-      console.log('111111111111111111111111111111100000000000000000000000', wabaData)
       __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
       if (data) {
         return dbService.insertConversationDataAgainstWaba(wabaData, date)

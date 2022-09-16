@@ -369,9 +369,9 @@ const getTemplateNameAgainstId = () => {
 }
 const getconversationDataBasedOnWabaNumber = () => {
   return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory,
-  b.from as wabaPhoneNumber,b.message_country as "messageCountry"
+  b.from as wabaPhoneNumber,b.message_country as "messageCountry", DATE_FORMAT(b.created_on, '%Y-%m-%d') as summaryDate
   FROM billing_conversation b
-  where b.from in (?) and b.created_on BETWEEN ? and ? 
+  where b.from in (?) and b.created_on BETWEEN ? and ?
   GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
 }
 // const insertConversationDataAgainstWaba = () => {

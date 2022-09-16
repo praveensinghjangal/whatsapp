@@ -833,6 +833,7 @@ class MessgaeHistoryService {
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
         if (result) {
+          console.log('getconversationDataBasedOnWabaNumber result ', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
@@ -844,7 +845,7 @@ class MessgaeHistoryService {
     return getconversationDataBasedOnWabaNumber.promise
   }
 
-  insertConversationDataAgainstWaba (dataIncoming, date) {
+  insertConversationDataAgainstWaba (dataIncoming) {
     const insertConversationDataAgainstWaba = q.defer()
     const wabaNumbers = Object.keys(dataIncoming)
     const dataValue = []
@@ -856,7 +857,6 @@ class MessgaeHistoryService {
         notApplicable: 0,
         businessInitiated: 0,
         referralConversion: 0,
-        date: date,
         totalcount: 0
       }
       dataInsert.wabaPhoneNumber = wabanumber
@@ -865,6 +865,7 @@ class MessgaeHistoryService {
       dataInsert.notApplicable = data.na || 0
       dataInsert.referralConversion = data.na || 0
       dataInsert.countryName = data.countryName || null
+      dataInsert.summaryDate = data.summaryDate
       dataInsert.totalcount = dataInsert.userInitiated + dataInsert.businessInitiated + dataInsert.notApplicable + dataInsert.referralConversion || 0
       dataInsert.createdOn = new Date()
       dataValue.push(dataInsert)
