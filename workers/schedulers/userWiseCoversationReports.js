@@ -6,7 +6,7 @@ const __constants = require('../../config/constants')
 // const DbService = require('../../app_modules/message/services/dbData')
 
 const task = {
-  one: cron.schedule(__constants.REPORTS_SCHEDULER_TIME, () => {
+  one: cron.schedule(__constants.CONVERSATION_REPORTS_SCHEDULER_TIME, () => {
     conversationMisService()
   })
 }

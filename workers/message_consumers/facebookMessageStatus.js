@@ -110,6 +110,7 @@ class FacebookConsumer {
                 statusData.customTwo = statusDataAdded.custom.customTwo
                 statusData.customThree = statusDataAdded.custom.customThree
                 statusData.customFour = statusDataAdded.custom.customFour
+                statusData.campName = statusDataAdded.campName
                 delete messageData.retryCount
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber

@@ -30,7 +30,8 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
-    date: payload.date
+    date: payload.date,
+    campName: payload.whatsapp.campName || null
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -152,7 +153,7 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
       .then(data => {
-        if (data.tempOptin && data.isFacebookVerified) {
+        if (data.tempOptin) {
           canSendMessage.resolve(true)
         } else if (data.optin && templateObj && data.isFacebookVerified) {
           canSendMessage.resolve(true)

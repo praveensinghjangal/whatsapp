@@ -7,11 +7,10 @@ const __constants = require('../../config/constants')
 // const moment = require('moment')
 
 const task = {
-  one: cron.schedule(__constants.REPORTS_SCHEDULER_TIME, () => {
-    // const dbService = new DbService()
-    // const currentDateAndTime = moment().format('DD/MM/YYYY HH:mm:ss')
-    // const currentDate = moment().format('YYMMDD')
+  one: cron.schedule(__constants.TEMPLATE_REPORTS_SCHEDULER_TIME, () => {
     InsertTemplateSumarryReports()
+  }, {
+    timezone: 'Asia/Kolkata'
   })
 }
 
