@@ -64,7 +64,7 @@ class dlrReportsDownlaod {
                 console.log('********************************', data)
                 if (data.count) {
                   const count = data.data || 0
-                  const lowLimit = 100000
+                  const lowLimit = 1000000
                   const part = Math.ceil(count / lowLimit)
                   let skipPage = 0
                   // const numberOfTimes = getNumberOfTimeToGetData(lowLimit, count)

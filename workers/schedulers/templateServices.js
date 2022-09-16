@@ -99,7 +99,7 @@ const InsertDataIntoSumarryReports = () => {
     })
     .then(processed => {
       console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', processed)
-      if (processed && processed.reject && processed.reject.length === 0) {
+      if (processed) {
         __logger.info('successfully processed data ~function=processCounts', processed)
       } else {
         __logger.info('processed data with errors ~function=processCounts', processed)

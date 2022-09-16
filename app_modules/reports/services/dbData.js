@@ -615,13 +615,15 @@ class MessageReportsServices {
     },
     {
       $group: {
-        _id: { currentStatus: '$currentStatus', campaignName: '$campName', Date: { $dateToString: { format: '%Y-%m-%dT%H:%m:%S.000Z', date: '$createdOn' } }, wabaPhoneNumber: '$wabaPhoneNumber' },
+        _id: { currentStatus: '$currentStatus', campaignName: '$campName', wabaPhoneNumber: '$wabaPhoneNumber' },
+        date: { $first: '$createdOn' },
         sc: { $sum: 1 }
       }
     },
     {
       $group: {
         _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', day: '$_id.Date', campaignName: '$_id.campaignName' },
+        day: { $min: '$date' },
         totalMessageSent: { $sum: '$sc' },
         status: {
           $push: {
