@@ -61,7 +61,6 @@ class dlrReportsDownlaod {
                 return dbService.countOfDataAgainstWabaAndUserId(messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber, messageData.userId)
               })
               .then(async (data) => {
-                console.log('********************************', data)
                 if (data.count) {
                   const count = data.data || 0
                   const lowLimit = 1000000

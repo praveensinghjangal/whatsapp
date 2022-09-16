@@ -4,6 +4,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const util = require('util')
 const q = require('q')
+const moment = require('moment')
 // const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // const HttpService = require('../../../lib/http_service')
 // const __config = require('../../../config')
@@ -78,8 +79,10 @@ const campaignSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      if (!req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+      var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+      if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, startDate, endDate, wabaPhoneNumber, limit, offset)
+      if (!req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByDate(startDate, endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -108,9 +111,11 @@ const templateSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else return messageReportsServices.getTemplateSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+      var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+      if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, startDate, endDate, wabaPhoneNumber, limit, offset)
+      else if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, startDate, endDate, wabaPhoneNumber, limit, offset)
+      else return messageReportsServices.getTemplateSummaryReportByDate(startDate, endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -139,8 +144,10 @@ const userConversationReport = (req, res) => {
       limit = req.body.limit ? +req.body.limit : 10
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
-      if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
-      else return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
+      var startDate = moment(req.body.startDate).format('YYYY-MM-DD')
+      var endDate = moment(req.body.endDate).format('YYYY-MM-DD')
+      if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, startDate, endDate, limit, offset)
+      else return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, startDate, endDate)
     })
     .then((data) => {
       if (data) {
