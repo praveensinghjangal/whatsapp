@@ -4,7 +4,7 @@ const __constants = require('../../config/constants')
 const q = require('q')
 const qalllib = require('qalllib')
 const tempaletName = require('../../lib/util/getTemplateAgainstId').getTemplateNameAgainstId
-const moment = require('moment')
+// const moment = require('moment')
 const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   const dataUpserted = q.defer()
   const dbService = new DbService()
@@ -89,7 +89,8 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  const currentDate = moment().format('YYYY-MM-DD')
+  // const currentDate = moment().format('YYYY-MM-DD')
+  const currentDate = '2022-08-02'
   console.log('InsertDataIntoSumarryReports parameters', currentDate)
   dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
     .then(allUserData => {
