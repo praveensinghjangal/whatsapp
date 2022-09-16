@@ -489,7 +489,7 @@ class MessageReportsServices {
     const pipeline = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        summaryDate: { $gte: startDate, $lte: endDate }
       }
     },
     {
@@ -507,7 +507,7 @@ class MessageReportsServices {
         'Total Rejected': '$totalRejected',
         'Total Seen': '$totalSeen',
         'Delivery Percentage': '$delivereyPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: { $dateFromString: { format: '%Y-%m-%d', dateString: '$summaryDate' } } } },
         _id: 0
       }
     },
@@ -536,7 +536,7 @@ class MessageReportsServices {
     const pipeline = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        summaryDate: { $gte: startDate, $lte: endDate }
       }
     },
     {
@@ -555,7 +555,7 @@ class MessageReportsServices {
         'Total Rejected': '$totalMessageRejected',
         'Total Seen': '$totalMessageSeen',
         'Delivery Percentage': '$deliveredPercentage',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y %H:%M:%S', date: '$createdOn' } },
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: { $dateFromString: { format: '%Y-%m-%d', dateString: '$summaryDate' } } } },
         _id: 0
       }
     },
@@ -583,7 +583,7 @@ class MessageReportsServices {
     const pipeline = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
-        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) }
+        summaryDate: { $gte: startDate, $lte: endDate }
       }
     },
     {
@@ -595,7 +595,7 @@ class MessageReportsServices {
         'Referral Conversion': '$referralConversion',
         'Not Applicable': '$notApplicable',
         'Total Count': '$totalcount',
-        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: '$createdOn' } },
+        'Date (MM/DD/YYYY)': { $dateToString: { format: '%m/%d/%Y', date: { $dateFromString: { format: '%Y-%m-%d', dateString: '$summaryDate' } } } },
         _id: 0
       }
     },

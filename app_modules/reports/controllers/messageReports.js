@@ -169,26 +169,29 @@ const downloadCampaignSummary = (req, res) => {
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
-  let filePath = __constants.FILEPATH + `/${uuid}`
+  let fullFilePath
+  const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
+  var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+  var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
   const validate = new ValidatonService()
   __logger.info('Get download CampaignSummary date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
-      return messageReportsServices.downloadCampaignSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+      return messageReportsServices.downloadCampaignSummary(wabaPhoneNumber, startDate, endDate)
     })
     .then((data) => {
       if (data) {
-        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.campaignSummary.csv`
+        fullFilePath = filePath + `/${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.campaignSummary.csv`
         const result = json2csv(data, { header: true })
 
-        return writeFile(filePath, result)
+        return writeFile(fullFilePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
     })
     .then(() => {
-      return res.download(filePath)
+      return res.download(fullFilePath)
     })
     .then(() => {
       return rimRaf(filePath)
@@ -207,25 +210,28 @@ const downloadTemplateSummary = (req, res) => {
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
-  let filePath = __constants.FILEPATH + `/${uuid}`
+  var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+  var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+  let fullFilePath
+  const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
   const validate = new ValidatonService()
   __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
-      return messageReportsServices.downloadTemplateSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+      return messageReportsServices.downloadTemplateSummary(wabaPhoneNumber, startDate, endDate)
     })
-    .then(async (data) => {
+    .then((data) => {
       if (data) {
-        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.templateSummary.csv`
+        fullFilePath = filePath + `/${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.templateSummary.csv`
         const result = json2csv(data, { header: true })
-        return writeFile(filePath, result)
+        return writeFile(fullFilePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
     })
     .then(() => {
-      return res.download(filePath)
+      return res.download(fullFilePath)
     })
     .then(() => {
       return rimRaf(filePath)
@@ -244,25 +250,28 @@ const downloadUserConversationReport = (req, res) => {
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
-  let filePath = __constants.FILEPATH + `/${uuid}`
+  var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+  var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+  let fullFilePath
+  const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
   const validate = new ValidatonService()
   __logger.info('download User conversation report by date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
-      return messageReportsServices.downloadUserConversationSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+      return messageReportsServices.downloadUserConversationSummary(wabaPhoneNumber, startDate, endDate)
     })
-    .then(async (data) => {
+    .then((data) => {
       if (data) {
-        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.userConversationSummary.csv`
+        fullFilePath = filePath + `/${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.userConversationSummary.csv`
         const result = json2csv(data, { header: true })
-        return writeFile(filePath, result)
+        return writeFile(fullFilePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
     })
     .then(() => {
-      return res.download(filePath)
+      return res.download(fullFilePath)
     })
     .then(() => {
       return rimRaf(filePath)
