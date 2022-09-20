@@ -11,7 +11,8 @@ const UPDATE_PROFILE_CONFIGURE_DATA = {
 }
 const DOWNLOAD_STATUS = {
   inProcess: 'InProcess',
-  completed: 'Completed'
+  completed: 'Completed',
+  fileExists: 'FileExists'
 }
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',

@@ -31,7 +31,7 @@ class MessageReportsServices {
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
-        __logger.info('getDeliveryReportByMessageId query Result', { result })
+        __logger.info('getDeliveryReportByMessageId query Result', {})
         if (result && result[0] && result[0].totalCount.length > 0) {
           doesDeliveryReportExists.resolve(result)
         } else {
@@ -71,7 +71,7 @@ class MessageReportsServices {
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
-        __logger.info('getDeliveryReportByConsumerNumber query Result', { result })
+        __logger.info('getDeliveryReportByConsumerNumber query Result', {})
         if (result && result[0] && result[0].totalCount.length > 0) {
           doesDeliveryReportByConsumerNumberExists.resolve(result)
         } else {
@@ -110,7 +110,7 @@ class MessageReportsServices {
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
-        __logger.info('getDeliveryReportByCampaignName query Result', { result })
+        __logger.info('getDeliveryReportByCampaignName query Result', {})
         if (result && result[0] && result[0].totalCount.length > 0) {
           doesDeliveryReportByStatusExists.resolve(result)
         } else {
@@ -148,7 +148,7 @@ class MessageReportsServices {
     ]
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
       .then(result => {
-        __logger.info('getDeliveryReportByDate query Result', { result })
+        __logger.info('getDeliveryReportByDate query Result', {})
         if (result && result[0] && result[0].totalCount.length > 0) {
           doesDeliveryReportByDateExists.resolve(result)
         } else {
@@ -677,6 +677,25 @@ class MessageReportsServices {
       .catch(err => {
         console.log(err)
         __logger.error('SCHEDULER::update template cron::update template cron ~updateCampaignCount  error: ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
+
+  updateDownloadDlr (data) {
+    const promises = q.defer()
+    __logger.info('inside updateDownloadDlr', data)
+    __db.mongo.__update(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { filename: data.filename, wabaPhoneNumber: data.wabaPhoneNumber }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess })
+      .then(result => {
+        if (result && result.result && result.result.ok === 1) {
+          return promises.resolve(result)
+        } else {
+          return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'updateDownloadDlr:: Record not updated' })
+        }
+      })
+      .catch(err => {
+        console.log(err)
+        __logger.error('error in updateDownloadDlr:  ', err)
         promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return promises.promise
