@@ -337,7 +337,7 @@ const downloadDlrRequest = (req, res) => {
       return checkFile.zipFileExixts(validateData)
     })
     .then(data => {
-      if (sendToQueueData.changeZipFile) return fs.unlinkSync(path.resolve(__dirname, `../../../${__constants.FILEPATH}/${sendToQueueData.filename}.zip`))
+      if (sendToQueueData.changeZipFile) return fs.unlinkSync(path.resolve(__dirname, `../../../app_modules/download/${sendToQueueData.filename}.zip`))
       else return dbService.updateDownloadFileAgainstWabaIdandUserId(sendToQueueData)
     })
     .then(data => {

@@ -96,21 +96,25 @@ class dlrReportsDownlaod {
                 }
               })
               .then(() => {
-                var output = fs.createWriteStream(path.resolve(__dirname, `../../${__constants.FILEPATH}/${messageData.filename}.zip`))
+                var output = fs.createWriteStream(path.resolve(__dirname, `../../app_modules/download/${messageData.filename}.zip`))
                 var archive = archiver('zip')
                 archive.on('error', function (err) {
                   throw err
                 })
                 archive.pipe(output)
-                archive.directory(path.resolve(__dirname, `../../${pathName}`), false)
+                archive.directory(path.resolve(__dirname, `../../app_modules/download/${messageData.filename}`), false)
                 return archive.finalize()
               })
               .then((data) => {
-                return dbService.updateStatusAgainstWabaAndUser(messageData.wabaPhoneNumber, messageData.filename, `${__constants.FILEPATH}/${messageData.filename}`)
+                return dbService.updateStatusAgainstWabaAndUser(messageData.wabaPhoneNumber, messageData.filename, `${pathName}`)
               })
               .then((data) => {
                 __logger.info('getAllUserStatusCountPerDay: data')
-                fs.rmdirSync(path.resolve(__dirname, `../../${pathName}`), { recursive: true, force: true })
+                // console.log('222222222222222222222222222222222222222222222', __dirname)
+                // console.log('111111111111111111111111111111111111111111111', pathName)
+                // console.log('333333333333333333333333333333333333', __dirname, `../../app_modules/download/${messageData.filename}`)
+                // console.log('44444444444444444444444444444444444444', path.resolve(__dirname, `../../app_modules/download/${messageData.filename}`))
+                fs.rmdirSync(path.resolve(__dirname, `../../app_modules/download/${messageData.filename}`), { recursive: true, force: true })
                 // console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })

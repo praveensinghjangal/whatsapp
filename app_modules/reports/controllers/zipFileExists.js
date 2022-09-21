@@ -12,7 +12,7 @@ const zipFileExixts = (file) => {
   if (file && file.changeZipFile) {
     doesZipFileExixts.resolve(messageReportsServices.updateDownloadDlr(file))
   } else {
-    if (fs.existsSync(path.resolve(__dirname, `../../../${__constants.FILEPATH}/${file.filename}.zip`))) {
+    if (fs.existsSync(path.resolve(__dirname, `../../../app_modules/download/${file.filename}.zip`))) {
       doesZipFileExixts.reject({ type: __constants.RESPONSE_MESSAGES.RECORD_EXIST, data: __constants.DOWNLOAD_STATUS.fileExists })
     } else {
       doesZipFileExixts.resolve({ changeZipFile: false })
