@@ -390,7 +390,6 @@ const downloadDlr = (req, res) => {
   validate.downloadDlr(req.query)
     .then((validate) => {
       download = `${validate.path}.zip`
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', download)
       return filesPresent(download)
     })
     .then((data) => {

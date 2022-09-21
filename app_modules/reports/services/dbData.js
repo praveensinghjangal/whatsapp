@@ -685,7 +685,7 @@ class MessageReportsServices {
   updateDownloadDlr (data) {
     const promises = q.defer()
     __logger.info('inside updateDownloadDlr', data)
-    __db.mongo.__update(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { filename: data.filename, wabaPhoneNumber: data.wabaPhoneNumber }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess })
+    __db.mongo.__update(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { filename: data.filename, wabaPhoneNumber: data.wabaPhoneNumber, isActive: '1' }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess, updateOn: new Date() })
       .then(result => {
         if (result && result.result && result.result.ok === 1) {
           return promises.resolve(result)
@@ -696,6 +696,42 @@ class MessageReportsServices {
       .catch(err => {
         console.log(err)
         __logger.error('error in updateDownloadDlr:  ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
+
+  findDlrZipFile () {
+    const promises = q.defer()
+    __logger.info('inside findDlrZipFile')
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { isActive: '1', updateOn: { $lt: new Date(new Date().setDate(new Date().getDate() - 1)), $gte: new Date(new Date().setDate(new Date().getDate() - 2)) } }, { })
+      .then(result => {
+        if (result && result.length > 0) {
+          return promises.resolve(result)
+        } else {
+          return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'findDlrZipFile:: Record not updated' })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in findDlrZipFile:  ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
+
+  deleteDlrrecord (data) {
+    const promises = q.defer()
+    __logger.info('inside deleteDlrrecord')
+    __db.mongo.__removeBulkFile(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, data)
+      .then(result => {
+        if (result && result.result && result.result.ok === 1) {
+          return promises.resolve(result)
+        } else {
+          return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'deleteDlrrecord:: Record not updated' })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in deleteDlrrecord:  ', err)
         promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return promises.promise

@@ -953,7 +953,7 @@ class MessgaeHistoryService {
 
   updateDownloadFileAgainstWabaIdandUserId (validateData) {
     const updateDownloadFileAgainstWabaIdandUserId = q.defer()
-    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { DownloadStatus: __constants.DOWNLOAD_STATUS.completed, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber, uniqueId: validateData.uniqueId, filename: validateData.filename })
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { DownloadStatus: __constants.DOWNLOAD_STATUS.completed, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber, isActive: '1' }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber, uniqueId: validateData.uniqueId, filename: validateData.filename, updateOn: new Date(), isActive: '1' })
       .then(data => {
         __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba')
         if (data) {
@@ -973,7 +973,7 @@ class MessgaeHistoryService {
   updateStatusAgainstWabaAndUser (wabaPhoneNumber, fileName, path) {
     // messageData.wabaPhoneNumber, messageData.userId, messageData.startDate, messageData.endDate, fileName, pathName
     const updateStatusAgainstWabaAndUser = q.defer()
-    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, filename: fileName }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
+    __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, filename: fileName, isActive: '1' }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
       .then(data => {
         __logger.info('data ~function=updateStatusAgainstWabaAndUser', data)
         if (data) {
@@ -984,7 +984,6 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        console.log('updateStatusAgainstWabaAndUser error')
         __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
         updateStatusAgainstWabaAndUser.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
@@ -993,7 +992,7 @@ class MessgaeHistoryService {
 
   getdownloadlist (userId, wabaPhoneNumber) {
     const getdownloadlist = q.defer()
-    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, userId: userId }, { startDate: 1, endDate: 1, DownloadStatus: 1, filename: 1, fileNameInServer: 1, path: 1 })
+    __db.mongo.__findSortField(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, userId: userId, isActive: '1' }, { startDate: 1, endDate: 1, DownloadStatus: 1, filename: 1, fileNameInServer: 1, path: 1 }, { updateOn: -1 })
       .then(result => {
         if (result && result.length > 0) {
           getdownloadlist.resolve(result)
