@@ -124,6 +124,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
       const phoneNumbersPresentInDB = []
       const phoneNumbersToBeCheckedWithFb = []
+      const numbersFromDataBase = []
       if (data.length) {
         for (let i = 0; i < data.length; i++) {
           phoneNumbersPresentInDB.push(data[i].phoneNumber)
@@ -143,12 +144,28 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
             }
           }
         }
-        if (data.length !== toNumbersThatNeedsToBeChecked.length) {
+        // remove dublicate from array
+        const afterRemoveDublicate = [...new Set(toNumbersThatNeedsToBeChecked)]
+        if (data.length !== afterRemoveDublicate.length) {
           for (let i = 0; i < data.length; i++) {
-            if (!toNumbersThatNeedsToBeChecked.includes(data[i].phoneNumber)) {
-              notVerifiedPhoneNumber.push(data[i].phoneNumber)
+            if (data[i].phoneNumber) {
+              numbersFromDataBase.push(data[i].phoneNumber)
             }
           }
+          const notVerifiedAudiencesNumbers = _.differenceBy(toNumbersThatNeedsToBeChecked, numbersFromDataBase)
+          if (notVerifiedAudiencesNumbers.length && notVerifiedAudiencesNumbers) {
+            notVerifiedPhoneNumber.push(...notVerifiedAudiencesNumbers)
+          }
+          // console.log('data.length is not equal to', data)
+          // for(let i = 0; )
+          // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+          //   console.log('inside for loop', toNumbersThatNeedsToBeChecked[i])
+          //   if (!data.includes(toNumbersThatNeedsToBeChecked[i])) {
+          //     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', toNumbersThatNeedsToBeChecked[i])
+          //     notVerifiedPhoneNumber.push(toNumbersThatNeedsToBeChecked[i])
+          //     console.log('notVerifiedPhoneNumber 1111111111111111111111', notVerifiedPhoneNumber)
+          //   }
+          // }
           // const numberNotInAudience = _.differenceBy(toNumbersThatNeedsToBeChecked, data)
           // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', numberNotInAudience)
           // notVerifiedPhoneNumber.push(numberNotInAudience)
@@ -181,9 +198,9 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
     .then((optinData) => {
       // optinData = [
       //   {
-      //     input: '+918169979302',
-      //     status: 'invalid',
-      //     wa_id: '918169979302'
+      //     input: '+918551834297',
+      //     status: 'valid',
+      //     wa_id: '918551834297'
       //   }]
       // optinData = [
       //   {
@@ -241,6 +258,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return true
     })
     .then(data => {
+      console.log('00000000000000000000000000000000000000000000000000000000000000000000000000000', notVerifiedPhoneNumber)
       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
@@ -362,8 +380,6 @@ class PreProcessQueueConsumer {
                 })
                 finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
                 notVerifiedPayloadArr = payloadsToBeCheckedForNotVerified
-                console.log('finalPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', finalPayloadArr)
-                console.log('notVerifiedPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', notVerifiedPayloadArr)
                 return { finalPayloadArr, notVerifiedPayloadArr }
                 // console.log('finalPayloadArr', finalPayloadArr)
               })

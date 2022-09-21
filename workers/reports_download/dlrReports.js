@@ -98,7 +98,6 @@ class dlrReportsDownlaod {
                 return dbService.updateStatusAgainstWabaAndUser(messageData.uniqueId, fileName, pathName)
               })
               .then((data) => {
-                __logger.info('getAllUserStatusCountPerDay: data', data)
                 console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })

@@ -911,10 +911,7 @@ class MessgaeHistoryService {
     const getUserStatusCountPerDayAgainstWaba = q.defer()
     __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, campName: 1, _id: 0 }, { createdOn: -1 }, skipPage, lowLimit)
       .then(data => {
-        console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
-        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
         if (data && data.length > 0) {
-          console.log('getUserStatusCountPerDayAgainstWaba daaaaaaaaaaaaaaaaaaaaaaaaaataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
           getUserStatusCountPerDayAgainstWaba.resolve(data || null)
         } else {
           console.log('getUserStatusCountPerDayAgainstWaba no dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
