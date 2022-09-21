@@ -833,6 +833,7 @@ class MessgaeHistoryService {
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
         if (result) {
+          console.log('getconversationDataBasedOnWabaNumber result ', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
@@ -844,7 +845,7 @@ class MessgaeHistoryService {
     return getconversationDataBasedOnWabaNumber.promise
   }
 
-  insertConversationDataAgainstWaba (dataIncoming, date) {
+  insertConversationDataAgainstWaba (dataIncoming) {
     const insertConversationDataAgainstWaba = q.defer()
     const wabaNumbers = Object.keys(dataIncoming)
     const dataValue = []
@@ -856,7 +857,6 @@ class MessgaeHistoryService {
         notApplicable: 0,
         businessInitiated: 0,
         referralConversion: 0,
-        date: date,
         totalcount: 0
       }
       dataInsert.wabaPhoneNumber = wabanumber
@@ -865,6 +865,7 @@ class MessgaeHistoryService {
       dataInsert.notApplicable = data.na || 0
       dataInsert.referralConversion = data.na || 0
       dataInsert.countryName = data.countryName || null
+      dataInsert.summaryDate = data.summaryDate
       dataInsert.totalcount = dataInsert.userInitiated + dataInsert.businessInitiated + dataInsert.notApplicable + dataInsert.referralConversion || 0
       dataInsert.createdOn = new Date()
       dataValue.push(dataInsert)
@@ -910,10 +911,7 @@ class MessgaeHistoryService {
     const getUserStatusCountPerDayAgainstWaba = q.defer()
     __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, campName: 1, _id: 0 }, { createdOn: 1 }, skipPage, lowLimit)
       .then(data => {
-        // console.log('getUserStatusCountPerDayAgainstWaba before dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
-        // __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba', data)
         if (data && data.length > 0) {
-          // console.log('getUserStatusCountPerDayAgainstWaba daaaaaaaaaaaaaaaaaaaaaaaaaataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', data)
           getUserStatusCountPerDayAgainstWaba.resolve(data || null)
         } else {
           console.log('getUserStatusCountPerDayAgainstWaba no dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
