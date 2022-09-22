@@ -55,6 +55,7 @@ const sendToQueue = (data, config, currentQueueName) => {
     config: config,
     payload: data
   }
+  const userId = data && data.redisData && data.redisData.userId ? data.redisData.userId : config.userId
   let queueObj = __constants.MQ.process_message_general
   if (currentQueueName.includes('chatbot')) {
     queueObj = __constants.MQ.process_message_chatbot
@@ -67,7 +68,7 @@ const sendToQueue = (data, config, currentQueueName) => {
   } else if (currentQueueName.includes('general')) {
     queueObj = __constants.MQ.process_message_general
   } else if (currentQueueName.includes('campaign')) {
-    queueObj = require('../../lib/util/rabbitmqHelper')('process_message_campaign', config.userId, data.whatsapp.from)
+    queueObj = require('../../lib/util/rabbitmqHelper')('process_message_campaign', userId, data.whatsapp.from)
     // queueObj = __constants.MQ.process_message_campaign
   }
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
@@ -465,7 +466,6 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
     date: payload.date,
     campName: payload.whatsapp.campName || null
   }
-  // console.log('notVerifiedPayloadArr-------------------', statusData)
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
       statusData.to = statusData.businessNumber
