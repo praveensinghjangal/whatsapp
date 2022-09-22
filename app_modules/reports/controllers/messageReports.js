@@ -52,6 +52,7 @@ const deliveryReport = (req, res) => {
       if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       if (req.query.status) return messageReportsServices.getDeliveryReportByStatus(req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
       if (!req.query.messageId && !req.query.consumerNumber && !req.query.status) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
