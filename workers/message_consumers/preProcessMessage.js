@@ -95,6 +95,178 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
   return sendSingleMessage.promise
 }
 // insert not veridfied with rejetced status
+// const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersThatNeedsToBeChecked) => {
+//   const messageStatus = q.defer()
+//   const audienceService = new AudienceService()
+//   const notVerifiedAudiencesPhoneNumbersInDB = {} // without "+"
+//   const notVerifiedAudiencesPhoneNumbersNotInDb = {} // without "+"
+//   const updateAudiencesBody = []
+//   const addAudiencesBody = []
+//   let verifiedNumbers = []
+//   let audMappingId
+//   const notVerifiedPhoneNumber = []
+//   let audienceData
+//   if (!toNumbersThatNeedsToBeChecked.length) {
+//     messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
+//     return messageStatus.promise
+//   }
+//   audienceService.getWabaPhoneNumber(fromNumber)
+//     .then(data => {
+//       if (data && data.audMappingId) {
+//         audMappingId = data.audMappingId
+//         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
+//       } else {
+//         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
+//       }
+//     })
+//     .then(data => {
+//       // notVerifiedAudiences = (audiences not present in payloadsToBeCheckedForVerified + audiences not verified in data)
+//       const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
+//       const phoneNumbersPresentInDB = []
+//       const phoneNumbersToBeCheckedWithFb = []
+//       const numbersFromDataBase = []
+//       for (let i = 0; i < data.length; i++) {
+//         phoneNumbersPresentInDB.push(data[i].phoneNumber)
+//         if (!data[i].isFacebookVerified) {
+//           notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
+//           phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
+//         } else {
+//           alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
+//         }
+//         verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+//         // get all the audiences not present in db's audiences table
+//         for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+//           const toNumber = toNumbersThatNeedsToBeChecked[i]
+//           if (!phoneNumbersPresentInDB.includes(toNumber)) {
+//             phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+//             notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+//           }
+//         }
+//       }
+//       // remove dublicate from array
+//       const afterRemoveDublicate = [...new Set(toNumbersThatNeedsToBeChecked)]
+//       if (data.length !== afterRemoveDublicate.length) {
+//         for (let i = 0; i < data.length; i++) {
+//           if (data[i].phoneNumber) {
+//             numbersFromDataBase.push(data[i].phoneNumber)
+//           }
+//         }
+//         const notVerifiedAudiencesNumbers = _.differenceBy(toNumbersThatNeedsToBeChecked, numbersFromDataBase)
+//         if (notVerifiedAudiencesNumbers.length && notVerifiedAudiencesNumbers) {
+//           notVerifiedPhoneNumber.push(...notVerifiedAudiencesNumbers)
+//         }
+//         // console.log('data.length is not equal to', data)
+//         // for(let i = 0; )
+//         // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+//         //   console.log('inside for loop', toNumbersThatNeedsToBeChecked[i])
+//         //   if (!data.includes(toNumbersThatNeedsToBeChecked[i])) {
+//         //     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', toNumbersThatNeedsToBeChecked[i])
+//         //     notVerifiedPhoneNumber.push(toNumbersThatNeedsToBeChecked[i])
+//         //     console.log('notVerifiedPhoneNumber 1111111111111111111111', notVerifiedPhoneNumber)
+//         //   }
+//         // }
+//         // const numberNotInAudience = _.differenceBy(toNumbersThatNeedsToBeChecked, data)
+//         // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', numberNotInAudience)
+//         // notVerifiedPhoneNumber.push(numberNotInAudience)
+//       }
+//       // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+//       // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
+//       // // get all the audiences not present in db's audiences table
+//       // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+//       //   const toNumber = toNumbersThatNeedsToBeChecked[i]
+//       //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
+//       //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+//       //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+//       //   }
+//       // }
+//       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
+//       // changes  write now
+//       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+//       return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
+
+//       // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
+
+//       // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
+
+//       // todo: for numbers already present in db =>  make their status isFacebookVerified to true in our db
+//       // todo: for numbers not present in db => create new entries in audiences table
+//     })
+//     .then((optinData) => {
+//       // optinData = [
+//       //   {
+//       //     input: '+918551834297',
+//       //     status: 'valid',
+//       //     wa_id: '918551834297'
+//       //   }]
+//       // optinData = [
+//       //   {
+//       //     input: '+917666220077',
+//       //     status: 'valid',
+//       //     wa_id: '917666220077'
+//       //   },
+//       //   {
+//       //     input: '+918097353703',
+//       //     status: 'valid',
+//       //     wa_id: '918097353703'
+//       //   }
+//       // ]
+//       const uniqueId = new UniqueId()
+//       for (let i = 0; i < optinData.length; i++) {
+//         const contactNumber = optinData[i].wa_id // without "+"
+//         if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
+//           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
+//             updateAudiencesBody.push(contactNumber)
+//             verifiedNumbers.push(contactNumber)
+//           } else {
+//             notVerifiedPhoneNumber.push(contactNumber)
+//           }
+//         } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
+//           audienceData = {
+//             audienceId: uniqueId.uuid(),
+//             phoneNumber: contactNumber,
+//             channel: __constants.DELIVERY_CHANNEL.whatsapp,
+//             createdBy: messageData.config.userId,
+//             isFacebookVerified: 1,
+//             countryCode: __constants.DEFAULT_COUNTRY_CODE,
+//             wabaPhoneNumber: audMappingId
+//           }
+//           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
+//             audienceData.isFacebookVerified = 1
+//             verifiedNumbers.push(contactNumber)
+//           } else {
+//             audienceData.isFacebookVerified = 0
+//           }
+//           const queryParam = []
+//           _.each(audienceData, (val) => queryParam.push(val))
+//           addAudiencesBody.push(queryParam)
+//         }
+//       }
+//       if (updateAudiencesBody && updateAudiencesBody.length) {
+//         return audienceService.updateAudiencesAsFaceBookVerified(audMappingId, updateAudiencesBody, messageData.config.userId)
+//       }
+//       return true
+//     })
+//     .then(data => {
+//       // add new audiences
+//       if (addAudiencesBody && addAudiencesBody.length) {
+//         return audienceService.addAudineceToDbInBulk(addAudiencesBody, audMappingId)
+//       }
+//       return true
+//     })
+//     .then(data => {
+//       console.log('00000000000000000000000000000000000000000000000000000000000000000000000000000', notVerifiedPhoneNumber)
+//       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
+//     })
+//     .catch(err => {
+//       console.log('11111111111111111111111111111111111111111111111111', err)
+//       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+//       errorToTelegram.send(err, telegramErrorMessage)
+//       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
+//       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+//     })
+//   return messageStatus.promise
+// }
+
 const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersThatNeedsToBeChecked) => {
   const messageStatus = q.defer()
   const audienceService = new AudienceService()
@@ -107,7 +279,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
   const notVerifiedPhoneNumber = []
   let audienceData
   if (!toNumbersThatNeedsToBeChecked.length) {
-    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
+    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedPhoneNumber: notVerifiedPhoneNumber })
     return messageStatus.promise
   }
   audienceService.getWabaPhoneNumber(fromNumber)
@@ -116,7 +288,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         audMappingId = data.audMappingId
         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
       } else {
-        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
+        rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
       }
     })
     .then(data => {
@@ -124,70 +296,34 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
       const phoneNumbersPresentInDB = []
       const phoneNumbersToBeCheckedWithFb = []
-      const numbersFromDataBase = []
-      if (data.length) {
-        for (let i = 0; i < data.length; i++) {
-          phoneNumbersPresentInDB.push(data[i].phoneNumber)
-          if (!data[i].isFacebookVerified) {
-            notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
-            phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
-          } else {
-            alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
-          }
-          verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-          // get all the audiences not present in db's audiences table
-          for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-            const toNumber = toNumbersThatNeedsToBeChecked[i]
-            if (!phoneNumbersPresentInDB.includes(toNumber)) {
-              phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
-              notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
-            }
-          }
+      for (let i = 0; i < data.length; i++) {
+        // number present in dbatabse agains waba
+        phoneNumbersPresentInDB.push(data[i].phoneNumber)
+        if (!data[i].isFacebookVerified) {
+          // present in db but not facebook verified
+          notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
+          /// phone number check from facebook
+          phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
+        } else {
+          // else verified and facebook verified true and also present in database
+          alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
         }
-        // remove dublicate from array
-        const afterRemoveDublicate = [...new Set(toNumbersThatNeedsToBeChecked)]
-        if (data.length !== afterRemoveDublicate.length) {
-          for (let i = 0; i < data.length; i++) {
-            if (data[i].phoneNumber) {
-              numbersFromDataBase.push(data[i].phoneNumber)
-            }
-          }
-          const notVerifiedAudiencesNumbers = _.differenceBy(toNumbersThatNeedsToBeChecked, numbersFromDataBase)
-          if (notVerifiedAudiencesNumbers.length && notVerifiedAudiencesNumbers) {
-            notVerifiedPhoneNumber.push(...notVerifiedAudiencesNumbers)
-          }
-          // console.log('data.length is not equal to', data)
-          // for(let i = 0; )
-          // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-          //   console.log('inside for loop', toNumbersThatNeedsToBeChecked[i])
-          //   if (!data.includes(toNumbersThatNeedsToBeChecked[i])) {
-          //     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', toNumbersThatNeedsToBeChecked[i])
-          //     notVerifiedPhoneNumber.push(toNumbersThatNeedsToBeChecked[i])
-          //     console.log('notVerifiedPhoneNumber 1111111111111111111111', notVerifiedPhoneNumber)
-          //   }
-          // }
-          // const numberNotInAudience = _.differenceBy(toNumbersThatNeedsToBeChecked, data)
-          // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', numberNotInAudience)
-          // notVerifiedPhoneNumber.push(numberNotInAudience)
-        }
-      } else {
-        notVerifiedPhoneNumber.push(...toNumbersThatNeedsToBeChecked)
       }
-      // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
-      // // get all the audiences not present in db's audiences table
-      // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-      //   const toNumber = toNumbersThatNeedsToBeChecked[i]
-      //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
-      //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
-      //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
-      //   }
-      // }
+      verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+      // get all the audiences not present in db's audiences table
+      // doubt
+      for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+        const toNumber = toNumbersThatNeedsToBeChecked[i]
+        if (!phoneNumbersPresentInDB.includes(toNumber)) {
+          phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+          /// number not present in database
+          // o of n
+          notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+        }
+      }
       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
-      // changes  write now
       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
       return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
-
       // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
 
       // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
@@ -198,25 +334,41 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
     .then((optinData) => {
       // optinData = [
       //   {
-      //     input: '+918551834297',
+      //     input: '+910000000002',
       //     status: 'valid',
-      //     wa_id: '918551834297'
-      //   }]
-      // optinData = [
-      //   {
-      //     input: '+917666220077',
-      //     status: 'valid',
-      //     wa_id: '917666220077'
+      //     wa_id: '910000000002'
       //   },
       //   {
-      //     input: '+918097353703',
+      //     input: '+910000000003',
+      //     status: 'invalid',
+      //     wa_id: '910000000003'
+      //   },
+      //   {
+      //     input: '+910000000004',
+      //     status: 'invalid',
+      //     wa_id: '910000000004'
+      //   },
+      //   {
+      //     input: '+910000000005',
+      //     status: 'invalid',
+      //     wa_id: '910000000005'
+      //   },
+      //   {
+      //     input: '+910000000006',
       //     status: 'valid',
-      //     wa_id: '918097353703'
+      //     wa_id: '910000000006'
+      //   },
+      //   {
+      //     input: '+910000000007',
+      //     status: 'invalid',
+      //     wa_id: '910000000007'
       //   }
+
       // ]
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
         const contactNumber = optinData[i].wa_id // without "+"
+        // if phone number present in database and facebook not verified then update audience body
         if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
             updateAudiencesBody.push(contactNumber)
@@ -225,6 +377,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
             notVerifiedPhoneNumber.push(contactNumber)
           }
         } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
+          /// check facebook verified and not in database also
           audienceData = {
             audienceId: uniqueId.uuid(),
             phoneNumber: contactNumber,
@@ -239,6 +392,8 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
             verifiedNumbers.push(contactNumber)
           } else {
             audienceData.isFacebookVerified = 0
+            // changes
+            notVerifiedPhoneNumber.push(contactNumber)
           }
           const queryParam = []
           _.each(audienceData, (val) => queryParam.push(val))
@@ -246,6 +401,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         }
       }
       if (updateAudiencesBody && updateAudiencesBody.length) {
+        // console.log('updateAudiencesBody', updateAudiencesBody)
         return audienceService.updateAudiencesAsFaceBookVerified(audMappingId, updateAudiencesBody, messageData.config.userId)
       }
       return true
@@ -258,11 +414,11 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return true
     })
     .then(data => {
-      console.log('00000000000000000000000000000000000000000000000000000000000000000000000000000', notVerifiedPhoneNumber)
-      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
+      // console.log('00000000000000000000000000000000000 verifiedNumbers', verifiedNumbers)
+      // console.log('1111111111111111111111111111111111 notVerifiedPhoneNumber', notVerifiedPhoneNumber)
+      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
-      console.log('11111111111111111111111111111111111111111111111111', err)
       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
@@ -272,6 +428,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
 }
 
 const setStatusToRejectedForNonVerifiedNumbers = (notVerifiedPayloadArr, serviceProviderId) => {
+  // console.log('22222222222222222222222222222222222 ----------notVerifiedPayloadArr', notVerifiedPayloadArr)
   const setStatusToRejected = q.defer()
   qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, notVerifiedPayloadArr, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, serviceProviderId)
     .then(data => {
@@ -300,6 +457,7 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
     endConsumerNumber: payload.to,
     countryName: phoneCodeAndPhoneSeprator(payload.to).countryName,
     businessNumber: payload.whatsapp.from,
+    errors: ['not verified from facebook'],
     customOne: payload.whatsapp.customOne || null,
     customTwo: payload.whatsapp.customTwo || null,
     customThree: payload.whatsapp.customThree || null,
@@ -307,6 +465,7 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
     date: payload.date,
     campName: payload.whatsapp.campName || null
   }
+  // console.log('notVerifiedPayloadArr-------------------', statusData)
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
       statusData.to = statusData.businessNumber
@@ -339,11 +498,12 @@ class PreProcessQueueConsumer {
             let payloadsToBeCheckedForVerified = []
             const payloadsToBeNotCheckedForVerified = []
             const toNumbersThatNeedsToBeChecked = []
+            let payloadsToBeNotCheckedForNotVerified = []
             // const payload = messageData.payload
             // check for audiences only if we pass "isOptin" flag, bcoz we need to add them in audiences if they are not in audiences.
             // if isOptin is false, then we need to check the optin of audiences (audiences needs to be present, so no need to call save optin)
             const config = messageData.config
-            let payloadsToBeCheckedForNotVerified = []
+            const payloadsToBeCheckedForNotVerified = []
             const payloadArr = messageData.payload
             const fromNumber = payloadArr[0].whatsapp.from
             let finalPayloadArr = []
@@ -354,16 +514,21 @@ class PreProcessQueueConsumer {
               if (payload.isOptin) {
                 toNumbersThatNeedsToBeChecked.push(payload.to)
                 payloadsToBeCheckedForVerified.push(payload)
-                payloadsToBeCheckedForNotVerified.push(payload)
+                payloadsToBeNotCheckedForNotVerified.push(payload)
               } else {
                 payloadsToBeNotCheckedForVerified.push(payload)
-                payloadsToBeCheckedForNotVerified.push(payload)
+                payloadsToBeNotCheckedForNotVerified.push(payload)
               }
             }
+            // console.log('payloadsToBeCheckedForVerified', payloadsToBeCheckedForVerified)
+            // console.log('payloadsToBeNotCheckedForVerified', payloadsToBeNotCheckedForVerified)
+            // start
             checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
               .then(data => {
-                notVerifiedNumbers = data.notVerifiedAudeienceNumbers
+                notVerifiedNumbers = data.notVerifiedNumbers
                 const verifiedNumbers = data.verifiedNumbers
+                // console.log('verifiedNumbers', verifiedNumbers)
+                // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
                   if (verifiedNumbers.includes(payload.to)) {
                     return true
@@ -371,24 +536,31 @@ class PreProcessQueueConsumer {
                     return false
                   }
                 })
-                payloadsToBeCheckedForNotVerified = payloadsToBeCheckedForNotVerified.filter(payload => {
+                // console.log('notVerifiedNumbers', notVerifiedNumbers)
+                payloadsToBeNotCheckedForNotVerified = payloadsToBeNotCheckedForNotVerified.filter(payload => {
                   if (notVerifiedNumbers.includes(payload.to)) {
                     return true
                   } else {
                     return false
                   }
                 })
+                // console.log('payloadsToBeNotCheckedForNotVerified', payloadsToBeNotCheckedForNotVerified)
                 finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
-                notVerifiedPayloadArr = payloadsToBeCheckedForNotVerified
+                notVerifiedPayloadArr = [...payloadsToBeNotCheckedForNotVerified, ...payloadsToBeCheckedForNotVerified]
+                // console.log('@@@@@@@@@@@@@@ notVerifiedPayloadArr', notVerifiedPayloadArr)
                 return { finalPayloadArr, notVerifiedPayloadArr }
                 // console.log('finalPayloadArr', finalPayloadArr)
               })
               .then((sendToQueueRes) => {
                 __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
+                // console.warn('------------ notVerifiedNumbers :: ', notVerifiedNumbers)
                 if (notVerifiedNumbers && notVerifiedNumbers.length) {
+                  // console.warn('------------------ in if condition')
+                  // console.log('notVerifiedPayloadArr ------------------', notVerifiedPayloadArr)
                   return setStatusToRejectedForNonVerifiedNumbers(notVerifiedPayloadArr, config.servicProviderId)
                   // return saveAndSendMessageStatusForNotVerfiedNumber(notVerifiedPayloadArr, config.servicProviderId)
                 } else {
+                  // console.warn('---------------- in else condition')
                   return true
                 }
               })
