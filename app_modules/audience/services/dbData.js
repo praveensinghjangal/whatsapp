@@ -431,7 +431,6 @@ class AudienceService {
   }
 
   getAudiencesVerified (audiencesNumbers, wabaNumber) {
-    console.log('getAudiencesVerified (audiencesNumbers, wabaNumber) ---', audiencesNumbers, wabaNumber)
     const promises = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFacebookVerifiedUsers(), [audiencesNumbers, wabaNumber])
       .then(data => {
