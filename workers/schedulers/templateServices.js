@@ -88,10 +88,12 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  const currentDate = moment().format('YYYY-MM-DD')
-  // const currentDate = '2022-08-01'
-  console.log('InsertDataIntoSumarryReports parameters', currentDate)
-  dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
+  // const dateWithTime = moment().utc().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ssZ')
+  const currentFromDate = moment().utc().format('YYYY-MM-DD HH:mm:ssZ')
+  const currentEndDate = moment().utc().format('YYYY-MM-DD 23:59:59Z')
+  const currentDate = moment().utc().format('YYYY-MM-DD')
+  // console.log('InsertDataIntoSumarryReports parameters', currentDate)
+  dbService.getNewTemplateDetailsAgainstAllUser(currentFromDate, currentEndDate)
     .then(allUserData => {
       console.log('getNewTemplateDetailsAgainstAllUser  alluserData', allUserData)
       return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, currentDate)
