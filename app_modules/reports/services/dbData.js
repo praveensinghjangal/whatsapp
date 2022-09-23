@@ -86,13 +86,52 @@ class MessageReportsServices {
   }
 
   getDeliveryReportByStatus (status, startDate, endDate, wabaPhoneNumber, limit, offset) {
-    __logger.info('inside getDeliveryReportByCampaignName', status, wabaPhoneNumber, limit, offset)
+    __logger.info('inside getDeliveryReportByStatus', status, wabaPhoneNumber, limit, offset)
     const doesDeliveryReportByStatusExists = q.defer()
     const pineLine = [{
       $match: {
         wabaPhoneNumber: wabaPhoneNumber,
         createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
         currentStatus: { $in: status }
+      }
+    },
+    {
+      $facet: {
+        data: [
+          { $skip: offset },
+          { $limit: limit },
+          { $sort: { createdOn: 1 } }
+        ],
+        totalCount: [
+          { $count: 'count' }
+        ]
+      }
+    }
+    ]
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, pineLine)
+      .then(result => {
+        __logger.info('getDeliveryReportByStatus query Result', {})
+        if (result && result[0] && result[0].totalCount.length > 0) {
+          doesDeliveryReportByStatusExists.resolve(result)
+        } else {
+          return doesDeliveryReportByStatusExists.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getDeliveryReportByStatus: ', err)
+        doesDeliveryReportByStatusExists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return doesDeliveryReportByStatusExists.promise
+  }
+
+  getDeliveryReportByCampaignName (campaignName, startDate, endDate, wabaPhoneNumber, limit, offset) {
+    __logger.info('inside getDeliveryReportByCampaignName', campaignName, wabaPhoneNumber, limit, offset)
+    const doesDeliveryReportByStatusExists = q.defer()
+    const pineLine = [{
+      $match: {
+        wabaPhoneNumber: wabaPhoneNumber,
+        createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) },
+        campName: campaignName
       }
     },
     {
