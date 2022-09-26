@@ -23,11 +23,11 @@ const rejectionHandler = require('../../lib/util/rejectionHandler')
 // }
 const conversationMisService = () => {
   const dbService = new DbService()
-  const previousDateWithTime = moment().utc().format('YYYY-MM-DD 00:00:00')
+  const previousDateWithTime = moment().utc().format('YYYY-MM-DD 00:00:00Z')
   // const previousDateWithTime = '2022-09-06 00:00:00'
   // const currentdateWithTime = '2022-09-06 23:59:59'
-  const currentdateWithTime = moment().utc().format('YYYY-MM-DD 23:59:59')
-  const date = moment().utc.apply().format('YYYY-MM-DD')
+  const currentdateWithTime = moment().utc().format('YYYY-MM-DD 23:59:59Z')
+  const date = moment().utc().format('YYYY-MM-DD')
   let wabaNumber
   const wabaData = {}
   dbService.getActiveBusinessNumber()
