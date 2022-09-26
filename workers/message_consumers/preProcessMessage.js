@@ -322,6 +322,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
           notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
         }
       }
+      // console.log('phoneNumbersToBeCheckedWithFb', phoneNumbersToBeCheckedWithFb)
       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
       return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
@@ -335,6 +336,11 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
     .then((optinData) => {
       // optinData = [
       //   {
+      //     input: '+910000000001',
+      //     status: 'valid',
+      //     wa_id: '910000000001'
+      //   },
+      //   {
       //     input: '+910000000002',
       //     status: 'valid',
       //     wa_id: '910000000002'
@@ -346,7 +352,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       //   },
       //   {
       //     input: '+910000000004',
-      //     status: 'invalid',
+      //     status: 'valid',
       //     wa_id: '910000000004'
       //   },
       //   {
@@ -368,8 +374,11 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // ]
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
-        const contactNumber = optinData[i].wa_id // without "+"
+        // const contactNumber = optinData[i].wa_id // without "+"
+        let contactNumber = optinData[i].input // without "+"
+        contactNumber = contactNumber.slice(1)
         // if phone number present in database and facebook not verified then update audience body
+        // changed :- not valid number from facebook does not come from optinData[i].wa_id
         if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
             updateAudiencesBody.push(contactNumber)
