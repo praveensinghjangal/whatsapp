@@ -615,17 +615,20 @@ class MessgaeHistoryService {
   }
 
   getActiveBusinessNumber () {
+    __logger.info('~function=getActiveBusinessNumber data')
     const getActiveBusinessNumber = q.defer()
     // __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getActiveBusinessNumber())
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getActiveBusinessNumber())
       .then(result => {
         if (result) {
+          __logger.info('~function=getActiveBusinessNumber data', result)
           return getActiveBusinessNumber.resolve(result[0])
         } else {
           return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('~function=getActiveBusinessNumber data', err)
         return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getActiveBusinessNumber.promise
@@ -808,7 +811,7 @@ class MessgaeHistoryService {
   // }
 
   getTemplateNameAgainstId (templateId) {
-    console.log('ggetTemplateNameAgainstIdet', templateId)
+    console.log('getTemplateNameAgainstId', templateId)
     const getTemplateNameAgainstId = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
       .then(result => {
@@ -817,7 +820,7 @@ class MessgaeHistoryService {
           return getTemplateNameAgainstId.resolve(result[0])
         } else {
           console.log('ggetTemplateNameAgainstIdet result', templateId)
-          return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return getTemplateNameAgainstId.resolve(null)
         }
       })
       .catch(err => {

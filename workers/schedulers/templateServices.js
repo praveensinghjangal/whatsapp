@@ -73,14 +73,13 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   dataObject.deliveredPercentage = Math.round((((dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted) / dataObject.totalMessageSent) * 100 + Number.EPSILON) * 100) / 100
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
   dataObject.templateName = await tempaletName(dataObject.templateId)
-  console.log('+++++++++++++++++++++++++++++++++++++++++++', dataObject)
   dbService.addUpdateCountsAgainst(dataObject)
     .then(upserted => {
-      console.log('upserted ++++++++++++++++++++++++++++++++++++++++++', upserted)
+      __logger.info('addUpdateCountsAgainst  data', upserted)
       return dataUpserted.resolve(upserted)
     })
     .catch((error) => {
-      console.log('!@#$%^&*()!@#$%^&*(!@#$%^&*(!@#$%^&*()!@#$%^&*(', error)
+      __logger.error('addUpdateCountsAgainst  error', error)
       dataUpserted.reject(error)
     })
   return dataUpserted.promise
@@ -88,27 +87,23 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
 
 const InsertDataIntoSumarryReports = () => {
   const dbService = new DbService()
-  // const dateWithTime = moment().utc().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ssZ')
-  const currentFromDate = moment().utc().format('YYYY-MM-DD HH:mm:ssZ')
-  const currentEndDate = moment().utc().format('YYYY-MM-DD 23:59:59Z')
-  const currentDate = moment().utc().format('YYYY-MM-DD')
-  // console.log('InsertDataIntoSumarryReports parameters', currentDate)
+  // var currentDate = '2022-09-23'
+  var currentDate = moment().format('YYYY-MM-DD')
+  const currentFromDate = moment(currentDate).subtract(1, 'days').format('YYYY-MM-DDT18:30:00.000[Z]')
+  const currentEndDate = moment(currentDate).subtract(0, 'days').format('YYYY-MM-DDT18:29:59.999[Z]')
+  __logger.info('InsertDataIntoSumarryReports  dates', currentDate, currentFromDate, currentEndDate)
   dbService.getNewTemplateDetailsAgainstAllUser(currentFromDate, currentEndDate)
     .then(allUserData => {
-      console.log('getNewTemplateDetailsAgainstAllUser  alluserData', allUserData)
       return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, currentDate)
     })
     .then(processed => {
-      console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', processed)
       if (processed && processed.reject && processed.reject.length === 0) {
-        __logger.info('successfully processed data ~function=processCounts', processed)
+        __logger.info('successfully processed data ~function=upsertCounts', processed)
       } else {
-        __logger.info('processed data with errors ~function=processCounts', processed)
+        __logger.info('processed data with errors ~function=upsertCounts', processed)
       }
     })
     .catch((error) => {
-      console.log('-------------------------------', error)
-      console.log('error in while inserting template summary ~function=InsertDataIntoSumarryReports', error)
       __logger.error('error in while inserting template summary ~function=InsertDataIntoSumarryReports', { err: typeof error === 'object' ? error : { error: error.toString() } })
     })
     .done()
