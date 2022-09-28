@@ -615,17 +615,20 @@ class MessgaeHistoryService {
   }
 
   getActiveBusinessNumber () {
+    __logger.info('~function=getActiveBusinessNumber data')
     const getActiveBusinessNumber = q.defer()
     // __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getActiveBusinessNumber())
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getActiveBusinessNumber())
       .then(result => {
         if (result) {
+          __logger.info('~function=getActiveBusinessNumber data', result)
           return getActiveBusinessNumber.resolve(result[0])
         } else {
           return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('~function=getActiveBusinessNumber data', err)
         return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getActiveBusinessNumber.promise
@@ -729,29 +732,34 @@ class MessgaeHistoryService {
   //   return checkTableExist.promise
   // }
 
-  getNewTemplateDetailsAgainstAllUser (currentDate) {
+  getNewTemplateDetailsAgainstAllUser (currentFromDate, currentEndDate) {
     const getNewTemplateDetailsAgainstAllUserPromise = q.defer()
     /// group by day chnages
-    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date(currentDate + 'T00:00:00.000Z'), $lte: new Date(currentDate + 'T23:59:59.999Z') } } },
-      {
-        $group: {
-          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', templateId: '$templateId' },
-          sc: { $sum: 1 }
-        }
-      },
-      {
-        $group: {
-          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', templateId: '$_id.templateId' },
-          total: { $sum: '$sc' },
-          status: {
-            $push: {
-              name: '$_id.currentStatus',
-              count: '$sc'
-            }
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{
+      $match: {
+        createdOn: { $gte: new Date(currentFromDate), $lte: new Date(currentEndDate) },
+        templateId: { $exists: true, $ne: null }
+      }
+    },
+    {
+      $group: {
+        _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', templateId: '$templateId' },
+        sc: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', templateId: '$_id.templateId' },
+        total: { $sum: '$sc' },
+        status: {
+          $push: {
+            name: '$_id.currentStatus',
+            count: '$sc'
           }
         }
-      },
-      { $sort: { total: -1 } }])
+      }
+    },
+    { $sort: { total: -1 } }])
     // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         console.log('getNewTemplateDetailsAgainstAllUser result ', result)
@@ -808,7 +816,7 @@ class MessgaeHistoryService {
   // }
 
   getTemplateNameAgainstId (templateId) {
-    console.log('ggetTemplateNameAgainstIdet', templateId)
+    console.log('getTemplateNameAgainstId', templateId)
     const getTemplateNameAgainstId = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
       .then(result => {
@@ -817,7 +825,7 @@ class MessgaeHistoryService {
           return getTemplateNameAgainstId.resolve(result[0])
         } else {
           console.log('ggetTemplateNameAgainstIdet result', templateId)
-          return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return getTemplateNameAgainstId.resolve(null)
         }
       })
       .catch(err => {

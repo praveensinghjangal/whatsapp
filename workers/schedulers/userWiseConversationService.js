@@ -23,17 +23,21 @@ const rejectionHandler = require('../../lib/util/rejectionHandler')
 // }
 const conversationMisService = () => {
   const dbService = new DbService()
-  const previousDateWithTime = moment().format('YYYY-MM-DD 00:00:00')
+  var currentDate = moment().format('YYYY-MM-DD')
+  const previousDateWithTime = moment(currentDate).utc().subtract(1, 'days').format('YYYY-MM-DDT18:30:00.000[Z]')
+  const currentdateWithTime = moment(currentDate).utc().subtract(0, 'days').format('YYYY-MM-DDT18:29:59.999[Z]')
+  // const previousDateWithTime = moment().utc().format('YYYY-MM-DD 00:00:00Z')
   // const previousDateWithTime = '2022-09-06 00:00:00'
   // const currentdateWithTime = '2022-09-06 23:59:59'
-  const currentdateWithTime = moment().format('YYYY-MM-DD 23:59:59')
-  const date = moment().format('YYYY-MM-DD')
+  // const currentdateWithTime = moment().utc().format('YYYY-MM-DD 23:59:59Z')
   let wabaNumber
   const wabaData = {}
   dbService.getActiveBusinessNumber()
     .then((data) => {
+      __logger.info('~function=getActiveBusinessNumber data', data)
       if (data) {
         wabaNumber = data.wabaNumber.split(',')
+        __logger.info('~function=getActiveBusinessNumber data', wabaNumber)
         return dbService.getconversationDataBasedOnWabaNumber(wabaNumber, previousDateWithTime, currentdateWithTime)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'No active waba numbers in platform', data: {} })
@@ -77,7 +81,7 @@ const conversationMisService = () => {
     .then((data) => {
       __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
       if (data) {
-        return dbService.insertConversationDataAgainstWaba(wabaData, date)
+        return dbService.insertConversationDataAgainstWaba(wabaData)
       }
     })
     .then((data) => {

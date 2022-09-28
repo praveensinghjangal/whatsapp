@@ -37,12 +37,12 @@ class validate {
         startDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStampSummary
+          pattern: __constants.VALIDATOR.timeStampForDownload
         },
         endDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStampSummary,
+          pattern: __constants.VALIDATOR.timeStampForDownload,
           minLength: 1
         },
         limit: {
@@ -420,13 +420,13 @@ class validate {
         startDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStampSummary,
+          pattern: __constants.VALIDATOR.timeStampForDownload,
           minLength: 1
         },
         endDate: {
           type: 'string',
           required: true,
-          pattern: __constants.VALIDATOR.timeStampSummary,
+          pattern: __constants.VALIDATOR.timeStampForDownload,
           minLength: 1
         }
       }

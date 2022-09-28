@@ -181,14 +181,14 @@ const getAllOptOutUser = () => {
 
 const getFacebookVerifiedUser = () => {
   console.log('getFacebookVerifiedUser')
-  return `select a.phone_number as phoneNumber , a.optin as optin, a.isFacebookVerified, awnm.waba_phone_number as wabaPhoneNumber,a.waba_phone_number as wabaPhoneNumberId from audience a 
+  return `select distinct a.phone_number as phoneNumber , a.optin as optin, a.isFacebookVerified, awnm.waba_phone_number as wabaPhoneNumber,a.waba_phone_number as wabaPhoneNumberId from audience a 
   inner join audience_waba_no_mapping awnm on awnm.aud_mapping_id = a.waba_phone_number where a.is_active = true 
   and a.phone_number = ? and awnm.waba_phone_number = ?`
 }
 
 const getFacebookVerifiedUsers = () => {
   console.log('getFacebookVerifiedUsers')
-  return `select a.phone_number as phoneNumber , a.optin as optin, a.isFacebookVerified, awnm.waba_phone_number as wabaPhoneNumber,a.waba_phone_number as wabaPhoneNumberId from audience a 
+  return `select distinct a.phone_number as phoneNumber , a.optin as optin, a.isFacebookVerified, awnm.waba_phone_number as wabaPhoneNumber,a.waba_phone_number as wabaPhoneNumberId from audience a 
   inner join audience_waba_no_mapping awnm on awnm.aud_mapping_id = a.waba_phone_number where a.is_active = true 
   and a.phone_number in (?) and awnm.waba_phone_number = ?`
 }
