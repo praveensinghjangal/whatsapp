@@ -735,26 +735,31 @@ class MessgaeHistoryService {
   getNewTemplateDetailsAgainstAllUser (currentFromDate, currentEndDate) {
     const getNewTemplateDetailsAgainstAllUserPromise = q.defer()
     /// group by day chnages
-    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{ $match: { createdOn: { $gte: new Date(currentFromDate), $lte: new Date(currentEndDate) } } },
-      {
-        $group: {
-          _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', templateId: '$templateId' },
-          sc: { $sum: 1 }
-        }
-      },
-      {
-        $group: {
-          _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', templateId: '$_id.templateId' },
-          total: { $sum: '$sc' },
-          status: {
-            $push: {
-              name: '$_id.currentStatus',
-              count: '$sc'
-            }
+    __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [{
+      $match: {
+        createdOn: { $gte: new Date(currentFromDate), $lte: new Date(currentEndDate) },
+        templateId: { $exists: true, $ne: null }
+      }
+    },
+    {
+      $group: {
+        _id: { currentStatus: '$currentStatus', wabaPhoneNumber: '$wabaPhoneNumber', templateId: '$templateId' },
+        sc: { $sum: 1 }
+      }
+    },
+    {
+      $group: {
+        _id: { wabaPhoneNumber: '$_id.wabaPhoneNumber', templateId: '$_id.templateId' },
+        total: { $sum: '$sc' },
+        status: {
+          $push: {
+            name: '$_id.currentStatus',
+            count: '$sc'
           }
         }
-      },
-      { $sort: { total: -1 } }])
+      }
+    },
+    { $sort: { total: -1 } }])
     // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         console.log('getNewTemplateDetailsAgainstAllUser result ', result)
