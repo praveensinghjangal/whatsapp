@@ -38,7 +38,8 @@ const SERVER_SCRIPTS = {
   sendOptinExcelStreams: './workers/send_optin_excel_streams/sendOptinExcelStreams.js',
   facebookErrorQueuesConsumer: './workers/message_consumers/facebookErrorConsumer.js',
   reportsDownloadConsumer: './workers/reports_download/dlrReports.js',
-  dlrZipFileDelete: './workers/reports_download/dlrDeleteCron.js'
+  dlrZipFileDelete: './workers/reports_download/dlrDeleteCron.js',
+  dailyWorker: './workers/schedulers/dailyWorker.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {

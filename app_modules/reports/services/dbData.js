@@ -656,13 +656,13 @@ class MessageReportsServices {
     return doesDownloadUserConversationSummaryExists.promise
   }
 
-  getCampaignName (date) {
+  getCampaignName (firstDate, secondDate) {
     const promises = q.defer()
     __logger.info('SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name')
 
     var findParam = [{
       $match: {
-        createdOn: { $gte: new Date(`${date}T00:00:00.000`), $lte: new Date(`${date}T23:59:59.999`) },
+        createdOn: { $gte: new Date(`${firstDate}T00:00:00.000Z`), $lte: new Date(`${secondDate}T23:59:59.999Z`) },
         campName: { $exists: true }
       }
     },

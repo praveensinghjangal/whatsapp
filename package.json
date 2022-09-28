@@ -55,6 +55,7 @@
     "develop-facebookErrorQueuesConsumer": "NODE_ENV=development WORKER_TYPE=facebookErrorQueuesConsumer MQ_OBJECT_KEY=facebookErrorQueuesConsumer USER_ID=Helo_test node server.js",
     "develop-reportsDownloadConsumer": "NODE_ENV=development WORKER_TYPE=reportsDownloadConsumer MQ_OBJECT_KEY=reportsDownloadConsumer USER_ID=Helo_test node server.js",
     "develop-dlrZipFileDelete": "NODE_ENV=development WORKER_TYPE=dlrZipFileDelete node server.js",
+    "develop-dailyWorker": "NODE_ENV=development WORKER_TYPE=dailyWorker node server.js",
     "v8Profile": "node --prof server.js",
     "standard": "standard --fix"
   },

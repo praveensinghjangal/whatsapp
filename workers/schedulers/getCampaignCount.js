@@ -6,13 +6,12 @@ const __logger = require('../../lib/logger')
 const moment = require('moment')
 const MessageReportsServices = require('../../app_modules/reports/services/dbData')
 
-const createCampaignSummaryReport = () => {
+const createCampaignSummaryReport = (firstDate, secondDate) => {
   let campaignName
   const arrOfCamaignName = []
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
-  const date = moment().format('YYYY-MM-DD')
-  messageReportsServices.getCampaignName(date)
+  messageReportsServices.getCampaignName(firstDate, secondDate)
     .then(result => {
       result.forEach(element => {
         if ((element._id.campaignName !== null) || (!_.isEmpty(element._id.campaignName))) {
@@ -60,7 +59,7 @@ const createCampaignSummaryReport = () => {
           finalRecord.totalRateLimit = campaignName[__constants.MESSAGE_STATUS.rateLimit] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.rateLimit]
           finalRecord.deliveredMessage = deliveredMessage
           finalRecord.delivereyPercentage = totalDelivered
-          finalRecord.summaryDate = date
+          finalRecord.summaryDate = moment(campaignName.day).format('YYYY-MM-DD')
           finalRecord.createdOn = new Date(campaignName.day)
           finalRecord.updatedOn = new Date()
           arrOfCamaignName.push(finalRecord)

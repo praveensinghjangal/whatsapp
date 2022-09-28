@@ -1,18 +1,14 @@
 const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
-// const messageStatusOnMail = require('./misService')
 const __constants = require('../../config/constants')
-// const DbService = require('../../app_modules/message/services/dbData')
-const getCampaignCount = require('./getCampaignCount')
-const moment = require('moment')
+const thirtyDaysReports = require('./thirtyDaysReports')
 
 const task = {
-  one: cron.schedule(__constants.CAMP_REPORTS_SCHEDULER_TIME, () => {
-    const date = moment().format('YYYY-MM-DD')
-    getCampaignCount(date, date)
+  one: cron.schedule(__constants.DAILYSUMMARYWORKER, () => {
+    thirtyDaysReports()
       .then(() => {
-        return __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports')
+        return __logger.info('sucessfully run thirtyDaysReports worker')
       })
       .catch((error) => {
         return __logger.error('inside ~function=', { err: typeof error === 'object' ? error : { error: error.toString() } })
@@ -21,16 +17,17 @@ const task = {
   })
 }
 
-class reportsScheduler {
+class dailyReportsScheduler {
   startServer () {
-    __logger.info('inside ~function=startServer. Starting WORKER=reportsScheduler')
+    __logger.info('inside ~function=startServer. Starting WORKER=dailyReportsScheduler')
     __db.init()
       .then(async (start) => {
-        task.one.start()
+        // task.one.start()
+        thirtyDaysReports()
       })
       .catch(err => {
-        console.log('reportsScheduler main catch error ->', err)
-        __logger.error('ERROR ~function=reportsScheduler. reportsScheduler::error: ', { err: typeof err === 'object' ? err : { err } })
+        console.log('dailyReportsScheduler main catch error ->', err)
+        __logger.error('ERROR ~function=dailyReportsScheduler. dailyReportsScheduler::error: ', { err: typeof err === 'object' ? err : { err } })
         process.exit(1)
       })
     this.stop_gracefully = function () {
@@ -42,7 +39,7 @@ class reportsScheduler {
   }
 }
 
-class Worker extends reportsScheduler {
+class Worker extends dailyReportsScheduler {
   start () {
     __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()

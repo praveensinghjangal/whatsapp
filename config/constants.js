@@ -688,6 +688,8 @@ const STREAM_OPTIN_BATCH_SIZE = 3500
 // const SEND_OPTIN_BATCH_ACK_IN_SECS = 180 // 3 minutes
 const SEND_OPTIN_BATCH_ACK_IN_SECS = 120 // 2 minutes
 const FILEPATH = 'public/createdFileCSV'
+const DAYWORKER = 30
+const DAILYSUMMARYWORKER = '* * 02 * * *'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -822,3 +824,5 @@ module.exports.CONVERSATION_REPORTS_SCHEDULER_TIME = CONVERSATION_REPORTS_SCHEDU
 module.exports.FILEPATH = FILEPATH
 module.exports.DOWNLOAD_STATUS = DOWNLOAD_STATUS
 module.exports.DELETE_DLR_REPORT_ZIP_FILE = DELETE_DLR_REPORT_ZIP_FILE
+module.exports.DAYWORKER = DAYWORKER
+module.exports.DAILYSUMMARYWORKER = DAILYSUMMARYWORKER
