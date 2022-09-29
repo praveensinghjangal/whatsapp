@@ -10,7 +10,7 @@ const moment = require('moment')
 const task = {
   one: cron.schedule(__constants.CAMP_REPORTS_SCHEDULER_TIME, () => {
     const date = moment().format('YYYY-MM-DD')
-    getCampaignCount(date, date)
+    getCampaignCount(date)
       .then(() => {
         return __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports')
       })
@@ -20,7 +20,6 @@ const task = {
   }, {
   })
 }
-
 class reportsScheduler {
   startServer () {
     __logger.info('inside ~function=startServer. Starting WORKER=reportsScheduler')

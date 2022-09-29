@@ -6,12 +6,12 @@ const __logger = require('../../lib/logger')
 const moment = require('moment')
 const MessageReportsServices = require('../../app_modules/reports/services/dbData')
 
-const createCampaignSummaryReport = (firstDate, secondDate) => {
+const createCampaignSummaryReport = (date) => {
   let campaignName
   const arrOfCamaignName = []
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
-  messageReportsServices.getCampaignName(firstDate, secondDate)
+  messageReportsServices.getCampaignName(date)
     .then(result => {
       result.forEach(element => {
         if ((element._id.campaignName !== null) || (!_.isEmpty(element._id.campaignName))) {

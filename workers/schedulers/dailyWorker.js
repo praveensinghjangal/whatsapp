@@ -2,13 +2,28 @@ const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
-const thirtyDaysReports = require('./thirtyDaysReports')
+// const thirtyDaysReports = require('./thirtyDaysReports')
+const conversationMisService = require('./userWiseConversationService')
+const InsertTemplateSumarryReports = require('./templateServices')
+const q = require('q')
+const moment = require('moment')
+const getCampaignCount = require('./getCampaignCount')
+const updateSummaryReportsForLastThirtyDays = () => {
+  const updateTemplateSummaryReports = q.defer()
+  for (var i = 0; i < __constants.DAYWORKER; i++) {
+    const currentDate = moment().subtract(i + 1, 'days').format('YYYY-MM-DD')
+    conversationMisService(currentDate)
+    InsertTemplateSumarryReports(currentDate)
+    getCampaignCount(currentDate)
+  }
+  return updateTemplateSummaryReports.promise
+}
 
 const task = {
   one: cron.schedule(__constants.DAILYSUMMARYWORKER, () => {
-    thirtyDaysReports()
+    updateSummaryReportsForLastThirtyDays()
       .then(() => {
-        return __logger.info('sucessfully run thirtyDaysReports worker')
+        return __logger.info('sucessfully run updateSummaryReportsForLastThirtyDays worker')
       })
       .catch((error) => {
         return __logger.error('inside ~function=', { err: typeof error === 'object' ? error : { error: error.toString() } })
@@ -23,7 +38,7 @@ class dailyReportsScheduler {
     __db.init()
       .then(async (start) => {
         // task.one.start()
-        thirtyDaysReports()
+        updateSummaryReportsForLastThirtyDays()
       })
       .catch(err => {
         console.log('dailyReportsScheduler main catch error ->', err)

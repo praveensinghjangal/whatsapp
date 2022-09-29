@@ -85,10 +85,10 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   return dataUpserted.promise
 }
 
-const InsertDataIntoSumarryReports = () => {
+const InsertDataIntoSumarryReports = (currentDate) => {
   const dbService = new DbService()
   // var currentDate = '2022-09-23'
-  var currentDate = moment().format('YYYY-MM-DD')
+  // var currentDate = moment().format('YYYY-MM-DD')
   const currentFromDate = moment(currentDate).subtract(1, 'days').format('YYYY-MM-DDT18:30:00.000[Z]')
   const currentEndDate = moment(currentDate).subtract(0, 'days').format('YYYY-MM-DDT18:29:59.999[Z]')
   __logger.info('InsertDataIntoSumarryReports  dates', currentDate, currentFromDate, currentEndDate)
