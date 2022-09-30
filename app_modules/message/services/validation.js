@@ -140,7 +140,7 @@ class validate {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 100
               },
               interactive: {
                 type: 'object',
