@@ -690,7 +690,7 @@ const STREAM_OPTIN_BATCH_SIZE = 3500
 const SEND_OPTIN_BATCH_ACK_IN_SECS = 120 // 2 minutes
 const FILEPATH = 'public/createdFileCSV'
 const DAYWORKER = 30
-const DAILYSUMMARYWORKER = '* * 02 * * *'
+const DAILYSUMMARYWORKER = '00 00 02 * * *'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
