@@ -120,6 +120,7 @@ class InternalService {
   }
 
   mapComponent (components) {
+    console.log('12345678')
     if (!components || components.length <= 0) {
       return []
     }
