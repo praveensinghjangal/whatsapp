@@ -130,6 +130,10 @@ class InternalService {
           parameter[parameter.media.type] = parameter.media
           delete parameter[parameter.media.type].caption
           if (parameter[parameter.media.type].url) {
+            if (parameter && parameter.media && parameter.media.type && parameter.media.type === 'document' && parameter.document && parameter.document.url) {
+              const fileNameExtArray = parameter.document.url.split('/')
+              if (fileNameExtArray && fileNameExtArray.length) parameter[parameter.media.type].filename = fileNameExtArray[fileNameExtArray.length - 1] || 'generic.pdf'
+            }
             parameter[parameter.media.type].link = parameter[parameter.media.type].url
             delete parameter[parameter.media.type].url
           }
