@@ -534,7 +534,7 @@ class PreProcessQueueConsumer {
             // start
             checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
               .then(data => {
-                notVerifiedNumbers = data.notVerifiedNumbers
+                notVerifiedNumbers = data.notVerifiedNumbers || []
                 const verifiedNumbers = data.verifiedNumbers
                 // console.log('verifiedNumbers', verifiedNumbers)
                 // console.log('notVerifiedNumbers', notVerifiedNumbers)
