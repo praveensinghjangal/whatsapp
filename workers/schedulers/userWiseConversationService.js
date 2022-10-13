@@ -1,4 +1,4 @@
-const q = require('q')
+// const q = require('q')
 const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 // const _ = require('lodash')
@@ -8,15 +8,16 @@ const rejectionHandler = require('../../lib/util/rejectionHandler')
 const conversationMisService = (currentDate) => {
   const dbService = new DbService()
   // var currentDate = moment().format('YYYY-MM-DD')
-  const conversationMisServiceReports = q.defer()
   const previousDateWithTime = moment(currentDate).utc().subtract(1, 'days').format('YYYY-MM-DDT18:30:00.000[Z]')
   const currentdateWithTime = moment(currentDate).utc().subtract(0, 'days').format('YYYY-MM-DDT18:29:59.999[Z]')
   let wabaNumber
   const wabaData = {}
   dbService.getActiveBusinessNumber()
     .then((data) => {
+      __logger.info('~function=getActiveBusinessNumber data', data)
       if (data) {
         wabaNumber = data.wabaNumber.split(',')
+        __logger.info('~function=getActiveBusinessNumber data', wabaNumber)
         return dbService.getconversationDataBasedOnWabaNumber(wabaNumber, previousDateWithTime, currentdateWithTime)
       } else {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'No active waba numbers in platform', data: {} })
@@ -54,23 +55,21 @@ const conversationMisService = (currentDate) => {
         }
         return wabaData
       } else {
-        return conversationMisServiceReports.resolve(false)
+        return false
       }
     })
     .then((data) => {
+      __logger.info('data to be inserted into the table  the table ~function=InsertDataIntoSumarryReports', wabaData)
       if (data) {
         return dbService.insertConversationDataAgainstWaba(wabaData)
       }
     })
     .then((data) => {
-      __logger.info('successfully inserted data into the table ~function=InsertDataIntoSumarryReports')
-      conversationMisServiceReports.resolve(true)
+      __logger.info('successfully inserted data into the table ~function=InsertDataIntoSumarryReports', data)
     })
-    .catch((err) => {
-      // conversationMisServiceReports.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      __logger.error('error in while inserting template summary ~function=InsertDataIntoSumarryReports', { err: typeof error === 'object' ? err : { error: err.toString() } })
-      conversationMisServiceReports.resolve(false)
+    .catch((error) => {
+      console.log('error in while inserting template summary ~function=InsertDataIntoSumarryReports', error)
+      __logger.error('error in while inserting template summary ~function=InsertDataIntoSumarryReports', { err: typeof error === 'object' ? error : { error: error.toString() } })
     })
-  return conversationMisServiceReports.promise
 }
 module.exports = conversationMisService

@@ -8,6 +8,7 @@ const moment = require('moment')
 const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   const dataUpserted = q.defer()
   const dbService = new DbService()
+  console.log('upsertCounts parameters ', singleUserDayStatusData)
   const dataObject = {
     wabaPhoneNumber: singleUserDayStatusData._id.wabaPhoneNumber,
     summaryDate: currentDate,
@@ -29,6 +30,7 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
     deliveredPercentage: 0,
     templateName: null
   }
+  console.log('dataobject valueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', dataObject)
   singleUserDayStatusData.status.forEach(singleStatus => {
     switch (singleStatus.name) {
       case __constants.MESSAGE_STATUS.preProcess:
@@ -73,6 +75,7 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   dataObject.templateName = await tempaletName(dataObject.templateId)
   dbService.addUpdateCountsAgainst(dataObject)
     .then(upserted => {
+      __logger.info('addUpdateCountsAgainst  data', upserted)
       return dataUpserted.resolve(upserted)
     })
     .catch((error) => {
@@ -86,26 +89,23 @@ const InsertDataIntoSumarryReports = (currentDate) => {
   const dbService = new DbService()
   // var currentDate = '2022-09-23'
   // var currentDate = moment().format('YYYY-MM-DD')
-  const InsertDataIntoTemplateSumarryReports = q.defer()
   const currentFromDate = moment(currentDate).subtract(1, 'days').format('YYYY-MM-DDT18:30:00.000[Z]')
   const currentEndDate = moment(currentDate).subtract(0, 'days').format('YYYY-MM-DDT18:29:59.999[Z]')
+  __logger.info('InsertDataIntoSumarryReports  dates', currentDate, currentFromDate, currentEndDate)
   dbService.getNewTemplateDetailsAgainstAllUser(currentFromDate, currentEndDate)
     .then(allUserData => {
       return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, currentDate)
     })
     .then(processed => {
       if (processed && processed.reject && processed.reject.length === 0) {
-        __logger.info('successfully processed data ~function=upsertCounts')
-        InsertDataIntoTemplateSumarryReports.resolve(true)
+        __logger.info('successfully processed data ~function=upsertCounts', processed)
       } else {
-        __logger.info('unsuccessfull yprocessed data with errors ~function=upsertCounts')
-        InsertDataIntoTemplateSumarryReports.resolve(false)
+        __logger.info('processed data with errors ~function=upsertCounts', processed)
       }
     })
     .catch((error) => {
       __logger.error('error in while inserting template summary ~function=InsertDataIntoSumarryReports', { err: typeof error === 'object' ? error : { error: error.toString() } })
-      InsertDataIntoTemplateSumarryReports.resolve(false)
     })
-  return InsertDataIntoTemplateSumarryReports.promise
+    .done()
 }
 module.exports = InsertDataIntoSumarryReports

@@ -439,9 +439,11 @@ class MessgaeHistoryService {
   }
 
   addUpdateCountsAgainst (updateObject) {
+    __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
     __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.TEMEPLATE_SUMMARY, { wabaPhoneNumber: updateObject.wabaPhoneNumber, summaryDate: updateObject.summaryDate, templateId: updateObject.templateId }, updateObject)
       .then(data => {
+        __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
           addedUpdated.resolve(true)
         } else {
@@ -619,6 +621,7 @@ class MessgaeHistoryService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getActiveBusinessNumber())
       .then(result => {
         if (result) {
+          __logger.info('~function=getActiveBusinessNumber data', result)
           return getActiveBusinessNumber.resolve(result[0])
         } else {
           return getActiveBusinessNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
@@ -759,6 +762,7 @@ class MessgaeHistoryService {
     { $sort: { total: -1 } }])
     // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
+        console.log('getNewTemplateDetailsAgainstAllUser result ', result)
         if (result) {
           return getNewTemplateDetailsAgainstAllUserPromise.resolve(result)
         } else {
@@ -833,9 +837,11 @@ class MessgaeHistoryService {
 
   getconversationDataBasedOnWabaNumber (wabaNumber, previousDateWithTime, currentdateWithTime) {
     const getconversationDataBasedOnWabaNumber = q.defer()
+    console.log('getconversationDataBasedOnWabaNumber', wabaNumber, previousDateWithTime, currentdateWithTime)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
         if (result) {
+          console.log('getconversationDataBasedOnWabaNumber result ', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })

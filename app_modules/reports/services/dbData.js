@@ -692,8 +692,7 @@ class MessageReportsServices {
         if (result && result.length > 0) {
           return promises.resolve(result)
         } else {
-          return promises.resolve(false)
-          // return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
+          return promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
         }
       })
       .catch(err => {
@@ -715,7 +714,7 @@ class MessageReportsServices {
         }
       })
       .catch(err => {
-        console.log('1111111111111111111111111111111111111111111111111', err)
+        console.log(err)
         __logger.error('SCHEDULER::update template cron::update template cron ~updateCampaignCount  error: ', err)
         promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })

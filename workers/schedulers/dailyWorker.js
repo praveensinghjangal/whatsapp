@@ -8,64 +8,26 @@ const InsertTemplateSumarryReports = require('./templateServices')
 const q = require('q')
 const moment = require('moment')
 const getCampaignCount = require('./getCampaignCount')
-const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
-
-const updateCampaignSummaryReportsForLastThirtyDays = async () => {
-  for (var i = 0; i < __constants.NUMBER_OF_DAYS; i++) {
-    const currentDate = moment().subtract(i + 1, 'days').format('YYYY-MM-DD')
-    __logger.info('start updateCampaignSummaryReportsForLastThirtyDays for the date', currentDate)
-    const data = await getCampaignCount(currentDate)
-    if (data === true) {
-      __logger.info('success updateCampaignSummaryReportsForLastThirtyDays for the date :: ', currentDate)
-    } else {
-      const telegramErrorMessage = `function~updateCampaignSummaryReportsForLastThirtyDays error in date '${currentDate}'`
-      errorToTelegram.send(`there is no camapign record ${currentDate}`, telegramErrorMessage)
-    }
-  }
-}
-
-const updateTemplateSummaryReportsForLastThirtyDays = async () => {
+const updateSummaryReportsForLastThirtyDays = () => {
   const updateTemplateSummaryReports = q.defer()
-  for (var i = 0; i < __constants.NUMBER_OF_DAYS; i++) {
+  for (var i = 0; i < __constants.DAYWORKER; i++) {
     const currentDate = moment().subtract(i + 1, 'days').format('YYYY-MM-DD')
-    __logger.info('start updateTemplateSummaryReportsForLastThirtyDays for the date', currentDate)
-    const data = await InsertTemplateSumarryReports(currentDate)
-    if (data === true) {
-      __logger.info('success updateCampaignSummaryReportsForLastThirtyDays for the date :: ', currentDate)
-    } else {
-      const telegramErrorMessage = `function~updateCampaignSummaryReportsForLastThirtyDays error in date '${currentDate}'`
-      errorToTelegram.send('error', telegramErrorMessage)
-    }
+    conversationMisService(currentDate)
+    InsertTemplateSumarryReports(currentDate)
+    getCampaignCount(currentDate)
   }
   return updateTemplateSummaryReports.promise
 }
 
-const updateConversationSummaryReportsForLastThirtyDays = async () => {
-  const updateTemplateSummaryReports = q.defer()
-  for (var i = 0; i < __constants.NUMBER_OF_DAYS; i++) {
-    const currentDate = moment().subtract(i + 1, 'days').format('YYYY-MM-DD')
-    __logger.info('start updateConversationSummaryReportsForLastThirtyDays for the date', currentDate)
-    const data = await conversationMisService(currentDate)
-    if (data === true) {
-      __logger.info('success updateConversationSummaryReportsForLastThirtyDays for the date :: ', currentDate)
-    } else {
-      const telegramErrorMessage = `function~updateConversationSummaryReportsForLastThirtyDays error in date '${currentDate}'`
-      errorToTelegram.send('error', telegramErrorMessage)
-    }
-  }
-  return updateTemplateSummaryReports.promise
-}
 const task = {
-  one: cron.schedule(__constants.DAILYUPDATECAMPAIGNSUMMARYWORKER, () => {
-    updateCampaignSummaryReportsForLastThirtyDays()
-  }, {
-  }),
-  two: cron.schedule(__constants.DAILYUPDATETEMPLATESUMMARY, () => {
-    updateTemplateSummaryReportsForLastThirtyDays()
-  }, {
-  }),
-  three: cron.schedule(__constants.DAILYUPDATECONVERSATIONSUMMARRY, () => {
-    updateConversationSummaryReportsForLastThirtyDays()
+  one: cron.schedule(__constants.DAILYSUMMARYWORKER, () => {
+    updateSummaryReportsForLastThirtyDays()
+      .then(() => {
+        return __logger.info('sucessfully run updateSummaryReportsForLastThirtyDays worker')
+      })
+      .catch((error) => {
+        return __logger.error('inside ~function=', { err: typeof error === 'object' ? error : { error: error.toString() } })
+      })
   }, {
   })
 }
@@ -75,9 +37,8 @@ class dailyReportsScheduler {
     __logger.info('inside ~function=startServer. Starting WORKER=dailyReportsScheduler')
     __db.init()
       .then(async (start) => {
-        task.one.start()
-        task.two.start()
-        task.three.start()
+        // task.one.start()
+        updateSummaryReportsForLastThirtyDays()
       })
       .catch(err => {
         console.log('dailyReportsScheduler main catch error ->', err)

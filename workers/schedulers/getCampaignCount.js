@@ -68,19 +68,14 @@ const createCampaignSummaryReport = (date) => {
     })
     .then(result => {
       if (arrOfCamaignName.length > 0) return messageReportsServices.updateCampaignCount(arrOfCamaignName)
-      else {
-        statusUpdated.resolve(false)
-        // return statusUpdated.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
-      }
+      else return statusUpdated.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
     })
     .then(() => {
-      __logger.info('SCHEDULER::Campaign Name worker run successfully', date)
-      statusUpdated.resolve(true)
+      return __logger.info('SCHEDULER::Campaign Name worker run successfully')
     })
     .catch(err => {
       __logger.error('SCHEDULER::added campaign record using cron function::error: ', err)
-      statusUpdated.resolve(false)
-      // statusUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      statusUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return statusUpdated.promise
 }
