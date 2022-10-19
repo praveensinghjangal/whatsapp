@@ -38,7 +38,7 @@ class Message {
       .then(apiRes => {
         apiRes = apiRes.body || apiRes
         __logger.info('facebook send message api response', apiRes)
-        saveMessageApiLog(payload.messageId, (apiRes && apiRes.messages && apiRes.messages[0] && apiRes.messages[0].id) ? apiRes.messages[0].id : 'failed', __config.service_provider_id.facebook, 'sendMessage', reqObj, apiRes, payload.to)
+        saveMessageApiLog(payload.messageId, (apiRes && apiRes.messages && apiRes.messages[0] && apiRes.messages[0].id) ? apiRes.messages[0].id : 'failed', __config.service_provider_id.facebook, 'sendMessage', reqObj, apiRes, payload.to, payload.whatsapp.from)
         if (apiRes && apiRes.messages && apiRes.messages[0] && apiRes.messages[0].id) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes })
         } else {

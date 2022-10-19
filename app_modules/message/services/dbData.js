@@ -229,10 +229,10 @@ class MessgaeHistoryService {
   getMessageCount (wabaPhoneNumber, startDate, endDate) {
     __logger.info('getMessageCount::>>>>>>>>>>>>')
     const messageStatus = q.defer()
-    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMessageStatusCount(), [wabaPhoneNumber, startDate, endDate, wabaPhoneNumber, startDate, endDate])
+    __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMessageStatusCount(), [wabaPhoneNumber, startDate, endDate])
       .then(result => {
         __logger.info('result', { result })
-        if (result && result.length > 0) {
+        if (result && result.length) {
           __logger.info('dbData---', { result })
           messageStatus.resolve(result)
         } else {

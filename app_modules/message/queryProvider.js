@@ -23,19 +23,18 @@ const getMessageIdByServiceProviderMsgId = () => {
 }
 
 const getMessageStatusCount = () => {
-  return `SELECT mh.state, COUNT(1) AS "stateCount"
-  FROM message_history mh
-  WHERE mh.id IN (
-    SELECT MAX(mh1.id)
-    FROM message_history mh1
-    where mh1.is_active = 1
-    and mh1.business_number = ?
-    and mh1.created_on BETWEEN  ? AND ?
-    GROUP BY mh1.message_id)
-  and mh.is_active = 1
-    and mh.business_number =  ?
-  and mh.created_on BETWEEN ? AND ?
-  GROUP BY mh.state`
+  return `SELECT state, COUNT(1) AS "stateCount"
+  FROM (
+    SELECT
+        mh.id AS idd,
+        mh.state AS state,
+        mh.created_on as DATE123,
+        ROW_NUMBER() OVER (PARTITION BY mh.message_id  ORDER BY mh.id desc) AS nc
+      FROM
+        message_history mh where  mh.business_number = ? and
+          mh.created_on BETWEEN ? AND ?
+  ) t
+  WHERE t.nc = 1 group by t.state`
 }
 
 const getMessageStatusList = () => {

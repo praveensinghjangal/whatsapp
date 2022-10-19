@@ -49,6 +49,11 @@ const validateInput = input => {
         type: 'string',
         required: true,
         minLength: 1
+      },
+      fromNumber: {
+        type: 'string',
+        required: true,
+        minLength: 1
       }
     }
   }
@@ -68,12 +73,12 @@ const validateInput = input => {
   return isvalid.promise
 }
 
-module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo) => {
+module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo, fromNumber) => {
   const historyStored = q.defer()
-  const query = `insert into service_provider_message_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number,message_type)
-  values (?,?,?,?,?,?,?,?)`
-  __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo)
-  validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo })
+  const query = `insert into service_provider_message_api_log(viva_message_id,service_provider_message_id,service_provider_id,api_name,request,response,to_number,message_type,from_number)
+  values (?,?,?,?,?,?,?,?,?)`
+  __logger.info('Inside function to store api log in apilog table', vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo, fromNumber)
+  validateInput({ vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, request, response, toPhoneNo, fromNumber })
     .then(validData => {
       let messageType = ''
       if (request && request.payload && request.payload.whatsapp && request.payload.whatsapp.contentType === __constants.MESSAGE_TYPE[1]) {
@@ -81,7 +86,7 @@ module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, ap
       } else {
         messageType = __constants.MESSAGE_TYPE[0]
       }
-      __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo, messageType])
+      __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo, messageType, fromNumber])
     })
     .then(result => {
       __logger.info('result then 2', { result })
