@@ -539,7 +539,7 @@ class PreProcessQueueConsumer {
                 // console.log('verifiedNumbers', verifiedNumbers)
                 // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
-                  if (verifiedNumbers.includes(payload.to)) {
+                  if (verifiedNumbers && verifiedNumbers.includes(payload.to)) {
                     return true
                   } else {
                     return false
@@ -547,7 +547,7 @@ class PreProcessQueueConsumer {
                 })
                 // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeNotCheckedForNotVerified = payloadsToBeNotCheckedForNotVerified.filter(payload => {
-                  if (notVerifiedNumbers.includes(payload.to)) {
+                  if (notVerifiedNumbers && notVerifiedNumbers.includes(payload.to)) {
                     return true
                   } else {
                     return false
