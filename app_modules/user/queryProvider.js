@@ -30,12 +30,9 @@ const getUserAccountProfile = () => {
   type_name as "accountType" ,u.city, u.state, u.country, u.address_line_1 as "addressLine1",u.address_line_2 as "addressLine2",
   u.contact_number as "contactNumber",u.phone_code as "phoneCode", u.postal_code as "postalCode", u.first_name as "firstName",
   u.last_name as "lastName",u.tps, u.phone_verified as "phoneVerified", u.email_verified as "emailVerified", ut.tfa_type as "tfaType",
-  uaf.user_agreement_files_id  as "userAgreementFilesId",wi.service_provider_id as "serviceProviderId",wi.audience_webhook_url as "audienceWebhookUrl", CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
-  wi.max_tps_to_provider as "maxTpsToProvider", asi.status_name as "agreementStatus",uaf.agreement_status_id as "agreementStatusId",
-  uaf.rejection_reason as "agreementRejectionReason"
+  wi.service_provider_id as "serviceProviderId",wi.audience_webhook_url as "audienceWebhookUrl", CONCAT(wi.phone_code, wi.phone_number) as "wabaPhoneNumber",
+  wi.max_tps_to_provider as "maxTpsToProvider"
   from users u
-  left join user_agreement_files uaf on u.user_id = uaf.user_id and uaf.user_agreement_files_id = (SELECT user_agreement_files_id from user_agreement_files where is_active = 1 and user_id = u.user_id order by created_on desc limit 1) and uaf.is_active = true
-  left join agreement_status asi on uaf.agreement_status_id = asi.agreement_status_id and asi.is_active = true
   left join user_account_type uat on u.user_account_type_id = uat.user_account_type_id and uat.is_active = true
   left join users_tfa ut on u.user_id = ut.user_id and ut.is_active = true
   left join waba_information wi on wi.user_id = u.user_id and wi.is_active = true
@@ -165,7 +162,7 @@ const saveUserAgreement = () => {
 
 const getLatestAgreementByUserId = () => {
   return `select file_path from user_agreement_files
-  where user_id = ? and is_active = true 
+  where user_id = ? and is_active = true
   order by created_on desc limit 1`
 }
 
