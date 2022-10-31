@@ -312,6 +312,7 @@ const updateAccountManagerName = (req, res) => {
 // api specific to get email id of support user
 const getUserRoleArrayDataForEmail = (req, res) => {
   const userDetails = q.defer()
+  // need to change here change the query
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [__constants.SUPPORT_ROLE_ID])
     .then(results => {
       __logger.info('results Then 1')

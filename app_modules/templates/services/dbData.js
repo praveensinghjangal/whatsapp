@@ -89,6 +89,7 @@ class TemplateService {
 
   insertTemplate (newData, oldData, userId) {
     __logger.info('Inserting new template')
+    // need to change here in default message
     const dataInserted = q.defer()
     const templateData = {
       messageTemplateId: this.uniqueId.uuid().split('-').join('_'),

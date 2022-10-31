@@ -64,12 +64,15 @@ const addUpdateTemplates = (req, res) => {
       }
     })
     .then(wabaAndTemplateData => {
+      console.log('111111111111111111111111111111111111111111111111111111111111111', wabaAndTemplateData)
       __logger.info('add update template:: dbData then 2', { wabaAndTemplateData })
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
       if (req.body.messageTemplateId) {
         if (!wabaAndTemplateData || !wabaAndTemplateData.messageTemplateId) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, data: {}, err: {} })
         }
+        const testing = statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)
+        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', testing)
         if (wabaAndTemplateData.messageTemplateId && !statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_EDITED, data: {}, err: {} })
         }

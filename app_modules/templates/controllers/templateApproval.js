@@ -183,6 +183,7 @@ const sendTemplateForEvaluaion = (req, res) => {
       if (updateStatusRes.code !== 2000) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: updateStatusRes.error, data: {} })
       }
+      // need to changes here
       if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
         return ruleEngine.addTemplate(oldTemplateData)
       }
@@ -190,6 +191,7 @@ const sendTemplateForEvaluaion = (req, res) => {
     })
     .then(ruleEngineRes => {
       __logger.info('ruleEngineRes', ruleEngineRes)
+      // need to change here
       if (reqBody.firstLocalizationNewStatusId === __constants.TEMPLATE_STATUS.submitted.statusCode) {
         return templateService.addTemplate(oldTemplateData, req.endUserConfig.wabaPhoneNumber)
       }
