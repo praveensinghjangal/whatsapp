@@ -11,9 +11,9 @@ const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 // Controller require section
 const accountProfileController = require('./controllers/accoutProfile')
 const accountTypeController = require('./controllers/accountType')
-const billingProfileController = require('./controllers/billingProfile')
+// const billingProfileController = require('./controllers/billingProfile')
 const verificationController = require('./controllers/verification')
-const agreementController = require('./controllers/agreement')
+// const agreementController = require('./controllers/agreement')
 const accountConfigController = require('./controllers/config')
 const countController = require('./controllers/count')
 
@@ -70,8 +70,8 @@ router.get('/account/list', authMiddleware.authenticate(authstrategy.jwt.name, a
 router.patch('/account/accountManager', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountProfileController.updateAccountManagerName)
 
 // Billing Profile routes
-router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingProfileController.getBusinessBilllingProfile)
-router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingProfileController.addBusinessBilllingProfile)
+// router.get('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingProfileController.getBusinessBilllingProfile)
+// router.post('/billing', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, billingProfileController.addBusinessBilllingProfile)
 
 // Verification routes
 router.post('/verification/email', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, verificationController.generateEmailVerificationCode)
@@ -90,16 +90,16 @@ router.post('/tfa', authMiddleware.authenticate(authstrategy.jwt.name, authstrat
 router.get('/accountType', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountTypeController.getAcountType)
 
 // Agreement Routes
-router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.generateAgreement)
-router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.uploadAgreement)
-router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreement)
+// router.get('/agreement/generate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.generateAgreement)
+// router.post('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.uploadAgreement)
+// router.get('/agreement', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreement)
 // router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, agreementController.getAgreementListByStatusId)
-router.patch('/agreement/evaluate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.evaluateAgreement)
-router.get('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementStatusList)
-router.patch('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/agreementStatus').updateAgreementStatus)
-router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementList)
-router.get('/agreement/status/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, countController.getAgreementStatusCount)
-router.get('/agreement/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementByUserId)
+// router.patch('/agreement/evaluate', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.evaluateAgreement)
+// router.get('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementStatusList)
+// router.patch('/agreement/status', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), require('./controllers/agreementStatus').updateAgreementStatus)
+// router.get('/agreement/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementList)
+// router.get('/agreement/status/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, countController.getAgreementStatusCount)
+// router.get('/agreement/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), agreementController.getAgreementByUserId)
 // Account Config
 router.get('/account/config/:userId', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.getAccountConfig)
 router.patch('/account/config', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, accountConfigController.updateAccountConfig)

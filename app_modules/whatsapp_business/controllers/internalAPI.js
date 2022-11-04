@@ -73,7 +73,7 @@ const getWabaDataFromDb = (req, res) => {
  */
 
 const getUserIdAndApiKeyFromWabaNumber = (req, res) => {
-  __logger.info('Inside getWabaDataFromDb', req.query.wabaNumber)
+  __logger.info('Inside getUserIdAndApiKeyFromWabaNumber', req.query.wabaNumber)
   if (!req.query.wabaNumber) {
     return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide wabaNumber' })
   }

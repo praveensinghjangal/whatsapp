@@ -128,8 +128,8 @@ const getWabaData = () => {
   wi.is_helo_campaign as "isHeloCampaign",
   wi.optout_text as "optoutText"
   from waba_information wi
-  join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
-  join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
+  left join billing_information bi on wi.user_id = bi.user_id and bi.is_active = 1
+  left join plan_details pd on pd.plan_id = bi.plan_id and pd.is_active = 1
   where wi.is_active = 1 and wi.phone_number = ?`
 }
 
