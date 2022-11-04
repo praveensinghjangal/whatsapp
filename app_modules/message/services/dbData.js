@@ -381,10 +381,12 @@ class MessgaeHistoryService {
   }
 
   getWabaNameByWabaNumber (arrayofWabaNumber) {
+    console.log("arrayofWabaNumber",arrayofWabaNumber)
     const promises = q.defer()
     __logger.info('inside getWabaNameByWabaNumber')
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByWabaNumber(), [arrayofWabaNumber])
       .then(result => {
+        console.log('222222222222222222222222222222222222',result)
         if (result && result.length > 0) {
           promises.resolve(result)
         } else {
@@ -418,7 +420,25 @@ class MessgaeHistoryService {
       })
     return promises.promise
   }
-
+  getMisRelatedDataMonth (startOfMonth, endOfMonth) {
+    const promises = q.defer()
+    __logger.info('inside getMisRelatedDataMonth', startOfMonth, endOfMonth)
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMisRelatedDataMonth(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
+      .then(result => {
+        if (result && result.length > 0) {
+          __logger.info('>>>>>>>>> getMisRelatedDataMonth db call got array of json', result)
+          promises.resolve(result)
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getMisRelatedDataMonth db call')
+          promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getMisRelatedDataMonth db call:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
   addUpdateCounts (updateObject) {
     __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
@@ -831,20 +851,21 @@ class MessgaeHistoryService {
     return getTemplateNameAgainstId.promise
   }
 
-  getconversationDataBasedOnWabaNumber (wabaNumber, previousDateWithTime, currentdateWithTime) {
-    const getconversationDataBasedOnWabaNumber = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
+  
+  getconversationDataBasedOnWabaNumberAllData (wabaNumber, previousDateWithTime, currentdateWithTime) {
+    const getconversationDataBasedOnWabaNumberAllData = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumberAllData(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
         if (result) {
-          return getconversationDataBasedOnWabaNumber.resolve(result)
+          return getconversationDataBasedOnWabaNumberAllData.resolve(result)
         } else {
-          return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+          return getconversationDataBasedOnWabaNumberAllData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+        return getconversationDataBasedOnWabaNumberAllData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
-    return getconversationDataBasedOnWabaNumber.promise
+    return getconversationDataBasedOnWabaNumberAllData.promise
   }
 
   insertConversationDataAgainstWaba (dataIncoming) {
