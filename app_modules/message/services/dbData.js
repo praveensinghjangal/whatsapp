@@ -381,12 +381,11 @@ class MessgaeHistoryService {
   }
 
   getWabaNameByWabaNumber (arrayofWabaNumber) {
-    console.log("arrayofWabaNumber",arrayofWabaNumber)
     const promises = q.defer()
     __logger.info('inside getWabaNameByWabaNumber')
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByWabaNumber(), [arrayofWabaNumber])
       .then(result => {
-        console.log('222222222222222222222222222222222222',result)
+        console.log('222222222222222222222222222222222222', result)
         if (result && result.length > 0) {
           promises.resolve(result)
         } else {
@@ -420,6 +419,7 @@ class MessgaeHistoryService {
       })
     return promises.promise
   }
+
   getMisRelatedDataMonth (startOfMonth, endOfMonth) {
     const promises = q.defer()
     __logger.info('inside getMisRelatedDataMonth', startOfMonth, endOfMonth)
@@ -439,6 +439,7 @@ class MessgaeHistoryService {
       })
     return promises.promise
   }
+
   addUpdateCounts (updateObject) {
     __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
@@ -851,7 +852,6 @@ class MessgaeHistoryService {
     return getTemplateNameAgainstId.promise
   }
 
-  
   getconversationDataBasedOnWabaNumberAllData (wabaNumber, previousDateWithTime, currentdateWithTime) {
     const getconversationDataBasedOnWabaNumberAllData = q.defer()
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumberAllData(), [wabaNumber, previousDateWithTime, currentdateWithTime])
@@ -882,11 +882,11 @@ class MessgaeHistoryService {
         referralConversion: 0,
         totalcount: 0
       }
-      dataInsert.wabaPhoneNumber = wabanumber
+      dataInsert.wabaPhoneNumber = data.wabaNumber
       dataInsert.userInitiated = data.ui || 0
       dataInsert.businessInitiated = data.bi || 0
       dataInsert.notApplicable = data.na || 0
-      dataInsert.referralConversion = data.na || 0
+      dataInsert.referralConversion = data.rc || 0
       dataInsert.countryName = data.countryName || null
       dataInsert.summaryDate = data.summaryDate
       dataInsert.totalcount = dataInsert.userInitiated + dataInsert.businessInitiated + dataInsert.notApplicable + dataInsert.referralConversion || 0

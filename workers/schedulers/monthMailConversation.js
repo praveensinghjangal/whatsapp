@@ -1,19 +1,10 @@
 const cron = require('node-cron')
 const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
-const main = require('./processCountService')
-//const emailTemplatesMonths = require('../../lib/sendNotifications/emailTemplatesMonths')
+// const main = require('./processCountService')
+// const emailTemplatesMonths = require('../../lib/sendNotifications/emailTemplatesMonths')
 const __constants = require('../../config/constants')
 const conversationMisService = require('./monthMailConversationService')
-//30 6 2 * * -> for monthly report
-
-// const task = {
-//   mis: cron.schedule(__constants.PROCESS_COUNT_SCHEDULER_TIME, () => {
-//     main()
-//   }, {
-//     timezone: 'Asia/Kolkata'
-//   })
-// }
 const task = {
   // mis: cron.schedule('* * * * *', () => {
   mis: cron.schedule(__constants.MIS_MONTHLY_CONVERSATION, () => {
@@ -29,7 +20,7 @@ class monthMailConversation {
     __db.init()
       .then(async (start) => {
         task.mis.start()
-        //conversationMisService()
+        // conversationMisService()
       })
       .catch(err => {
         console.log('Process Catch Main Function Error :- ', err)
