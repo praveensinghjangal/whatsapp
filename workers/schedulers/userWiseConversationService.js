@@ -25,34 +25,50 @@ const conversationMisService = (currentDate) => {
     })
     .then((data) => {
       if (data && data.length > 0) {
-        for (let i = 0; i < data.length; i++) {
-          const value = data[i]
+        // for (let i = 0; i < data.length; i++) {
+        //   const value = data[i]
+        //   let finalvalue = 0
+        //   let countryName1 = 0
+        //   let finalDate
+        //   if (value.conversationCategoryCount) {
+        //     finalvalue = value.conversationCategoryCount
+        //   } else {
+        //     finalvalue = 0
+        //   }
+        //   if (value.summaryDate) {
+        //     finalDate = value.summaryDate
+        //   } else {
+        //     finalDate = null
+        //   }
+        //   if (value.messageCountry) {
+        //     countryName1 = value.messageCountry
+        //   } else countryName1 = null
+        //   if (!wabaData[value.wabaPhoneNumber]) {
+        //     wabaData[value.wabaPhoneNumber] = {
+        //       [value.conversationCategory]: finalvalue,
+        //       countryName: countryName1,
+        //       summaryDate: finalDate
+        //     }
+        //   } else {
+        //     wabaData[value.wabaPhoneNumber][value.conversationCategory] = finalvalue
+        //   }
+        // }
+        data.map(element => {
           let finalvalue = 0
           let countryName1 = 0
-          let finalDate
-          if (value.conversationCategoryCount) {
-            finalvalue = value.conversationCategoryCount
-          } else {
-            finalvalue = 0
-          }
-          if (value.summaryDate) {
-            finalDate = value.summaryDate
-          } else {
-            finalDate = null
-          }
-          if (value.messageCountry) {
-            countryName1 = value.messageCountry
-          } else countryName1 = null
-          if (!wabaData[value.wabaPhoneNumber]) {
-            wabaData[value.wabaPhoneNumber] = {
-              [value.conversationCategory]: finalvalue,
+          finalvalue = element.conversationCategoryCount || 0
+          countryName1 = element.messageCountry ?? null
+          if (!wabaData[`${element.wabaPhoneNumber}_${countryName1}`]) {
+            wabaData[`${element.wabaPhoneNumber}_${countryName1}`] = {
+              wabaNumber: element.wabaPhoneNumber,
+              [element.conversationCategory]: finalvalue,
               countryName: countryName1,
-              summaryDate: finalDate
+              summaryDate: moment(currentdateWithTime).format('YYYY-MM-DD')
             }
           } else {
-            wabaData[value.wabaPhoneNumber][value.conversationCategory] = finalvalue
+            wabaData[`${element.wabaPhoneNumber}_${countryName1}`][element.conversationCategory] = finalvalue
           }
-        }
+        })
         return wabaData
       } else {
         return false

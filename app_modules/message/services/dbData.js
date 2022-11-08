@@ -841,7 +841,7 @@ class MessgaeHistoryService {
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
         if (result) {
-          console.log('getconversationDataBasedOnWabaNumber result ', result)
+          // console.log('getconversationDataBasedOnWabaNumber result ', result)
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
@@ -867,11 +867,11 @@ class MessgaeHistoryService {
         referralConversion: 0,
         totalcount: 0
       }
-      dataInsert.wabaPhoneNumber = wabanumber
+      dataInsert.wabaPhoneNumber = data.wabaNumber
       dataInsert.userInitiated = data.ui || 0
       dataInsert.businessInitiated = data.bi || 0
       dataInsert.notApplicable = data.na || 0
-      dataInsert.referralConversion = data.na || 0
+      dataInsert.referralConversion = data.rc || 0
       dataInsert.countryName = data.countryName || null
       dataInsert.summaryDate = data.summaryDate
       dataInsert.totalcount = dataInsert.userInitiated + dataInsert.businessInitiated + dataInsert.notApplicable + dataInsert.referralConversion || 0
