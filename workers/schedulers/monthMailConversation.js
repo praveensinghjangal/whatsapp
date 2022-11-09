@@ -4,11 +4,11 @@ const __logger = require('../../lib/logger')
 // const main = require('./processCountService')
 // const emailTemplatesMonths = require('../../lib/sendNotifications/emailTemplatesMonths')
 const __constants = require('../../config/constants')
-const conversationMisService = require('./monthMailConversationService')
+const conversationMonthMisService = require('./monthMailConversationService')
 const task = {
   // mis: cron.schedule('* * * * *', () => {
   mis: cron.schedule(__constants.MIS_MONTHLY_CONVERSATION, () => {
-    conversationMisService()
+    conversationMonthMisService()
   }, {
     timezone: 'Asia/Kolkata'
   })

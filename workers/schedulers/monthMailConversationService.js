@@ -33,7 +33,6 @@ const messageStatusOnMailForConversation = () => {
   //   const dateWithTime = moment().utc().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ssZ')
   //   const startOfMonth = moment(dateWithTime).utc().startOf('month').format('YYYY-MM-DD')
   //   const endOfMonth = moment(dateWithTime).utc().endOf('month').format('YYYY-MM-DD')
-
   const startOfMonth = moment().utc().subtract(1, 'months').startOf('month').format('YYYY-MM-DD')
 
   const endOfMonth = moment().utc().subtract(1, 'months').endOf('month').format('YYYY-MM-DD')
@@ -104,15 +103,15 @@ const messageStatusOnMailForConversation = () => {
     //     userIdToUserNameConvo: userIdToUserName
     //   })
     // })
+    // .catch((error) => {
+    //   console.log('error in sending mis ~function=messageStatusOnMailForConversation', error)
+    //   __logger.error('error in sending mis ~function=messageStatusOnMailForConversation', { err: typeof error === 'object' ? error : { error: error.toString() } })
+    //   conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
     .catch((error) => {
-      console.log('error in sending mis ~function=messageStatusOnMailForConversation', error)
-      __logger.error('error in sending mis ~function=messageStatusOnMailForConversation', { err: typeof error === 'object' ? error : { error: error.toString() } })
-      conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
-    }).catch((error) => {
       const telegramErrorMessage = 'Monthy MIS report err || function ~ error in Sending monthly MIS'
       errorToTelegram.send(error, telegramErrorMessage)
       console.log('errror', error)
-      return conversationMis.reject(error)
+      return conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
     })
   return conversationMis.promise
 }
