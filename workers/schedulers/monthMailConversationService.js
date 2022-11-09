@@ -1,5 +1,5 @@
 const q = require('q')
-const __logger = require('../../lib/logger')
+// const __logger = require('../../lib/logger')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
