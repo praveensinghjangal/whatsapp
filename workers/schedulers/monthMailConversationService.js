@@ -33,26 +33,41 @@ const messageStatusOnMailForConversation = () => {
   //   const dateWithTime = moment().utc().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ssZ')
   //   const startOfMonth = moment(dateWithTime).utc().startOf('month').format('YYYY-MM-DD')
   //   const endOfMonth = moment(dateWithTime).utc().endOf('month').format('YYYY-MM-DD')
-  
-  const startOfMonth = moment().utc().subtract(1,'months').startOf('month').format('YYYY-MM-DD');
+  const startOfMonth = '2022-09-01';
 
-  const endOfMonth = moment().utc().subtract(1,'months').endOf('month').format('YYYY-MM-DD');
+  const endOfMonth = '2022-09-30';
+
+  
+  // const startOfMonth = moment().utc().subtract(1,'months').startOf('month').format('YYYY-MM-DD');
+
+  // const endOfMonth = moment().utc().subtract(1,'months').endOf('month').format('YYYY-MM-DD');
 
   let arrayofWabanumber
   dbService.getActiveBusinessNumber()
     .then((data) => {
+      console.log("active user",data)
       if (data) {
+
         arrayofWabanumber = data.wabaNumber.split(',')
-        return dbService.getconversationDataBasedOnWabaNumberAllData(arrayofWabanumber, startOfMonth, endOfMonth)
+        return dbService.getConversationDataBasedOnWabaNumberAllData(arrayofWabanumber, startOfMonth, endOfMonth)
       } else {
+        //sudo docker run --rm -it -p 15672:15672 -p 5672:5672 rabbitmq:3-management
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'No active waba numbers in platform', data: {} })
       }
     })
     .then((dbResponse)=>{
-     
+      console.log("_________----------------",dbResponse)
+     if(dbResponse)
+     {
       allUserData = bodyCreator(dbResponse)
       console.log("alluserData",allUserData)
-      return dbService.getWabaNameByWabaNumber(arrayofWabanumber)
+      return dbService.getWabaNameByWabaNumberWithCode(arrayofWabanumber)
+
+     }else{
+   
+
+     }
+      
     })
     .then(dbresponse => {
        
@@ -70,11 +85,50 @@ const messageStatusOnMailForConversation = () => {
          } 
         }
         console.log('data......',allUserData)
-        const emailService = new EmailService(__config.emailProvider)
+        return allUserData
+
+    })
+    .then((data)=>{
+         // const allUserGrouped = _.groupBy(allUserData ,item => {
+        //   return [item['businessName']];
+      // });
+      const groupBybusinessName = _.groupBy(data, item => item.businessName)
+      console.log("________________---------------------------__ppp",groupBybusinessName)
+      console.log("-------------",groupBybusinessName)
+      
+      // const j = JSON.parse(a)
+      console.log("/////////////////////////////////////////")
+      //const groupBywabaPhoneNumber = _.groupBy(groupBybusinessName, item => item.wabaPhoneNumber)
+        //console.log("________________---------------------------__ppp",groupBywabaPhoneNumber)   //object
+        //return data
+    })
+    .then ((data)=>{
+
+      function createRowHTML(){
+        var tableContent=""
+        for(i=0; i<data.length;i++){
+        var rowspan = 0;
+        var detailLength = data.key.length;
+        rowspan = detailLength;
+      
+        tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.key.getActiveBusinessNumber + "</td></tr>";
+      
+        data.map((ele) => {
+          // '<td>'ele.ui'</td>'
+          // <td>ele.bi</td>
+          // <td>ele.rc</td>
+          // <td>ele.na</td>
+          // <td>ele.total</td>
+        })
+
+      }
+    }
+
+
+      //console.log(data)
+      const emailService = new EmailService(__config.emailProvider)
         const subject = `MIS Report for ${preMonth}` 
-        return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMisMonth(allUserData))
-
-
+        return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMisMonth(data))
     })
   // dbService.getMisRelatedData(startOfMonth, endOfMonth)
     // .then(responseFromDb => {

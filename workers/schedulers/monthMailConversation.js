@@ -17,7 +17,7 @@ const conversationMisService = require('./monthMailConversationService')
 const task = {
   // mis: cron.schedule('* * * * *', () => {
   mis: cron.schedule(__constants.MIS_MONTHLY_CONVERSATION, () => {
-    conversationMisService()
+   // conversationMisService()
   }, {
     timezone: 'Asia/Kolkata'
   })
@@ -28,8 +28,8 @@ class monthMailConversation {
     __logger.info('inside ~function=startServer. Starting WORKER=monthMailConversation')
     __db.init()
       .then(async (start) => {
-        task.mis.start()
-        //conversationMisService()
+      //task.mis.start()
+      conversationMisService()
       })
       .catch(err => {
         console.log('Process Catch Main Function Error :- ', err)
