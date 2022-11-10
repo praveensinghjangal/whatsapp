@@ -92,15 +92,18 @@ const messageStatusOnMailForConversation = () => {
          // const allUserGrouped = _.groupBy(allUserData ,item => {
         //   return [item['businessName']];
       // });
+      // const groupBybusinessName = _.groupBy(data, item => item.businessName)
+      // console.log("________________---------------------------__ppp",groupBybusinessName)
+      // console.log("-------------",groupBybusinessName)
       const groupBybusinessName = _.groupBy(data, item => item.businessName)
-      console.log("________________---------------------------__ppp",groupBybusinessName)
-      console.log("-------------",groupBybusinessName)
-      
-      // const j = JSON.parse(a)
-      console.log("/////////////////////////////////////////")
-      //const groupBywabaPhoneNumber = _.groupBy(groupBybusinessName, item => item.wabaPhoneNumber)
-        //console.log("________________---------------------------__ppp",groupBywabaPhoneNumber)   //object
-        //return data
+      _.each(businessName, (singleUserData, wabaKey) => {
+        const alluserCountryLastDay = _.groupBy(singleUserData, item => item.countryOfPhoneNumber)
+
+        // let emptyjsonLastDay = {}
+        // _.each(alluserCountryLastDay, (singlecountryData, key) => {
+        //   UserLastDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], 0]
+  
+        return groupBybusinessName
     })
     .then ((data)=>{
 
@@ -113,13 +116,13 @@ const messageStatusOnMailForConversation = () => {
       
         tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.key.getActiveBusinessNumber + "</td></tr>";
       
-        data.map((ele) => {
-          // '<td>'ele.ui'</td>'
-          // <td>ele.bi</td>
-          // <td>ele.rc</td>
-          // <td>ele.na</td>
-          // <td>ele.total</td>
-        })
+        // data.map((ele) => {
+        //   // '<td>'ele.ui'</td>'
+        //   // <td>ele.bi</td>
+        //   // <td>ele.rc</td>
+        //   // <td>ele.na</td>
+        //   // <td>ele.total</td>
+        // })
 
       }
     }
