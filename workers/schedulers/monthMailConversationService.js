@@ -7,13 +7,14 @@ const _ = require('lodash')
 const EmailService = require('../../lib/sendNotifications/email')
 const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
-const userIdToUserName = {}
+const userWabaToUserName = {}
 const preMonth = moment().utc().subtract(1, 'months').format('MMMM')
 const __config = require('../../config')
-
+// reduce will make key for data and reduce  according to previous and current value where innitail value is {}
 const bodyCreator = (array) => {
   const merged = array.reduce((r, { wabaPhoneNumber, messageCountry, ...rest }) => {
     const key = `${wabaPhoneNumber}-${messageCountry}`
+    console.log('key',key)
     r[key] = r[key] || { wabaPhoneNumber, messageCountry, ui: 0, bi: 0, rc: 0, na: 0 }
     r[key][rest.conversationCategory] = rest.conversationCategoryCount
     r[key].total = r[key].total ? r[key].total + rest.conversationCategoryCount : rest.conversationCategoryCount
@@ -22,17 +23,7 @@ const bodyCreator = (array) => {
   const arraydata = Object.values(merged)
   return arraydata
 }
-const bodyCreator1 = (array) => {
-  const merged = array.reduce((r, { wabaPhoneNumber, messageCountry, ...rest }) => {
-    const key = `${wabaPhoneNumber}-${messageCountry}`
-    r[key] = r[key] || { wabaPhoneNumber, messageCountry, ui: 0, bi: 0, rc: 0, na: 0 }
-    r[key][rest.conversationCategory] = rest.conversationCategoryCount
-    r[key].total = r[key].total ? r[key].total + rest.conversationCategoryCount : rest.conversationCategoryCount
-    return r
-  }, {})
-  const arraydata = Object.values(merged)
-  return arraydata
-}
+
 // handle no record for mis data as of now mis stops in case of no data but if there is 0 campagin the opt out data should go
 const messageStatusOnMailForConversation = () => {
   const conversationMis = q.defer()
@@ -70,9 +61,9 @@ const messageStatusOnMailForConversation = () => {
       console.log('222222222222222222222222222222222222222222222222', dbwabaName)
       if (dbwabaName && dbwabaName.length) {
         for (let i = 0; i < dbwabaName.length; i++) {
-          userIdToUserName[dbwabaName[i].wabaPhoneNumber] = dbwabaName[i].businessName
+          userWabaToUserName[dbwabaName[i].wabaPhoneNumber] = dbwabaName[i].businessName
         }
-        console.log('userIdToUserName', userIdToUserName)
+        console.log('userWabaToUserName', userWabaToUserName)
       } else {
       // need to develop
       }
@@ -81,7 +72,8 @@ const messageStatusOnMailForConversation = () => {
       for (let i = 0; i < allUserData.length; i++) {
         data = allUserData[i]
         if (data.wabaPhoneNumber) {
-          data.businessName = userIdToUserName[data.wabaPhoneNumber]
+          data.businessName = userWabaToUserName[data.wabaPhoneNumber]
+
         } else {
           // need to develop
         }
@@ -95,7 +87,7 @@ const messageStatusOnMailForConversation = () => {
         return [item.businessName]
       })
       //  object with the value of business name as key and value as an array of object data
-      //console.log('3333333333333333333333333333333333333333333333333', allUserGroupedOnBusinessName)
+      console.log('3333333333333333333333333333333333333333333333333', allUserGroupedOnBusinessName)
       const abc = Object.keys(allUserGroupedOnBusinessName)
       // keys for all business name
       const obj1 = []
@@ -103,73 +95,47 @@ const messageStatusOnMailForConversation = () => {
       abc.forEach((result) => {
         const q = allUserGroupedOnBusinessName[result]
         //console.log('qqq', q)
-        const allUserGroupedOnBusinessName11 = _.groupBy(q, item => {
+        const allUserGroupedOnWabaNumber = _.groupBy(q, item => {
           return [item.wabaPhoneNumber]
            //  looping the key pushing data again grouping by waba no
+           
+          })
+          console.log('----allUserData------',allUserGroupedOnWabaNumber)
+          const abc1 = Object.keys(allUserGroupedOnWabaNumber)
+          // keys for all wabaphone number
+          //console.log('++++++++++++++', abc1)
+          abc1.forEach((data) => {
+            if (allUserGroupedOnWabaNumber.hasOwnProperty(data)) {
+              const obj = { businessName: '', wabaNumber: '', country: [] }
+              obj.businessName = allUserGroupedOnWabaNumber[data][0].businessName
+              obj.wabaNumber = data
+              obj.country = allUserGroupedOnWabaNumber[data]
+              obj1.push(obj)
+            }
+          })
+          console.log("$$$$$$$$$$$$$",obj1[0])
         })
-        // console.log('----allUserData------',allUserGroupedOnBusinessName11)
-        // process.exit(1)
-       
-        const abc1 = Object.keys(allUserGroupedOnBusinessName11)
-        // keys for all wabaphone number
-        //console.log('++++++++++++++', abc1)
-        abc1.forEach((data) => {
-          if (allUserGroupedOnBusinessName11.hasOwnProperty(data)) {
-            const obj = { businessName: '', wabaNumber: '', country: [] }
-            obj.businessName = allUserGroupedOnBusinessName11[data][0].businessName
-            obj.wabaNumber = data
-            obj.country = allUserGroupedOnBusinessName11[data]
-            obj1.push(obj)
-          }
+        const obj21 = []
+        const allUserGroupedOnBusinessName22 = _.groupBy(obj1, item => {
+          return [item.businessName]
         })
-         console.log("$$$$$$$$$$$$$",obj1[0])
-      })
-      const obj21 = []
-      const allUserGroupedOnBusinessName1122 = _.groupBy(obj1, item => {
-        return [item.businessName]
-      })
-      const abc4 = Object.keys(allUserGroupedOnBusinessName1122)
+        // data with object key as businessname value and value as an array  with the businessname,wabanumber,country of array
+        console.log("^^^^^^^^^^",allUserGroupedOnBusinessName22)
+      const abc4 = Object.keys(allUserGroupedOnBusinessName22)
       console.log('}}}}}}}}', abc4)
+      //process.exit(1)
       abc4.forEach((data) => {
-        if (allUserGroupedOnBusinessName1122.hasOwnProperty(data)) {
-          console.log('------------', allUserGroupedOnBusinessName1122[data])
+        if (allUserGroupedOnBusinessName22.hasOwnProperty(data)) {
+          console.log('------------', allUserGroupedOnBusinessName22[data])
           const obj12 = { businessName: '', wabaPhoneNumber: [] }
           obj12.businessName = data
-          obj12.wabaPhoneNumber = allUserGroupedOnBusinessName1122[data]
+          obj12.wabaPhoneNumber = allUserGroupedOnBusinessName22[data]
           obj21.push(obj12)
         }
       })
       console.log('}}}}}}}}---', obj21[3])
      
-       
-      //console.log("////////////",createRowHTML(obj21))
-
-      // return
-      // console.log('========', data)
-      // console.log('11111111111111111111--1',obj1)    wabanumber with key
-      //   let groupNumber
-      //   const  objectKeys = Object.keys(allUserGroupedOnBusinessName)
-      //   const obj= []
-      //   const obj1 = {}
-      //   for(let i =0; i<objectKeys.length;i++){
-      //     const b = objectKeys[i]
-      //     const c = allUserGroupedOnBusinessName[b]
-      //     groupNumber =_.groupBy(c ,item => {
-      //             return[item['wabaPhoneNumber']];
-      //         });
-      //         obj1[b] = [groupNumber]
-      //         console.log('99999999999999999999999999999999999999999',obj1)
-      //       }
-      //       obj.push(obj1)
-      //       console.log("-------------------------------obj",obj)
-      //     console.log("groupNumber-------------------------------------",groupNumber)
-      //     return obj
-      // }).then((groupNumber)=>{
-      //   const abc = Object.keys(groupNumber[0])
-      //   const xyz = abc.map((data) => {
-      //     console.group("4444444444444444444444",groupNumber[0][data])
-      //   })
-      //   process.exit(1)\
+  
   
       return mainTable(obj21)
     })
@@ -179,80 +145,9 @@ const messageStatusOnMailForConversation = () => {
       
       const subject = `MIS Report for ${preMonth}`
       return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMisMonth(data))
-      // console.log('_____________', allUserData)
-      // process.exit(1)
+
     })
-  // .then((data)=>{
-  // const allUserGrouped = _.groupBy(allUserData ,item => {
-  //   return [item['businessName']];
-  // });
-  // const groupBybusinessName = _.groupBy(data, item => item.businessName)
-  // console.log("________________---------------------------__ppp",groupBybusinessName)
-  //  console.log("11111111111111111111111111111111111111111111111",allUserData)
-  // const groupBybusinessName = _.groupBy(data, item => item.businessName )
-  // _.each(groupBybusinessName, (singleUserData, wabaKey) => {
-  //   const groupNumber = _.groupBy(singleUserData, item => item.wabaPhoneNumber)
-  //    console.log("66666666666666666666",singleUserData[wabaKey])
-  // })
-  // console.log("11111111111111111111111111111111",groupBybusinessName.wabaKey)
-  // process.exit(1)
-  //   const allUserLastDay = _.groupBy(lastDayData, item => item.wabaPhoneNumber)
-  // _.each(allUserLastDay, (singleUserData, wabaKey) => {
-  //   const alluserCountryLastDay = _.groupBy(singleUserData, item => item.countryOfPhoneNumber)
-  // let emptyjsonLastDay = {}
-  // _.each(alluserCountryLastDay, (singlecountryData, key) => {
-  //   UserLastDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], [0, 0], 0]
-  // return groupBybusinessName
-  // })
-  // .then ((data)=>{
-  //   function createRowHTML(){
-  //     var tableContent=""
-  //     for(i=0; i<data.length;i++){
-  //     var rowspan = 0;
-  //     var detailLength = data.key.length;
-  //     rowspan = detailLength;
-  //     tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.key.getActiveBusinessNumber + "</td></tr>";
-  //     // data.map((ele) => {
-  //     //   // '<td>'ele.ui'</td>'
-  //     //   // <td>ele.bi</td>
-  //     //   // <td>ele.rc</td>
-  //     //   // <td>ele.na</td>
-  //     //   // <td>ele.total</td>
-  //     // })
-  //   }
-  // }
-  // console.log(data)
-  // dbService.getMisRelatedData(startOfMonth, endOfMonth)
-  // .then(responseFromDb => {
-  //   const arrayofWabanumber = []
-  //   const allUserData = bodyCreator(responseFromDb)
-  //   console.log("allUserData", allUserData)
-  //   const allUserGrouped = _.groupBy(allUserData, item => item.wabaPhoneNumber)
-  //   __logger.info('data fetched from DB ~function=messageStatusOnMail---- allUserGrouped', allUserGrouped)
-  //   _.each(allUserGrouped, (singleUserData, key) => {
-  //     const UserAllDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], 0]
-  //     singleUserData.forEach(userCountData => {
-  //       const removePhoneCodeFromWaba = phoneCodeAndPhoneSeprator(userCountData.wabaPhoneNumber).phoneNumber
-  //       if (arrayofWabanumber.indexOf(removePhoneCodeFromWaba) === -1) arrayofWabanumber.push(removePhoneCodeFromWaba)
-    //     })
-    //   })
-    //   console.log('allUserGrouped', allUserGrouped)
-    //   return dbService.getWabaNameByWabaNumber(arrayofWabanumber)
-    // })
-    // .then(dbresponse => {
-    //   const userIdToUserName = {}
-    //   for (let i = 0; i < dbresponse.length; i++) {
-    //     userIdToUserName[dbresponse[i].wabaPhoneNumber] = dbresponse[i].businessName
-    //   }
-    //   console.log("dbresponse", dbresponse)
-    //   //console.log('objects using ',mtdAllUserCount,mtdTotalStatusCount,mtdTotalMessageCount)
-    //   return conversationMis.resolve({
-    //     // mtdStatusCount: passingObjectToMailer.mtdAllUserCount,
-    //     // mtdTotalStatusCount: passingObjectToMailer.mtdTotalStatusCount,
-    //     // mtdTotalMessageCount: passingObjectToMailer.mtdTotalMessageCount,
-    //     userIdToUserNameConvo: userIdToUserName
-    //   })
-    // })
+
     .catch((error) => {
       console.log('error in sending mis ~function=messageStatusOnMailForConversation', error)
       __logger.error('error in sending mis ~function=messageStatusOnMailForConversation', { err: typeof error === 'object' ? error : { error: error.toString() } })
@@ -411,38 +306,9 @@ function createRowHTML(data) {
         tableContent += "<td> "+ data[i].wabaPhoneNumber[j].country[k].total + "</td></tr>"
       
         
-        // console.log("??????????????????",data[i].wabaPhoneNumber[j].country[k].total)
        }
     }  
-    // calculate rowspan for first cell
-  //   var rowspan = 0;
-  //   var detailLength = data.result[result].bussinessName.length;
-  //   tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName + "</td></tr>"
-  //   rowspan += detailLength;
-  //   for (var i = 0; i < detailLength; i++) {
-  //     rowspan += data.result[result].bussinessName[i].wabaPhonenNo.length;
-  //     tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo + "</td></tr>"
-  //     for (var i = 0; j < detailLength; j++) {
-  //       rowspan += data.result[result].bussinessName[i].wabaPhonenNo[j].countryName.length;
-  //       tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo[j].countryName + "</td></tr>";
-  //       tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo[j].ui + "</td></tr>";
-  //       tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo[j].bi + "</td></tr>";
-  //       tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo[j].rc + "</td></tr>";
-  //       tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo[j].na + "</td></tr>";
-  //       tableContent += "<tr><td rowspan=" + parseInt(1 + rowspan) + ">" + data.result[result].bussinessName[i].wabaPhonenNo[j].total + "</td></tr>";
-
-        
-    
-    
-    
-    
-  //   }
-
-  //   // create rows
-
-      
-  //   }
-  // }
+  
 
 
 }
