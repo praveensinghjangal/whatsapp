@@ -400,6 +400,14 @@ const getTemplateIdandTemplateNameAgainstUser = () => {
   where mt.is_active = true `
 }
 
+const getConversationDataBasedOnWabaNumberAllData = () => {
+  return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory,
+  b.from as wabaPhoneNumber,b.message_country as "messageCountry"
+  FROM billing_conversation b
+  where b.from in (?) and b.created_on BETWEEN ? and ?
+  GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
+}
+
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -426,5 +434,6 @@ module.exports = {
   getTemplateNameAgainstId,
   getconversationDataBasedOnWabaNumber,
   getTemplateCategoryId,
-  getTemplateIdandTemplateNameAgainstUser
+  getTemplateIdandTemplateNameAgainstUser,
+  getConversationDataBasedOnWabaNumberAllData
 }

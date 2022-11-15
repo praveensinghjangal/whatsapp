@@ -854,7 +854,7 @@ class MessgaeHistoryService {
 
   getconversationDataBasedOnWabaNumberAllData (wabaNumber, previousDateWithTime, currentdateWithTime) {
     const getconversationDataBasedOnWabaNumberAllData = q.defer()
-    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getConversationDataBasedOnWabaNumberAllData(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
         if (result) {
           return getconversationDataBasedOnWabaNumberAllData.resolve(result)
@@ -1041,6 +1041,22 @@ class MessgaeHistoryService {
         return getTemplateIdandTemplateNameAgainstUser.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getTemplateIdandTemplateNameAgainstUser.promise
+  }
+
+  getconversationDataBasedOnWabaNumber (wabaNumber, previousDateWithTime, currentdateWithTime) {
+    const getconversationDataBasedOnWabaNumber = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getconversationDataBasedOnWabaNumber(), [wabaNumber, previousDateWithTime, currentdateWithTime])
+      .then(result => {
+        if (result) {
+          return getconversationDataBasedOnWabaNumber.resolve(result)
+        } else {
+          return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return getconversationDataBasedOnWabaNumber.promise
   }
 }
 
