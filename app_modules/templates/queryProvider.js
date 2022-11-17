@@ -317,7 +317,7 @@ const getTemplateStatusList = () => {
   return `select message_template_status_id as "messageTemplateStatusId",
   status_name as "statusName"
   from message_template_status
-  where is_active = true and message_template_status_id != '${__constants.TEMPLATE_STATUS.deleted.statusCode}'`
+  where is_active = true and message_template_status_id not in ('${__constants.TEMPLATE_STATUS.deleted.statusCode}','${__constants.TEMPLATE_STATUS.requested.statusCode}','${__constants.TEMPLATE_STATUS.submitFailed.statusCode}','${__constants.TEMPLATE_STATUS.partiallyApproved.statusCode}','${__constants.TEMPLATE_STATUS.denied.statusCode}','${__constants.TEMPLATE_STATUS.pending.statusCode}','${__constants.TEMPLATE_STATUS.complete.statusCode}')`
 }
 
 // Support Template Count
