@@ -35,7 +35,9 @@ const sendDlr = (message, queueObj, queue, mqData) => {
       customTwo: message.customTwo,
       customThree: message.customThree,
       customFour: message.customFour,
-      campName: message.campName || null
+      campName: message.campName || null,
+      conversationId: message.conversationId || null,
+      conversationType: message.conversationType || null
     }
   }
   http.Post(webhookPayload, 'body', message.url)

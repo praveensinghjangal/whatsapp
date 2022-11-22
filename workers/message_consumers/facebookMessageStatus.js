@@ -96,6 +96,7 @@ class FacebookConsumer {
               const logConversation = new LogConversation()
               const conversationExpireyTime = messageDataFromFacebook.statuses[0].conversation.expiration_timestamp ? moment.unix(messageDataFromFacebook.statuses[0].conversation.expiration_timestamp).utc().format('YYYY-MM-DD hh:mm:ss') : '2000-01-01 00:00:01'
               const conversationType = messageDataFromFacebook.statuses[0].conversation.origin && messageDataFromFacebook.statuses[0].conversation.origin.type ? __constants.LOG_CONVERSATION_ON_TYPE_MAPPING[messageDataFromFacebook.statuses[0].conversation.origin.type.toLowerCase()] : 'na'
+              statusData.conversationType = conversationType
               logConversation.add(messageDataFromFacebook.statuses[0].conversation.id, messageData.businessNumber, messageData.from, conversationExpireyTime, conversationType)
                 .then(logAdded => __logger.info('facebook message status QueueConsumer:: conversation log added'))
                 .catch(err => __logger.error('facebook message status QueueConsumer:: error while adding conversation log', err, err ? err.toString() : '', messageDataFromFacebook))
@@ -115,7 +116,6 @@ class FacebookConsumer {
                 delete statusData.serviceProviderMessageId
                 delete statusData.businessNumber
                 delete statusData.endConsumerNumber
-                delete statusData.conversationId
                 return redirectService.webhookPost(statusData.to, statusData)
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
