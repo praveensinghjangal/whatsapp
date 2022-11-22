@@ -63,7 +63,7 @@ const PLAN_CATEGORY = {
   custom: 'Custom'
 }
 const RESET_PASSWORD_TOKEN_EXPIREY_TIME = 3600
-// const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
+const FREE_PLAN_ID = 'cd9b694f-3106-4ce3-8b87-b02d8754fe9b'
 const DEFAULT_WABA_SETUP_STATUS_ID = '7933d858-7bb7-47eb-90ec-269cbecc8c9b'
 const PUBLIC_FOLDER_PATH = process.env.PWD + '/public'
 const REDIS_TTL = {
@@ -713,7 +713,7 @@ module.exports.DEFAULT_WABA_SETUP_STATUS_ID = DEFAULT_WABA_SETUP_STATUS_ID
 module.exports.TEMPLATE_STATUS = TEMPLATE_STATUS
 module.exports.ENTITY_NAME = ENTITY_NAME
 module.exports.PLAN_CATEGORY = PLAN_CATEGORY
-// module.exports.FREE_PLAN_ID = FREE_PLAN_ID
+module.exports.FREE_PLAN_ID = FREE_PLAN_ID
 module.exports.MQ = MQ
 module.exports.INCOMING_MESSAGE_RETRY = INCOMING_MESSAGE_RETRY
 module.exports.OUTGOING_MESSAGE_RETRY = OUTGOING_MESSAGE_RETRY

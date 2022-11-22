@@ -44,7 +44,7 @@ const getAcountProfile = (req, res) => {
       if (results && results.length > 0) {
         queryResult = results[0]
         // removed as there is no need for the agreement
-        // queryResult.isAgreementUploaded = !!((queryResult && queryResult.agreementStatusId && queryResult.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForApproval))
+        queryResult.isAgreementUploaded = !!((queryResult && queryResult.agreementStatusId && queryResult.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForApproval))
         if (queryResult.tfaType) queryResult.tfaTypeDisplayName = __constants.TFA_TYPE_DISPLAYNAME[queryResult.tfaType]
         return checkAccountProfileCompletionStatus(queryResult)
       } else {
