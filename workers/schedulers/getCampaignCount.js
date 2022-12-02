@@ -46,7 +46,7 @@ const createCampaignSummaryReport = (date) => {
           finalRecord.campaignName = campaignName._id.campaignName
           finalRecord.wabaPhoneNumber = campaignName._id.wabaPhoneNumber
           finalRecord.totalSent = campaignName.totalMessageSent
-          finalRecord.totalPreprocess = campaignName[__constants.MESSAGE_STATUS.preProcess] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.preProcess]
+          finalRecord.totalPreProcess = campaignName[__constants.MESSAGE_STATUS.preProcess] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.preProcess]
           finalRecord.totalInprocess = campaignName[__constants.MESSAGE_STATUS.inProcess] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.inProcess]
           finalRecord.totalResourceAllocated = campaignName[__constants.MESSAGE_STATUS.resourceAllocated] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.resourceAllocated]
           finalRecord.totalForwarded = campaignName[__constants.MESSAGE_STATUS.forwarded] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.forwarded]
