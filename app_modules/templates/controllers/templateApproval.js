@@ -10,7 +10,7 @@ const StatusService = require('../../templates/services/status')
 const ValidatonService = require('../services/validation')
 const request = require('request')
 const q = require('q')
-const userService = require('../../user/controllers/accoutProfile')
+// const userService = require('../../user/controllers/accoutProfile')
 
 const updateTemplateStatus = (reqBody, authToken) => {
   __logger.info('updateTemplateStatus called ::>>>>>>>>>>>>>>>>>.')
@@ -106,12 +106,12 @@ const sendTemplateForApproval = (req, res) => {
       return sendForApproval(reqBody.messageTemplateId, req.headers.authorization, userId)
     })
     .then(data => {
-      __logger.info('updateTemplateStatus result then 5', { data })
-      userService.getUserRoleArrayDataForEmail()
-        .then(userRoleData => {
-          const statusService = new StatusService()
-          statusService.notifySupport(userId, oldTemplateData.templateName, userRoleData)
-        })
+      // __logger.info('updateTemplateStatus result then 5', { data })
+      // userService.getUserRoleArrayDataForEmail()
+      //   .then(userRoleData => {
+      //     const statusService = new StatusService()
+      //     statusService.notifySupport(userId, oldTemplateData.templateName, userRoleData)
+      //   })
       res.send(data)
     })
     .catch(err => {
