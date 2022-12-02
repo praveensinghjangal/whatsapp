@@ -262,9 +262,7 @@ const getMisRelatedData = () => {
 const getWabaNameByWabaNumber = () => {
   return 'select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information wi where phone_number in (?)'
 }
-const getWabaNameByWabaNumberWithCode = () => {
-  return 'select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information wi where CONCAT(phone_code ,phone_number) in (?)'
-}
+
 const getDataOnBasisOfWabaNumberFromBillingCoversation = () => {
   return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory
   FROM billing_conversation b
@@ -401,6 +399,7 @@ const getTemplateIdandTemplateNameAgainstUser = () => {
   left join users u on u.user_id = wi.user_id and u.user_id = ? and u.is_active = true
   where mt.is_active = true `
 }
+
 const getConversationDataBasedOnWabaNumberAllData = () => {
   return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory,
   b.from as wabaPhoneNumber,b.message_country as "messageCountry"
@@ -408,7 +407,7 @@ const getConversationDataBasedOnWabaNumberAllData = () => {
   where b.from in (?) and b.created_on BETWEEN ? and ?
   GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
 }
-//, DATE_FORMAT(b.created_on, '%Y-%m-%d') as summaryDate
+
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -436,6 +435,5 @@ module.exports = {
   getconversationDataBasedOnWabaNumber,
   getTemplateCategoryId,
   getTemplateIdandTemplateNameAgainstUser,
-  getConversationDataBasedOnWabaNumberAllData,
-  getWabaNameByWabaNumberWithCode
+  getConversationDataBasedOnWabaNumberAllData
 }
