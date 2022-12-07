@@ -6,7 +6,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const AuthService = require('./authService').Authentication
 const DataMapper = require('./dataMapper')
-
+const RedisService = require('../../../lib/redis_service/redisService')
 class Message {
   constructor (maxConcurrent, userId) {
     this.http = new HttpService(60000, maxConcurrent, userId)
@@ -40,6 +40,10 @@ class Message {
         __logger.info('facebook send message api response', apiRes)
         saveMessageApiLog(payload.messageId, (apiRes && apiRes.messages && apiRes.messages[0] && apiRes.messages[0].id) ? apiRes.messages[0].id : 'failed', __config.service_provider_id.facebook, 'sendMessage', reqObj, apiRes, payload.to, payload.whatsapp.from)
         if (apiRes && apiRes.messages && apiRes.messages[0] && apiRes.messages[0].id) {
+          if (payload && payload.whatsapp && payload.whatsapp.template && payload.whatsapp.template.templateId && __constants.STATIC_TEMPLATE_ID === payload.whatsapp.template.templateId) {
+            const redisService = new RedisService()
+            redisService.setStaticTemplateForInternalUse(payload.whatsapp.from, payload.to, payload.messageId)
+          }
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: apiRes })
         } else {
           deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_SENDING_MESSAGE, err: apiRes, data: {} })
