@@ -400,27 +400,6 @@ class MessgaeHistoryService {
     return promises.promise
   }
 
-  getWabaNameByWabaNumberWithCode (arrayofWabaNumber) {
-    console.log('arrayofWabaNumber', arrayofWabaNumber)
-    const promises = q.defer()
-    __logger.info('inside getWabaNameByWabaNumberWithCode')
-    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByWabaNumberWithCode(), [arrayofWabaNumber])
-      .then(result => {
-        console.log('222222222222222222222222222222222222', result)
-        if (result && result.length > 0) {
-          promises.resolve(result)
-        } else {
-          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getWabaNameByWabaNumberWithCode db call')
-          promises.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
-        }
-      })
-      .catch(err => {
-        __logger.error('error in getWabaNameByWabaNumber db call:', err)
-        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
-      })
-    return promises.promise
-  }
-
   getMisRelatedData (startOfMonth, endOfMonth) {
     const promises = q.defer()
     __logger.info('inside getMisRelatedData', startOfMonth, endOfMonth)
@@ -873,12 +852,10 @@ class MessgaeHistoryService {
     return getTemplateNameAgainstId.promise
   }
 
-  getConversationDataBasedOnWabaNumberAllData (wabaNumber, previousDateWithTime, currentdateWithTime) {
-    console.log('11111111111111111111111111111111111111111111111111111', wabaNumber, previousDateWithTime, currentdateWithTime)
+  getconversationDataBasedOnWabaNumberAllData (wabaNumber, previousDateWithTime, currentdateWithTime) {
     const getconversationDataBasedOnWabaNumberAllData = q.defer()
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getConversationDataBasedOnWabaNumberAllData(), [wabaNumber, previousDateWithTime, currentdateWithTime])
       .then(result => {
-        console.log('2222222222222222222222222222222222222222222222222222222222222', result)
         if (result) {
           return getconversationDataBasedOnWabaNumberAllData.resolve(result)
         } else {
