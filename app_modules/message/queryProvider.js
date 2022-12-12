@@ -408,6 +408,10 @@ const getConversationDataBasedOnWabaNumberAllData = () => {
   GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
 }
 
+const groupByIssue = () => {
+  return "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));"
+}
+
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -435,5 +439,6 @@ module.exports = {
   getconversationDataBasedOnWabaNumber,
   getTemplateCategoryId,
   getTemplateIdandTemplateNameAgainstUser,
-  getConversationDataBasedOnWabaNumberAllData
+  getConversationDataBasedOnWabaNumberAllData,
+  groupByIssue
 }
