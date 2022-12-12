@@ -5,10 +5,18 @@ const __logger = require('../../lib/logger')
 // const emailTemplatesMonths = require('../../lib/sendNotifications/emailTemplatesMonths')
 const __constants = require('../../config/constants')
 const conversationMonthMisService = require('./monthMailConversationService')
+const DbService = require('../../app_modules/message/services/dbData')
 const task = {
   // mis: cron.schedule('* * * * *', () => {
   mis: cron.schedule(__constants.MIS_MONTHLY_CONVERSATION, () => {
-    conversationMonthMisService()
+    const dbService = new DbService()
+    dbService.groupByIssue()
+      .then((data) => {
+        if (data) conversationMonthMisService()
+      })
+      .catch((err) => {
+        __logger.error('ERROR ~function=task. monthlyMisScheduler::error: ', { err: typeof err === 'object' ? err : { err } })
+      })
   }, {
     timezone: 'Asia/Kolkata'
   })

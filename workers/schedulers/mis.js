@@ -3,10 +3,18 @@ const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
 const messageStatusOnMail = require('./misService')
 const __constants = require('../../config/constants')
+const DbService = require('../../app_modules/message/services/dbData')
 
 const task = {
   one: cron.schedule(__constants.MIS_SCHEDULER_TIME, () => {
-    messageStatusOnMail()
+    const dbService = new DbService()
+    dbService.groupByIssue()
+      .then((data) => {
+        if (data) messageStatusOnMail()
+      })
+      .catch((err) => {
+        __logger.error('ERROR ~function=task. misScheduler::error: ', { err: typeof err === 'object' ? err : { err } })
+      })
   }, {
     timezone: 'Asia/Kolkata'
   })

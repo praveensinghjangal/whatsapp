@@ -1058,6 +1058,18 @@ class MessgaeHistoryService {
       })
     return getconversationDataBasedOnWabaNumber.promise
   }
+
+  groupByIssue () {
+    const resolvedGroupBy = q.defer()
+    __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.groupByIssue(), '')
+      .then(result => {
+        return resolvedGroupBy.resolve(result)
+      })
+      .catch(err => {
+        return resolvedGroupBy.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return resolvedGroupBy.promise
+  }
 }
 
 module.exports = MessgaeHistoryService
