@@ -283,14 +283,14 @@ class validate {
                           pattern: __constants.VALIDATOR.alphanumericWithSpace
                         }
                       },
-                      oneOf: [{
-                        required: ['first_name']
+                      anyOf: [{
+                        required: ['firstName']
                       },
                       {
-                        required: ['last_name']
+                        required: ['lastName']
                       },
                       {
-                        required: ['middle_name']
+                        required: ['middleName']
                       },
                       {
                         required: ['prefix']
@@ -788,7 +788,10 @@ class validate {
         formatedError.push(formatedErr)
       } else {
         const formatedErr = err.split('.')
-        if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
+        __logger.error('validadtion: formatedError:', formatedErr[formatedErr.length - 1])
+        if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2],[subschema 3],[subschema 4]')) {
+          formatedError.push('contact should be an array, it should consist name object, with atleast one [firstName, middleName, lastName, prefix, suffix]')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
           formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('instance[1] is not exactly one from [subschema 0],[subschema 1]')) {
           formatedError.push('Either isCampaign or isChatBot or both should should not be present')
@@ -854,6 +857,7 @@ class validate {
     if (formatedError.length > 0) {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
       __logger.error('sendMessageToQueue: validation failed:', JSON.stringify(formatedError))
 =======
       __logger.error('services/validation.js: sendMessageToQueue()', formatedError)
@@ -861,6 +865,8 @@ class validate {
 =======
       __logger.error('services/validation: sendMessageToQueue()', formatedError)
 >>>>>>> d9695f9e (Changed logs)
+=======
+>>>>>>> 9b867095 (Added extra error logs)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
