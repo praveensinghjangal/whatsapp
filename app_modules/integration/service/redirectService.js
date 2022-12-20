@@ -72,6 +72,7 @@ const queueCall = (payload, userId) => {
     })
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
+      __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '):', err)
       const telegramErrorMessage = 'redirectService ~ queueCall function ~ sendToHeloCampaign/sendToUser function'
       errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
@@ -96,7 +97,6 @@ class RedirectService {
     }
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(data => {
-        __logger.info('~ Got redis data,', data)
         if (payload && payload.content && payload.retryCount === 0) {
           this.callMessageFlow(data, payload)
         }
@@ -131,7 +131,7 @@ class RedirectService {
 
   callMessageFlow (redisData, payload) {
     // if bot flag true then hit or else do nothing
-    __logger.info('Inside callMessageFlow', redisData, payload)
+    __logger.info('redirectService: callMessageFlow(' + payload.whatsapp.from + ')', redisData, payload)
     if (payload && payload.content && payload.content.text) {
       payload.content.text = payload.content.text.trim()
       __logger.info('payload text', payload.content.text, redisData.optinText && payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText)
@@ -156,9 +156,8 @@ class RedirectService {
       }
       http.Post(payload, 'body', apiUrl, headers, redisData.serviceProviderId)
         .then(apiRes => {
-          // __logger.info('webhookPost api ressssssssssssssssss', apiRes.statusCode, apiRes.body)
           if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
-            __logger.info(' Redirected', __constants.RESPONSE_MESSAGES.SUCCESS, apiRes.body)
+            __logger.info('refirectService: callMessageFlow(): post api res:', __constants.RESPONSE_MESSAGES.SUCCESS, JSON.stringify(apiRes.body))
           } else {
             const telegramErrorMessage = 'redirectService ~ callMessageFlow function ~ Error Not Redirected'
             errorToTelegram.send({}, telegramErrorMessage)

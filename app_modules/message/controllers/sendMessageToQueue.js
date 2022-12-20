@@ -51,7 +51,6 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     }
   }
   if (uniqueTemplateIdAndNotInGlobal.length === 0) {
-    console.log('only redissssssssssssssss')
     bulkTemplateCheck.resolve(templateDataObj)
     return bulkTemplateCheck.promise
   }
@@ -78,11 +77,12 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
       return bulkTemplateCheck.resolve(templateDataObj)
     })
     .catch(err => {
+      __logger.error('sendMessageToQueue: getBulkTemplates(' + wabaPhoneNumber + '): Err in DB Query:', err)
       if (err && err.type) {
         if (err.type.status_code) delete err.type.status_code
         return bulkTemplateCheck.resolve(err.type)
       }
-      const telegramErrorMessage = 'sendMessageToQueue ~ getBulkTemplates function ~ error in getBulkTemplates while sending message'
+      const telegramErrorMessage = 'sendMessageToQueue: getBulkTemplates(' + wabaPhoneNumber + '): '
       errorToTelegram.send(err, telegramErrorMessage)
       return bulkTemplateCheck.reject(err)
     })
@@ -108,7 +108,10 @@ const saveAndSendMessageStatus = (payload) => {
   }
   redirectService.webhookPost(statusData.to, statusData)
     .then(data => statusSent.resolve(data))
-    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => {
+      __logger.error('sendMessageToQueue: saveAndSendMessageStatus(' + statusData.to + '):', err)
+      statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
   return statusSent.promise
 }
 
@@ -117,10 +120,10 @@ const checkIfNoExists = (number) => {
   const redisService = new RedisService()
   redisService.getWabaDataByPhoneNumber(number)
     .then(data => {
-      __logger.info('datatat', { data })
       exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: { redisData: data } })
     })
     .catch(err => {
+      __logger.error('sendMessageToQueue: checkIfNoExists(' + number + '):', err)
       exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return exists.promise
@@ -146,7 +149,8 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
   saveAndSendMessageStatus(data)
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, campName: data.whatsapp.campName || null, queueData }))
     .catch(err => {
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
+      __logger.error('sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus(' + data.whatsapp.from + '):', err)
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus()'
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
     })
@@ -157,10 +161,11 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
   const sendSingleMessage = q.defer()
   qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, providerId, userId, maxTpsToProvider, headers)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
-    .catch(function (error) {
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
-      errorToTelegram.send(error, telegramErrorMessage)
-      return sendSingleMessage.reject(error)
+    .catch(function (err) {
+      __logger.error('sendMessageToQueue: sendToQueueBulk(' + data.whatsapp.from + '):', err)
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk():'
+      errorToTelegram.send(err, telegramErrorMessage)
+      return sendSingleMessage.reject(err)
     })
     .done()
   return sendSingleMessage.promise
@@ -168,7 +173,6 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
 
 const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
   const processSingleMessage = q.defer()
-  __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
   if (data.whatsapp.from !== wabaPhoneNumber) { // comparing api req number(data.whatsapp.from) with number fetched from jwt token(wabaPhoneNumber)
     const modifiedRejectPromise = { ...__constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS }
 
@@ -186,28 +190,30 @@ const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
       return processSingleMessage.resolve(data)
     })
     .catch(err => {
+      __logger.error('sendMessageToQueue: singleRuleCheck(' + wabaPhoneNumber + '):', err)
       if (err && err.type) {
         if (err.type.status_code) delete err.type.status_code
         return processSingleMessage.reject(err.type)
       }
-      const telegramErrorMessage = 'sendMessageToQueue ~ singleRuleCheck function ~ error in checkIfParamsEqual function'
+      const telegramErrorMessage = 'sendMessageToQueue: singleRuleCheck(): checkIfParamsEqual(' + wabaPhoneNumber + ')'
       errorToTelegram.send(err, telegramErrorMessage)
       return processSingleMessage.reject(err)
-    }
-    )
+    })
   return processSingleMessage.promise
 }
 
 // function to check various rules like waba num and template variable params etc
 const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
+  __logger.info('sendMessageToQueue: ruleCheck(' + wabaPhoneNumber + '): ', {})
   const sendSingleMessage = q.defer()
 
   qalllib.qASyncWithBatch(singleRuleCheck, body, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, wabaPhoneNumber, redisData, userRedisData)
     .then(data => sendSingleMessage.resolve(data))
-    .catch(function (error) {
-      const telegramErrorMessage = 'sendMessageToQueue ~ ruleCheck function ~ error in qASyncWithBatch function'
-      errorToTelegram.send(error, telegramErrorMessage)
-      return sendSingleMessage.reject(error)
+    .catch(function (err) {
+      __logger.error('sendMessageToQueue: ruleCheck(' + wabaPhoneNumber + '):', err)
+      const telegramErrorMessage = 'sendMessageToQueue: ruleCheck(): qASyncWithBatch(' + wabaPhoneNumber + ')'
+      errorToTelegram.send(err, telegramErrorMessage)
+      return sendSingleMessage.reject(err)
     })
     .done()
   return sendSingleMessage.promise
@@ -217,18 +223,17 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
   const messageSent = q.defer()
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
     .then((data) => {
-      console.log('insisisisisisdeeeee data', data)
       if (data.length > 0) {
         messageSent.resolve({ categoryId: data[0].message_template_category_id })
       } else {
+        __logger.error('sendMessageToQueue: getTemplateCategory(): DB Query :- No Data Found', ['Invalid template id'])
         messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
       }
     })
     .catch((err) => {
-      console.log('errorrrrr', err)
+      __logger.error('sendMessageToQueue: getTemplateCategory(' + wabaPhoneNumber + '): DB Query:', err)
       messageSent.reject(err)
     })
-
   return messageSent.promise
 }
 
@@ -248,7 +253,6 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
  */
 
 const controller = (req, res) => {
-  __logger.info('sendMessageToQueue :: API to send message called', req.body)
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
@@ -302,9 +306,11 @@ const controller = (req, res) => {
     .then(redisData => ruleCheck(req.body, req.user.wabaPhoneNumber, redisData, userRedisData))
     .then(processedMessages => {
       if (processedMessages && processedMessages.reject && processedMessages.reject.length > 0) {
+        __logger.error('sendMessageToQueue: ruleCheck(' + req.user.wabaPhoneNumber + '): then processedMessages:', processedMessages)
         rejected.push(...processedMessages.reject)
       }
       if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
+        __logger.error('sendMessageToQueue: ruleCheck(' + req.user.wabaPhoneNumber + '): then processedMessages.resolve is 0:', processedMessages)
         return null
       } else { // when message is not rejected in rule check
         const uniqueId = new UniqueId()
@@ -353,8 +359,7 @@ const controller = (req, res) => {
     })
     .then(res => {
       sendToQueueRes = res
-      console.log('=================== final final LAst final')
-      __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
+      __logger.info('sendMessageToQueue: message sent to queue bulk then:', { response: res })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
         return false
       } else {
@@ -387,6 +392,7 @@ const controller = (req, res) => {
     })
     .then(data => {
       if (data === false) {
+        __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '): final then :', data)
         // data is false
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
       } else {
@@ -395,8 +401,8 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      console.log('send message ctrl error : ', err)
-      const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
+      __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):', err)
+      const telegramErrorMessage = 'sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):'
       errorToTelegram.send(err, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {
         delete err.type.status_code

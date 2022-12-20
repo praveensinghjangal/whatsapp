@@ -1,0 +1,415 @@
+{"level":"info","message":" databases constructor called."}
+{"level":"info","message":" redis_lib.constructor called."}
+{"level":"info","message":" mysqlLib.constructor called."}
+{"level":"info","message":" 20/12/2022, 19:29:39   >> Worker PID: 502651"}
+{"level":"info","message":" redisLib.init, initializing redis connection  {\"port\":\"6379\",\"host\":\"localhost\",\"uri\":\"redis://localhost:6379/\"}"}
+{"level":"info","message":" databases constructor called."}
+{"level":"info","message":" redis_lib.constructor called."}
+{"level":"info","message":" mysqlLib.constructor called."}
+{"level":"info","message":" 20/12/2022, 19:29:53   >> Worker PID: 502900"}
+{"level":"info","message":" redisLib.init, initializing redis connection  {\"port\":\"6379\",\"host\":\"localhost\",\"uri\":\"redis://localhost:6379/\"}"}
+{"level":"info","message":" redisLib.init, success redis connection  {\"port\":\"6379\",\"host\":\"localhost\"}"}
+{"level":"info","message":" mongoLib.init, success connection to mongodb:"}
+{"level":"info","message":" mysqlLib.init connecting with mysql {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" mysqlLib.init connection established with mysql {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" get getUserData for dynamic per user queue >>>>>>>>>>>>>"}
+{"level":"info","message":" mysqlLib.query request:: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\",\"query\":\"select user_id as userId, phone_code as \\\"phoneCode\"}"}
+{"level":"info","message":" mysqlLib.query success :: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" response getUserData for dynamic per user queue >>>>>>>>>>>>> {\"result\":[{\"userId\":\"dba50b76-4f7c-4987-a9c0-a84ced291dbd\",\"phoneCode\":\"91\",\"phoneNumber\":\"8080800808\"},{\"userId\":\"03603085-a17b-4a5f-a6b6-f729a066d0ff\",\"phoneCode\":\"91\",\"phoneNumber\":\"8080800809\"},{\"userId\":\"0bb5bce0-6914-49cf-9604-39095881f7be\",\"phoneCode\":\"91\",\"phoneNumber\":\"7666118833\"},{\"userId\":\"1d26d6c6-1e2d-4373-98d3-69cef2d9931a\",\"phoneCode\":\"91\",\"phoneNumber\":\"9595284284\"},{\"userId\":\"5f3db7df-2a2e-4728-9363-07e11e5fa707\",\"phoneCode\":\"91\",\"phoneNumber\":\"1234567\"}]}"}
+{"level":"info","message":" created per user Queue success >>>>>>>>>>>>>"}
+{"level":"info","message":" mysqlLib.init connecting with mysql {\"conn_name\":\"helo_whatsapp_mis_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" mysqlLib.init connection established with mysql {\"conn_name\":\"helo_whatsapp_mis_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_chatbot\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_chatbot\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_category_otp\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_category_otp\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_category_transactional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_category_transactional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_category_promotional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_category_promotional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_general\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_general\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_chatbot\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_chatbot\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_category_otp\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_category_otp\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_category_transactional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_category_transactional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_category_promotional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_category_promotional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_general\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_general\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"mock_provider\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"mock_provider\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"mock_sendmessage_error\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"mock_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_sendmessage_error\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_outgoing\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_outgoing\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_sendmessage_error\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_incoming\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_incoming\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_incoming\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_incoming\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_message_status\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_message_status\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_message_status\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_message_status\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_20_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_20_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_30_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_30_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_40_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_40_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_50_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_50_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"retry_failed_to_redirect_payload\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"retry_failed_to_redirect_payload\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_outgoing_sync\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_outgoing_sync\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"audience_webhook\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"audience_webhook\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"default\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"default\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"demoQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"demoQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"demo_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"demo_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaSetUpConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaSetUpConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaSetUpConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaSetUpConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaSetUpConsumer_queue_15_min\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaSetUpConsumer_queue_15_min\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"bussinessDetailsConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"bussinessDetailsConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"bussinessDetailsConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"bussinessDetailsConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"spawningContainerConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"spawningContainerConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"spawningContainerConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"spawningContainerConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumer_queue_2_min\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumer_queue_2_min\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumer_queue_15_min\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumer_queue_15_min\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"twoFaConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"twoFaConsumerQueue\"}"}
+{"level":"error","message":" rabbitmqLib.createChannelsForQueue, channel exits {\"q_name\":\"fb_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"dlr_reports_download\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"dlr_reports_download\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"twoFaConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"twoFaConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"embeddedSingupErrorConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"embeddedSingupErrorConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"embeddedSingupErrorConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"embeddedSingupErrorConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"embeddedSingupErrorConsumerQueue2\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"embeddedSingupErrorConsumerQueue2\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"send_optin_excel_stream\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"send_optin_excel_stream\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.init, connection success {\"amqp_host\":\"localhost\"}"}
+{"level":"info","message":" waba information fetched successfully (per user queue)"}
+{"level":"info","message":" connections open."}
+{"level":"info","message":" Initializing swagger doc Routes Completed"}
+{"level":"info","message":" SERVER SWAGGER API-DOC URL: http://localhost:3000/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865  "}
+{"level":"info","message":" 798142c6-bc89-4fd7-ab90-b6e602cc6ca1=> API REQUEST::  {\"req_ip\":\"::1\",\"uri\":\"/helowhatsapp/api/chat/v1/messages/single\",\"req_t\":\"2022-12-20 19:30:04.156\"}"}
+{"level":"info","message":" Check UserId Exists For Account Profile>>>"}
+{"level":"info","message":" Response then 1 {\"valResponse\":{\"userId\":\"1d26d6c6-1e2d-4373-98d3-69cef2d9931a\"}}"}
+{"level":"info","message":" mysqlLib.query request:: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\",\"query\":\"select u.user_id as \\\"accountId\\\",u.email as \\\"accoun\"}"}
+{"level":"info","message":" mysqlLib.query success :: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" then 2 {\"result\":[{\"accountId\":\"1d26d6c6-1e2d-4373-98d3-69cef2d9931a\",\"accountManagerName\":\"rahul.wala@vivaconnect.co\",\"tokenKey\":\"def5249b-b2ae-4744-8146-7b4755532541\",\"email\":\"rahul.wala@vivaconnect.co\",\"accountType\":\"Postpaid\",\"city\":\"2707\",\"state\":\"22\",\"country\":\"101\",\"addressLine1\":\"A 123 Abcd Bldg, S.V. Road, Dahisar East\",\"addressLine2\":null,\"contactNumber\":\"9595284284\",\"phoneCode\":\"91\",\"postalCode\":\"400068\",\"firstName\":\"Rahul\",\"lastName\":\"Wala\",\"tps\":20,\"phoneVerified\":1,\"emailVerified\":1,\"tfaType\":\"authenticator\",\"userAgreementFilesId\":null,\"serviceProviderId\":\"a4f03720-3a33-4b94-b88a-e10453492183\",\"audienceWebhookUrl\":null,\"wabaPhoneNumber\":\"919595284284\",\"maxTpsToProvider\":100,\"agreementStatus\":null,\"agreementStatusId\":null,\"agreementRejectionReason\":null}]}"}
+{"level":"info","message":" createAuthTokenByUserId"}
+{"level":"info","message":" checkUserIdExist::>>>>>>>>>>..."}
+{"level":"info","message":" valRespons then 1"}
+{"level":"info","message":" mysqlLib.query request:: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\",\"query\":\"SELECT waba_information_id as \\\"wabaInformationId\\\",\"}"}
+{"level":"info","message":" mysqlLib.query success :: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" result then 2"}
+{"level":"info","message":" apiHitsAllowed: rateLimit(): {\"accountId\":\"1d26d6c6-1e2d-4373-98d3-69cef2d9931a\",\"accountManagerName\":\"rahul.wala@vivaconnect.co\",\"tokenKey\":\"def5249b-b2ae-4744-8146-7b4755532541\",\"email\":\"rahul.wala@vivaconnect.co\",\"accountType\":\"Postpaid\",\"city\":\"2707\",\"state\":\"22\",\"country\":\"101\",\"addressLine1\":\"A 123 Abcd Bldg, S.V. Road, Dahisar East\",\"addressLine2\":null,\"contactNumber\":\"9595284284\",\"phoneCode\":\"91\",\"postalCode\":\"400068\",\"firstName\":\"Rahul\",\"lastName\":\"Wala\",\"tps\":20,\"phoneVerified\":1,\"emailVerified\":1,\"tfaType\":\"authenticator\",\"userAgreementFilesId\":null,\"serviceProviderId\":\"a4f03720-3a33-4b94-b88a-e10453492183\",\"audienceWebhookUrl\":null,\"wabaPhoneNumber\":\"919595284284\",\"maxTpsToProvider\":100,\"agreementStatus\":null,\"agreementStatusId\":null,\"agreementRejectionReason\":null,\"authToken\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXJfaWQiOiIxZDI2ZDZjNi0xZTJkLTQzNzMtOThkMy02OWNlZjJkOTkzMWEiLCJwcm92aWRlcklkIjoiYTRmMDM3MjAtM2EzMy00Yjk0LWI4OGEtZTEwNDUzNDkyMTgzIiwid2FiYVBob25lTnVtYmVyIjoiOTE5NTk1Mjg0Mjg0Iiwic2lnbmF0dXJlIjoiMjExYmYyYmYtMTYwMy00NTVhLTg0YTgtNjlkNDE4YzQ4ODQxIiwibWF4VHBzVG9Qcm92aWRlciI6MTAwfSwiaWF0IjoxNjcxNTQ0ODA0LCJleHAiOjE2NzE1NDY2MDR9.Rv54EY-A54N29_ArGUNdyqPB9g83MGmuFlZV12S98CM\"}"}
+{"level":"error","message":" validadtion: formatedError: name is not any of [subschema 0],[subschema 1],[subschema 2],[subschema 3],[subschema 4]"}
+{"level":"error","message":" sendMessageToQueue: controller(919595284284): {\"type\":{\"status_code\":400,\"code\":4000,\"message\":\"Invalid request\"},\"err\":[\"contact should be an array, it should consist name object, with atleast one [firstName, middleName, lastName, prefix, suffix]\"]} {}"}
+{"level":"info","message":" 798142c6-bc89-4fd7-ab90-b6e602cc6ca1=> API RESPONSE::  {\"req_ip\":\"::1\",\"uri\":\"/helowhatsapp/api/chat/v1/messages/single\",\"req_t\":\"2022-12-20 19:30:04.156\",\"res_t\":\"2022-12-20 19:30:04.243\",\"res_in\":\"0.087sec\"}"}
+{"level":"info","message":" response of telegram >>>>>>>>>>>>>>>>>>>>>>>>.. {\"ok\":true,\"result\":{\"message_id\":120,\"sender_chat\":{\"id\":-1001753957398,\"title\":\"Stage Helo WhatsApp\",\"username\":\"stghwvcpl\",\"type\":\"channel\"},\"chat\":{\"id\":-1001753957398,\"title\":\"Stage Helo WhatsApp\",\"username\":\"stghwvcpl\",\"type\":\"channel\"},\"date\":1671544805,\"text\":\"{\\\"type\\\":{\\\"status_code\\\":400,\\\"code\\\":4000,\\\"message\\\":\\\"Invalid request\\\"},\\\"err\\\":[\\\"contact should be an array, it should consist name object, with atleast one [firstName, middleName, lastName, prefix, suffix]\\\"]}\"}}"}
+{"level":"info","message":" databases constructor called."}
+{"level":"info","message":" redis_lib.constructor called."}
+{"level":"info","message":" mysqlLib.constructor called."}
+{"level":"info","message":" 20/12/2022, 19:33:10   >> Worker PID: 504195"}
+{"level":"info","message":" redisLib.init, initializing redis connection  {\"port\":\"6379\",\"host\":\"localhost\",\"uri\":\"redis://localhost:6379/\"}"}
+{"level":"info","message":" redisLib.init, success redis connection  {\"port\":\"6379\",\"host\":\"localhost\"}"}
+{"level":"info","message":" mongoLib.init, success connection to mongodb:"}
+{"level":"info","message":" mysqlLib.init connecting with mysql {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" mysqlLib.init connection established with mysql {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" get getUserData for dynamic per user queue >>>>>>>>>>>>>"}
+{"level":"info","message":" mysqlLib.query request:: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\",\"query\":\"select user_id as userId, phone_code as \\\"phoneCode\"}"}
+{"level":"info","message":" mysqlLib.query success :: {\"conn_name\":\"helo_whatsapp_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" response getUserData for dynamic per user queue >>>>>>>>>>>>> {\"result\":[{\"userId\":\"dba50b76-4f7c-4987-a9c0-a84ced291dbd\",\"phoneCode\":\"91\",\"phoneNumber\":\"8080800808\"},{\"userId\":\"03603085-a17b-4a5f-a6b6-f729a066d0ff\",\"phoneCode\":\"91\",\"phoneNumber\":\"8080800809\"},{\"userId\":\"0bb5bce0-6914-49cf-9604-39095881f7be\",\"phoneCode\":\"91\",\"phoneNumber\":\"7666118833\"},{\"userId\":\"1d26d6c6-1e2d-4373-98d3-69cef2d9931a\",\"phoneCode\":\"91\",\"phoneNumber\":\"9595284284\"},{\"userId\":\"5f3db7df-2a2e-4728-9363-07e11e5fa707\",\"phoneCode\":\"91\",\"phoneNumber\":\"1234567\"}]}"}
+{"level":"info","message":" created per user Queue success >>>>>>>>>>>>>"}
+{"level":"info","message":" mysqlLib.init connecting with mysql {\"conn_name\":\"helo_whatsapp_mis_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" mysqlLib.init connection established with mysql {\"conn_name\":\"helo_whatsapp_mis_mysql\",\"host\":\"10.40.13.240\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_chatbot\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_chatbot\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_category_otp\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_category_otp\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_category_transactional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_category_transactional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_category_promotional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_category_promotional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_general\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_general\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_chatbot\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_chatbot\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_category_otp\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_category_otp\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_category_transactional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_category_transactional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_category_promotional\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_category_promotional\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_general\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_general\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"mock_provider\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"mock_provider\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"mock_sendmessage_error\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"mock_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_sendmessage_error\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_outgoing\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_outgoing\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_sendmessage_error\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_incoming\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_incoming\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_incoming\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_incoming\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_message_status\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_message_status\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_message_status\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_message_status\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_20_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_20_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_30_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_30_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_40_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_40_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"delay_failed_to_redirect_50_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"delay_failed_to_redirect_50_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"retry_failed_to_redirect_payload\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"retry_failed_to_redirect_payload\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"tyntec_outgoing_sync\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"tyntec_outgoing_sync\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"audience_webhook\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"audience_webhook\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"default\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"default\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"demoQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"demoQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"demo_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"demo_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaSetUpConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaSetUpConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaSetUpConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaSetUpConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaSetUpConsumer_queue_15_min\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaSetUpConsumer_queue_15_min\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"bussinessDetailsConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"bussinessDetailsConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"bussinessDetailsConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"bussinessDetailsConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"spawningContainerConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"spawningContainerConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"spawningContainerConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"spawningContainerConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumer_queue_2_min\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumer_queue_2_min\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"wabaContainerBindingConsumer_queue_15_min\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"wabaContainerBindingConsumer_queue_15_min\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"twoFaConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"twoFaConsumerQueue\"}"}
+{"level":"error","message":" rabbitmqLib.createChannelsForQueue, channel exits {\"q_name\":\"fb_sendmessage_error\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"dlr_reports_download\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"dlr_reports_download\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"twoFaConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"twoFaConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"embeddedSingupErrorConsumerQueue\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"embeddedSingupErrorConsumerQueue\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"embeddedSingupErrorConsumer_queue_10_sec\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"embeddedSingupErrorConsumer_queue_10_sec\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"embeddedSingupErrorConsumerQueue2\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"embeddedSingupErrorConsumerQueue2\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"send_optin_excel_stream\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"send_optin_excel_stream\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_918080800808\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_03603085-a17b-4a5f-a6b6-f729a066d0ff_918080800809\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_0bb5bce0-6914-49cf-9604-39095881f7be_917666118833\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"fb_outgoing_sync_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"fb_outgoing_sync_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_helo_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_helo_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"webhook_queue_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"webhook_queue_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"pre_process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"pre_process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" lib_amqp.createChannelsForQueue, declaring a queue {\"q_name\":\"process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.createChannelsForQueue, queueDeclared {\"q_name\":\"process_message_campaign_5f3db7df-2a2e-4728-9363-07e11e5fa707_911234567\"}"}
+{"level":"info","message":" rabbitmqLib.init, connection success {\"amqp_host\":\"localhost\"}"}
+{"level":"info","message":" waba information fetched successfully (per user queue)"}
+{"level":"info","message":" connections open."}
+{"level":"info","message":" Initializing swagger doc Routes Completed"}
+{"level":"info","message":" SERVER SWAGGER API-DOC URL: http://localhost:3000/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865  "}
+{"level":"warn","message":" redisLib.close, function called {\"port\":\"6379\",\"host\":\"localhost\"}"}
+{"level":"warn","message":" mongoLib.close, function called {}"}
+{"level":"error","message":" mongoLib.init, connection closed:"}
+{"level":"warn","message":" mysqlLib.close, connection close {\"host\":\"10.40.13.240\",\"conn_name\":\"helo_whatsapp_mysql\"}"}
+{"level":"warn","message":" mysqlLib.close, connection close {\"host\":\"10.40.13.240\",\"conn_name\":\"helo_whatsapp_mis_mysql\"}"}
+{"level":"warn","message":" rabbitmqLib.close, function called {\"amqp_host\":\"localhost\"}"}
+{"level":"info","message":" success connection closed."}
+{"level":"warn","message":" redisLib.close, function called {\"port\":\"6379\",\"host\":\"localhost\"}"}
+{"level":"warn","message":" mongoLib.close, function called {}"}
+{"level":"warn","message":" mysqlLib.close, connection close {\"host\":\"10.40.13.240\",\"conn_name\":\"helo_whatsapp_mysql\"}"}
+{"level":"warn","message":" mysqlLib.close, connection close {\"host\":\"10.40.13.240\",\"conn_name\":\"helo_whatsapp_mis_mysql\"}"}
+{"level":"warn","message":" rabbitmqLib.close, function called {\"amqp_host\":\"localhost\"}"}
+{"level":"info","message":" success connection closed."}

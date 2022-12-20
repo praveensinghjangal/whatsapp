@@ -225,7 +225,7 @@ class InternalClass {
   basicDataPresent (td) {
     __logger.info('basicDataPresent::')
     const valid = q.defer()
-    const testRegex = td.templateName.match(new RegExp(__constants.VALIDATOR.aplphaNumericWithUnderscore, 'g'))
+    const testRegex = td.templateName.match(new RegExp(__constants.VALIDATOR.alphaNumericWithUnderscore, 'g'))
     if (!td.templateName || !testRegex || testRegex.length === 0) {
       valid.reject('please provide valid template name with only aplha numeric character in lowercase and underscore')
       return valid.promise
