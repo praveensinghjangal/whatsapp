@@ -852,7 +852,7 @@ class validate {
     }
 
     if (formatedError.length > 0) {
-      __logger.error('services/validation.js: sendMessageToQueue()', formatedError)
+      __logger.error('services/validation: sendMessageToQueue()', formatedError)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
