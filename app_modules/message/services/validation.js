@@ -142,6 +142,237 @@ class validate {
                 minLength: 1,
                 maxLength: 100
               },
+              contact: {
+                type: 'array',
+                required: false,
+                minItems: 1,
+                maxItems: 5,
+                items: {
+                  type: 'object',
+                  required: true,
+                  properties: {
+                    addresses: {
+                      type: 'array',
+                      required: false,
+                      minItems: 1,
+                      maxItems: 5,
+                      items: {
+                        type: 'object',
+                        required: false,
+                        properties: {
+                          type: {
+                            type: 'string',
+                            required: false,
+                            minLength: 3,
+                            maxLength: 10,
+                            pattern: __constants.VALIDATOR.alphanumericWithSpace,
+                            default: ''
+                          },
+                          street: {
+                            type: 'string',
+                            required: false,
+                            minLength: 3,
+                            maxLength: 100,
+                            pattern: __constants.VALIDATOR.alphanumericWithSpace,
+                            default: ''
+                          },
+                          city: {
+                            type: 'string',
+                            required: false,
+                            minLength: 3,
+                            maxLength: 100,
+                            pattern: __constants.VALIDATOR.text,
+                            default: ''
+                          },
+                          state: {
+                            type: 'string',
+                            required: false,
+                            minLength: 3,
+                            maxLength: 100,
+                            pattern: __constants.VALIDATOR.textWithSpace,
+                            default: ''
+                          },
+                          country: {
+                            type: 'string',
+                            required: false,
+                            minLength: 3,
+                            maxLength: 100,
+                            pattern: __constants.VALIDATOR.textWithSpace,
+                            default: ''
+                          },
+                          countryCode: {
+                            type: 'string',
+                            required: false,
+                            minLength: 2,
+                            maxLength: 10,
+                            pattern: __constants.VALIDATOR.text,
+                            default: ''
+                          }
+                        }
+                      }
+                    },
+                    birthday: {
+                      type: 'string',
+                      required: true,
+                      pattern: __constants.VALIDATOR.dateFormat
+                    },
+                    emails: {
+                      type: 'array',
+                      required: false,
+                      items: {
+                        type: 'object',
+                        required: false,
+                        properties: {
+                          email: {
+                            type: 'string',
+                            required: false,
+                            minLength: 8,
+                            maxLength: 100,
+                            pattern: __constants.VALIDATOR.email
+                          },
+                          email_type: {
+                            type: 'string',
+                            required: false,
+                            minLength: 2,
+                            maxLength: 10,
+                            pattern: __constants.VALIDATOR.textWithSpace
+                          }
+                        }
+                      }
+                    },
+                    name: {
+                      type: 'object',
+                      required: true,
+                      minLength: 1,
+                      properties: {
+                        firstName: {
+                          type: 'string',
+                          minLength: 3,
+                          maxLength: 20,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                        },
+                        lastName: {
+                          type: 'string',
+                          minLength: 3,
+                          maxLength: 20,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                        },
+                        middleName: {
+                          type: 'string',
+                          minLength: 3,
+                          maxLength: 20,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                        },
+                        suffix: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 5,
+                          pattern: __constants.VALIDATOR.text
+                        },
+                        prefix: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 5,
+                          pattern: __constants.VALIDATOR.text
+                        },
+                        formattedName: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 50,
+                          required: true,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                        }
+                      },
+                      oneOf: [{
+                        required: ['first_name']
+                      },
+                      {
+                        required: ['last_name']
+                      },
+                      {
+                        required: ['middle_name']
+                      },
+                      {
+                        required: ['prefix']
+                      },
+                      {
+                        required: ['suffix']
+                      }
+                      ]
+                    },
+                    org: {
+                      type: 'object',
+                      required: false,
+                      properties: {
+                        company: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 100
+                        },
+                        department: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 50
+                        },
+                        title: {
+                          type: 'string',
+                          minLength: 2,
+                          maxLength: 100
+                        }
+                      }
+                    },
+                    phones: {
+                      type: 'array',
+                      required: false,
+                      items: {
+                        type: 'object',
+                        required: false,
+                        properties: {
+                          phone: {
+                            type: 'string',
+                            minLength: 7,
+                            maxLength: 15,
+                            pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
+                          },
+                          department: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 6
+                          },
+                          wa_id: {
+                            type: 'string',
+                            minLength: 7,
+                            maxLength: 15,
+                            pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
+                          }
+                        }
+                      }
+                    },
+                    urls: {
+                      type: 'array',
+                      required: false,
+                      items: {
+                        type: 'object',
+                        required: false,
+                        properties: {
+                          url: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 200,
+                            pattern: __constants.VALIDATOR.url
+                          },
+                          type: {
+                            type: 'string',
+                            minLength: 2,
+                            maxLength: 10,
+                            pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
               interactive: {
                 type: 'object',
                 required: false,
@@ -272,7 +503,7 @@ class validate {
                 type: 'string',
                 required: true,
                 minLength: 1,
-                enum: ['text', 'media', 'template', 'location', 'interactive']
+                enum: ['text', 'media', 'template', 'location', 'interactive', 'contact']
               },
               text: {
                 type: 'string',
@@ -509,6 +740,12 @@ class validate {
                   contentType: { const: 'interactive' }
                 },
                 required: ['interactive']
+              },
+              {
+                properties: {
+                  contentType: { const: 'contact' }
+                },
+                required: ['contact']
               }
             ]
           },
@@ -557,7 +794,11 @@ class validate {
           formatedError.push('Either isCampaign or isChatBot or both should should not be present')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
           formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
-        } else { formatedError.push(formatedErr[formatedErr.length - 1]) }
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('birthday does not match')) {
+          formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
+        } else {
+          formatedError.push(formatedErr[formatedErr.length - 1])
+        }
       }
     })
 
@@ -598,9 +839,20 @@ class validate {
       }
     }
 
+    // all contacts's birthday date format should be same
+    if ('contact' in request[0].whatsapp) {
+      const birthdayIsValid = request.every((obj) => {
+        return obj.whatsapp.contact.every(d => {
+          return __constants.VALIDATOR.dateFormat.test(d.birthday)
+        })
+      })
+      if (!birthdayIsValid) {
+        formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
+      }
+    }
+
     if (formatedError.length > 0) {
-      console.log('sendMessageToQueue validation error: ', formatedError)
-      console.log('request=>>', request)
+      __logger.error('services/validation.js: sendMessageToQueue()', formatedError)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
