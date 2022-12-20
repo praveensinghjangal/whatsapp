@@ -853,10 +853,14 @@ class validate {
 
     if (formatedError.length > 0) {
 <<<<<<< HEAD
+<<<<<<< HEAD
       __logger.error('sendMessageToQueue: validation failed:', JSON.stringify(formatedError))
 =======
       __logger.error('services/validation.js: sendMessageToQueue()', formatedError)
 >>>>>>> b1f4dd9e (Added new content type - Contact)
+=======
+      __logger.error('services/validation: sendMessageToQueue()', formatedError)
+>>>>>>> d9695f9e (Changed logs)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
