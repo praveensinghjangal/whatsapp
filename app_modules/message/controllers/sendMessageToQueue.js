@@ -1,1262 +1,408 @@
 const q = require('q')
 const _ = require('lodash')
-const Validator = require('jsonschema').Validator
-const v = new Validator()
+const moment = require('moment')
+const ValidatonService = require('../services/validation')
+const __util = require('../../../lib/util')
 const __constants = require('../../../config/constants')
-const TrimService = require('../../../lib/trimService/trim')
+const config = require('../../../config')
+const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
+const UniqueId = require('../../../lib/util/uniqueIdGenerator')
+const TemplateParamValidationService = require('../../templates/services/paramValidation')
+// const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const __logger = require('../../../lib/logger')
+const templateParamValidationService = new TemplateParamValidationService()
+const MessageHistoryService = require('../services/dbData')
+const RedirectService = require('../../integration/service/redirectService')
+const RedisService = require('../../../lib/redis_service/redisService')
+const qalllib = require('qalllib')
+const __db = require('../../../lib/db')
+const queryProvider = require('../queryProvider')
+const errorToTelegram = require('./../../../lib/errorHandlingMechanism/sendToTelegram')
+const phoneCodeAndPhoneSeprator = require('../../../lib/util/phoneCodeAndPhoneSeprator')
+/**
+ * @namespace -WhatsApp-Message-Controller-SendMessage-
+ * @description API’s related to whatsapp message.
+ */
 
-const trimInput = new TrimService()
-// "payload": {
-//     "text": "This is an example response"
-// }
-class validate {
-  sendMessage (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/sendMessage',
-      type: 'object',
-      required: true,
-      properties: {
-        senderNumber: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        receiverNumber: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        payload: {
-          type: 'object',
-          required: true,
-          minLength: 1,
-          properties: {
-            text: {
-              type: 'string',
-              required: true,
-              minLength: 1
-            }
-          }
-        }
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/sendMessage')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({ statusCode: 'VE001', message: 'invalid input', error: formatedError })
-    } else {
-      trimInput.singleInputTrim(request)
-        .then(data => isvalid.resolve(data))
-    }
-    return isvalid.promise
-  }
-
-  sendMessageToQueue (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/sendMessageToQueue',
-      type: 'array',
-      required: true,
-      minItems: 1,
-      maxItems: 500,
-      items: {
-        type: 'object',
-        required: true,
-        properties: {
-          to: {
-            type: 'string',
-            required: true,
-            minLength: 1
-          },
-          isOptin: {
-            type: 'boolean',
-            required: false
-          },
-          isChatBot: {
-            type: 'boolean',
-            required: false
-          },
-          sendAfterMessageId: {
-            type: 'string',
-            required: false
-          },
-          channels: {
-            type: 'array',
-            required: true,
-            minItems: 1,
-            items: {
-              type: 'string',
-              enum: ['whatsapp']
-            }
-          },
-          countryCode: {
-            type: 'string',
-            required: true,
-            enum: __constants.COUNTRY_LIST_ALPHA_TWO
-          },
-
-          whatsapp: {
-            type: 'object',
-            required: true,
-            minLength: 1,
-            properties: {
-              from: {
-                type: 'string',
-                required: true,
-                minLength: 1
-              },
-              customOne: {
-                type: 'string',
-                required: false,
-                minLength: 1,
-                maxLength: 50
-              },
-              customTwo: {
-                type: 'string',
-                required: false,
-                minLength: 1,
-                maxLength: 50
-              },
-              customThree: {
-                type: 'string',
-                required: false,
-                minLength: 1,
-                maxLength: 50
-              },
-              customFour: {
-                type: 'string',
-                required: false,
-                minLength: 1,
-                maxLength: 50
-              },
-              campName: {
-                type: 'string',
-                required: false,
-                minLength: 1,
-                maxLength: 100
-              },
-              contact: {
-                type: 'array',
-                required: false,
-                minItems: 1,
-                maxItems: 5,
-                items: {
-                  type: 'object',
-                  required: true,
-                  properties: {
-                    addresses: {
-                      type: 'array',
-                      required: false,
-                      minItems: 1,
-                      maxItems: 5,
-                      items: {
-                        type: 'object',
-                        required: false,
-                        properties: {
-                          type: {
-                            type: 'string',
-                            required: false,
-                            minLength: 3,
-                            maxLength: 10,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace,
-                            default: ''
-                          },
-                          street: {
-                            type: 'string',
-                            required: false,
-                            minLength: 3,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace,
-                            default: ''
-                          },
-                          city: {
-                            type: 'string',
-                            required: false,
-                            minLength: 3,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.text,
-                            default: ''
-                          },
-                          state: {
-                            type: 'string',
-                            required: false,
-                            minLength: 3,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.textWithSpace,
-                            default: ''
-                          },
-                          country: {
-                            type: 'string',
-                            required: false,
-                            minLength: 3,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.textWithSpace,
-                            default: ''
-                          },
-                          countryCode: {
-                            type: 'string',
-                            required: false,
-                            minLength: 2,
-                            maxLength: 10,
-                            pattern: __constants.VALIDATOR.text,
-                            default: ''
-                          }
-                        }
-                      }
-                    },
-                    birthday: {
-                      type: 'string',
-                      required: true,
-                      pattern: __constants.VALIDATOR.dateFormat
-                    },
-                    emails: {
-                      type: 'array',
-                      required: false,
-                      items: {
-                        type: 'object',
-                        required: false,
-                        properties: {
-                          email: {
-                            type: 'string',
-                            required: false,
-                            minLength: 8,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.email
-                          },
-                          email_type: {
-                            type: 'string',
-                            required: false,
-                            minLength: 2,
-                            maxLength: 10,
-                            pattern: __constants.VALIDATOR.textWithSpace
-                          }
-                        }
-                      }
-                    },
-                    name: {
-                      type: 'object',
-                      required: true,
-                      minLength: 1,
-                      properties: {
-                        firstName: {
-                          type: 'string',
-                          minLength: 3,
-                          maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
-                        },
-                        lastName: {
-                          type: 'string',
-                          minLength: 3,
-                          maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
-                        },
-                        middleName: {
-                          type: 'string',
-                          minLength: 3,
-                          maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
-                        },
-                        suffix: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 5,
-                          pattern: __constants.VALIDATOR.text
-                        },
-                        prefix: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 5,
-                          pattern: __constants.VALIDATOR.text
-                        },
-                        formattedName: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50,
-                          required: true,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
-                        }
-                      },
-                      oneOf: [{
-                        required: ['first_name']
-                      },
-                      {
-                        required: ['last_name']
-                      },
-                      {
-                        required: ['middle_name']
-                      },
-                      {
-                        required: ['prefix']
-                      },
-                      {
-                        required: ['suffix']
-                      }
-                      ]
-                    },
-                    org: {
-                      type: 'object',
-                      required: false,
-                      properties: {
-                        company: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 100
-                        },
-                        department: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 50
-                        },
-                        title: {
-                          type: 'string',
-                          minLength: 2,
-                          maxLength: 100
-                        }
-                      }
-                    },
-                    phones: {
-                      type: 'array',
-                      required: false,
-                      items: {
-                        type: 'object',
-                        required: false,
-                        properties: {
-                          phone: {
-                            type: 'string',
-                            minLength: 7,
-                            maxLength: 15,
-                            pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
-                          },
-                          department: {
-                            type: 'string',
-                            minLength: 2,
-                            maxLength: 6
-                          },
-                          wa_id: {
-                            type: 'string',
-                            minLength: 7,
-                            maxLength: 15,
-                            pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
-                          }
-                        }
-                      }
-                    },
-                    urls: {
-                      type: 'array',
-                      required: false,
-                      items: {
-                        type: 'object',
-                        required: false,
-                        properties: {
-                          url: {
-                            type: 'string',
-                            minLength: 2,
-                            maxLength: 200,
-                            pattern: __constants.VALIDATOR.url
-                          },
-                          type: {
-                            type: 'string',
-                            minLength: 2,
-                            maxLength: 10,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              interactive: {
-                type: 'object',
-                required: false,
-                properties: {
-                  type: {
-                    type: 'string',
-                    required: false
-                  },
-                  header: {
-                    type: 'object',
-                    required: false,
-                    properties: {
-                      type: {
-                        type: 'string',
-                        required: false
-
-                      },
-                      text: {
-                        type: 'string',
-                        required: false,
-                        maxLength: 60
-                      }
-                    }
-                  },
-                  body: {
-                    type: 'object',
-                    required: false,
-                    properties: {
-                      text: {
-                        type: 'string',
-                        required: false
-                      }
-                    }
-                  },
-                  footer: {
-                    type: 'object',
-                    required: false,
-                    properties: {
-                      text: {
-                        type: 'string',
-                        required: false,
-                        maxLength: 60
-                      }
-                    }
-                  },
-                  action: {
-                    type: 'object',
-                    properties: {
-                      buttons: {
-                        type: 'array',
-                        required: false,
-                        items: {
-                          type: 'object',
-                          required: true,
-                          properties: {
-                            type: {
-                              type: 'string',
-                              required: true
-                            },
-                            reply: {
-                              type: 'object',
-                              required: true,
-                              properties: {
-                                id: {
-                                  type: 'string',
-                                  required: true
-                                },
-                                title: {
-                                  type: 'string',
-                                  required: true
-                                }
-                              }
-
-                            }
-                          }
-                        }
-
-                      },
-                      button: {
-                        type: 'string',
-                        required: false,
-                        maxLength: 20
-                      },
-                      sections: {
-                        type: 'array',
-                        required: false,
-                        items: {
-                          type: 'object',
-                          required: true,
-                          properties: {
-                            title: {
-                              type: 'string',
-                              required: false,
-                              maxLength: 24
-                            },
-                            rows: {
-                              type: 'array',
-                              required: true,
-                              items: {
-                                type: 'object',
-                                required: true,
-                                properties: {
-                                  id: {
-                                    type: 'string',
-                                    required: true
-                                  },
-                                  title: {
-                                    type: 'string',
-                                    required: true,
-                                    maxLength: 24
-                                  },
-                                  description: {
-                                    type: 'string',
-                                    maxLength: 72
-                                  }
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-
-                  }
-                }
-              },
-              contentType: {
-                type: 'string',
-                required: true,
-                minLength: 1,
-                enum: ['text', 'media', 'template', 'location', 'interactive', 'contact']
-              },
-              text: {
-                type: 'string',
-                required: false,
-                minLength: 1,
-                maxLength: 4096
-              },
-              media: {
-                type: 'object',
-                required: false,
-                minLength: 1,
-                properties: {
-                  type: {
-                    type: 'string',
-                    required: true,
-                    minLength: 1,
-                    enum: ['image', 'document', 'video', 'sticker', 'audio']
-                  },
-                  url: {
-                    type: 'string',
-                    minLength: 1
-                  },
-                  mediaId: {
-                    type: 'string',
-                    minLength: 1
-                  },
-                  caption: {
-                    type: 'string',
-                    required: false,
-                    minLength: 1,
-                    maxLength: 4096
-                  },
-                  filename: {
-                    type: 'string',
-                    required: false,
-                    minLength: 1
-                  }
-                },
-                anyOf: [
-                  {
-                    required:
-                      ['mediaId']
-                  },
-                  {
-                    required:
-                      ['url']
-                  }
-                ]
-              },
-              location: {
-                type: 'object',
-                required: false,
-                minLength: 1,
-                properties: {
-                  longitude: {
-                    type: 'number',
-                    required: true,
-                    minLength: 1
-                  },
-                  latitude: {
-                    type: 'number',
-                    required: true,
-                    minLength: 1
-                  },
-                  name: {
-                    type: 'string',
-                    required: false
-                  },
-                  address: {
-                    type: 'string',
-                    required: false
-                  }
-                }
-              },
-              template: {
-                type: 'object',
-                required: false,
-                minLength: 1,
-                properties: {
-                  templateId: {
-                    type: 'string',
-                    required: true,
-                    minLength: 1
-                  },
-                  language: {
-                    type: 'object',
-                    required: true,
-                    minLength: 1,
-                    properties: {
-                      policy: {
-                        type: 'string',
-                        required: true,
-                        minLength: 1,
-                        enum: ['deterministic']
-                      },
-                      code: {
-                        type: 'string',
-                        required: true,
-                        minLength: 1
-                      }
-                    }
-                  },
-                  components: {
-                    type: 'array',
-                    required: false,
-                    minItems: 1,
-                    items: {
-                      type: 'object',
-                      required: true,
-                      properties: {
-                        type: {
-                          type: 'string',
-                          required: true,
-                          minLength: 1,
-                          enum: ['header', 'body', 'footer']
-                        },
-                        parameters: {
-                          type: 'array',
-                          required: false,
-                          items: {
-                            type: 'object',
-                            required: true,
-                            properties: {
-                              type: {
-                                type: 'string',
-                                required: true,
-                                minLength: 1,
-                                enum: ['text', 'media', 'location']
-                              },
-                              text: {
-                                type: 'string',
-                                required: false,
-                                minLength: 1
-                                // pattern: __constants.VALIDATOR.noTabLinebreakSpace
-                              },
-                              media: {
-                                type: 'object',
-                                required: false,
-                                minLength: 1,
-                                properties: {
-                                  type: {
-                                    type: 'string',
-                                    required: true,
-                                    minLength: 1,
-                                    enum: ['image', 'document', 'video', 'sticker', 'audio']
-                                  },
-                                  url: {
-                                    type: 'string',
-                                    required: true,
-                                    minLength: 1
-                                  },
-                                  caption: {
-                                    type: 'string',
-                                    required: false,
-                                    minLength: 1
-                                  },
-                                  filename: {
-                                    type: 'string',
-                                    required: false,
-                                    minLength: 1
-                                  }
-                                }
-                              },
-                              location: {
-                                type: 'object',
-                                required: false,
-                                minLength: 1,
-                                properties: {
-                                  longitude: {
-                                    type: 'number',
-                                    required: true,
-                                    minLength: 1
-                                  },
-                                  latitude: {
-                                    type: 'number',
-                                    required: true,
-                                    minLength: 1
-                                  }
-                                }
-                              }
-                            },
-                            anyOf: [
-                              {
-                                properties: {
-                                  type: { const: 'text' }
-                                },
-                                required: ['text']
-                              },
-                              {
-                                properties: {
-                                  type: { const: 'media' }
-                                },
-                                required: ['media']
-                              }, {
-                                properties: {
-                                  type: { const: 'location' }
-                                },
-                                required: ['location']
-                              }
-                            ]
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            },
-            anyOf: [
-              {
-                properties: {
-                  contentType: { const: 'text' }
-                },
-                required: ['text']
-              },
-              {
-                properties: {
-                  contentType: { const: 'media' }
-                },
-                required: ['media']
-              }, {
-                properties: {
-                  contentType: { const: 'location' }
-                },
-                required: ['location']
-              }, {
-                properties: {
-                  contentType: { const: 'template' }
-                },
-                required: ['template']
-              },
-              {
-                properties: {
-                  contentType: { const: 'interactive' }
-                },
-                required: ['interactive']
-              },
-              {
-                properties: {
-                  contentType: { const: 'contact' }
-                },
-                required: ['contact']
-              }
-            ]
-          },
-          isCampaign: {
-            type: 'boolean',
-            required: false,
-            default: false
-          }
-        },
-        oneOf: [
-          {
-            required: [
-              'isChatBot'
-            ]
-          },
-          {
-            required: [
-              'isCampaign'
-            ]
-          },
-          {
-            not: {
-              anyOf: [{
-                required: ['isChatBot']
-              }, {
-                required: ['isCampaign']
-              }]
-            }
-          }
-        ],
-        additionalProperties: false
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/sendMessageToQueue')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      if (err.split('"/^(?:(.)(?!\\\\s\\\\s\\\\s\\\\s)(?!\\\\n)(?!\\\\t))*$/g"').length > 1) {
-        const formatedErr = 'Template variable parameter of text cannot contain new line, tab or more than 3 spaces'
-        formatedError.push(formatedErr)
-      } else {
-        const formatedErr = err.split('.')
-        if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1],[subschema 2]')) {
-          formatedError.push('content should be an object, it should consist of atleast one [ text, media, location]')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('instance[1] is not exactly one from [subschema 0],[subschema 1]')) {
-          formatedError.push('Either isCampaign or isChatBot or both should should not be present')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('[subschema 0],[subschema 1]')) {
-          formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('birthday does not match')) {
-          formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
-        } else {
-          formatedError.push(formatedErr[formatedErr.length - 1])
-        }
-      }
-    })
-
-    // check validation for similar fromNumber
-    const fromNumber = request[0].whatsapp.from
-    const fromNumberIsValid = request.every((obj) => obj.whatsapp.from === fromNumber)
-    if (!fromNumberIsValid) {
-      formatedError.push('From number should be same across the entire request body')
-    }
-
-    // check validation for similar value of isCampaign
-    const isCampaign = request[0].isCampaign
-    const isCampaignIsValid = request.every((obj) => obj.isCampaign === isCampaign)
-    if (!isCampaignIsValid) {
-      formatedError.push('isCampaign value should be same across the entire request body')
-    }
-
-    // check validation for similar value of isChatBot
-    const isChatBot = request[0].isChatBot
-    const isChatBotIsValid = request.every((obj) => obj.isChatBot === isChatBot)
-    if (!isChatBotIsValid) {
-      formatedError.push('isChatBot value should be same across the entire request body')
-    }
-
-    // all json's contentType should be same
-    const contentType = request[0].whatsapp.contentType
-    const contentTypeIsValid = request.every((obj) => obj.whatsapp.contentType === contentType)
-    if (!contentTypeIsValid) {
-      formatedError.push('contentType value should be same across the entire request body')
-    }
-
-    // all templates should be of same template
-    if (contentTypeIsValid && request[0] && request[0].whatsapp && request[0].whatsapp.contentType === 'template') {
-      const templateId = request[0].whatsapp.template.templateId
-      const templateIdIsValid = request.every((obj) => obj.whatsapp.template.templateId === templateId)
-      if (!templateIdIsValid) {
-        formatedError.push('templateId value should be same across the entire request body')
-      }
-    }
-
-    // all contacts's birthday date format should be same
-    if ('contact' in request[0].whatsapp) {
-      const birthdayIsValid = request.every((obj) => {
-        return obj.whatsapp.contact.every(d => {
-          return __constants.VALIDATOR.dateFormat.test(d.birthday)
+// function to get bulk templates from redis and if not in redis then from DB
+const getBulkTemplates = async (messages, wabaPhoneNumber) => {
+  const bulkTemplateCheck = q.defer()
+  const templateIdArr = []
+  const map = new Map()
+  for (const item of messages) { // loop to pluck unique template id from message aaray to serch
+    if (item.whatsapp && item.whatsapp.template && item.whatsapp.template.templateId) {
+      if (!map.has(item.whatsapp.template.templateId)) {
+        map.set(item.whatsapp.template.templateId, true)
+        templateIdArr.push({
+          from: item.whatsapp.from,
+          templateId: item.whatsapp.template.templateId
         })
+      }
+    }
+  }
+  const uniqueTemplateIdAndNotInGlobal = [] // not in redis arr so that it can be queryed in db
+  const templateDataObj = {}
+  for (let i = 0; i < templateIdArr.length; i++) {
+    const templateData = await __db.redis.get(templateIdArr[i].templateId + '___' + templateIdArr[i].from)
+    if (!templateData) {
+      uniqueTemplateIdAndNotInGlobal.push(templateIdArr[i])
+    } else {
+      templateDataObj[templateIdArr[i].templateId] = JSON.parse(templateData)
+    }
+  }
+  if (uniqueTemplateIdAndNotInGlobal.length === 0) {
+    bulkTemplateCheck.resolve(templateDataObj)
+    return bulkTemplateCheck.promise
+  }
+  const onlyTemplateId = uniqueTemplateIdAndNotInGlobal.map(templateIdArr => templateIdArr.templateId)
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setTemplatesInRedisForWabaPhoneNumber(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, onlyTemplateId])
+    .then(dbData => {
+      _.each(dbData, singleObj => {
+        if (singleObj && singleObj.message_template_id) { // block to push template data in templateDataObj and redis
+          const dataObject = {
+            templateId: singleObj.message_template_id,
+            headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            phoneNumber: singleObj.phone_number
+          }
+          dataObject.approvedLanguages = []
+          if (singleObj.first_localization_status === __constants.TEMPLATE_APPROVE_STATUS) dataObject.approvedLanguages.push(singleObj.first_language_code)
+          if (singleObj.second_localization_status === __constants.TEMPLATE_APPROVE_STATUS) dataObject.approvedLanguages.push(singleObj.second_language_code)
+          if (singleObj.header_type && singleObj.header_type !== 'text') dataObject.headerParamCount = dataObject.headerParamCount + 1
+          templateDataObj[dataObject.templateId] = dataObject
+          __db.redis.setex(dataObject.templateId + '___' + dataObject.phoneNumber, JSON.stringify(dataObject), __constants.REDIS_TTL.templateData)
+        }
       })
-      if (!birthdayIsValid) {
-        formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
-      }
-    }
-
-    if (formatedError.length > 0) {
-      __logger.error('services/validation.js: sendMessageToQueue()', formatedError)
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      trimInput.bulkInputTrim(request)
-      isvalid.resolve(request)
-    }
-    return isvalid.promise
-  }
-
-  checkMessageIdExistService (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/checkMessageIdExist',
-      type: 'object',
-      required: true,
-      properties: {
-        messageId: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        }
-      }
-    }
-    const formatedError = []
-    require('./../../../lib/util/invalidMessageIdWithDateHandler')(formatedError, request)
-    v.addSchema(schema, '/checkMessageIdExist')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
+      return bulkTemplateCheck.resolve(templateDataObj)
     })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: formatedError })
-    } else {
-      trimInput.singleInputTrim(request)
-      isvalid.resolve(request)
-    }
-    return isvalid.promise
-  }
-
-  addMessageHistory (request) {
-    const isvalid = q.defer()
-
-    const schema = {
-      id: '/addMessageHistoryData',
-      type: 'object',
-      required: true,
-      additionalProperties: true,
-      anyOf: [
-        {
-          required:
-            ['messageId']
-        },
-        {
-          required:
-            ['serviceProviderMessageId']
-        }
-      ],
-      properties: {
-        messageId: {
-          type: 'string',
-          minLength: 1
-        },
-        serviceProviderMessageId: {
-          type: 'string',
-          minLength: 1
-        },
-        serviceProviderId: {
-          type: 'string',
-          required: false
-        },
-        deliveryChannel: {
-          type: 'string',
-          required: false,
-          minLength: 1
-        },
-        statusTime: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        state: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        errors: {
-          type: 'array',
-          required: false
-        },
-        endConsumerNumber: {
-          type: 'string',
-          required: false
-        },
-        businessNumber: {
-          type: 'string',
-          required: false
-        }
-
+    .catch(err => {
+      if (err && err.type) {
+        if (err.type.status_code) delete err.type.status_code
+        return bulkTemplateCheck.resolve(err.type)
       }
-    }
-
-    const formatedError = []
-    v.addSchema(schema, '/addMessageHistoryData')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
+      const telegramErrorMessage = 'sendMessageToQueue ~ getBulkTemplates function ~ error in getBulkTemplates while sending message'
+      errorToTelegram.send(err, telegramErrorMessage)
+      return bulkTemplateCheck.reject(err)
     })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      trimInput.singleInputTrim(request)
-      isvalid.resolve(request)
-    }
-    return isvalid.promise
-  }
-
-  checkstartDateAndendDate (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/checkstartDateAndendDate',
-      type: 'object',
-      required: true,
-      properties: {
-        startDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp
-        },
-        endDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
-          minLength: 1
-        }
-
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/checkstartDateAndendDate')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
-      formatedError.push(regexPatternPreetyMessage)
-    })
-    if (formatedError.length > 0) {
-      __logger.info('Catched', formatedError)
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
-      if (formatedError.length > 0) {
-        __logger.info('Catched', formatedError)
-        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-      } else {
-        trimInput.singleInputTrim(request)
-        request.startDate = decodeURI(request.startDate)
-        request.endDate = decodeURI(request.endDate)
-        isvalid.resolve(request)
-      }
-    }
-    return isvalid.promise
-  }
-
-  transactionValidator (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/transactionValidator',
-      type: 'object',
-      required: true,
-      properties: {
-        startDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp
-        },
-        endDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
-          minLength: 1
-        },
-        transactionType: {
-          type: 'string',
-          required: true,
-          enum: __constants.MESSAGE_TRANSACTION_TYPE
-        }
-
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/transactionValidator')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
-      formatedError.push(regexPatternPreetyMessage)
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
-      if (formatedError.length > 0) {
-        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-      } else {
-        trimInput.singleInputTrim(request)
-        request.startDate = decodeURI(request.startDate)
-        request.endDate = decodeURI(request.endDate)
-        isvalid.resolve(request)
-      }
-    }
-    return isvalid.promise
-  }
-
-  checkMediaIdExist (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/checkMediaIdExist',
-      type: 'object',
-      required: true,
-      properties: {
-        mediaId: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        }
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/checkMediaIdExist')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      trimInput.singleInputTrim(request)
-      isvalid.resolve(request)
-    }
-    return isvalid.promise
-  }
-
-  outgoingTransactionValidatorByFilters (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/outgoingTransactionValidator',
-      type: 'object',
-      required: true,
-      properties: {
-        startDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp
-        },
-        endDate: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.timeStamp,
-          minLength: 1
-        },
-        endUserNumber: {
-          type: 'string',
-          required: false,
-          minLength: 6,
-          maxLength: 15,
-          pattern: __constants.VALIDATOR.number
-        }
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/outgoingTransactionValidator')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      const regexPatternPreetyMessage = formatedErr[1].split(' "^')[0].replace('does not match pattern', '- invalid date format- use yyyy-mm-dd hh:MM:ss')
-      formatedError.push(regexPatternPreetyMessage)
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      if (request.startDate === request.endDate) {
-        formatedError.push('startDate cannot be equal to endDate!')
-      }
-      if (request.startDate > request.endDate) {
-        formatedError.push('startDate can not be greater than endDate!')
-      }
-      if (formatedError.length > 0) {
-        isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-      } else {
-        trimInput.singleInputTrim(request)
-        request.startDate = decodeURI(request.startDate)
-        request.endDate = decodeURI(request.endDate)
-        isvalid.resolve(request)
-      }
-    }
-    return isvalid.promise
-  }
-
-  addConversationLog (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/addConversationLog',
-      type: 'object',
-      required: true,
-      additionalProperties: false,
-      properties: {
-        conversationId: {
-          type: 'string',
-          minLength: 1,
-          required: true
-
-        },
-        from: {
-          type: 'string',
-          minLength: 1,
-          required: true,
-          pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
-        },
-        to: {
-          type: 'string',
-          required: true,
-          pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
-        },
-        expiresOn: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          pattern: __constants.VALIDATOR.timeStamp
-        },
-        type: {
-          type: 'string',
-          required: true,
-          minLength: 1,
-          enum: __constants.CONVERSATION_BILLING_CATEGORY
-        }
-
-      }
-    }
-
-    const formatedError = []
-    v.addSchema(schema, '/addConversationLog')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
-    } else {
-      trimInput.singleInputTrim(request)
-      isvalid.resolve(request)
-    }
-    return isvalid.promise
-  }
-
-  getMediaByPhoneNumber (request) {
-    const isvalid = q.defer()
-    const schema = {
-      id: '/getMediaByPhoneNumber',
-      type: 'object',
-      required: true,
-      properties: {
-        mediaId: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        },
-        phoneNumber: {
-          type: 'string',
-          required: true,
-          minLength: 1
-        }
-      }
-    }
-    const formatedError = []
-    v.addSchema(schema, '/getMediaByPhoneNumber')
-    const error = _.map(v.validate(request, schema).errors, 'stack')
-    _.each(error, function (err) {
-      const formatedErr = err.split('.')
-      formatedError.push(formatedErr[formatedErr.length - 1])
-    })
-    if (formatedError.length > 0) {
-      isvalid.reject({
-        type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST,
-        err: formatedError
-      })
-    } else {
-      trimInput.singleInputTrim(request)
-      isvalid.resolve(request)
-    }
-    return isvalid.promise
-  }
+  return bulkTemplateCheck.promise
 }
 
-module.exports = validate
+// function to send webhook to user for message status
+const saveAndSendMessageStatus = (payload) => {
+  const statusSent = q.defer()
+  const redirectService = new RedirectService()
+  const statusData = {
+    messageId: payload.messageId,
+    deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+    statusTime: moment.utc().format('YYYY-MM-DDTHH:mm:ss'),
+    state: __constants.MESSAGE_STATUS.preProcess,
+    from: payload.to,
+    to: payload.whatsapp.from,
+    customOne: payload.whatsapp.customOne || null,
+    customTwo: payload.whatsapp.customTwo || null,
+    customThree: payload.whatsapp.customThree || null,
+    customFour: payload.whatsapp.customFour || null,
+    campName: payload.whatsapp.campName || null
+  }
+  redirectService.webhookPost(statusData.to, statusData)
+    .then(data => statusSent.resolve(data))
+    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+  return statusSent.promise
+}
+
+const checkIfNoExists = (number) => {
+  const exists = q.defer()
+  const redisService = new RedisService()
+  redisService.getWabaDataByPhoneNumber(number)
+    .then(data => {
+      __logger.info('datatat', { data })
+      exists.resolve({ type: __constants.RESPONSE_MESSAGES.WABA_NO_VALID, data: { redisData: data } })
+    })
+    .catch(err => {
+      exists.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+  return exists.promise
+}
+
+const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
+  const messageSent = q.defer()
+  data.authToken = headers.authorization
+  data.vivaReqId = headers.vivaReqId
+  const queueData = {
+    config: config.provider_config[providerId],
+    payload: data
+  }
+  queueData.config.userId = userId
+  queueData.config.maxTpsToProvider = maxTpsToProvider
+  // const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
+  // let queueObj = __constants.MQ.process_message
+  // if (data && data.isCampaign) {
+  //   queueObj = __constants.MQ.process_message_campaign
+  // }
+  // rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
+  //   .then(queueResponse =>
+  saveAndSendMessageStatus(data)
+    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, campName: data.whatsapp.campName || null, queueData }))
+    .catch(err => {
+      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
+      errorToTelegram.send(err, telegramErrorMessage)
+      messageSent.reject(err)
+    })
+  return messageSent.promise
+}
+
+const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) => { // function to push to queue in bulk
+  const sendSingleMessage = q.defer()
+  qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, providerId, userId, maxTpsToProvider, headers)
+    .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
+    .catch(function (error) {
+      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
+      errorToTelegram.send(error, telegramErrorMessage)
+      return sendSingleMessage.reject(error)
+    })
+    .done()
+  return sendSingleMessage.promise
+}
+
+const singleRuleCheck = (data, wabaPhoneNumber, redisData, userRedisData) => {
+  const processSingleMessage = q.defer()
+  __logger.info('Inside singleRuleCheck :: sendMessageToQueue :: API to send message called')
+  if (data.whatsapp.from !== wabaPhoneNumber) { // comparing api req number(data.whatsapp.from) with number fetched from jwt token(wabaPhoneNumber)
+    const modifiedRejectPromise = { ...__constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS }
+
+    delete modifiedRejectPromise.status_code
+    modifiedRejectPromise.message = modifiedRejectPromise.message + ' from :- ' + data.whatsapp.from + ' wabaNumber :- ' + wabaPhoneNumber
+    processSingleMessage.reject(modifiedRejectPromise)
+    return processSingleMessage.promise
+  }
+  templateParamValidationService.checkIfParamsEqual(data.whatsapp.template, data.whatsapp.from, redisData)
+    .then(tempValRes => {
+      const uniqueId = new UniqueId()
+      data.redisData = userRedisData.data.redisData || null
+      data.messageId = `${uniqueId.uuid()}-${Buffer.from(`${moment().utc().format('YYMMDD')}`).toString('base64') || ''}`
+      data.date = moment().utc().format('YYMMDD')
+      return processSingleMessage.resolve(data)
+    })
+    .catch(err => {
+      if (err && err.type) {
+        if (err.type.status_code) delete err.type.status_code
+        return processSingleMessage.reject(err.type)
+      }
+      const telegramErrorMessage = 'sendMessageToQueue ~ singleRuleCheck function ~ error in checkIfParamsEqual function'
+      errorToTelegram.send(err, telegramErrorMessage)
+      return processSingleMessage.reject(err)
+    }
+    )
+  return processSingleMessage.promise
+}
+
+// function to check various rules like waba num and template variable params etc
+const ruleCheck = (body, wabaPhoneNumber, redisData, userRedisData) => {
+  const sendSingleMessage = q.defer()
+
+  qalllib.qASyncWithBatch(singleRuleCheck, body, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, wabaPhoneNumber, redisData, userRedisData)
+    .then(data => sendSingleMessage.resolve(data))
+    .catch(function (error) {
+      const telegramErrorMessage = 'sendMessageToQueue ~ ruleCheck function ~ error in qASyncWithBatch function'
+      errorToTelegram.send(error, telegramErrorMessage)
+      return sendSingleMessage.reject(error)
+    })
+    .done()
+  return sendSingleMessage.promise
+}
+
+const getTemplateCategory = (wabaPhoneNumber, templateId) => {
+  const messageSent = q.defer()
+  __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
+    .then((data) => {
+      if (data.length > 0) {
+        messageSent.resolve({ categoryId: data[0].message_template_category_id })
+      } else {
+        __logger.error('sendMessageToQueue.js: getTemplateCategory: No Data Found', ['Invalid template id'])
+        messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
+      }
+    })
+    .catch((err) => {
+      __logger.error('sendMessageToQueue.js: getTemplateCategory: ', err)
+      messageSent.reject(err)
+    })
+
+  return messageSent.promise
+}
+
+/**
+ * @memberof -WhatsApp-Message-Controller-SendMessage-
+ * @name SendMessageInQueue
+ * @path {POST} /chat/v1/messages
+ * @description Bussiness Logic :- This API is used to send mesages on whatsapp. This API can send single as well as bulk messsages. There are total 3 routes in top of this controller - one for single message which has tps of 500 another for bulk message max 500 messages per call with tps of 1 and one for internal call with same input as bulk but without tps for internal use among helo products and platforms. tps is managed on router layer
+ * @auth This route requires HTTP Basic Authentication in Headers such as { "Authorization":"SOMEVALUE"}, user can obtain auth token by using login API. If authentication fails it will return a 401 error (Invalid token in header).
+ <br/><br/><b>API Documentation : </b> {@link https://stage-whatsapp.helo.ai/helowhatsapp/api/internal-docs/7ae9f9a2674c42329142b63ee20fd865/#/message/send|SendMessageInQueue}
+ * @body {Array}  Array0fJson - This below Object is a sample Object for request body <br/>[ { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "location", "location": { "longitude": 7.4954884, "latitude": 51.5005765 } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "template", "template": { "templateId": "welcome", "language": { "policy": "deterministic", "code": "en" }, "components": [ { "type": "header", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] }, { "type": "body", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] }, { "type": "footer", "parameters": [ { "type": "text", "text": "Hi!" }, { "type": "media", "media": { "type": "document", "url": "http://www.africau.edu/images/default/sample.pdf" } } ] } ] } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "media", "media": { "type": "image", "url": "https://i.ibb.co/kXgjphY/925869358s.png", "caption": "viva connect" } } }, { "to": "9112345", "channels": [ "whatsapp" ], "whatsapp": { "from": "9167890", "contentType": "text", "text": "hello" } } ]
+ * @response {string} ContentType=application/json - Response content type.
+ * @response {array} metadata.data - It will return the object containing messageId and acceptedAt.
+ * @code {200} if the msg is success than it Returns message ID.
+ * @author Danish Galiyara 18th june, 2020
+ * *** Last-Updated :- Arjun Bhole 23th October, 2020 ***
+ */
+
+const controller = (req, res) => {
+  __logger.info('sendMessageToQueue :: API to send message called', req.body)
+  const validate = new ValidatonService()
+  const messageHistoryService = new MessageHistoryService()
+  const rejected = []
+  let sendToQueueRes
+  let finalObjToBeSent
+  let userRedisData
+  let templateCategory = ''
+  // block where we check if req is coming from /single url then data type should be json obj & not arr
+  if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
+    if (Array.isArray(req.body)) {
+      return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
+    } else if (typeof req.body === 'object' && !Array.isArray(req.body) && req.body !== null) {
+      req.body = [req.body]
+    }
+  }
+  if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+  validate.sendMessageToQueue(req.body)
+    .then(data => {
+      if (data && data[0] && !data[0].isCampaign && !data[0].isChatBot && data[0].whatsapp && data[0].whatsapp.contentType === 'template') {
+        // all templates have same templateId => already validated above
+        // it shoud neither be isCampaign nor isChatBot
+        // check the category of the template
+        return getTemplateCategory(data[0].whatsapp.from, data[0].whatsapp.template.templateId)
+      }
+      return true
+    })
+    .then(data => {
+      if (data && data.categoryId) {
+        // data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b' // promotional
+        // message is a template
+        switch (data.categoryId) {
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.OTP:
+            templateCategory = 'category_otp'
+            break
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.TRANSACTIONAL:
+            templateCategory = 'category_transactional'
+            break
+          case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.PROMOTIONAL:
+            templateCategory = 'category_promotional'
+            break
+          default:
+            templateCategory = 'general'
+        }
+      }
+      return checkIfNoExists(req.body[0].whatsapp.from, req.user.wabaPhoneNumber || null)
+    })
+    .then(data => {
+      userRedisData = data
+      return getBulkTemplates(req.body, req.user.wabaPhoneNumber)
+    })
+    .then(redisData => ruleCheck(req.body, req.user.wabaPhoneNumber, redisData, userRedisData))
+    .then(processedMessages => {
+      if (processedMessages && processedMessages.reject && processedMessages.reject.length > 0) {
+        rejected.push(...processedMessages.reject)
+      }
+      if (processedMessages && processedMessages.resolve && processedMessages.resolve.length === 0) {
+        return null
+      } else { // when message is not rejected in rule check
+        const uniqueId = new UniqueId()
+        const msgInsertData = []
+        const mongoBulkObject = []
+        _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
+          msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null, singleMessage.whatsapp.campName || null])
+          mongoBulkObject.push({
+            messageId: singleMessage.messageId,
+            serviceProviderMessageId: null,
+            serviceProviderId: req.user.providerId,
+            deliveryChannel: __constants.DELIVERY_CHANNEL.whatsapp,
+            senderPhoneNumber: singleMessage.to,
+            countryName: phoneCodeAndPhoneSeprator(singleMessage.to).countryName,
+            wabaPhoneNumber: singleMessage.whatsapp.from,
+            customOne: singleMessage.whatsapp.customOne || null,
+            customTwo: singleMessage.whatsapp.customTwo || null,
+            customThree: singleMessage.whatsapp.customThree || null,
+            customFour: singleMessage.whatsapp.customFour || null,
+            campName: singleMessage.whatsapp.campName || null,
+            currentStatus: __constants.MESSAGE_STATUS.preProcess,
+            // templateId: singleMessage.whatsapp?.template?.templateId || null,
+            templateId: singleMessage.whatsapp && singleMessage.whatsapp.template && singleMessage.whatsapp.template.templateId ? singleMessage.whatsapp.template.templateId : null,
+            currentStatusTime: new Date(),
+            createdOn: new Date(),
+            status: [
+              {
+                senderPhoneNumber: singleMessage.to,
+                eventType: __constants.MESSAGE_STATUS.preProcess,
+                eventId: uniqueId.uuid(),
+                messageId: singleMessage.messageId,
+                sendTime: new Date()
+              }
+            ]
+          })
+        })
+        return messageHistoryService.addMessageHistoryDataInBulk(msgInsertData, processedMessages.resolve, false, mongoBulkObject)
+      }
+    })
+    .then(msgAdded => {
+      // this is need to remove it
+      if (!msgAdded) return []
+      // this is only update status not in queue
+      // note change the name
+      return sendToQueueBulk(msgAdded, req.user.providerId, req.user.user_id, req.user.maxTpsToProvider, req.headers)
+    })
+    .then(res => {
+      sendToQueueRes = res
+      __logger.info('sendMessageToQueue.js: message sent to queue then 1', { res })
+      if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
+        return false
+      } else {
+        finalObjToBeSent = {
+          config: sendToQueueRes[0].queueData.config
+        }
+        const payloadArray = []
+        sendToQueueRes = sendToQueueRes.map(resData => {
+          payloadArray.push(resData.queueData.payload)
+          delete resData.queueData
+          return resData
+        })
+        finalObjToBeSent.payload = payloadArray
+        const planPriority = payloadArray && payloadArray[0] && payloadArray[0].redisData.planPriority ? payloadArray[0].redisData.planPriority : null
+        // let queueObj = __constants.MQ.pre_process_message
+        let queueObj = __constants.MQ.pre_process_message_general
+        if (payloadArray[0] && payloadArray[0].isCampaign) {
+          queueObj = require('../../../lib/util/rabbitmqHelper')('pre_process_message_campaign', req.user.user_id, payloadArray[0].whatsapp.from)
+          // queueObj = __constants.MQ.pre_process_message_campaign
+        } else if (payloadArray[0] && payloadArray[0].isChatBot) {
+          queueObj = __constants.MQ.pre_process_message_chatbot
+        } else {
+          if (!templateCategory) {
+            templateCategory = 'general'
+          }
+          queueObj = __constants.MQ[`pre_process_message_${templateCategory}`]
+        }
+        return rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(finalObjToBeSent), planPriority)
+      }
+    })
+    .then(data => {
+      if (data === false) {
+        // data is false
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [...rejected] })
+      } else {
+        // success
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.ACCEPTED, data: [...sendToQueueRes, ...rejected] })
+      }
+    })
+    .catch(err => {
+      __logger.error('sendMessageToQueue.js: controller(' + req.user.wabaPhoneNumber + '):', err)
+      const telegramErrorMessage = 'sendMessageToQueue.js ~ controller() ~ error in main function'
+      errorToTelegram.send(err, telegramErrorMessage)
+      if (err && err.type && err.type.code && err.type.code === 3021) {
+        delete err.type.status_code
+        __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })
+      } else {
+        __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      }
+    })
+}
+
+module.exports = controller
