@@ -120,7 +120,6 @@ class InternalService {
   }
 
   mapComponent (components) {
-    console.log('12345678')
     if (!components || components.length <= 0) {
       return []
     }
@@ -145,6 +144,39 @@ class InternalService {
     return components
   }
 
+  mapContacts (components) {
+    if (!components || components.length <= 0) {
+      return []
+    }
+    _.each(components, (component) => {
+      _.each(component.addresses, (parameter) => {
+        if (parameter.country_code) {
+          parameter.countryCode = parameter.country_code
+          delete parameter.country_code
+        }
+      })
+      _.each(component.name, (parameter) => {
+        if (parameter.firstName) {
+          parameter.first_name = parameter.firstName
+          delete parameter.firstName
+        }
+        if (parameter.lastName) {
+          parameter.last_name = parameter.lastName
+          delete parameter.lastName
+        }
+        if (parameter.formattedName) {
+          parameter.formatted_name = parameter.formattedName
+          delete parameter.formattedName
+          if (parameter.middleName) {
+          }
+          parameter.middle_name = parameter.middleName
+          delete parameter.middleName
+        }
+      })
+    })
+    return components
+  }
+
   async sendMessageFbBody (td, maxTpsToProvider) {
     const body = {
       to: td.to,
@@ -156,6 +188,9 @@ class InternalService {
       body.text = {
         body: td.whatsapp.text
       }
+    } else if (td.whatsapp.contentType === 'contact') {
+      body.type = 'contacts'
+      body.contacts = this.mapContacts(td.whatsapp.contact)
     } else if (td.whatsapp.contentType === 'location') {
       body.location = {
         longitude: `${td.whatsapp.location.longitude}`,
