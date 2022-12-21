@@ -11,6 +11,8 @@ package-lock.json
 .vscode/*
 public/agreements
 config/.env
+config/stage.env
+config/uat.env
 config/.env-stage
 public/js-docs
 public/ossWrapper
