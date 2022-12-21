@@ -165,48 +165,49 @@ class validate {
                             required: false,
                             minLength: 3,
                             maxLength: 10,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace,
-                            default: ''
+                            pattern: __constants.VALIDATOR.textWithSpace
                           },
                           street: {
                             type: 'string',
                             required: false,
                             minLength: 3,
                             maxLength: 100,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace,
-                            default: ''
+                            pattern: __constants.VALIDATOR.alphanumericWithSpace
                           },
                           city: {
                             type: 'string',
                             required: false,
                             minLength: 3,
                             maxLength: 100,
-                            pattern: __constants.VALIDATOR.text,
-                            default: ''
+                            pattern: __constants.VALIDATOR.textWithSpace
                           },
                           state: {
                             type: 'string',
                             required: false,
                             minLength: 3,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.textWithSpace,
-                            default: ''
+                            maxLength: 20,
+                            pattern: __constants.VALIDATOR.textWithSpace
                           },
                           country: {
                             type: 'string',
                             required: false,
                             minLength: 3,
-                            maxLength: 100,
-                            pattern: __constants.VALIDATOR.textWithSpace,
-                            default: ''
+                            maxLength: 60,
+                            pattern: __constants.VALIDATOR.textWithSpace
                           },
                           countryCode: {
                             type: 'string',
                             required: false,
                             minLength: 2,
                             maxLength: 10,
-                            pattern: __constants.VALIDATOR.text,
-                            default: ''
+                            pattern: __constants.VALIDATOR.text
+                          },
+                          zip: {
+                            type: 'string',
+                            required: false,
+                            minLength: 6,
+                            maxLength: 7,
+                            pattern: __constants.VALIDATOR.number
                           }
                         }
                       }
@@ -277,7 +278,7 @@ class validate {
                         },
                         formattedName: {
                           type: 'string',
-                          minLength: 2,
+                          minLength: 3,
                           maxLength: 50,
                           required: true,
                           pattern: __constants.VALIDATOR.alphanumericWithSpace
@@ -307,17 +308,20 @@ class validate {
                         company: {
                           type: 'string',
                           minLength: 2,
-                          maxLength: 100
+                          maxLength: 100,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
                         },
                         department: {
                           type: 'string',
                           minLength: 2,
-                          maxLength: 50
+                          maxLength: 50,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
                         },
                         title: {
                           type: 'string',
                           minLength: 2,
-                          maxLength: 100
+                          maxLength: 20,
+                          pattern: __constants.VALIDATOR.alphanumericWithSpace
                         }
                       }
                     },
@@ -334,10 +338,11 @@ class validate {
                             maxLength: 15,
                             pattern: __constants.VALIDATOR.phoneNumberWithPhoneCode
                           },
-                          department: {
+                          type: {
                             type: 'string',
                             minLength: 2,
-                            maxLength: 6
+                            maxLength: 20,
+                            pattern: __constants.VALIDATOR.alphanumericWithSpace
                           },
                           wa_id: {
                             type: 'string',
@@ -357,7 +362,7 @@ class validate {
                         properties: {
                           url: {
                             type: 'string',
-                            minLength: 2,
+                            minLength: 7,
                             maxLength: 200,
                             pattern: __constants.VALIDATOR.url
                           },
