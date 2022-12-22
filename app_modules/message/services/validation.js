@@ -7,9 +7,7 @@ const TrimService = require('../../../lib/trimService/trim')
 const __logger = require('../../../lib/logger')
 
 const trimInput = new TrimService()
-// "payload": {
-//     "text": "This is an example response"
-// }
+
 class validate {
   sendMessage (request) {
     const isvalid = q.defer()
@@ -172,21 +170,21 @@ class validate {
                             required: false,
                             minLength: 3,
                             maxLength: 100,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace
+                            pattern: __constants.VALIDATOR.alphanumericWithSpecialChar
                           },
                           city: {
                             type: 'string',
                             required: false,
                             minLength: 3,
                             maxLength: 100,
-                            pattern: __constants.VALIDATOR.textWithSpace
+                            pattern: __constants.VALIDATOR.alphanumericWithMinSpecialChar
                           },
                           state: {
                             type: 'string',
                             required: false,
                             minLength: 3,
                             maxLength: 20,
-                            pattern: __constants.VALIDATOR.textWithSpace
+                            pattern: __constants.VALIDATOR.alphanumericWithSpecialChar
                           },
                           country: {
                             type: 'string',
@@ -250,19 +248,19 @@ class validate {
                           type: 'string',
                           minLength: 3,
                           maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.textWithSpace
                         },
                         lastName: {
                           type: 'string',
                           minLength: 3,
                           maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.textWithSpace
                         },
                         middleName: {
                           type: 'string',
                           minLength: 3,
                           maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.textWithSpace
                         },
                         suffix: {
                           type: 'string',
@@ -281,24 +279,25 @@ class validate {
                           minLength: 3,
                           maxLength: 50,
                           required: true,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.textWithSpace
                         }
                       },
-                      anyOf: [{
-                        required: ['firstName']
-                      },
-                      {
-                        required: ['lastName']
-                      },
-                      {
-                        required: ['middleName']
-                      },
-                      {
-                        required: ['prefix']
-                      },
-                      {
-                        required: ['suffix']
-                      }
+                      anyOf: [
+                        {
+                          required: ['firstName']
+                        },
+                        {
+                          required: ['lastName']
+                        },
+                        {
+                          required: ['middleName']
+                        },
+                        {
+                          required: ['prefix']
+                        },
+                        {
+                          required: ['suffix']
+                        }
                       ]
                     },
                     org: {
@@ -309,19 +308,19 @@ class validate {
                           type: 'string',
                           minLength: 2,
                           maxLength: 100,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.alphanumericWithSpecialChar
                         },
                         department: {
                           type: 'string',
                           minLength: 2,
                           maxLength: 50,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.alphanumericWithMinSpecialChar
                         },
                         title: {
                           type: 'string',
                           minLength: 2,
                           maxLength: 20,
-                          pattern: __constants.VALIDATOR.alphanumericWithSpace
+                          pattern: __constants.VALIDATOR.alphanumericWithMinSpecialChar
                         }
                       }
                     },
@@ -342,7 +341,7 @@ class validate {
                             type: 'string',
                             minLength: 2,
                             maxLength: 20,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace
+                            pattern: __constants.VALIDATOR.textWithSpace
                           },
                           wa_id: {
                             type: 'string',
@@ -370,7 +369,7 @@ class validate {
                             type: 'string',
                             minLength: 2,
                             maxLength: 10,
-                            pattern: __constants.VALIDATOR.alphanumericWithSpace
+                            pattern: __constants.VALIDATOR.textWithSpace
                           }
                         }
                       }
@@ -393,7 +392,6 @@ class validate {
                       type: {
                         type: 'string',
                         required: false
-
                       },
                       text: {
                         type: 'string',
@@ -500,7 +498,6 @@ class validate {
                         }
                       }
                     }
-
                   }
                 }
               },
@@ -549,12 +546,10 @@ class validate {
                 },
                 anyOf: [
                   {
-                    required:
-                      ['mediaId']
+                    required: ['mediaId']
                   },
                   {
-                    required:
-                      ['url']
+                    required: ['url']
                   }
                 ]
               },
@@ -804,6 +799,10 @@ class validate {
           formatedError.push('Media should contain atleast one from these both keys:- url or mediaId and caption is optional')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('birthday does not match')) {
           formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern') && formatedErr[formatedErr.length - 1].includes('^[a-zA-Z\\t\\\\s]*$')) {
+          formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should not contain special characters')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern')) {
+          formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain special characters -() only')
         } else {
           formatedError.push(formatedErr[formatedErr.length - 1])
         }

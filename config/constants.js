@@ -268,6 +268,8 @@ const VALIDATOR = {
   textWithSpace: '^[a-zA-Z\t\\s]*$',
   number: '^[0-9]+$',
   alphanumericWithSpace: '^[a-zA-Z0-9\t\\s]*$',
+  alphanumericWithSpecialChar: '^[a-zA-Z0-9\t\\s-@,_&()]*$',
+  alphanumericWithMinSpecialChar: '^[a-zA-Z0-9\t\\s-()]*$',
   alphaNumeric: '^[a-zA-Z0-9]+$',
   phoneNumber: '^\\d{1,15}$',
   // phoneNumberWithPhoneCode: '^[\\d+]{1,4}\\s?[0-9]{15}$',
@@ -285,7 +287,6 @@ const VALIDATOR = {
   noTabLinebreakSpace: /^(?:(.)(?!\s\s\s\s)(?!\n)(?!\t))*$/g,
   empty: /^''$/g,
   dateFormat: /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/g
-
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
