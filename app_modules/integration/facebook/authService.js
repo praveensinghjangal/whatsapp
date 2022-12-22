@@ -79,7 +79,7 @@ class Authentication {
     const redisService = new RedisService()
     redisService.getFacebookAuthKeys(wabaNumber)
       .then(data => {
-        if (!data) {
+        if (!data || !data.apiKey) {
           return this.setFaceBookTokensByWabaNumber(wabaNumber, this.userId)
         } else {
           return data
