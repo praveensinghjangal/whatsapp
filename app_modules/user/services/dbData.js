@@ -85,7 +85,7 @@ class UserData {
     const doesUserIdExist = q.defer()
     // checking using service whether the userId is  provided or not
     this.validate.checkUserIdService({ userId })
-    // then using a query to check that a record exist or not in table
+      // then using a query to check that a record exist or not in table
       .then(valResponse => {
         __logger.info('Response then 1', { valResponse })
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
@@ -113,7 +113,7 @@ class UserData {
     const doesUserIdExist = q.defer()
     // checking using service whether the userId is  provided or not
     this.validate.checkUserIdService({ userId })
-    // then using a query to check that a record exist or not in table
+      // then using a query to check that a record exist or not in table
       .then(valResponse => {
         __logger.info('Response then 1', { valResponse })
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
@@ -624,11 +624,11 @@ class UserData {
   }
 
   getUserData () {
-    __logger.info('get getUserData for dynamic per user queue >>>>>>>>>>>>>')
+    __logger.info('<<<<<<<<<<<<< user.services.dbData: getUserData(): create dynamic queue per User >>>>>>>>>>>>>')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserData())
       .then(result => {
-        __logger.info('response getUserData for dynamic per user queue >>>>>>>>>>>>>', { result })
+        __logger.info('response getUserData():', { result })
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -648,7 +648,7 @@ class UserData {
             __constants.MQ['pre_process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.pre_process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
             __constants.MQ['process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
           })
-          __logger.info('created per user Queue success >>>>>>>>>>>>>')
+          __logger.info('<<<<<<<<<<<<< created per user Queue success >>>>>>>>>>>>>')
           userDetails.resolve(result)
         }
       })

@@ -51,7 +51,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     }
   }
   if (uniqueTemplateIdAndNotInGlobal.length === 0) {
-    console.log('only redissssssssssssssss')
+    __logger.info('sendMessageToQueue: getBulkTemplates(): Unique template found: Set data in Redis:', templateDataObj)
     bulkTemplateCheck.resolve(templateDataObj)
     return bulkTemplateCheck.promise
   }
@@ -78,6 +78,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
       return bulkTemplateCheck.resolve(templateDataObj)
     })
     .catch(err => {
+      __logger.error('sendMessageToQueue: getBulkTemplate(): setTemplatesInRedisForWabaPhoneNumber DB Query:', err.stack)
       if (err && err.type) {
         if (err.type.status_code) delete err.type.status_code
         return bulkTemplateCheck.resolve(err.type)
@@ -259,6 +260,7 @@ const controller = (req, res) => {
   // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
+      __logger.error('sendMEssageToQueue: Request must be in OBJECT', {})
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
     } else if (typeof req.body === 'object' && !Array.isArray(req.body) && req.body !== null) {
       req.body = [req.body]
@@ -277,7 +279,6 @@ const controller = (req, res) => {
     })
     .then(data => {
       if (data && data.categoryId) {
-        // data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b' // promotional
         // message is a template
         switch (data.categoryId) {
           case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.OTP:
@@ -353,8 +354,7 @@ const controller = (req, res) => {
     })
     .then(res => {
       sendToQueueRes = res
-      console.log('=================== final final LAst final')
-      __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
+      __logger.info('sendMessageToQueue :: message sent to queue then 3', { sendToQueueRes })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
         return false
       } else {
@@ -395,9 +395,10 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      console.log('send message ctrl error : ', err)
-      const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
-      errorToTelegram.send(err, telegramErrorMessage)
+      const error = err.stack ? err.stack.split('\n', 2).join('\n') : err;
+      __logger.error('send message ctrl error : ', error)
+      const telegramErrorMessage = '\nsendMessageToQueue ~ controller() ~ '
+      errorToTelegram.send(error, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {
         delete err.type.status_code
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })

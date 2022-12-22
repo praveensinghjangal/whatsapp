@@ -22,11 +22,11 @@ module.exports = function (app) {
     request.req_ip = (request.headers['x-forwarded-for'] ? request.headers['x-forwarded-for'].split(',').shift().trim() : request.ip)
     const startTime = new Date()
     request.req_t = startTime
-    __logger.info(uuid + '=> API REQUEST:: ', { req_ip: request.req_ip, uri: request.originalUrl, req_t: dateUtil.formatDate(startTime, 'yyyy-MM-dd HH:mm:ss.SSS') })
+    __logger.info('routes.index: ' + uuid + '=> API REQUEST:: ', { req_ip: request.req_ip, uri: request.originalUrl, req_t: dateUtil.formatDate(startTime, 'yyyy-MM-dd HH:mm:ss.SSS') })
     response.on('finish', function () {
       const endTime = new Date()
       const responseTime = endTime - startTime
-      __logger.info(uuid + '=> API RESPONSE:: ', { req_ip: request.req_ip, uri: request.originalUrl, req_t: dateUtil.formatDate(startTime, 'yyyy-MM-dd HH:mm:ss.SSS'), res_t: dateUtil.formatDate(endTime, 'yyyy-MM-dd HH:mm:ss.SSS'), res_in: (responseTime / 1000) + 'sec' })
+      __logger.info('routes.index: ' + uuid + '=> API RESPONSE:: ', { req_ip: request.req_ip, uri: request.originalUrl, req_t: dateUtil.formatDate(startTime, 'yyyy-MM-dd HH:mm:ss.SSS'), res_t: dateUtil.formatDate(endTime, 'yyyy-MM-dd HH:mm:ss.SSS'), res_in: (responseTime / 1000) + 'sec' })
     })
     next()
   })
@@ -46,4 +46,5 @@ module.exports = function (app) {
   app.use(apiUrlPrefix + '/report', report)
   app.use(apiUrlPrefix + '/masterData', masterData)
   require('../lib/swagger')(app, '/' + __config.api_prefix + '/api')
+  // endregion
 }

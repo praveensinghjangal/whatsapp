@@ -45,16 +45,17 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
       return redirectService.webhookPost(statusData.to, statusData)
     })
     .then(data => statusSent.resolve(data))
-    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => statusSent.reject({
+      from: 'saveAndSendMessageStatus :: messageHistoryService.addMessageHistoryDataService :: ',
+      type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+      err: err.err || err
+    }))
   return statusSent.promise
 }
 
 const sendToQueue = (data, config, currentQueueName) => {
   const messageSent = q.defer()
-  const queueData = {
-    config: config,
-    payload: data
-  }
+  const queueData = { config: config, payload: data }
   const userId = data && data.redisData && data.redisData.userId ? data.redisData.userId : config.userId
   let queueObj = __constants.MQ.process_message_general
   if (currentQueueName.includes('chatbot')) {
@@ -74,9 +75,19 @@ const sendToQueue = (data, config, currentQueueName) => {
   const planPriority = data && data.redisData && data.redisData.planPriority ? data.redisData.planPriority : null
   __db.rabbitmqHeloWhatsapp.sendToQueue(queueObj, JSON.stringify(queueData), planPriority)
     .then(queueResponse => saveAndSendMessageStatus(data))
-    .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: data.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour }))
+    .then(messagStatusResponse => messageSent.resolve({
+      messageId: data.messageId,
+      to: data.to,
+      acceptedAt: new Date(),
+      apiReqId: data.vivaReqId,
+      customOne: data.whatsapp.customOne,
+      customTwo: data.whatsapp.customTwo,
+      customThree: data.whatsapp.customThree,
+      customFour: data.whatsapp.customFour
+    }))
     .catch(err => {
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
+      __logger.error('inside : preProcessMessage :: ', err)
+      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus'
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
     })
@@ -88,6 +99,7 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
   qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config, currentQueueName)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
+      __logger.error('inside : preProcessMessage :: sendToQueueBulk :: ', error)
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
       errorToTelegram.send(error, telegramErrorMessage)
       return sendSingleMessage.reject(error)
@@ -280,7 +292,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
   const notVerifiedPhoneNumber = []
   let audienceData
   if (!toNumbersThatNeedsToBeChecked.length) {
-    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedPhoneNumber: notVerifiedPhoneNumber })
+    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     return messageStatus.promise
   }
   audienceService.getWabaPhoneNumber(fromNumber)
@@ -289,7 +301,11 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         audMappingId = data.audMappingId
         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
       } else {
-        rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
+        return rejectionHandler({
+          from: 'checkIsVerifiedAudiencesTrueOrFalse : audienceService.getWabaPhoneNumber :: ',
+          type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST,
+          err: ['Invalid waba phone number']
+        })
       }
     })
     .then(data => {
@@ -325,7 +341,16 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // console.log('phoneNumbersToBeCheckedWithFb', phoneNumbersToBeCheckedWithFb)
       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+
+      // Commented: For running locally
       return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
+
+      // For Testing Purpose hardcode set
+      /* return [{
+        input: phoneNumbersToBeCheckedWithFb.length > 0 ? phoneNumbersToBeCheckedWithFb : verifiedNumbers[0],
+        status: 'valid',
+        wa_id: fromNumber
+      }] */
       // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
 
       // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
@@ -334,44 +359,43 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // todo: for numbers not present in db => create new entries in audiences table
     })
     .then((optinData) => {
-      // optinData = [
-      //   {
-      //     input: '+910000000001',
-      //     status: 'valid',
-      //     wa_id: '910000000001'
-      //   },
-      //   {
-      //     input: '+910000000002',
-      //     status: 'valid',
-      //     wa_id: '910000000002'
-      //   },
-      //   {
-      //     input: '+910000000003',
-      //     status: 'invalid',
-      //     wa_id: '910000000003'
-      //   },
-      //   {
-      //     input: '+910000000004',
-      //     status: 'valid',
-      //     wa_id: '910000000004'
-      //   },
-      //   {
-      //     input: '+910000000005',
-      //     status: 'invalid',
-      //     wa_id: '910000000005'
-      //   },
-      //   {
-      //     input: '+910000000006',
-      //     status: 'valid',
-      //     wa_id: '910000000006'
-      //   },
-      //   {
-      //     input: '+910000000007',
-      //     status: 'invalid',
-      //     wa_id: '910000000007'
-      //   }
-
-      // ]
+      /* optinData = [
+        {
+          input: '+910000000001',
+          status: 'valid',
+          wa_id: '910000000001'
+        },
+        {
+          input: '+910000000002',
+          status: 'valid',
+          wa_id: '910000000002'
+        },
+        {
+          input: '+910000000003',
+          status: 'invalid',
+          wa_id: '910000000003'
+        },
+        {
+          input: '+910000000004',
+          status: 'valid',
+          wa_id: '910000000004'
+        },
+        {
+          input: '+910000000005',
+          status: 'invalid',
+          wa_id: '910000000005'
+        },
+        {
+          input: '+910000000006',
+          status: 'valid',
+          wa_id: '910000000006'
+        },
+        {
+          input: '+910000000007',
+          status: 'invalid',
+          wa_id: '910000000007'
+        }
+      ] */
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
         // const contactNumber = optinData[i].wa_id // without "+"
@@ -387,7 +411,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
             notVerifiedPhoneNumber.push(contactNumber)
           }
         } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
-          /// check facebook verified and not in database also
+          // check facebook verified and not in database also
           audienceData = {
             audienceId: uniqueId.uuid(),
             phoneNumber: contactNumber,
@@ -424,14 +448,13 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return true
     })
     .then(data => {
-      // console.log('00000000000000000000000000000000000 verifiedNumbers', verifiedNumbers)
-      // console.log('1111111111111111111111111111111111 notVerifiedPhoneNumber', notVerifiedPhoneNumber)
-      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedNumbers: notVerifiedPhoneNumber })
+      // console.log('@@@@@!@@#@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', verifiedNumbers, notVerifiedPhoneNumber)
+      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
+      __logger.error('inside : checkIsVerifiedTrueOrFalse :: sendToRespectiveProviderQueue ::', err)
       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
-      __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return messageStatus.promise
@@ -444,11 +467,11 @@ const setStatusToRejectedForNonVerifiedNumbers = (notVerifiedPayloadArr, service
     .then(data => {
       setStatusToRejected.resolve([...data.resolve, ...data.reject])
     })
-    .catch(function (error) {
+    .catch(function (err) {
+      __logger.error('inside : preProcessMessage :: setStatusToRejectedForNonVerifiedNumbers ::', err)
       const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
-      errorToTelegram.send(error, telegramErrorMessage)
-      console.log('errror', error)
-      return setStatusToRejected.reject(error)
+      errorToTelegram.send(err, telegramErrorMessage)
+      return setStatusToRejected.reject(err)
     })
     .done()
   return setStatusToRejected.promise
@@ -486,7 +509,11 @@ const saveAndSendMessageStatusForNotVerfiedNumber = (payload, serviceProviderId)
       return redirectService.webhookPost(statusData.to, statusData)
     })
     .then(data => saveAndSendMessageStatusForNotVerfiedNumber.resolve(data))
-    .catch(err => saveAndSendMessageStatusForNotVerfiedNumber.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => saveAndSendMessageStatusForNotVerfiedNumber.reject({
+      from: 'saveAndSendMessageStatusForNotVerfiedNumber : messageHistoryService.addMessageHistoryDataService :: ',
+      type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
+      err: err.err || err
+    }))
   return saveAndSendMessageStatusForNotVerfiedNumber.promise
 }
 
@@ -499,7 +526,7 @@ class PreProcessQueueConsumer {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const queue = queueObj.q_name
-        __logger.info('preProcessQueueConsumer::Waiting for message...')
+        __logger.info('-------------------------------------------- preProcessQueueConsumer :: Waiting for message... --------------------------------------------')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             // console.log(__config.mqObjectKey)
@@ -539,31 +566,24 @@ class PreProcessQueueConsumer {
                 // console.log('verifiedNumbers', verifiedNumbers)
                 // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
-                  if (verifiedNumbers && verifiedNumbers.includes(payload.to)) {
-                    return true
-                  } else {
-                    return false
-                  }
+                  return !!(verifiedNumbers && verifiedNumbers.includes(payload.to))
                 })
                 // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeNotCheckedForNotVerified = payloadsToBeNotCheckedForNotVerified.filter(payload => {
-                  if (notVerifiedNumbers && notVerifiedNumbers.includes(payload.to)) {
-                    return true
-                  } else {
-                    return false
-                  }
+                  return !!(notVerifiedNumbers && notVerifiedNumbers.includes(payload.to))
                 })
                 // console.log('payloadsToBeNotCheckedForNotVerified', payloadsToBeNotCheckedForNotVerified)
                 finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
-                notVerifiedPayloadArr = [...payloadsToBeNotCheckedForNotVerified, ...payloadsToBeCheckedForNotVerified]
-                // console.log('@@@@@@@@@@@@@@ notVerifiedPayloadArr', notVerifiedPayloadArr)
+                notVerifiedPayloadArr = payloadsToBeCheckedForNotVerified
+                // console.log('finalPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', finalPayloadArr)
+                // console.log('notVerifiedPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', notVerifiedPayloadArr)
                 return { finalPayloadArr, notVerifiedPayloadArr }
-                // console.log('finalPayloadArr', finalPayloadArr)
               })
               .then((sendToQueueRes) => {
-                __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
-                // console.warn('------------ notVerifiedNumbers :: ', notVerifiedNumbers)
-                if (notVerifiedNumbers && notVerifiedNumbers.length) {
+                __logger.info('inside : preProcessMessage :: message sending to queue 1 ::', { sendToQueueRes })
+
+                return (notVerifiedNumbers && notVerifiedNumbers.length) ? setStatusToRejectedForNonVerifiedNumbers(notVerifiedPayloadArr, config.servicProviderId) : true
+                /* if (notVerifiedNumbers && notVerifiedNumbers.length) {
                   // console.warn('------------------ in if condition')
                   // console.log('notVerifiedPayloadArr ------------------', notVerifiedPayloadArr)
                   return setStatusToRejectedForNonVerifiedNumbers(notVerifiedPayloadArr, config.servicProviderId)
@@ -571,17 +591,18 @@ class PreProcessQueueConsumer {
                 } else {
                   // console.warn('---------------- in else condition')
                   return true
-                }
+                } */
               })
               .then(() => {
-                if (finalPayloadArr && finalPayloadArr.length) {
+                return (finalPayloadArr && finalPayloadArr.length) ? sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey) : false
+                /* if (finalPayloadArr && finalPayloadArr.length) {
                   return sendToQueueBulk(finalPayloadArr, config, __config.mqObjectKey)
                 } else {
                   return true
-                }
+                } */
               })
               .then((data) => {
-                __logger.info('sendMessageToQueue :: message sentt to queue then 3', { data })
+                __logger.info('inside : preProcessMessage :: message sending to queue 2 ::', { data })
                 rmqObject.channel[queue].ack(mqData)
                 // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
                 //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [] })
@@ -590,7 +611,7 @@ class PreProcessQueueConsumer {
                 // }
               })
               .catch(err => {
-                console.log('send message ctrl error : ', err)
+                __logger.error('inside : preProcessMessage ::', { err })
                 const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
                 errorToTelegram.send(err, telegramErrorMessage)
                 // if (err && err.type && err.type.code && err.type.code === 3021) {
@@ -607,10 +628,9 @@ class PreProcessQueueConsumer {
             // sendToRespectiveProviderQueue => send to processMessageQueue
             // saveAndSendMessageStatus (in bulk)
           } catch (err) {
+            __logger.error('inside : preProcessQueueConsumer ::', err)
             const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ preProcessQueueConsumer::error while parsing:'
             errorToTelegram.send(err, telegramErrorMessage)
-
-            __logger.error('preProcessQueueConsumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, {
@@ -618,9 +638,10 @@ class PreProcessQueueConsumer {
         })
       })
       .catch(err => {
+        console.log(err)
+        __logger.error('inside : preProcessQueueConsumer :: final ::', err)
         const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('preProcessQueueConsumer::error: ', err)
         process.exit(1)
       })
     // } else {
@@ -630,7 +651,7 @@ class PreProcessQueueConsumer {
     // }
 
     this.stop_gracefully = function () {
-      __logger.info('stopping all resources gracefully')
+      __logger.info('------------- STOPPING ALL RESOURCES GRACEFULLYS -------------')
       __db.close(function () {
         process.exit(0)
       })

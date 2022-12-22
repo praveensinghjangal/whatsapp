@@ -599,8 +599,7 @@ class validate {
     }
 
     if (formatedError.length > 0) {
-      console.log('sendMessageToQueue validation error: ', formatedError)
-      console.log('request=>>', request)
+      __logger.error('sendMessageToQueue: validation failed:', JSON.stringify(formatedError))
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)
@@ -650,12 +649,10 @@ class validate {
       additionalProperties: true,
       anyOf: [
         {
-          required:
-            ['messageId']
+          required: ['messageId']
         },
         {
-          required:
-            ['serviceProviderMessageId']
+          required: ['serviceProviderMessageId']
         }
       ],
       properties: {
@@ -698,7 +695,6 @@ class validate {
           type: 'string',
           required: false
         }
-
       }
     }
 
