@@ -395,7 +395,7 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      const error = err.stack ? err.stack.split('\n', 2).join('\n') : err;
+      const error = err.stack ? err.stack.split('\n', 2).join('\n') : err
       __logger.error('send message ctrl error : ', error)
       const telegramErrorMessage = '\nsendMessageToQueue ~ controller() ~ '
       errorToTelegram.send(error, telegramErrorMessage)
