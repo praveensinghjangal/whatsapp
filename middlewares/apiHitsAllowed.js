@@ -33,13 +33,12 @@ const rateLimit = (req, res, next) => {
     this.noOfHitsAllowedConfig.consume(consumekey)
       .then(rate => next())
       .catch(err => {
-        __logger.error('apiHitsAllowed: rateLimit(): noOfHitsAllowedConfig.consume():', err, err.stack)
+        __logger.error('apiHitsAllowed: rateLimit():', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, err.stack)
         errorToTelegram.send(err, __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
         __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: err })
       })
   } else {
-    __logger.error('apiHitsAllowed: rateLimit(): !req.userConfig.tps else condition', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
-    console.log('error in ratelimitter !req.userConfig.tps else condition ->>', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
+    __logger.error('apiHitsAllowed: ratelimitter(): !req.userConfig.tps else condition:', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
     __util.send(res, { type: __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: {} })
   }
 }
