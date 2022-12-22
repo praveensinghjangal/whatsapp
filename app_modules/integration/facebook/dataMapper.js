@@ -150,27 +150,27 @@ class InternalService {
     }
     _.each(components, (component) => {
       _.each(component.addresses, (parameter) => {
-        if (parameter.country_code) {
-          parameter.countryCode = parameter.country_code
-          delete parameter.country_code
+        if (parameter.countryCode) {
+          parameter.country_code = parameter.countryCode
+          delete parameter.countryCode
         }
       })
-      _.each(component.name, (parameter) => {
-        if (parameter.firstName) {
-          parameter.first_name = parameter.firstName
-          delete parameter.firstName
+      _.each(component.name, (parameter, key) => {
+        if (key === 'firstName') {
+          component.name.first_name = component.name.firstName
+          delete component.name.firstName
         }
-        if (parameter.lastName) {
-          parameter.last_name = parameter.lastName
-          delete parameter.lastName
+        if (component.name.lastName) {
+          component.name.last_name = component.name.lastName
+          delete component.name.lastName
         }
-        if (parameter.formattedName) {
-          parameter.formatted_name = parameter.formattedName
-          delete parameter.formattedName
-          if (parameter.middleName) {
-          }
-          parameter.middle_name = parameter.middleName
-          delete parameter.middleName
+        if (component.name.formattedName) {
+          component.name.formatted_name = component.name.formattedName
+          delete component.name.formattedName
+        }
+        if (component.name.middleName) {
+          component.name.middle_name = component.name.middleName
+          delete component.name.middleName
         }
       })
     })
