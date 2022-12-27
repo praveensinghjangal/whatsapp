@@ -70,38 +70,37 @@ class UserQueue {
   }
 
   startServer () {
-    __logger.info('inside ~function=startServer. Starting DLR worker', __config.mqObjectKey)
+    __logger.info('sendDlr: startServer(): ', __config.mqObjectKey)
     __db.init()
       .then(result => {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         if (queueObj && queueObj.q_name) {
           const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
           const queue = queueObj.q_name
-          __logger.info('user_queue::Waiting for message...')
+          __logger.info('sendDlr: startServer(): user_queue :: Waiting for message ...')
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
               const messageData = JSON.parse(mqData.content.toString())
-              __logger.info('inside ~function=startServer. Calling sendDlr')
               return sendDlr(messageData, rmqObject, queue, mqData)
             } catch (err) {
-              __logger.error('~function=startServer. heloCampaign::error while parsing: ', err)
+              __logger.error('sendDlr: startServer(): error while parsing:', err.stack ? err.stack : err)
               rmqObject.channel[queue].ack(mqData)
             }
           }, {
             noAck: false
           })
         } else {
-          __logger.error('~function=startServer. heloCampaign::error: no such queue object exists')
+          __logger.error('sendDlr: startServer(): Error: No such queue object exists')
           process.exit(1)
         }
       })
       .catch(err => {
-        __logger.error('user_queue::error: ', err && err !== 'object' ? err.toString() : '', err)
+        __logger.error('sendDlr: startServer(): user_queue :: error: ', err && err !== 'object' ? err.toString() : '', err)
         process.exit(1)
       })
 
     this.stop_gracefully = function () {
-      __logger.info('info', {}, {}, 'inside ~function=stop_gracefully. stopping all resources gracefully')
+      __logger.info('sendDlr: stopGracefully(): info', {}, {}, ' stopping all resources gracefully')
       __db.close(function () {
         process.exit(0)
       })
@@ -113,7 +112,7 @@ class UserQueue {
 
 class Worker extends UserQueue {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('sendDlr: start(): ' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }
