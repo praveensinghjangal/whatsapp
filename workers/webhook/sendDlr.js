@@ -6,7 +6,7 @@ const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
 
 const sendDlr = (message, queueObj, queue, mqData) => {
-  __logger.info('sendDlr: sendDlr(): ', { message, queueObj, queue, mqData })
+  __logger.info('sendDlr: sendDlr(): ', message.content.toString(), queueObj, queue, mqData)
   const messageRouted = q.defer()
   const http = new HttpService(60000)
   let webhookPayload = {}
@@ -80,6 +80,7 @@ class UserQueue {
           __logger.info('sendDlr: startServer(): user_queue :: Waiting for message ...')
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
+              __logger.info('sendDlr: startServer(): mqData:', { types: typeof (mqData), m: mqData, c: mqData.content })
               const messageData = JSON.parse(mqData.content.toString())
               return sendDlr(messageData, rmqObject, queue, mqData)
             } catch (err) {
