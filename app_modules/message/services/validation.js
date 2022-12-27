@@ -860,22 +860,7 @@ class validate {
     }
 
     if (formatedError.length > 0) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-      __logger.error('sendMessageToQueue: validation failed:', JSON.stringify(formatedError))
-=======
       __logger.error('services/validation.js: sendMessageToQueue()', formatedError)
->>>>>>> b1f4dd9e (Added new content type - Contact)
-=======
-      __logger.error('services/validation: sendMessageToQueue()', formatedError)
->>>>>>> d9695f9e (Changed logs)
-=======
->>>>>>> 9b867095 (Added extra error logs)
-=======
-      __logger.error('sendMessageToQueue: validation failed:', JSON.stringify(formatedError))
->>>>>>> 5a4a64a9 (Added logs in http_api, messageConversation, sendMessageToQueue, validation, queryProvider, dbData, apiHitsAllowed, routes/index, preProcessMessage)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.bulkInputTrim(request)

@@ -6,7 +6,7 @@ const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
 
 const sendDlr = (message, queueObj, queue, mqData) => {
-  __logger.info('inside ~function=sendDlr.', message)
+  __logger.info('sendDlr: sendDlr(): ', { message, queueObj, queue, mqData })
   const messageRouted = q.defer()
   const http = new HttpService(60000)
   let webhookPayload = {}
@@ -43,11 +43,11 @@ const sendDlr = (message, queueObj, queue, mqData) => {
   }
   http.Post(webhookPayload, 'body', message.url)
     .then(function (response) {
-      __logger.info('sent ~function=sendDlr', response)
+      __logger.info('sendDlr: POST req res: ', response)
       queueObj.channel[queue].ack(mqData)
     })
     .catch(function (error) {
-      __logger.info('error', {}, { error: error.toString() }, 'error while sending dlr ~function=sendDlr.')
+      __logger.info('sendDlr: catch error', {}, { error: error.toString() }, 'error while sending dlr request ~function=sendDlr.')
       if (!message.retry) message.retry = 1
       if (message.retry <= __constants.WEBHOOK_MAX_RETRY_COUNT) {
         message.retry++
