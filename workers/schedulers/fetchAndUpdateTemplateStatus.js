@@ -10,9 +10,9 @@ class FetchAndUpdateTemplateStatus {
       .then(result => {
         var task = cron.schedule(__config.schedulers.updateTemplateStatus.time, () => {
           fetchAndUpdateTemplateStatus()
-            .then(data => __logger.info('SCHEDULER::udateTicketStatus::FINISHED ==================>', data)
+            .then(data => __logger.info('FetchAndUpdateTemplateStatus: SCHEDULER :: udateTicketStatus :: FINISHED ::', data)
             )
-            .catch(err => __logger.info('SCHEDULER::udateTicketStatus::FINISHED WITH ERROR ==================>', err))
+            .catch(err => __logger.info('FetchAndUpdateTemplateStatus: SCHEDULER :: udateTicketStatus :: FINISHED WITH ERROR ::', err))
         }, {
           scheduled: true,
           timezone: __config.schedulers.updateTemplateStatus.timeZone
@@ -20,13 +20,13 @@ class FetchAndUpdateTemplateStatus {
         task.start()
       })
       .catch(err => {
-        __logger.error('processQueueConsumer::error: ', err)
+        __logger.error('FetchAndUpdateTemplateStatus: main catch: ', err)
         process.exit(1)
       })
 
     this.stop_gracefully = function () {
       __logger.info('stopping all resources gracefully')
-      __db.close(function () {})
+      __db.close(function () { })
       process.exit(0)
     }
     process.on('SIGINT', this.stop_gracefully)
@@ -36,7 +36,7 @@ class FetchAndUpdateTemplateStatus {
 
 class Worker extends FetchAndUpdateTemplateStatus {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('fetchAndUpdateTemplateStatus:' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

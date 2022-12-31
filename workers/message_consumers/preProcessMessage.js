@@ -46,7 +46,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     })
     .then(data => statusSent.resolve(data))
     .catch(err => statusSent.reject({
-      from: 'saveAndSendMessageStatus :: messageHistoryService.addMessageHistoryDataService :: ',
+      from: 'preProcessMessage: saveAndSendMessageStatus :: messageHistoryService.addMessageHistoryDataService :: ',
       type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR,
       err: err.err || err
     }))
@@ -86,7 +86,7 @@ const sendToQueue = (data, config, currentQueueName) => {
       customFour: data.whatsapp.customFour
     }))
     .catch(err => {
-      __logger.error('inside : preProcessMessage :: ', err)
+      __logger.error('preProcessMessage: sendToQueue(): catch:', err)
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus'
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
@@ -99,7 +99,7 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
   qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config, currentQueueName)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
-      __logger.error('inside : preProcessMessage :: sendToQueueBulk :: ', error)
+      __logger.error('preProcessMessage: sendToQueueBulk(): catch:', error)
       const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
       errorToTelegram.send(error, telegramErrorMessage)
       return sendSingleMessage.reject(error)
@@ -301,6 +301,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         audMappingId = data.audMappingId
         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
       } else {
+        __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): getWabaPhoneNumber():')
         return rejectionHandler({
           from: 'checkIsVerifiedAudiencesTrueOrFalse : audienceService.getWabaPhoneNumber :: ',
           type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST,
@@ -338,7 +339,6 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
           notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
         }
       }
-      // console.log('phoneNumbersToBeCheckedWithFb', phoneNumbersToBeCheckedWithFb)
       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
 
@@ -452,7 +452,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
-      __logger.error('inside : checkIsVerifiedTrueOrFalse :: sendToRespectiveProviderQueue ::', err)
+      __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): final catch():', err)
       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
@@ -461,15 +461,14 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
 }
 
 const setStatusToRejectedForNonVerifiedNumbers = (notVerifiedPayloadArr, serviceProviderId) => {
-  // console.log('22222222222222222222222222222222222 ----------notVerifiedPayloadArr', notVerifiedPayloadArr)
   const setStatusToRejected = q.defer()
   qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, notVerifiedPayloadArr, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, serviceProviderId)
     .then(data => {
       setStatusToRejected.resolve([...data.resolve, ...data.reject])
     })
     .catch(function (err) {
-      __logger.error('inside : preProcessMessage :: setStatusToRejectedForNonVerifiedNumbers ::', err)
-      const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
+      __logger.error('preProcessMessage: setStatusToRejectedForNonVerifiedNumbers(): final catch():', err)
+      const telegramErrorMessage = 'preProcessMessage: setStatusToRejectedForNonVerifiedNumbers(): '
       errorToTelegram.send(err, telegramErrorMessage)
       return setStatusToRejected.reject(err)
     })
@@ -526,10 +525,9 @@ class PreProcessQueueConsumer {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const queue = queueObj.q_name
-        __logger.info('-------------------------------------------- preProcessQueueConsumer :: Waiting for message... --------------------------------------------')
+        __logger.info('-------------------------------------------- preProcessQueueConsumer :: Waiting for message... --------------------------------------------', __config.mqObjectKey)
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
-            // console.log(__config.mqObjectKey)
             const messageData = JSON.parse(mqData.content.toString())
             let payloadsToBeCheckedForVerified = []
             const payloadsToBeNotCheckedForVerified = []
@@ -556,31 +554,23 @@ class PreProcessQueueConsumer {
                 payloadsToBeNotCheckedForNotVerified.push(payload)
               }
             }
-            // console.log('payloadsToBeCheckedForVerified', payloadsToBeCheckedForVerified)
-            // console.log('payloadsToBeNotCheckedForVerified', payloadsToBeNotCheckedForVerified)
             // start
             checkIsVerifiedAudiencesTrueOrFalse(messageData, fromNumber, toNumbersThatNeedsToBeChecked)
               .then(data => {
                 notVerifiedNumbers = data.notVerifiedNumbers || []
                 const verifiedNumbers = data.verifiedNumbers
-                // console.log('verifiedNumbers', verifiedNumbers)
-                // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeCheckedForVerified = payloadsToBeCheckedForVerified.filter(payload => {
                   return !!(verifiedNumbers && verifiedNumbers.includes(payload.to))
                 })
-                // console.log('notVerifiedNumbers', notVerifiedNumbers)
                 payloadsToBeNotCheckedForNotVerified = payloadsToBeNotCheckedForNotVerified.filter(payload => {
                   return !!(notVerifiedNumbers && notVerifiedNumbers.includes(payload.to))
                 })
-                // console.log('payloadsToBeNotCheckedForNotVerified', payloadsToBeNotCheckedForNotVerified)
                 finalPayloadArr = [...payloadsToBeCheckedForVerified, ...payloadsToBeNotCheckedForVerified]
                 notVerifiedPayloadArr = payloadsToBeCheckedForNotVerified
-                // console.log('finalPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', finalPayloadArr)
-                // console.log('notVerifiedPayloadArr>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', notVerifiedPayloadArr)
                 return { finalPayloadArr, notVerifiedPayloadArr }
               })
               .then((sendToQueueRes) => {
-                __logger.info('inside : preProcessMessage :: message sending to queue 1 ::', { sendToQueueRes })
+                __logger.info('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): then 2:', { sendToQueueRes })
 
                 return (notVerifiedNumbers && notVerifiedNumbers.length) ? setStatusToRejectedForNonVerifiedNumbers(notVerifiedPayloadArr, config.servicProviderId) : true
                 /* if (notVerifiedNumbers && notVerifiedNumbers.length) {
@@ -602,7 +592,7 @@ class PreProcessQueueConsumer {
                 } */
               })
               .then((data) => {
-                __logger.info('inside : preProcessMessage :: message sending to queue 2 ::', { data })
+                __logger.info('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): then 4: sending to queue:', { data })
                 rmqObject.channel[queue].ack(mqData)
                 // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
                 //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [] })
@@ -611,8 +601,8 @@ class PreProcessQueueConsumer {
                 // }
               })
               .catch(err => {
-                __logger.error('inside : preProcessMessage ::', { err })
-                const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
+                __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): catch:', err)
+                const telegramErrorMessage = 'preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): catch(' + fromNumber + '):'
                 errorToTelegram.send(err, telegramErrorMessage)
                 // if (err && err.type && err.type.code && err.type.code === 3021) {
                 //   delete err.type.status_code
@@ -628,8 +618,8 @@ class PreProcessQueueConsumer {
             // sendToRespectiveProviderQueue => send to processMessageQueue
             // saveAndSendMessageStatus (in bulk)
           } catch (err) {
-            __logger.error('inside : preProcessQueueConsumer ::', err)
-            const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ preProcessQueueConsumer::error while parsing:'
+            __logger.error('preProcessMessage: main try/catch:', err)
+            const telegramErrorMessage = 'preProcessMessage: try/catch: Error while parsing:'
             errorToTelegram.send(err, telegramErrorMessage)
             rmqObject.channel[queue].ack(mqData)
           }
@@ -638,8 +628,7 @@ class PreProcessQueueConsumer {
         })
       })
       .catch(err => {
-        console.log(err)
-        __logger.error('inside : preProcessQueueConsumer :: final ::', err)
+        __logger.error('preProcessQueueConsumer: main catch:', err)
         const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
         errorToTelegram.send(err, telegramErrorMessage)
         process.exit(1)
@@ -663,7 +652,7 @@ class PreProcessQueueConsumer {
 
 class Worker extends PreProcessQueueConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('preProcessMessage: ' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

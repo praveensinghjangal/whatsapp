@@ -30,7 +30,7 @@ const ValidatonService = require('../services/validation')
  */
 
 module.exports = (req, res) => {
-  __logger.info('Get Outgoing Transaction List By Filters API Called:: ', req.query, req.user)
+  __logger.info('getOutgoingTransactionListByFilters: API Called: req:', req.query, req.user)
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   const wabaPhoneNumber = req.user && req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
@@ -43,7 +43,7 @@ module.exports = (req, res) => {
   validate.outgoingTransactionValidatorByFilters(req.query)
     .then(invalid => dbServices.getOutgoingTransactionListBySearchFilters(wabaPhoneNumber, req.query.startDate, req.query.endDate, ItemsPerPage, offset, req.query.endUserNumber))
     .then(data => {
-      __logger.info('Data------> then 2')
+      __logger.info('getOutgoingTransactionListByFilters: API Called: then 2:', data)
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })

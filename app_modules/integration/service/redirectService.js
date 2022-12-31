@@ -28,7 +28,6 @@ const sendToHeloCampaign = (payload) => {
 }
 
 const sendToUser = (payload) => {
-  __logger.info('Inside sendToUser', payload)
   const userId = payload.userId || null
   const webhookPostUrl = payload.webhookPostUrl || null
   const wabaNumber = payload.wabaNumber || null
@@ -37,10 +36,9 @@ const sendToUser = (payload) => {
   delete payload.wabaNumber
   delete payload.heloCampaign
   delete payload.webhookPostUrl
-  console.log('payyyyyyyyyyyyyyyy ---------->', payload, webhookPostUrl)
+  __logger.info('redirectService: sendToUser():', payload, webhookPostUrl)
   if (payload && webhookPostUrl && url.isValid(webhookPostUrl)) {
     if (payload.state) {
-      // console.log('its status ---------->', payload)
       if (__constants.SEND_WEBHOOK_ON.includes(payload.state)) {
         return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookQueue', userId, wabaNumber), JSON.stringify({ ...payload, url: webhookPostUrl }))
       } else {
@@ -49,7 +47,6 @@ const sendToUser = (payload) => {
         return defer.promise
       }
     } else {
-      // console.log('its incoming message ---------->', payload)
       return __db.rabbitmqHeloWhatsapp.sendToQueue(require('./../../../lib/util/rabbitmqHelper')('webhookQueue', userId, wabaNumber), JSON.stringify({ ...payload, url: webhookPostUrl }))
     }
   } else {
@@ -61,19 +58,18 @@ const sendToUser = (payload) => {
 
 const queueCall = (payload, userId) => {
   const defer = q.defer()
-  __logger.info('~ inside redirectservice', payload)
+  __logger.info('redirectservice: queueCall():', payload)
   initial()
     .then(() => {
       return [sendToHeloCampaign({ ...payload, userId }), sendToUser({ ...payload, userId })]
     })
     .spread((responseData1, responseData2) => {
-      // console.log('aftger alll ----------', payload)
       defer.resolve(true)
     })
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
       __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'redirectService ~ queueCall function ~ sendToHeloCampaign/sendToUser function'
+      const telegramErrorMessage = 'redirectService: queueCall(): catch: ~ sendToHeloCampaign/sendToUser function'
       errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
     })
@@ -81,12 +77,9 @@ const queueCall = (payload, userId) => {
 }
 class RedirectService {
   webhookPost (wabaNumber, payload) {
-    __logger.info('inside webhook post service', payload)
     const redirected = q.defer()
     const redisService = new RedisService()
-    const validPayload = {
-      ...payload
-    }
+    const validPayload = { ...payload }
 
     if (payload.retryCount) {
       delete validPayload.retryCount
@@ -110,19 +103,21 @@ class RedirectService {
         }
         payload.heloCampaign = data.isHeloCampaign
         payload.webhookPostUrl = data.webhookPostUrl
-        __logger.info('~ data and webhook before sending queue', data, payload)
+        __logger.info('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then:', data, payload)
         return queueCall(payload, data.userId)
       })
       .then(result => {
-        __logger.info('~ response after the queue functionality in redirect Service ', result)
+        __logger.info('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then:', result)
         if (result.notRedirected) {
+          __logger.info('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): reject:', { result: result.notRedirected })
           return redirected.reject({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
         } else {
           return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
         }
       })
       .catch(err => {
-        const telegramErrorMessage = 'redirectService ~ webhookPost function ~ Error While callMessage flow or queueCall function'
+        __logger.error('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
+        const telegramErrorMessage = 'redirectService: webhookPost function ~ Error While callMessage flow or queueCall function'
         errorToTelegram.send(err, telegramErrorMessage)
         redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
@@ -131,10 +126,10 @@ class RedirectService {
 
   callMessageFlow (redisData, payload) {
     // if bot flag true then hit or else do nothing
-    __logger.info('redirectService: callMessageFlow(' + payload.whatsapp.from + ')', redisData, payload)
+    __logger.info('redirectService: callMessageFlow(): ', redisData, payload)
     if (payload && payload.content && payload.content.text) {
       payload.content.text = payload.content.text.trim()
-      __logger.info('payload text', payload.content.text, redisData.optinText && payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText)
+      __logger.info('redirectService: callMessageFlow():', payload.content.text, redisData.optinText && payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText)
       if (redisData.optinText && payload.content.text.length === redisData.optinText.length && payload.content.text.toLowerCase() === redisData.optinText.toLowerCase()) {
         // TODO:
         payload.isVavaOptin = true
@@ -144,9 +139,9 @@ class RedirectService {
         payload.isVavaOptout = true
       }
     }
-    __logger.info('2nd check ', payload)
+    __logger.info('redirectService: callMessageFlow(): ', payload)
     if ((redisData && redisData.chatbotActivated) || payload.isVavaOptin === true || payload.isVavaOptout === true) {
-      __logger.info('Inside to send req to chatbot')
+      __logger.info('redirectService: callMessageFlow(): Inside send req to chatbot')
       const http = new HttpService(3000)
       const apiUrl = __config.chatAppUrl + __constants.CHAT_APP_ENDPOINTS.chatFlow
       const headers = {
@@ -157,15 +152,15 @@ class RedirectService {
       http.Post(payload, 'body', apiUrl, headers, redisData.serviceProviderId)
         .then(apiRes => {
           if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
-            __logger.info('refirectService: callMessageFlow(): post api res:', __constants.RESPONSE_MESSAGES.SUCCESS, JSON.stringify(apiRes.body))
+            __logger.info('redirectService: callMessageFlow(): POST API Res:', __constants.RESPONSE_MESSAGES.SUCCESS, JSON.stringify(apiRes.body))
           } else {
-            const telegramErrorMessage = 'redirectService ~ callMessageFlow function ~ Error Not Redirected'
-            errorToTelegram.send({}, telegramErrorMessage)
-            __logger.info('Not Redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, apiRes.body)
+            const telegramErrorMessage = 'redirectService: callMessageFlow() ~ Error Not Redirected'
+            errorToTelegram.send({ err: telegramErrorMessage }, telegramErrorMessage)
+            __logger.info('redirectService: callMessageFlow(): POST API Res: Not redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, JSON.stringify(apiRes.body))
           }
         })
         .catch(err => {
-          const telegramErrorMessage = 'redirectService ~ callMessageFlow function ~ error while sending message to chat api'
+          const telegramErrorMessage = 'redirectService: callMessageFlow() ~ error while sending message to chat api'
           console.log(telegramErrorMessage, err)
           errorToTelegram.send(err, telegramErrorMessage)
         })
@@ -176,17 +171,15 @@ class RedirectService {
 
   // todo: to move from here
   sendToRetryMessageSendQueue (message, retryCount) {
-    // __logger.info('sendToRetryMessageSendQueue Before', message)
-    __logger.info('sendToRetryMessageSendQueue Before', retryCount)
+    __logger.info('redirectService: sendToRetryMessageSendQueue():', retryCount, message)
     message.retryCount = retryCount.count === 0 ? 1 : ++retryCount.count
     const delayQueue = __constants.MQ[`delay_failed_to_redirect_${message.retryCount * 10}_sec`]
-    __logger.info('Delay Queue Status', delayQueue)
     const messageRouted = q.defer()
     if (message.retryCount && message.retryCount >= 1 && message.retryCount < 6) {
       rabbitmqHeloWhatsapp.sendToQueue(delayQueue, JSON.stringify(message), 0)
         .then(() => messageRouted.resolve(true))
         .catch(err => {
-          const telegramErrorMessage = 'redirectService ~ sendToRetryMessageSendQueue function ~ Error in delay_failed_to_redirect_ sendToQueue'
+          const telegramErrorMessage = 'redirectService: sendToRetryMessageSendQueue(): sendToQueue(): catch: ~ Error in delay_failed_to_redirect_ sendToQueue'
           errorToTelegram.send(err, telegramErrorMessage)
           messageRouted.reject(err)
         })

@@ -7,6 +7,7 @@ const saveApiLog = require('../../integration/service/saveApiLog')
 
 class HttpRequestOg {
   constructor (timeout, maxConcurrent, userId) {
+    __logger.warn('httpService: :: HttpRequestOg Class Initiated...')
     this.timeInSeconds = timeout || 3 * 60 * 60 * 1000 // hour * minutes * seconds * miliseconds
     // this.rateLimitter = new Bottleneck({
     //   maxConcurrent: maxConcurrent || 10,
@@ -32,13 +33,13 @@ class HttpRequestOg {
       json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
-    __logger.info('request for HTTP post ', options)
+    __logger.info('httpService: ::: POST ::: req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: POST ::: res:', response, body)
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: POST ::: error:', error)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -57,13 +58,14 @@ class HttpRequestOg {
       json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: GET ::: req:', options)
     if (encoding === null) options.encoding = null
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: GET ::: res:', response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: GET ::: error:', error)
         deferred.reject(error)
       } else {
         deferred.resolve(body)
@@ -82,12 +84,13 @@ class HttpRequestOg {
       rejectUnauthorized: false,
       encoding: 'binary'
     }
+    __logger.info('httpService: ::: GET MEDIA ::: req:', options)
     request(options, (error, response, body) => {
-      // __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: GET MEDIA ::: res:', response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: GET MEDIA ::: error:', error)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -107,13 +110,13 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
-    __logger.info('Integration Patch::OPTIONS', options)
+    __logger.info('httpService: ::: PATCH ::: req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: PATCH ::: res:', response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: PATCH ::: error:', error)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -133,12 +136,13 @@ class HttpRequestOg {
       json: isJson,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: PUT ::: req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: PUT ::: res:', response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: PUT ::: error:', error)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -157,12 +161,13 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: DELETE ::: req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: DELETE ::: res:', response, body)
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: DELETE ::: error:', error)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -182,13 +187,13 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
-    __logger.info('request for HTTP post ', options)
+    __logger.info('httpService: ::: RESOLVE POST ::: req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: RESOLVE POST ::: res:', response, body)
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: RESOLVE POST ::: error:', error)
         deferred.resolve({ err: true, error })
       } else {
         deferred.resolve(response)

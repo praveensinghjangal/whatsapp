@@ -16,7 +16,7 @@ class InternalFunctions {
 
   setTheMappingOfMessageData (templateData, whatsAppAccountId) {
     const finalData = []
-    __logger.info('integration :: Inside mapping function', templateData, templateData.data)
+    __logger.info('fb: template: setTheMappingOfMessageData():', templateData, templateData.data)
     if (templateData.data && templateData.data[0]) {
       const dataGroupedByName = _.chain(templateData.data)
         .groupBy('name')
@@ -40,6 +40,7 @@ class InternalFunctions {
       })
       return finalData
     } else {
+      __logger.error('fb: template: setTheMappingOfMessageData(): if/else: templateData not found.')
       return []
     }
   }
@@ -49,10 +50,10 @@ class InternalFunctions {
     let url = `${__constants.FACEBOOK_GRAPHURL}${__constants.FACEBOOK_ENDPOINTS.getTemplateList}${tokenData.graphApiKey}`
     let outData = {}
     url = url.split(':userAccountIdByProvider').join(tokenData.userAccountIdByProvider || '')
-    __logger.info('URL >>>>>>>>>>>>>>> __constants.FACEBOOK_ENDPOINTS.getTemplateList', url)
+    __logger.info('fb: template: getTemplateList(): ', url)
     this.http.Get(url, { 'Content-Type': 'application/json', Accept: 'application/json' }, tokenData.serviceProviderId)
       .then(async data => {
-        // console.log('data', data)
+        __logger.info('fb: template: getTemplateList(): HTTP GET Req Res:', data)
         outData = data
         let nextUrl = data && data.paging && data.paging.next ? data.paging.next : ''
         while (nextUrl) {
@@ -63,13 +64,17 @@ class InternalFunctions {
         outData.data = outData.data.flat()
         deferred.resolve(outData)
       })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: template: getTemplateList(): Erro while HTTP GET Req:', err)
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   }
 }
 
 class Template {
   constructor (maxConcurrent, userId) {
+    __logger.warn('fb: template: Template Class Initiated ...')
     this.maxConcurrent = maxConcurrent
     this.userId = userId
     this.http = new HttpService(60000, maxConcurrent, userId)
@@ -92,12 +97,17 @@ class Template {
             const data = mapData === true ? internalFunctions.setTheMappingOfMessageData(templateData, whatsAppAccountId) : templateData
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: data })
           } else {
+            __logger.error('fb: template: getTemplateList(' + wabaNumber + '): then 2: if/else: templateData not found')
             return deferred.reject({ ...__constants.RESPONSE_MESSAGES.NOT_FOUND, data: {} })
           }
         })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+        .catch(err => {
+          __logger.error('fb: template: getTemplateList(' + wabaNumber + '): then 2: if/else: templateData not found')
+          deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        })
       return deferred.promise
     } else {
+      __logger.error('fb: template: getTemplateList(' + wabaNumber + '): WabaNumber doesn\'t exist')
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, error: 'Missing wabaNumber' })
       return deferred.promise
     }
@@ -126,7 +136,7 @@ class Template {
           return this.http.Get(url, headers, data.serviceProviderId)
         })
         .then(templateData => {
-          __logger.info('integration :: get template info data', { templateData })
+          __logger.info('fb: template: getTemplateInfo(): then 2:', templateData)
           if (templateData && templateData.data && templateData.data.length > 0) {
             const dataAfterExactStringMatch = templateData.data.filter(s => s.name === templateId)
             templateData.data = dataAfterExactStringMatch
@@ -145,16 +155,20 @@ class Template {
           }
         })
         .then(templateData => {
-          __logger.info('integration :: get template info data after mapping', { templateData })
+          __logger.info('fb: template: getTemplateInfo(): then 3:', templateData)
           if (isData) {
             tempData.localizations = templateData
             templateData = tempData
           }
           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: templateData })
         })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+        .catch(err => {
+          __logger.error('fb: template: getTemplateInfo(): catch:', err)
+          deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        })
       return deferred.promise
     } else {
+      __logger.error('fb: template: getTemplateInfo(): if/else: WabaNumber & templateId missing....')
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing' })
       return deferred.promise
     }
@@ -169,20 +183,22 @@ class Template {
           singleObject.messageTemplateStatusId = data.messageTemplateStatusId
           return singleObject
         })
-        .catch(err => err)
+        .catch(err => {
+          __logger.error('fb: template: mapStatusOfAllLocalization(): catch:', err)
+          return err
+        })
       thePromises.push(p)
     })
     return q.all(thePromises)
   }
 
   deleteTemplate (wabaNumber, templateId) {
-    __logger.info('deleteTemplate::Template Service >>>>>>>>>>>>>>>>>>>>>>>>>>', { wabaNumber, templateId })
+    __logger.info('fb: template: deleteTemplate(' + wabaNumber + '): Deleting Template ....')
     const deferred = q.defer()
     if (wabaNumber && templateId) {
       const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
-          __logger.info('deleteTemplate::getWabaDataByPhoneNumber >>>>>>>>>>>>', { data, typeof: typeof data })
           const headers = {
             'Content-Type': 'application/json',
             Accept: 'application/json'
@@ -192,17 +208,21 @@ class Template {
           return this.http.Delete(deleteUrl, headers, data.serviceProviderId)
         })
         .then(templateData => {
-          __logger.info('deleteTemplate::facebook response =======?>', { wabaNumber, templateId })
+          __logger.info('fb: template: deleteTemplate(' + wabaNumber + '): Response from fb:', templateData)
           if (templateData) {
             return deferred.resolve({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_SENT_FOR_DELETION, data: {} })
           } else {
+            __logger.error('fb: template: deleteTemplate(' + wabaNumber + '): templateData not found:')
             return deferred.reject({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_DELETION_ERROR, err: {}, data: {} })
           }
         })
-        .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+        .catch(err => {
+          __logger.error('fb: template: deleteTemplate(' + wabaNumber + '): catch: Error while deleting template', err)
+          deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+        })
       return deferred.promise
     } else {
-      __logger.info('deleteTemplate::No waba and templateId =======?>', { wabaNumber, templateId })
+      __logger.error('fb: template: deleteTemplate(' + wabaNumber + '): catch: wabaNumber & templateId missing ....')
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
       return deferred.promise
     }
@@ -210,7 +230,7 @@ class Template {
 
   // when this service will be called we will call waba to get phone number to use here in redis
   addTemplate (templateData, wabaNumber) {
-    __logger.info('facebook addTemplate ::>>>>>>>>>>>>>>>>>>>>> ', templateData)
+    __logger.info('fb: template: addTemplate(' + wabaNumber + '): Adding template')
     const deferred = q.defer()
     let url = __constants.FACEBOOK_GRAPHURL + __constants.FACEBOOK_GRAPHURL_VERSION + '/'
     let headers = {}
@@ -236,14 +256,18 @@ class Template {
         }
       })
       .then(data => {
-        __logger.info('integration :: Add template data', { data })
+        __logger.info('fb: template: addTemplate(' + wabaNumber + '): then 4:', { data: data })
         if (data && data.body && data.body.id) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { id: data.id } })
         } else {
+          __logger.error('fb: template: addTemplate(' + wabaNumber + '): if/else: data not found.')
           return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body.error || data.body })
         }
       })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: template: addTemplate(' + wabaNumber + '): catch:', err)
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   }
 }

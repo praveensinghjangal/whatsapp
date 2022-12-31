@@ -13,12 +13,11 @@ const UniqueId = require('../../../lib/util/uniqueIdGenerator')
 
 class MessgaeHistoryService {
   getMessageHistoryTableDataWithId (messageId, date) {
-    __logger.info('getMessageHistoryTableDataWithId::>>>>>>>>>>>>')
-    __logger.info('inside get message history by id service', typeof messageId)
+    __logger.info('message: dbData: getMessageHistoryTableDataWithId():')
     const messageHistoryData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageTableDataWithId(date), [messageId])
       .then(result => {
-        __logger.info('Query Result', { result })
+        __logger.info('message: dbData: getMessageHistoryTableDataWithId(): Query Result:', { result })
         if (result && result.length > 0) {
           messageHistoryData.resolve(result)
         } else {
@@ -26,7 +25,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get audience by id function: ', err)
+        __logger.info('message: dbData: getMessageHistoryTableDataWithId(): catch:', err)
         return noTableFoundHandler(messageHistoryData, err)
       })
     return messageHistoryData.promise
@@ -36,25 +35,27 @@ class MessgaeHistoryService {
     const messageHistoryDataAdded = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageIdMappingData(), insertBulkMessage)
       .then(result => {
-        __logger.info('Add Result then 4', { result })
+        __logger.info('message: dbData: addMessageIdMappingData(): then 1:', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           messageHistoryDataAdded.resolve(true)
         } else {
+          __logger.error('dbData: addMessageIdMappingData(): then 1: Reject :: ')
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('dbData: addMessageIdMappingData(): catch: ')
         messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageHistoryDataAdded.promise
   }
 
   getMessageIdByServiceProviderMsgId (serviceProviderMessageId) {
-    __logger.info('getMessageIdByServiceProviderMsgId::>>>>>>>>>>>>', serviceProviderMessageId)
+    __logger.info('message: dbData: getMessageIdByServiceProviderMsgId():', serviceProviderMessageId)
     const messageHistoryData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getMessageIdByServiceProviderMsgId(), [serviceProviderMessageId])
       .then(result => {
-        __logger.info('Query Result', { result })
+        __logger.info('message: dbData: getMessageIdByServiceProviderMsgId(): Query Result: ', result)
         if (result && result.length > 0) {
           const base64 = new Base64()
           const str = result[0].messageId.split('-').slice(-1)[0]
@@ -65,14 +66,14 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get audience by id function: ', err)
+        __logger.error('dbData: getMessageIdByServiceProviderMsgId(): catch: ', err)
         messageHistoryData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageHistoryData.promise
   }
 
   addMessageHistoryDataService (dataObj, object, isSecondAttemp = null) { // isSecondAttemp is populated with date on retry
-    __logger.info('addMessageHistoryDataService::>>>>>>>>>33>>>', dataObj)
+    __logger.info('message: dbData: addMessageHistoryDataService():', dataObj)
     const messageHistoryDataAdded = q.defer()
     const validate = new ValidatonService()
     let msgId = ''
@@ -82,10 +83,9 @@ class MessgaeHistoryService {
     const custom = {}
     let campName = null
     let tempDate
-    __logger.info('Add message history service called', dataObj)
     validate.addMessageHistory(dataObj)
       .then(valres => {
-        __logger.info('valres then 1', { valres })
+        __logger.info('message: dbData: addMessageHistoryDataService(): then 1:', valres)
         if (!dataObj.messageId) {
           return this.getMessageIdByServiceProviderMsgId(dataObj.serviceProviderMessageId)
         } else {
@@ -93,8 +93,8 @@ class MessgaeHistoryService {
         }
       })
       .then(dbData => {
+        __logger.info('message: dbData: addMessageHistoryDataService(): then 2:', dbData)
         tempDate = dbData.date
-        __logger.info('dbData then 2', { dataObj })
         msgId = dbData.messageId
         bnNum = dbData.businessNumber ? dbData.businessNumber : dataObj.businessNumber
         ecNum = dbData.endConsumerNumber ? dbData.endConsumerNumber : dataObj.endConsumerNumber
@@ -143,7 +143,7 @@ class MessgaeHistoryService {
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryData(dataObj.date || tempDate), queryParamArr)
       })
       .then(result => {
-        __logger.info('Add Result then 4', { result })
+        __logger.info('message: dbData: addMessageHistoryDataService(): then 4:', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum, custom, campName })
         } else {
@@ -151,6 +151,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
+        __logger.error('dbData: addMessageHistoryDataService(): catch:', err)
         if (err && err.message && typeof err.message === 'string' && err.message.slice(err.message.length - 13) === "doesn't exist") {
           this.retryByCreating(dataObj, [{ date: dataObj.date || tempDate || null }])
             .then(result => {
@@ -195,7 +196,7 @@ class MessgaeHistoryService {
   }
 
   addMessageHistoryDataInBulk (msgInsertData, dataObj, isSecondAttemp = null, mongoBulkObject) {
-    __logger.info('addMessageHistoryDataService::>>>>>>>>>>>>23', dataObj)
+    __logger.info('message: dbData: dbData: addMessageHistoryDataInBulk():', dataObj.length)
     const messageHistoryDataAdded = q.defer()
     if (!isSecondAttemp) {
       __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInBulkInMis(), [msgInsertData])
@@ -210,16 +211,18 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in addMessageHistoryDataInBulk ', err)
+        __logger.error('dbData: addMessageHistoryDataInBulk(): catch:', err)
         if (err && err.message && typeof err.message === 'string' && err.message.slice(err.message.length - 13) === "doesn't exist") {
           this.retryByCreating(msgInsertData, dataObj, true, mongoBulkObject)
             .then(result => {
               messageHistoryDataAdded.resolve(result)
             })
             .catch(err => {
+              __logger.error('dbData: addMessageHistoryDataInBulk(): retryByCreating(): catch 2:', err)
               messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
             })
         } else {
+          __logger.error('dbData: addMessageHistoryDataInBulk(): retryByCreating(): catch 1: if/else:', err)
           messageHistoryDataAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
         }
       })
@@ -227,47 +230,46 @@ class MessgaeHistoryService {
   }
 
   getMessageCount (wabaPhoneNumber, startDate, endDate) {
-    __logger.info('getMessageCount::>>>>>>>>>>>>')
+    __logger.info('message: dbData: getMessageCount():', wabaPhoneNumber)
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMessageStatusCount(), [wabaPhoneNumber, startDate, endDate])
       .then(result => {
-        __logger.info('result', { result })
+        __logger.info('message: dbData: getMessageCount(): Query Result:', result)
         if (result && result.length) {
-          __logger.info('dbData---', { result })
           messageStatus.resolve(result)
         } else {
-          __logger.info('Failed to get Data')
+          __logger.error('dbData: getMessageCount(): Query Result: No data found.')
           messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in get message status count function: ', err)
+        __logger.error('dbData: getMessageCount(): catch:', err)
         messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageStatus.promise
   }
 
   getMessageStatusList (status, startDate, endDate, ItemsPerPage, offset, wabaPhoneNumber) {
-    __logger.info('getMessageStatusList::>>>>>>>>>>>>')
+    __logger.info('message: dbData: getMessageStatusList():')
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMessageStatusList(), [status, startDate, endDate, wabaPhoneNumber, startDate, endDate, wabaPhoneNumber, ItemsPerPage, offset, status, startDate, endDate, wabaPhoneNumber, startDate, endDate, wabaPhoneNumber])
       .then(result => {
         if (result && result.length > 0) {
           messageStatus.resolve(result)
         } else {
-          __logger.info('Failed to get Data')
+          __logger.info('message: dbData: Failed to get Data')
           messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in get message status list function: ', err)
+        __logger.error('message: dbData: error in get message status list function: ', err)
         messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageStatus.promise
   }
 
   getIncomingOutgoingMessageCount (userId, startDate, endDate, flag) {
-    __logger.info('getIncomingOutgoingMessageCount::>>>>>>>>>>>>')
+    __logger.info('message: dbData: getIncomingOutgoingMessageCount():')
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
@@ -289,22 +291,22 @@ class MessgaeHistoryService {
             dataCount.outgoingMessageCount.total = outgoingTotal
           }
           dataCount.totalMessageCount = dataCount.outgoingMessageCount.total + dataCount.incomingMessageCount
-          __logger.info('Res----', result, dataCount)
+          __logger.info('message: dbData: Res----', result, dataCount)
           messageStatus.resolve(dataCount)
         } else {
-          __logger.info('Failed to get Data')
+          __logger.info('message: dbData: Failed to get Data')
           messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in get message transaction count function: ', err)
+        __logger.error('message: dbData: error in get message transaction count function: ', err)
         messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageStatus.promise
   }
 
   getMessageTransactionList (userId, startDate, endDate, flag, ItemsPerPage, offset, sort, wabaPhoneNumber) {
-    __logger.info('getMessageTransactionList::>>>>>>>>>>>>')
+    __logger.info('message: dbData: getMessageTransactionList():')
     const messageStatus = q.defer()
     let qry = ''
     let qryParam = []
@@ -323,19 +325,19 @@ class MessgaeHistoryService {
         if (result && result.length > 0) {
           messageStatus.resolve(result)
         } else {
-          __logger.info('Failed to get Data')
+          __logger.info('message: dbData: Failed to get Data')
           messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in get outgoing message transaction list function: ', err)
+        __logger.error('message: dbData: error in get outgoing message transaction list function: ', err)
         messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageStatus.promise
   }
 
   getOutgoingTransactionListBySearchFilters (wabaPhoneNumber, startDate, endDate, ItemsPerPage, offset, endUserNumber) {
-    __logger.info('getOutgoingTransactionListBySearchFilters::>>>>>>>>>>>>', endUserNumber)
+    __logger.info('message: dbData: getOutgoingTransactionListBySearchFilters():', endUserNumber)
     const messageStatus = q.defer()
     let queryParams = [wabaPhoneNumber, startDate, endDate]
     if (endUserNumber) queryParams.push(endUserNumber)
@@ -346,15 +348,15 @@ class MessgaeHistoryService {
     __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getOutgoingTransactionListBySearchFilters(!!endUserNumber), queryParams)
       .then(result => {
         if (result && result[0] && result[0].length > 0) {
-          __logger.info('Res----', result)
+          __logger.info('message: dbData: Res----', result)
           messageStatus.resolve(result)
         } else {
-          __logger.info('Failed to get Data')
+          __logger.info('message: dbData: Failed to get Data')
           messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in get outgoing message transaction list function: ', err)
+        __logger.error('message: dbData: error in get outgoing message transaction list function: ', err)
         messageStatus.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageStatus.promise
@@ -362,19 +364,19 @@ class MessgaeHistoryService {
 
   getVivaMsgIdByserviceProviderMsgId (rmqObject) {
     const messageId = q.defer()
-    __logger.info('inside getVivaMsgIdByserviceProviderMsgId')
+    __logger.info('message: dbData: dbData: getVivaMsgIdByserviceProviderMsgId():')
     const msgIdDbCheck = rmqObject.messageId || null
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getVivaMsgIdByserviceProviderMsgId(), [msgIdDbCheck])
       .then(result => {
         if (result && result[0] && result[0].message_id) {
           messageId.resolve({ messageId: result[0].message_id })
         } else {
-          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getVivaMsgIdByserviceProviderMsgId db call')
+          __logger.info('message: dbData: dbData: getVivaMsgIdByserviceProviderMsgId(): DB Query: NO_RECORDS_FOUND.....')
           messageId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in getVivaMsgIdByserviceProviderMsgId db call:', err)
+        __logger.error('dbData: getVivaMsgIdByserviceProviderMsgId(): db call:', err)
         messageId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return messageId.promise
@@ -382,19 +384,19 @@ class MessgaeHistoryService {
 
   getWabaNameByWabaNumber (arrayofWabaNumber) {
     const promises = q.defer()
-    __logger.info('inside getWabaNameByWabaNumber')
+    __logger.info('message: dbData: inside getWabaNameByWabaNumber')
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByWabaNumber(), [arrayofWabaNumber])
       .then(result => {
-        console.log('222222222222222222222222222222222222', result)
+        __logger.info('message: dbData: dbData: getWabaNameByWabaNumber():', result)
         if (result && result.length > 0) {
           promises.resolve(result)
         } else {
-          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getWabaNameByWabaNumber db call')
+          __logger.info('message: dbData: dbData: getWabaNameByWabaNumber(): db call: NO_RECORDS_FOUND...')
           promises.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in getWabaNameByWabaNumber db call:', err)
+        __logger.error('dbData: getWabaNameByWabaNumber(): db call:', err)
         promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return promises.promise
@@ -402,19 +404,19 @@ class MessgaeHistoryService {
 
   getMisRelatedData (startOfMonth, endOfMonth) {
     const promises = q.defer()
-    __logger.info('inside getMisRelatedData', startOfMonth, endOfMonth)
+    __logger.info('message: dbData: inside getMisRelatedData', startOfMonth, endOfMonth)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMisRelatedData(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
       .then(result => {
         if (result && result.length > 0) {
-          __logger.info('>>>>>>>>> getMisRelatedData db call got array of json', result)
+          __logger.info('message: dbData: >>>>>>>>> getMisRelatedData db call got array of json', result)
           promises.resolve(result)
         } else {
-          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getMisRelatedData db call')
+          __logger.info('message: dbData: NO_RECORDS_FOUND >>>>>>>>> getMisRelatedData db call')
           promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in getMisRelatedData db call:', err)
+        __logger.error('message: dbData: error in getMisRelatedData db call:', err)
         promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return promises.promise
@@ -422,30 +424,30 @@ class MessgaeHistoryService {
 
   getMisRelatedDataMonth (startOfMonth, endOfMonth) {
     const promises = q.defer()
-    __logger.info('inside getMisRelatedDataMonth', startOfMonth, endOfMonth)
+    __logger.info('message: dbData: inside getMisRelatedDataMonth', startOfMonth, endOfMonth)
     __db.mysqlMis.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getMisRelatedDataMonth(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
       .then(result => {
         if (result && result.length > 0) {
-          __logger.info('>>>>>>>>> getMisRelatedDataMonth db call got array of json', result)
+          __logger.info('message: dbData: >>>>>>>>> getMisRelatedDataMonth db call got array of json', result)
           promises.resolve(result)
         } else {
-          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getMisRelatedDataMonth db call')
+          __logger.info('message: dbData: NO_RECORDS_FOUND >>>>>>>>> getMisRelatedDataMonth db call')
           promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error in getMisRelatedDataMonth db call:', err)
+        __logger.error('message: dbData: error in getMisRelatedDataMonth db call:', err)
         promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return promises.promise
   }
 
   addUpdateCounts (updateObject) {
-    __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+    __logger.info('message: dbData: inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
     const addedUpdated = q.defer()
     __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { wabaPhoneNumber: updateObject.wabaPhoneNumber, date: updateObject.date }, updateObject)
       .then(data => {
-        __logger.info('inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
+        __logger.info('message: dbData: inside ~function=addUpdateCounts. Adding or Updating audience optin', updateObject)
         if (data && data.result && data.result.ok > 0) {
           addedUpdated.resolve(true)
         } else {
@@ -453,7 +455,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get function=addUpdateCounts.---->>>>> ', err)
+        __logger.error('message: dbData: error in get function=addUpdateCounts.---->>>>> ', err)
         addedUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return addedUpdated.promise
@@ -470,18 +472,18 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get function=addUpdateCounts.---->>>>> ', err)
+        __logger.error('message: dbData: error in get function=addUpdateCounts.---->>>>> ', err)
         addedUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return addedUpdated.promise
   }
 
   addStatusToMessage (statusData, messageId) {
-    __logger.info('inside ~function = addStatusToMessage. Updating status of the message', statusData, messageId)
+    __logger.info('message: dbData: inside ~function = addStatusToMessage. Updating status of the message', statusData, messageId)
     const addMessageStatusData = q.defer()
     __db.mongo.__update_addToSet_and_other_param(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { messageId }, { status: statusData }, { currentStatus: statusData.eventType || '', currentStatusTime: new Date(), serviceProviderMessageId: statusData.serviceProviderMessageId || '' })
       .then(data => {
-        __logger.info('inside ~function = addStatusToMessage response', data)
+        __logger.info('message: dbData: inside ~function = addStatusToMessage response', data)
         if (data && data.value && data.value.messageId && data.lastErrorObject && data.lastErrorObject.n && data.lastErrorObject.n > 0) {
           addMessageStatusData.resolve(statusData)
         } else {
@@ -489,18 +491,18 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get function=addStatusToMessage. Updating status of the message: ', err)
+        __logger.error('message: dbData: error in get function=addStatusToMessage. Updating status of the message: ', err)
         addMessageStatusData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return addMessageStatusData.promise
   }
 
   addBulkMessageStatusData (msgStatusData) {
-    __logger.info('inside ~function=addBulkMessageStatusData ', msgStatusData)
+    __logger.info('message: dbData: inside ~function=addBulkMessageStatusData ', msgStatusData)
     const addMessageData = q.defer()
     __db.mongo.__insertMany(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, msgStatusData)
       .then(data => {
-        __logger.info('inside ~function=After inserting addBulkMessageStatusData ', data)
+        __logger.info('message: dbData: inside ~function=After inserting addBulkMessageStatusData ', data)
         if (data && data.insertedCount > 0) {
           addMessageData.resolve(true)
         } else {
@@ -508,18 +510,18 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get function=addBulkMessageStatusData function: ', err)
+        __logger.error('message: dbData: error in get function=addBulkMessageStatusData function: ', err)
         addMessageData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return addMessageData.promise
   }
 
   messageStatusCountByDate (startDate, endDate) {
-    __logger.info('start ~function=messageStatusCountByDate', startDate, endDate)
+    __logger.info('message: dbData: start ~function=messageStatusCountByDate', startDate, endDate)
     const messageTemplate = q.defer()
     __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGE_STATUS, { date: { $gte: new Date(startDate), $lte: new Date(endDate) } })
       .then(data => {
-        __logger.info('got data ~function=messageStatusCountByDate', data)
+        __logger.info('message: dbData: got data ~function=messageStatusCountByDate', data)
         if (data && data.length > 0) {
           messageTemplate.resolve(data || null)
         } else {
@@ -527,14 +529,14 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get function=messageStatusCountByDate function: ', err)
+        __logger.error('message: dbData: error in get function=messageStatusCountByDate function: ', err)
         messageTemplate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return messageTemplate.promise
   }
 
   getAllUserStatusCountPerDay (startDate, endDate) {
-    __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
+    __logger.info('message: dbData: ~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
     const messageTemplate = q.defer()
     __db.mongo.__custom_aggregate(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, [
       {
@@ -564,7 +566,7 @@ class MessgaeHistoryService {
       { $sort: { total: -1 } }
     ])
       .then(data => {
-        __logger.info('data ~function=getAllUserStatusCountPerDay', data)
+        __logger.info('message: dbData: data ~function=getAllUserStatusCountPerDay', data)
         if (data && data.length > 0) {
           messageTemplate.resolve(data || null)
         } else {
@@ -572,7 +574,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        __logger.error('message: dbData: error in get function=getAllUserStatusCountPerDay function: ', err)
         messageTemplate.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return messageTemplate.promise
@@ -634,7 +636,7 @@ class MessgaeHistoryService {
   }
 
   getActiveBusinessNumber () {
-    __logger.info('~function=getActiveBusinessNumber data')
+    __logger.info('message: dbData: ~function=getActiveBusinessNumber data')
     const getActiveBusinessNumber = q.defer()
     // __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getActiveBusinessNumber())
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getActiveBusinessNumber())
@@ -778,7 +780,7 @@ class MessgaeHistoryService {
       }
     },
     { $sort: { total: -1 } }])
-    // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
+      // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         if (result) {
           return getNewTemplateDetailsAgainstAllUserPromise.resolve(result)
@@ -833,20 +835,19 @@ class MessgaeHistoryService {
   // }
 
   getTemplateNameAgainstId (templateId) {
-    console.log('getTemplateNameAgainstId', templateId)
+    __logger.info('message: dbData: dbData: getTemplateNameAgainstId():', templateId)
     const getTemplateNameAgainstId = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateNameAgainstId(), [templateId])
       .then(result => {
         if (result && result.length) {
-          console.log('ggetTemplateNameAgainstIdet result', result)
           return getTemplateNameAgainstId.resolve(result[0])
         } else {
-          console.log('ggetTemplateNameAgainstIdet result', templateId)
+          __logger.info('message: dbData: dbData: getTemplateNameAgainstId(): result: ', templateId)
           return getTemplateNameAgainstId.resolve(null)
         }
       })
       .catch(err => {
-        console.log('getTemplateNameAgainstId error', err)
+        __logger.error('dbData: getTemplateNameAgainstId(): catch:', err)
         return getTemplateNameAgainstId.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getTemplateNameAgainstId.promise
@@ -859,10 +860,12 @@ class MessgaeHistoryService {
         if (result) {
           return getconversationDataBasedOnWabaNumberAllData.resolve(result)
         } else {
+          __logger.error('dbData: getconversationDataBasedOnWabaNumberAllData(): if/else:', result)
           return getconversationDataBasedOnWabaNumberAllData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('dbData: getconversationDataBasedOnWabaNumberAllData(): catch:', err)
         return getconversationDataBasedOnWabaNumberAllData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getconversationDataBasedOnWabaNumberAllData.promise
@@ -893,57 +896,57 @@ class MessgaeHistoryService {
       dataInsert.createdOn = new Date()
       dataValue.push(dataInsert)
     }
-    //   const country = wabaNumbers[i]
-    //   const summary = data[country]
-    //   const wabaNumbers1 = Object.keys(summary)
-    //   for (let j = 0; j < wabaNumbers1.length; j++) {
-    //     const requiredJson = {}
-    //     const arr = summary[wabaNumbers1[j]]
-    //     for (let k = 0; k < arr.length; k++) {
-    //       requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
-    //     }
-    //     console.log('$#$%^&*&^%$#@', requiredJson)
-    //     const wabaNumberData = requiredJson
-    //     const totalUserInitiated = wabaNumberData.ui || 0
-    //     const totalBusinessInitiated = wabaNumberData.bi || 0
-    //     const totalReferralConversion = wabaNumberData.rc || 0
-    //     const toatalNotApplicable = wabaNumberData.na || 0
-    //     const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
-    //     values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
-    //   }
-    // }
-    // __updateWithInsert
-    // __constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed
+    /*   const country = wabaNumbers[i]
+      const summary = data[country]
+      const wabaNumbers1 = Object.keys(summary)
+      for (let j = 0; j < wabaNumbers1.length; j++) {
+        const requiredJson = {}
+        const arr = summary[wabaNumbers1[j]]
+        for (let k = 0; k < arr.length; k++) {
+          requiredJson[arr[k].conversationCategory] = arr[k].conversationCategoryCount
+        }
+        console.log('$#$%^&*&^%$#@', requiredJson)
+        const wabaNumberData = requiredJson
+        const totalUserInitiated = wabaNumberData.ui || 0
+        const totalBusinessInitiated = wabaNumberData.bi || 0
+        const totalReferralConversion = wabaNumberData.rc || 0
+        const toatalNotApplicable = wabaNumberData.na || 0
+        const totalCount = totalUserInitiated + totalBusinessInitiated + totalReferralConversion + toatalNotApplicable || 0
+        values.push([wabaNumbers1[j], country, totalUserInitiated, totalBusinessInitiated, totalReferralConversion, toatalNotApplicable, totalCount])
+      }
+    }
+    __updateWithInsert
+    __constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaNumber, userId: userId, startDate, endDate }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed */
     __db.mongo.__bulkinsertWithBulkUpdate(__constants.DB_NAME, __constants.ENTITY_NAME.CONVERSATION_SUMMARY, dataValue)
       .then(result => {
         if (result) {
           return insertConversationDataAgainstWaba.resolve(result)
         } else {
+          __logger.error('dbData: insertConversationDataAgainstWaba(): if/else :: Error while bulk inserting :: Reject ::', result)
           return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('dbData: insertConversationDataAgainstWaba(): catch:', err)
         return insertConversationDataAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return insertConversationDataAgainstWaba.promise
   }
 
   getUserStatusCountPerDayAgainstWaba (startDate, endDate, wabaNumber, skipPage, lowLimit) {
-    console.log('getUserStatusCountPerDayAgainstWaba parameter', startDate, endDate, wabaNumber)
-    __logger.info('~function=getAllUserStatusCountPerDay ~startDate, endDate', startDate, endDate)
+    __logger.info('message: dbData: dbData: getUserStatusCountPerDayAgainstWaba(): ', startDate, endDate, wabaNumber)
     const getUserStatusCountPerDayAgainstWaba = q.defer()
     __db.mongo.__findSort(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { createdOn: { $gte: new Date(startDate), $lt: new Date(endDate) }, wabaPhoneNumber: wabaNumber }, { messageId: 1, wabaPhoneNumber: 1, senderPhoneNumber: 1, currentStatus: 1, createdOn: 1, currentStatusTime: 1, templateId: 1, campName: 1, _id: 0 }, { createdOn: 1 }, skipPage, lowLimit)
       .then(data => {
         if (data && data.length > 0) {
           getUserStatusCountPerDayAgainstWaba.resolve(data || null)
         } else {
-          console.log('getUserStatusCountPerDayAgainstWaba no dataaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+          __logger.info('message: dbData: dbData: getUserStatusCountPerDayAgainstWaba(): then : if/else :: Error while find :: Reject ::', data)
           getUserStatusCountPerDayAgainstWaba.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: ['no data present between this record'] })
         }
       })
       .catch(err => {
-        console.log('getUserStatusCountPerDayAgainstWaba err', err)
-        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        __logger.error('dbData: getUserStatusCountPerDayAgainstWaba(): catch:', err)
         getUserStatusCountPerDayAgainstWaba.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return getUserStatusCountPerDayAgainstWaba.promise
@@ -951,22 +954,17 @@ class MessgaeHistoryService {
 
   countOfDataAgainstWabaAndUserId (startDate, endDate, wabaNumber) {
     const countOfDataAgainstWabaAndUserId = q.defer()
-    // console.log('countOfDataAgainstWabaAndUserId parameters', startDate, endDate, wabaNumber)
-    // console.warn('----------------------- query :: ', { wabaPhoneNumber: wabaNumber, createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) } })
     __db.mongo.__count(__constants.DB_NAME, __constants.ENTITY_NAME.MESSAGES, { wabaPhoneNumber: wabaNumber, createdOn: { $gte: new Date(startDate), $lte: new Date(endDate) } })
       .then(data => {
-        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba')
         if (data > 0) {
-          console.log('countOfDataAgainstWabaAndUserId data', data)
           countOfDataAgainstWabaAndUserId.resolve({ data: data, count: true })
         } else {
-          console.log('countOfDataAgainstWabaAndUserId error')
+          __logger.error('dbData: countOfDataAgainstWabaAndUserId(): Error while getting count :: Reject ::', data)
           countOfDataAgainstWabaAndUserId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
-        console.log('countOfDataAgainstWabaAndUserId error')
-        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        __logger.error('dbData: countOfDataAgainstWabaAndUserId(): catch:', err)
         countOfDataAgainstWabaAndUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return countOfDataAgainstWabaAndUserId.promise
@@ -976,16 +974,15 @@ class MessgaeHistoryService {
     const updateDownloadFileAgainstWabaIdandUserId = q.defer()
     __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { DownloadStatus: __constants.DOWNLOAD_STATUS.completed, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber, isActive: '1' }, { DownloadStatus: __constants.DOWNLOAD_STATUS.inProcess, startDate: validateData.startDate, endDate: validateData.endDate, userId: validateData.userId, wabaPhoneNumber: validateData.wabaPhoneNumber, uniqueId: validateData.uniqueId, filename: validateData.filename, updateOn: new Date(), isActive: '1' })
       .then(data => {
-        __logger.info('data ~function=getUserStatusCountPerDayAgainstWaba')
         if (data) {
           updateDownloadFileAgainstWabaIdandUserId.resolve(data)
         } else {
+          __logger.error('dbData: updateDownloadFileAgainstWabaIdandUserId(): Error while updateWithInsert :: Reject ::', data)
           updateDownloadFileAgainstWabaIdandUserId.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
-        console.log('countOfDataAgainstWabaAndUserId error')
-        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        __logger.error('dbData: updateDownloadFileAgainstWabaIdandUserId(): catch:', err)
         updateDownloadFileAgainstWabaIdandUserId.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return updateDownloadFileAgainstWabaIdandUserId.promise
@@ -996,16 +993,15 @@ class MessgaeHistoryService {
     const updateStatusAgainstWabaAndUser = q.defer()
     __db.mongo.__updateWithInsert(__constants.DB_NAME, __constants.ENTITY_NAME.DOWNLOAD_STATUS, { wabaPhoneNumber: wabaPhoneNumber, filename: fileName, isActive: '1' }, { filename: fileName, path: path, DownloadStatus: __constants.DOWNLOAD_STATUS.completed })
       .then(data => {
-        __logger.info('data ~function=updateStatusAgainstWabaAndUser', data)
         if (data) {
           updateStatusAgainstWabaAndUser.resolve(data)
         } else {
-          console.log('updateStatusAgainstWabaAndUser error')
+          __logger.error('dbData: updateStatusAgainstWabaAndUser(): Error while updateWithInsert :: Reject ::', data)
           updateStatusAgainstWabaAndUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
         }
       })
       .catch(err => {
-        __logger.error('error in get function=getAllUserStatusCountPerDay function: ', err)
+        __logger.error('dbData: updateStatusAgainstWabaAndUser(): catch:', err)
         updateStatusAgainstWabaAndUser.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return updateStatusAgainstWabaAndUser.promise
@@ -1018,10 +1014,12 @@ class MessgaeHistoryService {
         if (result && result.length > 0) {
           getdownloadlist.resolve(result)
         } else {
+          __logger.error('dbData: getdownloadlist(): Error while findSort :: Reject ::', result)
           getdownloadlist.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
         }
       })
       .catch(err => {
+        __logger.error('dbData: getdownloadlist(): catch:', err)
         getdownloadlist.reject({ type: err.type || __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: err.err || err })
       })
     return getdownloadlist.promise
@@ -1034,10 +1032,12 @@ class MessgaeHistoryService {
         if (result) {
           return getTemplateIdandTemplateNameAgainstUser.resolve(result)
         } else {
+          __logger.error('dbData: getTemplateIdandTemplateNameAgainstUser(): DB Query :: Reject ::', result)
           return getTemplateIdandTemplateNameAgainstUser.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('dbData: getTemplateIdandTemplateNameAgainstUser(): Catch:', err)
         return getTemplateIdandTemplateNameAgainstUser.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getTemplateIdandTemplateNameAgainstUser.promise
@@ -1050,10 +1050,12 @@ class MessgaeHistoryService {
         if (result) {
           return getconversationDataBasedOnWabaNumber.resolve(result)
         } else {
+          __logger.error('dbData: getconversationDataBasedOnWabaNumber(): DB Query :: Reject ::', result)
           return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('dbData: getconversationDataBasedOnWabaNumber(): catch:', err)
         return getconversationDataBasedOnWabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return getconversationDataBasedOnWabaNumber.promise
@@ -1066,6 +1068,7 @@ class MessgaeHistoryService {
         return resolvedGroupBy.resolve(result)
       })
       .catch(err => {
+        __logger.error('dbData: groupByIssue(): catch:', err)
         return resolvedGroupBy.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return resolvedGroupBy.promise

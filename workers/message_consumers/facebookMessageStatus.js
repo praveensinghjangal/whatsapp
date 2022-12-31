@@ -19,7 +19,7 @@ const sendToFacebookMessageStatusQueue = (message, queueObj) => {
 
 const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
   const messageHistoryService = new MessageHistoryService()
-  __logger.info('inside pendingMessageToSendMechanism')
+  __logger.info('fbMessageStatus: pendingMessageToSendMechanism(): ', queueObj)
   let messageId
   messageHistoryService.getVivaMsgIdByserviceProviderMsgId(queueDataobject)
     .then(messageData => {
@@ -36,7 +36,7 @@ const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
       }
     })
     .catch(err => {
-      __logger.error('error in pendingMessageMechanism of async data:', err)
+      __logger.error('fbMessageStatus: pendingMessageMechanism(): getVivaMsgIdByserviceProviderMsgId(): catch: of async data:', err)
     })
 }
 
@@ -61,24 +61,20 @@ class FacebookConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('facebook message status QueueConsumer::Waiting for message...')
-        __logger.info('facebook message status queue consumer started')
+        __logger.info('FacebookMessageStatus QueueConsumer::Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageDataFromFacebook = JSON.parse(mqData.content.toString())
-            // console.log('Facebook message status incoming object', messageDataFromFacebook)
             // change the mapping
             const messageData = setTheMappingOfMessageData(messageDataFromFacebook)
             if (__constants.CONTINUE_SENDING_MESSAGE_STATUS_FB.includes(messageData.status.toLowerCase())) {
               pendingMessageToSendMechanism(messageData, rmqObject)
             }
             let statusData = {}
-            // __logger.info('incoming!!!!!!!!!!!!!!!!!!', messageData)
             const redirectService = new RedirectService()
             const retryCount = messageData.retryCount || 0
             const messageHistoryService = new MessageHistoryService()
-            // __logger.info('Alteredddddddddddddddddddddddd------', messageData, retryCount)
-            __logger.info('facebook message status QueueConsumer:: messageData received:', messageData)
+            __logger.info('fbMessageStatus: messageData received:', messageData)
             statusData = {
               serviceProviderMessageId: messageData.messageId,
               deliveryChannel: messageData.deliveryChannel,
@@ -98,8 +94,8 @@ class FacebookConsumer {
               const conversationType = messageDataFromFacebook.statuses[0].conversation.origin && messageDataFromFacebook.statuses[0].conversation.origin.type ? __constants.LOG_CONVERSATION_ON_TYPE_MAPPING[messageDataFromFacebook.statuses[0].conversation.origin.type.toLowerCase()] : 'na'
               statusData.conversationType = conversationType
               logConversation.add(messageDataFromFacebook.statuses[0].conversation.id, messageData.businessNumber, messageData.from, conversationExpireyTime, conversationType)
-                .then(logAdded => __logger.info('facebook message status QueueConsumer:: conversation log added'))
-                .catch(err => __logger.error('facebook message status QueueConsumer:: error while adding conversation log', err, err ? err.toString() : '', messageDataFromFacebook))
+                .then(logAdded => __logger.info('fbMessageStatus: conversation log added'))
+                .catch(err => __logger.error('fbMessageStatus: error while adding conversation log: add() catch:', err, err ? err.toString() : '', messageDataFromFacebook))
             }
             messageHistoryService.addMessageHistoryDataService(statusData)
               .then(statusDataAdded => {
@@ -120,38 +116,35 @@ class FacebookConsumer {
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
-                const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue function ~ facebook incoming status QueueConsumer::error'
+                __logger.error('fbMessageStatus: addMessageHistoryDataService(): catch:', err, retryCount)
+                const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue function ~ facebook incoming status QueueConsumer::error'
                 errorToTelegram.send(err, telegramErrorMessage)
-                __logger.error('ppperrrrrrrrrr', err, retryCount)
-                // __logger.info('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                  // __logger.info('time to check retry count', retryCount, __constants.INCOMING_MESSAGE_RETRY.tyntec, retryCount < __constants.INCOMING_MESSAGE_RETRY.tyntec)
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.facebook) {
                     const oldObj = JSON.parse(mqData.content.toString())
                     oldObj.retryCount = retryCount + 1
-                    // __logger.info('requeing --->', oldObj)
                     sendToFacebookMessageStatusQueue(oldObj, rmqObject)
                   }
                 }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue function ~ facebook message status QueueConsumer::error while parsing: try/catch'
+            __logger.error('facebookMessageStatus: try/catch:', err.toString())
+            const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(): error while parsing: try/catch'
             errorToTelegram.send(err, telegramErrorMessage)
-            __logger.error('facebook message status QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue main function ~ facebook message status QueueConsumer::error:'
+        __logger.error('facebookMessageStatus: catch:', err.toString())
+        const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue main function: catch:'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('facebook message status QueueConsumer::error: ', err)
         process.exit(1)
       })
 
     this.stop_gracefully = function () {
-      __logger.info('stopping all resources gracefully')
+      __logger.info('|||||||||||| fbMessageStatus: stopping all resources gracefully ||||||||||||')
       __db.close(function () {
         process.exit(0)
       })
@@ -163,7 +156,7 @@ class FacebookConsumer {
 
 class Worker extends FacebookConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('fbMessageStatus: start():' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

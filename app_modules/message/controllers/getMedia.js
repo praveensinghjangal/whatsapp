@@ -25,7 +25,7 @@ const integrationService = require('../../../app_modules/integration')
  */
 
 const getMedia = (req, res) => {
-  __logger.info('Get Media API Called', req.params)
+  __logger.info('getMedia: API Called req>param: ', { req: req.params })
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const maxTpsToProvider = req.user && req.user.maxTpsToProvider ? req.user.maxTpsToProvider : 10
   const messageService = new integrationService.Messaage(req.user.providerId, maxTpsToProvider, userId)
@@ -35,7 +35,7 @@ const getMedia = (req, res) => {
     .then(() => messageService.getMedia(req.user.wabaPhoneNumber, mediaId))
     .then(mediaData => __util.send(res, { type: mediaData, data: mediaData.data }))
     .catch(err => {
-      __logger.error('getMedia::error: ', err)
+      __logger.error('getMedia:: validate.checkMediaIdExist: catch:', err)
       return __util.send(res, { type: err.type, err: err.err || {} })
     })
 }

@@ -26,7 +26,7 @@ const queryProvider = require('../queryProvider')
  */
 // Get Account Type
 const getAcountType = (req, res) => {
-  __logger.info('Inside getAcountType', req.user)
+  __logger.info('accountType: getAccountType():', req.user)
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAccountType(), [])
     .then(results => {
       __logger.info('Then 1', { results })
@@ -40,14 +40,14 @@ const getAcountType = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.info('accountType: getAccountType(): catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
 // Update Account Type todo
 const updateAcountType = (req, res) => {
-  __logger.info('Inside updateAcountType')
+  __logger.info('accountType: updateAcountType():')
 }
 
 module.exports = { getAcountType, updateAcountType }

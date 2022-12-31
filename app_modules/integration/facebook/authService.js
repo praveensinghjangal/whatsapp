@@ -20,7 +20,7 @@ class InternalFunctions {
     }
     http.Post(body, 'body', url + __constants.FACEBOOK_ENDPOINTS.login, headers, __config.service_provider_id.facebook)
       .then(data => {
-        __logger.info('post metadata api response', data)
+        __logger.info('fb: AuthService: WabaLoginApi(' + wabaNumber + '):', { data })
         data = data.body || data
         if (data && data.users && data.users.length > 0 && data.users[0].token) {
           resolveObj.apiKey = data.users[0].token
@@ -32,6 +32,7 @@ class InternalFunctions {
             return resolveObj
           }
         } else {
+          __logger.error('fb: AuthService: WabaLoginApi(' + wabaNumber + '): Reject :: ')
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: data.errors })
         }
       })
@@ -39,6 +40,7 @@ class InternalFunctions {
         apiCalled.resolve(resolveObj)
       })
       .catch(err => {
+        __logger.error('fb: AuthService: WabaLoginApi(' + wabaNumber + '): catch: ', err)
         apiCalled.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiCalled.promise
@@ -47,6 +49,7 @@ class InternalFunctions {
 
 class Authentication {
   constructor (userId) {
+    __logger.warn('fb: AuthService: Authentication: Class Initiated ...')
     this.userId = userId
   }
 
@@ -55,7 +58,7 @@ class Authentication {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(wabaData => {
-        // wabaData.wabizBaseUrl = 'https://10.40.13.240:9090'
+        __logger.info('fb: authService: checking FB token expiry .....')
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
         if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
           const internalFunctions = new InternalFunctions()
@@ -67,30 +70,31 @@ class Authentication {
       .then(tokenData => redisService.setFacebookAuthKeysInRedis(tokenData, wabaNumber, __config.service_provider_id.facebook, this.userId))
       .then(data => dataFetched.resolve(data))
       .catch(err => {
-        __logger.error('error in auth', err)
+        __logger.error('fb: AuthService: setFaceBookTokensByWabaNumber(' + wabaNumber + '): catch:', err)
         dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return dataFetched.promise
   }
 
   getFaceBookTokensByWabaNumber (wabaNumber) {
-    __logger.info('inside getFaceBookTokensByWabaNumber', wabaNumber)
+    __logger.info('fb: authService: getFaceBookTokensByWabaNumber(' + wabaNumber + '):')
     const dataFetched = q.defer()
     const redisService = new RedisService()
     redisService.getFacebookAuthKeys(wabaNumber)
       .then(data => {
         if (!data) {
+          __logger.info('fb: authService: getFaceBookTokensByWabaNumber(' + wabaNumber + '): Setting new data')
           return this.setFaceBookTokensByWabaNumber(wabaNumber, this.userId)
         } else {
+          __logger.info('fb: authService: getFaceBookTokensByWabaNumber(' + wabaNumber + '): redis data found', data)
           return data
         }
       })
       .then(data => dataFetched.resolve(data))
       .catch(err => {
-        __logger.error('error in auth', err)
+        __logger.error('fb: authService: getFaceBookTokensByWabaNumber(' + wabaNumber + '): catch: while getting Fb Auth Key', err)
         dataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
-
     return dataFetched.promise
   }
 }

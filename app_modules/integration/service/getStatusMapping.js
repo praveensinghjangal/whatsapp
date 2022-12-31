@@ -36,6 +36,7 @@ const validateInput = input => {
     formatedError.push(formatedErr[formatedErr.length - 1])
   })
   if (formatedError.length > 0) {
+    __logger.error('getStatusMapping: validatingInput(): formatedError:', formatedError)
     isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
   } else {
     trimInput.singleInputTrim(input)
@@ -53,11 +54,12 @@ const setDataInRedis = (serviceProviderStatus, serviceProviderId) => {
   where is_active = 1 and lower(service_provider_status) = ? and service_provider_id = ?`
   __db.mysql.query(__constants.HW_MYSQL_NAME, query, [serviceProviderStatus.toLowerCase(), serviceProviderId])
     .then(result => {
-      __logger.info('Inside function to set platform Status :: dbdata', { result })
+      __logger.info('getStatusMapping: setDataInRedis(): ', result)
       if (result && result.length > 0) {
         statusData = result[0]
         return result[0]
       } else {
+        __logger.error('getStatusMapping: setDataInRedis(): Error result not found', result)
         rejectionHandler({ type: __constants.RESPONSE_MESSAGES.STATUS_MAPPING_NOT_FOUND, err: {} })
       }
     })
@@ -65,7 +67,10 @@ const setDataInRedis = (serviceProviderStatus, serviceProviderId) => {
       return __db.redis.setex(serviceProviderStatus.toLowerCase() + '_' + serviceProviderId, JSON.stringify(data), __constants.REDIS_TTL.templateData)
     })
     .then(result => dataSet.resolve(statusData))
-    .catch(err => dataSet.reject(err))
+    .catch(err => {
+      __logger.error('getStatusMapping: setDataInRedis(): Error while setting redis data', err)
+      dataSet.reject(err)
+    })
   return dataSet.promise
 }
 
@@ -79,13 +84,16 @@ const getStatusMappingDataFromRedis = redisKey => {
         statusMappingData.resolve({ exists: false, data: {} })
       }
     })
-    .catch(err => statusMappingData.reject(err))
+    .catch(err => {
+      __logger.error('getStatusMapping: getStatusMappingDataFromRedis(): catch:', err)
+      statusMappingData.reject(err)
+    })
   return statusMappingData.promise
 }
 
 module.exports = (serviceProviderStatus, serviceProviderId) => {
   const platformStatus = q.defer()
-  __logger.info('Inside function to get platform Status', { serviceProviderStatus, serviceProviderId })
+  __logger.info('getStatusMapping:', serviceProviderStatus, serviceProviderId)
   validateInput({ serviceProviderStatus, serviceProviderId })
     .then(validData => getStatusMappingDataFromRedis(serviceProviderStatus.toLowerCase() + '_' + serviceProviderId))
     .then(redisData => {
@@ -97,7 +105,7 @@ module.exports = (serviceProviderStatus, serviceProviderId) => {
     })
     .then(redisData => platformStatus.resolve(redisData))
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('getStatusMapping: validatingInput: catch:', serviceProviderStatus, serviceProviderId)
       platformStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return platformStatus.promise

@@ -28,7 +28,7 @@ const __constants = require('../../../config/constants')
 const getMediaByPhoneNumber = (req, res) => {
   const validate = new ValidatonService()
   const redisService = new RedisService()
-  __logger.info('getMediaByPhoneNumber::req.params: ', req.params)
+  __logger.info('getMediaByPhoneNumber: :req.params: ', { req: req.params })
   validate.getMediaByPhoneNumber(req.params)
     .then(() => redisService.getWabaDataByPhoneNumber(req.params.phoneNumber))
     .then((data) => {
@@ -37,7 +37,7 @@ const getMediaByPhoneNumber = (req, res) => {
     })
     .then(mediaData => __util.send(res, { type: mediaData, data: mediaData.data }))
     .catch(err => {
-      __logger.error('getMediaByPhoneNumber::error: ', err)
+      __logger.error('getMediaByPhoneNumber: getMediaByPhoneNumber: catch:', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }

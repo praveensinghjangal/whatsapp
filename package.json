@@ -7,6 +7,7 @@
     "start": "node ./bin/www",
     "develop": "nodemon server.js",
     "develop-sendToWebhook-u": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookQueue USER_ID=Helo_test node server.js",
+    "develop-sendToWebhook-user": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookQueue_1d26d6c6-1e2d-4373-98d3-69cef2d9931a_919595284284 USER_ID=Helo_test node server.js",
     "develop-sendToWebhook-h": "NODE_ENV=development WORKER_TYPE=sendToWebhook MQ_OBJECT_KEY=webhookHeloCampaign USER_ID=Helo_test node server.js",
     "develop-preProcessQueueConsumerChatBot": "NODE_ENV=development WORKER_TYPE=preProcessQueueConsumer MQ_OBJECT_KEY=pre_process_message_chatbot USER_ID=Helo_test node server.js",
     "develop-preProcessQueueConsumerCampaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_917666118833": "NODE_ENV=development WORKER_TYPE=preProcessQueueConsumer MQ_OBJECT_KEY=pre_process_message_campaign_dba50b76-4f7c-4987-a9c0-a84ced291dbd_917666118833 USER_ID=Helo_test node server.js",

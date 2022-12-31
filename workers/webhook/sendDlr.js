@@ -6,7 +6,7 @@ const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
 
 const sendDlr = (message, queueObj, queue, mqData) => {
-  __logger.info('sendDlr: sendDlr(): ')
+  __logger.info('sendDlr: sendDlr(): ', JSON.stringify(message))
   const messageRouted = q.defer()
   const http = new HttpService(60000)
   let webhookPayload = {}
@@ -43,18 +43,18 @@ const sendDlr = (message, queueObj, queue, mqData) => {
   }
   http.Post(webhookPayload, 'body', message.url)
     .then(function (response) {
-      __logger.info('sendDlr: POST req res: ', response)
+      __logger.info('sendDlr: sendDlr(): POST req res: ', response)
       queueObj.channel[queue].ack(mqData)
     })
     .catch(function (error) {
-      __logger.info('sendDlr: catch error', {}, { error: error.toString() }, 'error while sending dlr request ~function=sendDlr.')
+      __logger.info('sendDlr: catch error', {}, { error: error.toString() })
       if (!message.retry) message.retry = 1
       if (message.retry <= __constants.WEBHOOK_MAX_RETRY_COUNT) {
         message.retry++
         queueObj.sendToQueue(__constants.MQ['delay_failed_to_redirect_' + (message.retry - 1) + '0_sec'], JSON.stringify(message))
           .then(data => queueObj.channel[queue].ack(mqData))
           .catch(err => {
-            __logger.error('error', {}, { error: err.toString() }, 'error in redirect retry')
+            __logger.error('sendDlr: HTTP POST: sendToQueue(): catch:', { error: err.toString() }, 'error in redirect retry')
             queueObj.channel[queue].ack(mqData)
           })
       } else {
@@ -70,17 +70,16 @@ class UserQueue {
   }
 
   startServer () {
-    __logger.info('sendDlr: startServer(): ', __config.mqObjectKey)
     __db.init()
       .then(result => {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         if (queueObj && queueObj.q_name) {
           const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
           const queue = queueObj.q_name
-          __logger.info('sendDlr: startServer(): user_queue :: Waiting for message ...')
+          __logger.info('sendDlr: startServer(' + __config.mqObjectKey + '): :: Waiting for message ...')
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
-              __logger.info('sendDlr: startServer(): mqData:', { types: typeof (mqData), m: mqData, c: mqData.content })
+              __logger.info('sendDlr: startServer(): Received data from queue:', { messageData: mqData.content.toString() })
               const messageData = JSON.parse(mqData.content.toString())
               return sendDlr(messageData, rmqObject, queue, mqData)
             } catch (err) {
@@ -101,7 +100,7 @@ class UserQueue {
       })
 
     this.stop_gracefully = function () {
-      __logger.info('sendDlr: stopGracefully(): info', {}, {}, ' stopping all resources gracefully')
+      __logger.info('|||||||||||| sendDlr: stopGracefully(): Stopping all resources gracefully ||||||||||||')
       __db.close(function () {
         process.exit(0)
       })

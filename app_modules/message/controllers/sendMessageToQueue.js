@@ -51,7 +51,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     }
   }
   if (uniqueTemplateIdAndNotInGlobal.length === 0) {
-    __logger.info('sendMessageToQueue: getBulkTemplates(): Unique template found: Set data in Redis:', templateDataObj)
+    __logger.info('sendMessageToQueue: getBulkTemplates(' + wabaPhoneNumber + '): Unique template found: Set data in Redis:', templateDataObj)
     bulkTemplateCheck.resolve(templateDataObj)
     return bulkTemplateCheck.promise
   }

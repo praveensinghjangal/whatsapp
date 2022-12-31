@@ -92,7 +92,7 @@ class dlrReportsDownlaod {
                     })
                   }
                 } else {
-                  __logger.error('error in sending mis ~function=messageStatusOnMail', { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create file messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber', data: {} })
+                  __logger.error('dlrReports: messageStatusOnMail(): ', { type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: 'unable to create file messageData.startDate, messageData.endDate, messageData.wabaPhoneNumber', data: {} })
                 }
               })
               .then(() => {
@@ -109,34 +109,29 @@ class dlrReportsDownlaod {
                 return dbService.updateStatusAgainstWabaAndUser(messageData.wabaPhoneNumber, messageData.filename, `${pathName}`)
               })
               .then((data) => {
-                __logger.info('getAllUserStatusCountPerDay: data')
-                // console.log('222222222222222222222222222222222222222222222', __dirname)
-                // console.log('111111111111111111111111111111111111111111111', pathName)
-                // console.log('333333333333333333333333333333333333', __dirname, `../../app_modules/download/${messageData.filename}`)
-                // console.log('44444444444444444444444444444444444444', path.resolve(__dirname, `../../app_modules/download/${messageData.filename}`))
+                __logger.info('dlrReports: messageStatusOnMail(): getAllUserStatusCountPerDay(): then 6:', data)
                 fs.rmdirSync(path.resolve(__dirname, `../../app_modules/download/${messageData.filename}`), { recursive: true, force: true })
-                // console.log('++++++++++++++++++++++++++++++++++++++++++++++++++++++', messageData)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
-                const telegramErrorMessage = ' ~ facebook error queue consumer::error:'
+                const telegramErrorMessage = 'DlrReports: getTemplateIdandTemplateNameAgainstUser(): catch:'
                 __logger.error('dlr_reports_downloads_queue:::error: ', err)
                 errorToTelegram.send(err, telegramErrorMessage)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
             // getAllUserStatusCountPerDay
           } catch (err) {
-            const telegramErrorMessage = 'dlrReportsDownlaod ~ dlr_reports_downloads_queue::error while parsing: '
+            __logger.error('DlrReports: try/catch: error while parsing: ', err)
+            const telegramErrorMessage = 'DlrReports: try/catch: error while parsing: '
             errorToTelegram.send(err, telegramErrorMessage)
-            __logger.error('facebook queue consumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'dlrReportsDownlaod ~ dlr_reports_downloads_queue::Main error in catch block'
+        __logger.error('DlrReports: main catch: ', err)
+        const telegramErrorMessage = 'dlrReportsDownlaod: Main error in catch block'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('dlr_reports_downloads_queue::error: ', err)
         process.exit(1)
       })
     this.stop_gracefully = function () {
