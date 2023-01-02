@@ -45,6 +45,7 @@ const validateInput = input => {
     formatedError.push(formatedErr[formatedErr.length - 1])
   })
   if (formatedError.length > 0) {
+    __logger.error('saveApiLog: validateInput: error: ', formatedError)
     isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
   } else {
     trimInput.singleInputTrim(input)

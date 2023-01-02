@@ -52,7 +52,7 @@ class Message {
         }
       })
       .catch(err => {
-        __logger.error('fb: message: sendMessage(' + payload.whatsapp.from + '): Fb response: catch: Error while getting fb token')
+        __logger.error('fb: message: sendMessage(' + payload.whatsapp.from + '): Fb response: catch: Error while getting fb token', err.stack ? err.stack : err)
         deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return deferred.promise
