@@ -74,7 +74,7 @@ class SendOptinExcelStreamsConsumer {
           process.exit(1)
         })
     } else {
-      errorToTelegram.send({file: 'sendOptinExcelStram: SendOptinExcelStreamsConsumer():'}, 'ProcessMessageConsumer: no such queue object exists with name')
+      errorToTelegram.send({ file: 'sendOptinExcelStram: SendOptinExcelStreamsConsumer():' }, 'ProcessMessageConsumer: no such queue object exists with name')
       __logger.error('SendOptinExcelStreamsConsumer::error: no such queue object exists with name', __config.mqObjectKey)
       process.exit(1)
     }
