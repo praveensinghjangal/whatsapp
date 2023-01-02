@@ -108,7 +108,7 @@ const messageStatusOnMailForConversation = () => {
     //   __logger.error('error in sending mis ~function=messageStatusOnMailForConversation', { err: typeof error === 'object' ? error : { error: error.toString() } })
     //   conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
     .catch((error) => {
-      const telegramErrorMessage = 'Monthy MIS report err || function ~ error in Sending monthly MIS'
+      const telegramErrorMessage = 'Monthy MIS report err ||(): error in Sending monthly MIS'
       errorToTelegram.send(error, telegramErrorMessage)
       console.log('errror', error)
       return conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })

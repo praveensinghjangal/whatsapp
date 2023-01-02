@@ -201,7 +201,7 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 //       messageStatus.resolve(true)
 //     })
 //     .catch(err => {
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ getWabaPhoneNumberAndAdd function ~ error while getWabaPhoneNumberAndAdd functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: getWabaPhoneNumberAndAdd(): error while getWabaPhoneNumberAndAdd functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('getWabaPhoneNumberAndAdd sendToRespectiveProviderQueue ::error: ', err)
 //       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
@@ -226,7 +226,7 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 //       return messageStatus.resolve(true)
 //     })
 //     .catch(err => {
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ callFbApiAndAddUpdateInDb function ~ error while callFbApiAndAddUpdateInDb functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: callFbApiAndAddUpdateInDb(): error while callFbApiAndAddUpdateInDb functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('callFbApiAndAddUpdateInDb sendToRespectiveProviderQueue ::error: ', err)
 //       if (err && err.err && err.err.errors && err.err.errors.length && err.err.errors[0].code === 1015) {
@@ -253,7 +253,7 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 //       return messageStatus.resolve(true)
 //     })
 //     .catch(err => {
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: checkIsVerifiedTrueOrFalse(): error while checkIsVerifiedTrueOrFalse functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
 //       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
@@ -284,7 +284,7 @@ class ProcessQueueConsumer {
               }
               // })
               // .catch(err => {
-              //   const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
+              //   const telegramErrorMessage = 'ProcessMessageConsumer: startServer(): error in process message main functionality'
               //   errorToTelegram.send(err, telegramErrorMessage)
               //   __logger.error('processQueueConsumer::error while parsing: ', err)
               //   rmqObject.channel[queue].ack(mqData)
@@ -311,7 +311,7 @@ class ProcessQueueConsumer {
             }
           } catch (err) {
             __logger.error('processQueueConsumer:  startServer(' + queue + '): try/catch:', err)
-            const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ processQueueConsumer::error while parsing:'
+            const telegramErrorMessage = 'ProcessMessageConsumer: startServer(): processQueueConsumer::error while parsing:'
             errorToTelegram.send(err, telegramErrorMessage)
             rmqObject.channel[queue].ack(mqData)
           }

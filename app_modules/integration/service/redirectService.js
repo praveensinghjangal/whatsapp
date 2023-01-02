@@ -69,7 +69,7 @@ const queueCall = (payload, userId) => {
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
       __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'redirectService: queueCall(): catch: ~ sendToHeloCampaign/sendToUser function'
+      const telegramErrorMessage = 'redirectService: queueCall(): catch:: sendToHeloCampaign/sendToUser function'
       errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
     })
@@ -117,7 +117,7 @@ class RedirectService {
       })
       .catch(err => {
         __logger.error('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
-        const telegramErrorMessage = 'redirectService: webhookPost function ~ Error While callMessage flow or queueCall function'
+        const telegramErrorMessage = 'redirectService: webhookPost(): Error While callMessage flow or queueCall function'
         errorToTelegram.send(err, telegramErrorMessage)
         redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
@@ -154,13 +154,13 @@ class RedirectService {
           if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
             __logger.info('redirectService: callMessageFlow(): POST API Res:', __constants.RESPONSE_MESSAGES.SUCCESS, JSON.stringify(apiRes.body))
           } else {
-            const telegramErrorMessage = 'redirectService: callMessageFlow() ~ Error Not Redirected'
+            const telegramErrorMessage = 'redirectService: callMessageFlow(): Error Not Redirected'
             errorToTelegram.send({ err: telegramErrorMessage }, telegramErrorMessage)
             __logger.info('redirectService: callMessageFlow(): POST API Res: Not redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, JSON.stringify(apiRes.body))
           }
         })
         .catch(err => {
-          const telegramErrorMessage = 'redirectService: callMessageFlow() ~ error while sending message to chat api'
+          const telegramErrorMessage = 'redirectService: callMessageFlow(): error while sending message to chat api'
           console.log(telegramErrorMessage, err)
           errorToTelegram.send(err, telegramErrorMessage)
         })
@@ -179,7 +179,7 @@ class RedirectService {
       rabbitmqHeloWhatsapp.sendToQueue(delayQueue, JSON.stringify(message), 0)
         .then(() => messageRouted.resolve(true))
         .catch(err => {
-          const telegramErrorMessage = 'redirectService: sendToRetryMessageSendQueue(): sendToQueue(): catch: ~ Error in delay_failed_to_redirect_ sendToQueue'
+          const telegramErrorMessage = 'redirectService: sendToRetryMessageSendQueue(): sendToQueue(): catch:: Error in delay_failed_to_redirect_ sendToQueue'
           errorToTelegram.send(err, telegramErrorMessage)
           messageRouted.reject(err)
         })

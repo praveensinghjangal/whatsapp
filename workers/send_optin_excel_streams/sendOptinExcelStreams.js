@@ -57,7 +57,7 @@ class SendOptinExcelStreamsConsumer {
               }, __constants.SEND_OPTIN_BATCH_ACK_IN_SECS * 1000)
             } catch (err) {
               console.log('err', err)
-              const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ SendOptinExcelStreamsConsumer::error while parsing:'
+              const telegramErrorMessage = 'ProcessMessageConsumer: startServer(): SendOptinExcelStreamsConsumer::error while parsing:'
               errorToTelegram.send(err, telegramErrorMessage)
 
               __logger.error('SendOptinExcelStreamsConsumer::error while parsing: ', err)
@@ -68,7 +68,7 @@ class SendOptinExcelStreamsConsumer {
           })
         })
         .catch(err => {
-          const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
+          const telegramErrorMessage = 'ProcessMessageConsumer: startServer():'
           errorToTelegram.send(err, telegramErrorMessage)
           __logger.error('SendOptinExcelStreamsConsumer::error: ', err)
           process.exit(1)

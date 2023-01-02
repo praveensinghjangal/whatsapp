@@ -404,7 +404,7 @@ const controller = (req, res) => {
     .catch(err => {
       const error = err.stack ? err.stack.split('\n', 2).join('\n') : err
       __logger.error('send message ctrl error : ', error)
-      const telegramErrorMessage = '\nsendMessageToQueue ~ controller() ~ '
+      const telegramErrorMessage = '\nsendMessageToQueue: controller(): '
       errorToTelegram.send(error, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {
         delete err.type.status_code

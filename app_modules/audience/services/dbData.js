@@ -473,7 +473,7 @@ class AudienceService {
   }
 
   addAudineceToDb (payload, audMappingId, userId) {
-    __logger.info('dbData: Add audience service called ~ payload, audMappingId', payload, audMappingId)
+    __logger.info('dbData: Add audience service called: payload, audMappingId', payload, audMappingId)
     const audienceDataAdded = q.defer()
     const audienceData = {
       audienceId: this.uniqueId.uuid(),
@@ -501,7 +501,7 @@ class AudienceService {
   }
 
   addAudineceToDbInBulk (addAudiencesBody, audMappingId) {
-    __logger.info('dbData: Add audience in bulk service called ~ payload, audMappingId', addAudiencesBody, audMappingId)
+    __logger.info('dbData: Add audience in bulk service called: payload, audMappingId', addAudiencesBody, audMappingId)
     const audienceDataAdded = q.defer()
     // __db.mysql.batch(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), addAudiencesBody)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), [addAudiencesBody])

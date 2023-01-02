@@ -87,7 +87,7 @@ const sendToQueue = (data, config, currentQueueName) => {
     }))
     .catch(err => {
       __logger.error('preProcessMessage: sendToQueue(): catch:', err)
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus'
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): error in sendToQueue and saveAndSendMessageStatus'
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
     })
@@ -100,7 +100,7 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
       __logger.error('preProcessMessage: sendToQueueBulk(): catch:', error)
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk(): error in sendToQueueBulk'
       errorToTelegram.send(error, telegramErrorMessage)
       return sendSingleMessage.reject(error)
     })
@@ -272,7 +272,7 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
 //     })
 //     .catch(err => {
 //       console.log('11111111111111111111111111111111111111111111111111', err)
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: checkIsVerifiedTrueOrFalse(): error while checkIsVerifiedTrueOrFalse functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
 //       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
@@ -453,7 +453,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
     })
     .catch(err => {
       __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): final catch():', err)
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+      const telegramErrorMessage = 'ProcessMessageConsumer: checkIsVerifiedTrueOrFalse(): error while checkIsVerifiedTrueOrFalse functionality'
       errorToTelegram.send(err, telegramErrorMessage)
       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
@@ -629,7 +629,7 @@ class PreProcessQueueConsumer {
       })
       .catch(err => {
         __logger.error('preProcessQueueConsumer: main catch:', err)
-        const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
+        const telegramErrorMessage = 'ProcessMessageConsumer: startServer():'
         errorToTelegram.send(err, telegramErrorMessage)
         process.exit(1)
       })

@@ -58,7 +58,7 @@ const sendToErrorQueue = (message, queueObj) => {
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => {
       __logger.error('fbOutgoing: sendToErrorQueue(): catch: ', err)
-      const telegramErrorMessage = 'FaceBookOutGoingQueue ~ saveAndSendMessageStatus function'
+      const telegramErrorMessage = 'FaceBookOutGoingQueue: saveAndSendMessageStatus function'
       errorToTelegram.send(err, telegramErrorMessage)
       messageRouted.reject(err)
     })
@@ -71,7 +71,7 @@ const sendToFacebookOutgoingQueue = (message, queueObj) => {
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => {
       __logger.error('fbOutgoing: sendToFacebookOutgoingQueue(): catch: ', err)
-      const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ sendToQueue function error while sending'
+      const telegramErrorMessage = 'sendToFacebookOutgoingQueue: sendToQueue function error while sending'
       errorToTelegram.send(err, telegramErrorMessage)
       messageRouted.reject(err)
     })

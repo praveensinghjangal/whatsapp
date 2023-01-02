@@ -117,7 +117,7 @@ class FacebookConsumer {
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
                 __logger.error('fbMessageStatus: addMessageHistoryDataService(): catch:', err, retryCount)
-                const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue function ~ facebook incoming status QueueConsumer::error'
+                const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(): facebook incoming status QueueConsumer::error'
                 errorToTelegram.send(err, telegramErrorMessage)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.facebook) {

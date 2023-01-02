@@ -59,7 +59,7 @@ class Message {
   }
 
   getMedia (wabaNumber, mediaId) {
-    __logger.error('fb: message: getMedia(' + wabaNumber + '): ', mediaId)
+    __logger.info('fb: message: getMedia(' + wabaNumber + '): ', mediaId)
     const deferred = q.defer()
     if (wabaNumber && mediaId) {
       const authService = new AuthService(this.userId)
@@ -88,16 +88,16 @@ class Message {
           }
         })
         .catch(err => {
-          __logger.info('fb: message: getMedia(' + wabaNumber + '): catch:', err)
+          __logger.error('fb: message: getMedia(' + wabaNumber + '): catch:', err)
           deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
         })
       return deferred.promise
     } else if (!mediaId) {
-      __logger.info('fb: message: getMedia(' + wabaNumber + '): ::::: Missing MediaId :::::')
+      __logger.error('fb: message: getMedia(' + wabaNumber + '): ::::: Missing MediaId :::::')
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing MediaId' })
       return deferred.promise
     } else {
-      __logger.info('fb: message: getMedia(' + wabaNumber + '): ::::: Missing WabaNumber & MediaId :::::')
+      __logger.error('fb: message: getMedia(' + wabaNumber + '): ::::: Missing WabaNumber & MediaId :::::')
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
       return deferred.promise
     }
