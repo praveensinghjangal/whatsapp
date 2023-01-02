@@ -129,7 +129,7 @@ class FacebookConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            __logger.error('facebookMessageStatus: try/catch:', err.toString())
+            __logger.error('facebookMessageStatus: try/catch:', err)
             const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(): error while parsing: try/catch'
             errorToTelegram.send(err, telegramErrorMessage)
             rmqObject.channel[queue].ack(mqData)
@@ -137,7 +137,7 @@ class FacebookConsumer {
         }, { noAck: false })
       })
       .catch(err => {
-        __logger.error('facebookMessageStatus: catch:', err.toString())
+        __logger.error('facebookMessageStatus: catch:', err)
         const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue main function: catch:'
         errorToTelegram.send(err, telegramErrorMessage)
         process.exit(1)
