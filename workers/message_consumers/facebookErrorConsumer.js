@@ -54,7 +54,6 @@ const saveAndSendMessageStatusformFacebookerrorQueue = (payload, servicProviderI
     .catch(function (error) {
       const telegramErrorMessage = 'facebookErrorConsumer: saveAndSendMessageStatusformFacebookerrorQueue(): error in saveAndSendMessageStatusformFacebookerrorQueue'
       errorToTelegram.send(error, telegramErrorMessage)
-      console.log('errror', error)
       return saveAndSendMessageStatusformFacebookerrorQueue.reject(error)
     })
     .done()

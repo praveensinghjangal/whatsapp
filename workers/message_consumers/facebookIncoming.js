@@ -141,7 +141,7 @@ class FacebookConsumer {
               .then(payloadSaved => {
                 messageData.messageId = messageData.vivaMessageId
                 delete messageData.vivaMessageId
-                delete messageData.retryCountreturn
+                delete messageData.retryCount
                 return redirectService.webhookPost(messageData.to, messageData)
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
