@@ -150,27 +150,27 @@ class InternalService {
     }
     _.each(components, (component) => {
       _.each(component.addresses, (parameter) => {
-        if (parameter.country_code) {
-          parameter.countryCode = parameter.country_code
-          delete parameter.country_code
+        if (parameter.countryCode) {
+          parameter.country_code = parameter.countryCode
+          delete parameter.countryCode
         }
       })
-      _.each(component.name, (parameter) => {
-        if (parameter.firstName) {
-          parameter.first_name = parameter.firstName
-          delete parameter.firstName
+      _.each(component.name, (parameter, key) => {
+        if (key === 'firstName') {
+          component.name.first_name = component.name.firstName
+          delete component.name.firstName
         }
-        if (parameter.lastName) {
-          parameter.last_name = parameter.lastName
-          delete parameter.lastName
+        if (component.name.lastName) {
+          component.name.last_name = component.name.lastName
+          delete component.name.lastName
         }
-        if (parameter.formattedName) {
-          parameter.formatted_name = parameter.formattedName
-          delete parameter.formattedName
-          if (parameter.middleName) {
-          }
-          parameter.middle_name = parameter.middleName
-          delete parameter.middleName
+        if (component.name.formattedName) {
+          component.name.formatted_name = component.name.formattedName
+          delete component.name.formattedName
+        }
+        if (component.name.middleName) {
+          component.name.middle_name = component.name.middleName
+          delete component.name.middleName
         }
       })
     })
@@ -323,14 +323,14 @@ class InternalService {
 
 class DataMapper {
   addTemplate (templateData, accesToken) {
-    __logger.info('fb: dataMapper: addTemplate():')
+    __logger.info('Inside addTemplate in dataMapper')
     const apiReqBody = q.defer()
     const internalService = new InternalService()
     const resumableApi = new ResumableApi()
     let body = internalService.createInitialBody(templateData)
     getCategoryMapping(templateData.messageTemplateCategoryId, __config.service_provider_id.facebook)
       .then(data => {
-        __logger.info('fb: dataMapper: addTemplate(): getCategoryMapping(): then 1:', data)
+        __logger.info('Inside getCategoryMapping response')
         if (body && body[0]) {
           body[0].category = data.service_provider_category
         }
@@ -343,7 +343,7 @@ class DataMapper {
           return null
         }
       }).then(headerHandleData => {
-        __logger.info('fb: dataMapper: addTemplate(): getCategoryMapping(): headerHandleData(): then 2:', headerHandleData)
+        __logger.info('headerHandleData response')
         body = internalService.addHeader(body, templateData, headerHandleData)
         body = internalService.addFooter(body, templateData)
         body = internalService.addCallToActionButton(body, templateData)
@@ -351,7 +351,7 @@ class DataMapper {
         apiReqBody.resolve(body)
       })
       .catch(err => {
-        __logger.error('fb: dataMapper: addTemplate(): getCategoryMapping(): catch:', err)
+        __logger.error('error inside addTemplate : ', err)
         apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiReqBody.promise
@@ -369,13 +369,10 @@ class DataMapper {
           websites: wabaData.websites,
           about: wabaData.whatsappStatus
         }
-        __logger.info('fb: dataMapper: updateProfileDetails(): getWabaCategoryMapping():', data, body)
+        __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
-      .catch(err => {
-        __logger.error('fb: dataMapper: updateProfileDetails(): getWabaCategoryMapping(): catch:', err)
-        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
+      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return apiReqBody.promise
   }
 
@@ -390,13 +387,10 @@ class DataMapper {
           email: wabaData.email || '',
           websites: wabaData.websites || ''
         }
-        __logger.info('fb: dataMapper: updateBusinessProfileDetails(): getWabaCategoryMapping():', data, body)
+        __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
-      .catch(err => {
-        __logger.error('fb: dataMapper: updateBusinessProfileDetails(): getWabaCategoryMapping(): catch:', err)
-        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-      })
+      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
     return apiReqBody.promise
   }
 
@@ -419,10 +413,10 @@ class DataMapper {
     const internalService = new InternalService()
     internalService.sendMessageFbBody(data, maxTpsToProvider)
       .then(body => {
+        __logger.info('dataMapper: sendMessage(): fb req body:', JSON.stringify(body))
         deferred.resolve(body)
       })
       .catch(err => {
-        __logger.error('fb: dataMapper: sendMessage(): catch:', err)
         deferred.reject(err)
       })
     return deferred.promise
