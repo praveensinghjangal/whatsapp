@@ -103,20 +103,20 @@ class RedirectService {
         }
         payload.heloCampaign = data.isHeloCampaign
         payload.webhookPostUrl = data.webhookPostUrl
-        __logger.info('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then:', data, payload)
+        __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then: Waba Data Found .....')
         return queueCall(payload, data.userId)
       })
       .then(result => {
-        __logger.info('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then:', result)
+        __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then:', result)
         if (result.notRedirected) {
-          __logger.info('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): reject:', { result: result.notRedirected })
+          __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): reject:', { result: result.notRedirected })
           return redirected.reject({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
         } else {
           return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
         }
       })
       .catch(err => {
-        __logger.error('redisService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
+        __logger.error('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
         const telegramErrorMessage = 'redirectService: webhookPost(): Error While callMessage flow or queueCall function'
         errorToTelegram.send(err, telegramErrorMessage)
         redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
