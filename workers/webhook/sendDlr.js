@@ -6,7 +6,7 @@ const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
 
 const sendDlr = (message, queueObj, queue, mqData) => {
-  __logger.info('sendDlr: sendDlr(): ', JSON.stringify(message))
+  __logger.info('sendDlr: sendDlr(): ', message)
   const messageRouted = q.defer()
   const http = new HttpService(60000)
   let webhookPayload = {}
