@@ -54,7 +54,7 @@ class businesAccountService {
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaTableDataByUserId(), [userId])
       })
       .then(result => {
-        __logger.info('businessAccount: checkUserIdExist(): checkUserIdService: then 2:', result)
+        __logger.info('businessAccount: checkUserIdExist(): checkUserIdService: then 2:')
         // if exist throw return true exist
         if (result && result.length > 0) {
           result[0].canReceiveSms = result[0].canReceiveSms === 1
