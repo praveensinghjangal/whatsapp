@@ -33,8 +33,9 @@ class HttpRequestOg {
       json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: POST ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: POST ::: res:', { options, response, body })
+      __logger.info('httpService: ::: POST ::: Req:', { response, body })
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
@@ -58,8 +59,9 @@ class HttpRequestOg {
       rejectUnauthorized: false
     }
     if (encoding === null) options.encoding = null
+    __logger.info('httpService: ::: GET ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: GET ::: res:', { options, response, body })
+      __logger.info('httpService: ::: GET ::: Req:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -82,8 +84,9 @@ class HttpRequestOg {
       rejectUnauthorized: false,
       encoding: 'binary'
     }
+    __logger.info('httpService: ::: GET MEDIA ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: GET MEDIA ::: res:', { options, response, body })
+      __logger.info('httpService: ::: GET MEDIA ::: Req:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -107,8 +110,9 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: PATCH ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: PATCH ::: res:', { options, response, body })
+      __logger.info('httpService: ::: PATCH ::: Req:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -132,8 +136,9 @@ class HttpRequestOg {
       json: isJson,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: PUT ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: PUT ::: res:', { options, response, body })
+      __logger.info('httpService: ::: PUT ::: Req:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -156,8 +161,9 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: DELETE ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: DELETE ::: res:', { options, response, body })
+      __logger.info('httpService: ::: DELETE ::: Req:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
@@ -181,8 +187,9 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: RESOLVE POST ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: RESOLVE POST ::: res:', { options, response, body })
+      __logger.info('httpService: ::: RESOLVE POST ::: Req:', { response, body })
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
