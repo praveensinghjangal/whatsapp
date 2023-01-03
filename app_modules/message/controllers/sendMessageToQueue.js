@@ -264,7 +264,7 @@ const controller = (req, res) => {
   // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
-      __logger.error('sendMEssageToQueue: Request must be in OBJECT', {})
+      __logger.error('sendMEssageToQueue: Request body must be OBJECT', {})
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
     } else if (typeof req.body === 'object' && !Array.isArray(req.body) && req.body !== null) {
       req.body = [req.body]

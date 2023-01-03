@@ -46,15 +46,14 @@ class businesAccountService {
   checkUserIdExist (userId) {
     // declare a prmoise
     const doesUserIdExist = q.defer()
-    // checking using service whether the userId is  provided or not
+    // checking using service whether the userId is provided or not
     this.validate.checkUserIdService({ userId })
       // then using a query to check that a record exist or not in table
       .then(valResponse => {
-        __logger.info('businessAccount: checkUserIdExist(): checkUserIdService: then 1:', valResponse)
+        __logger.info('businessAccount: checkUserIdExist(): checkUserIdService: then 1: Validated Successfully.')
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaTableDataByUserId(), [userId])
       })
       .then(result => {
-        __logger.info('businessAccount: checkUserIdExist(): checkUserIdService: then 2:')
         // if exist throw return true exist
         if (result && result.length > 0) {
           result[0].canReceiveSms = result[0].canReceiveSms === 1
