@@ -31,7 +31,8 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
     date: payload.date,
-    campName: payload.whatsapp.campName || null
+    campName: payload.whatsapp.campName || null,
+    errorMsg: payload.errorMessage || ''
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -168,6 +169,7 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
 
 const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
   const messageStatus = q.defer()
+  message.payload.errorMessage = __constants.RESPONSE_MESSAGES.CANNOT_SEND_MESSAGE.message
   saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false, __constants.MESSAGE_STATUS.rejected)
     .then(statusResponse => queueObj.channel[queue].ack(mqData))
     .then(statusResponse => messageStatus.resolve('done!'))
