@@ -955,8 +955,11 @@ class validate {
         businessNumber: {
           type: 'string',
           required: false
+        },
+        errorMsg: {
+          type: 'string',
+          required: false
         }
-
       }
     }
 

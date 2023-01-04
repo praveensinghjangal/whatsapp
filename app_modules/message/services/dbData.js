@@ -81,6 +81,7 @@ class MessgaeHistoryService {
     let countryName = ''
     const custom = {}
     let campName = null
+    let errors = null
     let tempDate
     __logger.info('Add message history service called', dataObj)
     validate.addMessageHistory(dataObj)
@@ -105,6 +106,13 @@ class MessgaeHistoryService {
         custom.customThree = dbData.customThree || dataObj.customThree || null
         custom.customFour = dbData.customFour || dataObj.customFour || null
         campName = dataObj.campName || null
+        errors = dataObj.errors || []
+        const internalErrorMsg = dataObj.errorMsg || null
+        if (errors != null) {
+          errors = internalErrorMsg ? errors.concat(internalErrorMsg) : errors
+        } else if (internalErrorMsg) {
+          errors = errors.concat(internalErrorMsg)
+        }
         const messageHistoryData = {
           messageId: msgId,
           serviceProviderMessageId: dataObj.serviceProviderMessageId || null,
@@ -115,7 +123,7 @@ class MessgaeHistoryService {
           endConsumerNumber: ecNum,
           countryName: countryName,
           businessNumber: bnNum,
-          errors: dataObj.errors ? JSON.stringify(dataObj.errors) : '[]',
+          errors: JSON.stringify(errors),
           customOne: custom.customOne,
           customTwo: custom.customTwo,
           customThree: custom.customThree,
@@ -145,7 +153,7 @@ class MessgaeHistoryService {
       .then(result => {
         __logger.info('Add Result then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
-          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum, custom, campName })
+          messageHistoryDataAdded.resolve({ dataAdded: true, messageId: msgId, businessNumber: bnNum, endConsumerNumber: ecNum, custom, campName, errors })
         } else {
           messageHistoryDataAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
         }
@@ -778,7 +786,7 @@ class MessgaeHistoryService {
       }
     },
     { $sort: { total: -1 } }])
-    // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
+      // __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getNewTemplateDetailsAgainstAllUser(currentDate), [wabaNumber])
       .then(result => {
         if (result) {
           return getNewTemplateDetailsAgainstAllUserPromise.resolve(result)
