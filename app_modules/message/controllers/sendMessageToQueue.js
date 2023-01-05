@@ -317,6 +317,7 @@ const controller = (req, res) => {
         const msgInsertData = []
         const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
+          singleMessage.to = singleMessage.to.length === 10 && singleMessage.countryCode === 'IN' ? '91' + singleMessage.to : singleMessage.to
           msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null, singleMessage.whatsapp.campName || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,

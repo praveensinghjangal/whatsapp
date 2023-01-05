@@ -124,6 +124,10 @@ class InternalService {
       return []
     }
     _.each(components, (component) => {
+      if (component && component.type && component.type === 'button') {
+        component.sub_type = 'url'
+        component.index = '0'
+      }
       _.each(component.parameters, (parameter) => {
         if (parameter.media) {
           parameter.type = parameter.media.type
@@ -286,7 +290,8 @@ class InternalService {
   addCallToActionButton (body, td) {
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.buttonType && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
       const pushData = { type: 'BUTTONS', buttons: [] }
-      if (td.buttonData.websiteButtontext && td.buttonData.webAddress) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
+      if (td.buttonData && td.buttonData.websiteButtontext && td.buttonData.webAddress && td.buttonData.websiteTextVarExample && isArray(td.buttonData.websiteTextVarExample) && td.buttonData.websiteTextVarExample.length > 0) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress, example: td.buttonData.websiteTextVarExample })
+      else pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
       if (td.buttonData.phoneButtonText && td.buttonData.phoneNumber) pushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.phoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
       if (pushData.buttons.length > 0) body[0].components.push(pushData)
 
