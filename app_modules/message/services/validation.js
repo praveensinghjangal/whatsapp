@@ -810,37 +810,37 @@ class validate {
     })
 
     // check validation for similar fromNumber
-    const fromNumber = request[0].whatsapp.from
-    const fromNumberIsValid = request.every((obj) => obj.whatsapp.from === fromNumber)
+    const fromNumber = request && request[0] && request[0].whatsapp && request[0].whatsapp.from ? request[0].whatsapp.from : ''
+    const fromNumberIsValid = request.every((obj) => (obj && obj.whatsapp && obj.whatsapp.from) === fromNumber)
     if (!fromNumberIsValid) {
       formatedError.push('From number should be same across the entire request body')
     }
 
     // check validation for similar value of isCampaign
-    const isCampaign = request[0].isCampaign
-    const isCampaignIsValid = request.every((obj) => obj.isCampaign === isCampaign)
+    const isCampaign = request && request[0] && request[0].isCampaign ? request[0].isCampaign : ''
+    const isCampaignIsValid = request.every((obj) => (obj && obj.isCampaign) === isCampaign)
     if (!isCampaignIsValid) {
       formatedError.push('isCampaign value should be same across the entire request body')
     }
 
     // check validation for similar value of isChatBot
-    const isChatBot = request[0].isChatBot
-    const isChatBotIsValid = request.every((obj) => obj.isChatBot === isChatBot)
+    const isChatBot = request && request[0] && request[0].isChatBot ? request[0].isChatBot : ''
+    const isChatBotIsValid = request.every((obj) => (obj && obj.isChatBot) === isChatBot)
     if (!isChatBotIsValid) {
       formatedError.push('isChatBot value should be same across the entire request body')
     }
 
     // all json's contentType should be same
-    const contentType = request[0].whatsapp.contentType
-    const contentTypeIsValid = request.every((obj) => obj.whatsapp.contentType === contentType)
+    const contentType = request && request[0] && request[0].whatsapp && request[0].whatsapp.contentType ? request[0].whatsapp.contentType : ''
+    const contentTypeIsValid = request.every((obj) => (obj && obj.whatsapp && obj.whatsapp.contentType) === contentType)
     if (!contentTypeIsValid) {
       formatedError.push('contentType value should be same across the entire request body')
     }
 
     // all templates should be of same template
     if (contentTypeIsValid && request[0] && request[0].whatsapp && request[0].whatsapp.contentType === 'template') {
-      const templateId = request[0].whatsapp.template.templateId
-      const templateIdIsValid = request.every((obj) => obj.whatsapp.template.templateId === templateId)
+      const templateId = request && request[0] && request[0].whatsapp && request[0].whatsapp.template && request[0].whatsapp.template.templateId ? request[0].whatsapp.template.templateId : ''
+      const templateIdIsValid = request.every((obj) => (obj && obj.whatsapp && obj.whatsapp.template && obj.whatsapp.template.templateId) === templateId)
       if (!templateIdIsValid) {
         formatedError.push('templateId value should be same across the entire request body')
       }

@@ -123,7 +123,7 @@ class Template {
             'Content-Type': 'application/json',
             Accept: 'application/json'
           }
-          return this.http.Get(url, headers, data.serviceProviderId)
+          return this.http.Get(url, headers, __config.service_provider_id.facebook)
         })
         .then(templateData => {
           __logger.info('integration :: get template info data', { templateData })
