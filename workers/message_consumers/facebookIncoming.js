@@ -104,15 +104,22 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
     // creates body for interactive button_reply title
-    messageData.content = {
-      text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
-      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    messageData.interactive = {
+      button_reply: messageDataFromFacebook.messages[0].interactive.button_reply
     }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.list_reply && messageDataFromFacebook.messages[0].interactive.list_reply.id) {
     // for interactive list
     messageData.content = {
       text: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
+  } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].type === __constants.FACEBOOK_CONTENT_TYPE.audio) {
+    // for interactive list
+    messageData.content = {
+      media: {
+        mediaId: messageDataFromFacebook.messages[0].audio.id || null
+      },
+      contentType: messageDataFromFacebook.messages[0].type
     }
   }
   messageData.retryCount = messageDataFromFacebook.retryCount ? messageDataFromFacebook.retryCount : 0
