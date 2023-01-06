@@ -71,7 +71,8 @@ class validate {
           to: {
             type: 'string',
             required: true,
-            minLength: 1
+            minLength: 7,
+            maxLength: 15
           },
           isOptin: {
             type: 'boolean',
@@ -108,7 +109,8 @@ class validate {
               from: {
                 type: 'string',
                 required: true,
-                minLength: 1
+                minLength: 7,
+                maxLength: 15
               },
               customOne: {
                 type: 'string',
@@ -383,7 +385,9 @@ class validate {
                 properties: {
                   type: {
                     type: 'string',
-                    required: false
+                    required: false,
+                    minLength: 4,
+                    maxLength: 20
                   },
                   header: {
                     type: 'object',
@@ -391,7 +395,9 @@ class validate {
                     properties: {
                       type: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        minLength: 4,
+                        maxLength: 20
                       },
                       text: {
                         type: 'string',
@@ -406,7 +412,8 @@ class validate {
                     properties: {
                       text: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        maxLength: 1049
                       }
                     }
                   },
@@ -433,7 +440,9 @@ class validate {
                           properties: {
                             type: {
                               type: 'string',
-                              required: true
+                              required: true,
+                              minLength: 4,
+                              maxLength: 20
                             },
                             reply: {
                               type: 'object',
@@ -445,7 +454,9 @@ class validate {
                                 },
                                 title: {
                                   type: 'string',
-                                  required: true
+                                  required: true,
+                                  minLength: 1,
+                                  maxLength: 20
                                 }
                               }
 
@@ -541,7 +552,8 @@ class validate {
                   filename: {
                     type: 'string',
                     required: false,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 20
                   }
                 },
                 anyOf: [
@@ -561,16 +573,19 @@ class validate {
                   longitude: {
                     type: 'number',
                     required: true,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 20
                   },
                   latitude: {
                     type: 'number',
                     required: true,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 20
                   },
                   name: {
                     type: 'string',
-                    required: false
+                    required: false,
+                    maxLength: 20
                   },
                   address: {
                     type: 'string',
@@ -586,7 +601,8 @@ class validate {
                   templateId: {
                     type: 'string',
                     required: true,
-                    minLength: 1
+                    minLength: 36,
+                    maxLength: 36
                   },
                   language: {
                     type: 'object',
@@ -602,7 +618,8 @@ class validate {
                       code: {
                         type: 'string',
                         required: true,
-                        minLength: 1
+                        minLength: 2,
+                        maxLength: 4
                       }
                     }
                   },
@@ -618,7 +635,7 @@ class validate {
                           type: 'string',
                           required: true,
                           minLength: 1,
-                          enum: ['header', 'body', 'footer']
+                          enum: ['header', 'body', 'footer', 'button']
                         },
                         parameters: {
                           type: 'array',
@@ -636,7 +653,8 @@ class validate {
                               text: {
                                 type: 'string',
                                 required: false,
-                                minLength: 1
+                                minLength: 2,
+                                maxLength: 50
                                 // pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
@@ -653,7 +671,8 @@ class validate {
                                   url: {
                                     type: 'string',
                                     required: true,
-                                    minLength: 1
+                                    minLength: 3,
+                                    maxLength: 2000
                                   },
                                   caption: {
                                     type: 'string',
@@ -663,7 +682,8 @@ class validate {
                                   filename: {
                                     type: 'string',
                                     required: false,
-                                    minLength: 1
+                                    minLength: 1,
+                                    maxLength: 20
                                   }
                                 }
                               },
@@ -675,12 +695,14 @@ class validate {
                                   longitude: {
                                     type: 'number',
                                     required: true,
-                                    minLength: 1
+                                    minLength: 1,
+                                    maxLength: 20
                                   },
                                   latitude: {
                                     type: 'number',
                                     required: true,
-                                    minLength: 1
+                                    minLength: 1,
+                                    maxLength: 20
                                   }
                                 }
                               }
