@@ -55,12 +55,17 @@ class Authentication {
     const redisService = new RedisService()
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(wabaData => {
+        console.log('wabaData')
+        __logger.info('wabaData----> ', wabaData, new Date().getTime())
         // wabaData.wabizBaseUrl = 'https://10.40.13.240:9090'
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
-        if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
+        console.log('timeLeftToExpire', timeLeftToExpire)
+        if (__constants.FB_REDIS_KEY_BUFFER_TIME) {
+          console.log('if')
           const internalFunctions = new InternalFunctions()
           return internalFunctions.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, null, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaData.userAccountIdByProvider, wabaNumber, this.userId, true)
         } else {
+          console.log('else')
           return { baseUrl: wabaData.wabizBaseUrl, apiKey: wabaData.apiKey, graphApiKey: wabaData.graphApiKey, userAccountIdByProvider: wabaData.userAccountIdByProvider, timeLeftToExpire }
         }
       })

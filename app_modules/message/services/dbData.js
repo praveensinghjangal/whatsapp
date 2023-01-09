@@ -1078,6 +1078,44 @@ class MessgaeHistoryService {
       })
     return resolvedGroupBy.promise
   }
+
+  interactionDump (instanceInsert) {
+    __logger.info('inside ~function=interactionDump ', instanceInsert)
+    const promises = q.defer()
+    __db.mongo.__insertMany(__constants.DB_NAME, __constants.ENTITY_NAME.INTERACTIONS, [instanceInsert])
+      .then(data => {
+        __logger.info('inside ~function=After inserting interactionDump ', data)
+        if (data && data.insertedCount > 0) {
+          promises.resolve(true)
+        } else {
+          promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: {} })
+        }
+      })
+      .catch(err => {
+        console.log('errrrorr::', err)
+        __logger.error('error in get function=interactionDump function: ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
+
+  getInteractions () {
+    __logger.info('start ~function=getInteractions')
+    const promises = q.defer()
+    __db.mongo.__find(__constants.DB_NAME, __constants.ENTITY_NAME.INTERACTIONS, { }, { Question_1: 1, Question_2: 1, Question_3: 1, Question_4: 1, Question_5: 1, createdAt: 1, score: 1, audience: 1 })
+      .then(data => {
+        if (data && data.length > 0) {
+          promises.resolve(data || null)
+        } else {
+          promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: [] })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in get function=getInteractions function: ', err)
+        promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
 }
 
 module.exports = MessgaeHistoryService
