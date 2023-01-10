@@ -116,25 +116,25 @@ class validate {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customTwo: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customThree: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customFour: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               campName: {
                 type: 'string',
@@ -619,7 +619,7 @@ class validate {
                         type: 'string',
                         required: true,
                         minLength: 2,
-                        maxLength: 4
+                        maxLength: 5
                       }
                     }
                   },
@@ -648,7 +648,18 @@ class validate {
                                 type: 'string',
                                 required: true,
                                 minLength: 1,
-                                enum: ['text', 'media', 'location']
+                                enum: ['text', 'media', 'location', 'payload']
+                              },
+                              index: {
+                                type: 'string',
+                                required: false,
+                                maxLength: 1,
+                                pattern: __constants.VALIDATOR.payload
+                              },
+                              payload: {
+                                type: 'string',
+                                required: false,
+                                maxLength: 128
                               },
                               text: {
                                 type: 'string',
@@ -719,11 +730,18 @@ class validate {
                                   type: { const: 'media' }
                                 },
                                 required: ['media']
-                              }, {
+                              },
+                              {
                                 properties: {
                                   type: { const: 'location' }
                                 },
                                 required: ['location']
+                              },
+                              {
+                                properties: {
+                                  type: { const: 'payload' }
+                                },
+                                required: ['payload']
                               }
                             ]
                           }
@@ -823,8 +841,10 @@ class validate {
           formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern') && formatedErr[formatedErr.length - 1].includes('^[a-zA-Z\\t\\\\s]*$')) {
           formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should not contain special characters')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern')) {
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes(__constants.VALIDATOR.alphanumericWithMinSpecialChar.toString())) {
           formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain special characters -() only')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes(__constants.VALIDATOR.payload.toString())) {
+          formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain value between 0-2')
         } else {
           formatedError.push(formatedErr[formatedErr.length - 1])
         }

@@ -100,7 +100,8 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     // creates body for button
     messageData.content = {
       text: messageDataFromFacebook.messages[0].button.text || null,
-      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.text,
+      payload: messageDataFromFacebook.messages[0].button.payload || null,
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
     // creates body for interactive button_reply title
@@ -114,7 +115,8 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     messageData.interactive = {
       button_reply: {
         id: messageDataFromFacebook.messages[0].interactive.button_reply.id,
-        text: messageDataFromFacebook.messages[0].interactive.button_reply.title
+        text: messageDataFromFacebook.messages[0].interactive.button_reply.title,
+        payload: messageDataFromFacebook.messages[0].interactive.button_reply.payload
       }
     }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.list_reply && messageDataFromFacebook.messages[0].interactive.list_reply.id) {

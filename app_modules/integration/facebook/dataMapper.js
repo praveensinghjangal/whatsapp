@@ -123,11 +123,16 @@ class InternalService {
     if (!components || components.length <= 0) {
       return []
     }
-    _.each(components, (component) => {
-      if (component && component.type && component.type === 'button') {
+    _.each(components, (component, index) => {
+      if (component && component.type && component.type === 'button' && component.parameters && component.parameters[0].type === 'text' && component.parameters.length === 1) {
         component.sub_type = 'url'
         component.index = '0'
       }
+      if (component && component.type && component.type === 'button' && component.parameters && component.parameters[0].type === 'payload' && component.parameters.length >= 1) {
+        component.sub_type = 'quick_reply'
+        component.index = component.parameters[0].index
+      }
+
       _.each(component.parameters, (parameter) => {
         if (parameter.media) {
           parameter.type = parameter.media.type
