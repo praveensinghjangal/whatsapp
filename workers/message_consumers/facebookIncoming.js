@@ -101,7 +101,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     messageData.content = {
       text: messageDataFromFacebook.messages[0].button.text || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text,
-      payload: messageDataFromFacebook.messages[0].button.payload || null,
+      payload: messageDataFromFacebook.messages[0].button.payload || null
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
     // creates body for interactive button_reply title
