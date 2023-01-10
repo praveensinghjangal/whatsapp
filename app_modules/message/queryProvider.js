@@ -211,10 +211,10 @@ const createMessageHistoryTable = (date) => {
     is_active  tinyint(1) DEFAULT '1',
     service_provider_message_id  varchar(250) DEFAULT NULL,
     errors  json DEFAULT NULL,
-    custom_one  varchar(50) DEFAULT NULL,
-    custom_two  varchar(50) DEFAULT NULL,
-    custom_three  varchar(50) DEFAULT NULL,
-    custom_four  varchar(50) DEFAULT NULL,
+    custom_one  varchar(150) DEFAULT NULL,
+    custom_two  varchar(150) DEFAULT NULL,
+    custom_three  varchar(150) DEFAULT NULL,
+    custom_four  varchar(150) DEFAULT NULL,
     conversation_id varchar(100) DEFAULT NULL NULL,
     camp_name  varchar(100) DEFAULT NULL,
     PRIMARY KEY (id)) `
@@ -386,12 +386,11 @@ const getconversationDataBasedOnWabaNumber = () => {
 // }
 
 const getTemplateCategoryId = () => {
-  return `select mt.message_template_id,mt.message_template_category_id
-  ,CONCAT(wi.phone_code, wi.phone_number) as phone_number
-   from message_template mt
+  return `select mt.message_template_id,mt.message_template_category_id, CONCAT(wi.phone_code, wi.phone_number) as phone_number, button_type, button_data
+  from message_template mt
   join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
   where mt.is_active = true and wi.phone_number = ?
-   and mt.message_template_id = ?`
+  and mt.message_template_id = ?`
 }
 const getTemplateIdandTemplateNameAgainstUser = () => {
   return `select DISTINCT message_template_id as "templateId", template_name as "templateName"  from message_template mt 

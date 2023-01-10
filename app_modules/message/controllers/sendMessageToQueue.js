@@ -224,7 +224,7 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
     .then((data) => {
       if (data.length > 0) {
-        messageSent.resolve({ categoryId: data[0].message_template_category_id })
+        messageSent.resolve({ categoryId: data[0].message_template_category_id, buttonType: data[0].button_type, buttonData: data[0].button_data })
       } else {
         __logger.error('sendMessageToQueue: getTemplateCategory(): DB Query :- No Data Found', ['Invalid template id'])
         messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
@@ -235,6 +235,26 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
       messageSent.reject(err)
     })
   return messageSent.promise
+}
+
+const checkTemplateWithPayload = (templateData, reqBody) => {
+  const buttonArrayCheck = q.defer()
+
+  if (templateData.buttonType === 'quick reply') {
+    let buttonArrayCount = 0
+    if (templateData.buttonData.quickReply.length >= 1 && reqBody.whatsapp && reqBody.whatsapp.template && reqBody.whatsapp.template.components && reqBody.whatsapp.template.components.length >= 1) {
+      _.each(reqBody.whatsapp.template.components, (component, index) => {
+        if (component.type === 'button' && component.parameters && component.parameters.length === 1 && component.parameters[0].type === 'payload' && component.parameters[0].index && component.parameters[0].payload) { buttonArrayCount++ }
+      })
+      if (buttonArrayCount > templateData.buttonData.quickReply.length) {
+        __logger.error('sendMessageToQueue: checkTemplateWithPayload: buttonArrayCount: ', buttonArrayCount)
+        buttonArrayCheck.reject({ type: __constants.RESPONSE_MESSAGES.BUTTON_PARAM_MISMATCH, err: ['Invalid parameters in template type buttons'] })
+      }
+    }
+    buttonArrayCheck.resolve({ ...templateData })
+    return buttonArrayCheck.promise
+  }
+  return templateData
 }
 
 /**
@@ -278,6 +298,11 @@ const controller = (req, res) => {
         return getTemplateCategory(data[0].whatsapp.from, data[0].whatsapp.template.templateId)
       }
       return true
+    })
+    .then(async data => {
+      // Check if template type quick reply & components include parameters
+      if (data.buttonType === 'quick reply') { return checkTemplateWithPayload(data, req.body[0]) }
+      return data
     })
     .then(data => {
       if (data && data.categoryId) {

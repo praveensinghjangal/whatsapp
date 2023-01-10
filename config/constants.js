@@ -287,7 +287,8 @@ const VALIDATOR = {
   pan: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i,
   noTabLinebreakSpace: /^(?:(.)(?!\s\s\s\s)(?!\n)(?!\t))*$/g,
   empty: /^''$/g,
-  dateFormat: /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/g
+  dateFormat: /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/g,
+  payload: /^[0-2]{1}/g
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
