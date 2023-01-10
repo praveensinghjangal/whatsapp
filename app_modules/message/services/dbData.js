@@ -279,6 +279,7 @@ class MessgaeHistoryService {
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
+        console.log('--------result----------', result)
         if (result && result.length > 0) {
           const dataCount = { outgoingMessageCount: { session: 0, template: 0, total: 0 }, incomingMessageCount: 0 }
           if (flag === __constants.MESSAGE_TRANSACTION_TYPE[0]) {
@@ -390,7 +391,7 @@ class MessgaeHistoryService {
 
   getWabaNameByWabaNumber (arrayofWabaNumber) {
     const promises = q.defer()
-    __logger.info('inside getWabaNameByWabaNumber')
+    __logger.info('inside getWabaNameByWabaNumber', arrayofWabaNumber)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByWabaNumber(), [arrayofWabaNumber])
       .then(result => {
         console.log('222222222222222222222222222222222222', result)
@@ -1077,6 +1078,25 @@ class MessgaeHistoryService {
         return resolvedGroupBy.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return resolvedGroupBy.promise
+  }
+
+  getWabaNameByPhoneNumber (arrayofWabaNumber) {
+    const promises = q.defer()
+    __logger.info('inside getWabaNameByPhoneNumber', arrayofWabaNumber)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByPhoneNumber(), [arrayofWabaNumber])
+      .then(result => {
+        if (result && result.length > 0) {
+          promises.resolve(result)
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getWabaNameByPhoneNumber db call')
+          promises.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getWabaNameByPhoneNumber db call:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
   }
 }
 

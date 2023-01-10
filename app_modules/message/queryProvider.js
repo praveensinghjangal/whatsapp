@@ -405,11 +405,15 @@ const getConversationDataBasedOnWabaNumberAllData = () => {
   b.from as wabaPhoneNumber,b.message_country as "messageCountry"
   FROM billing_conversation b
   where b.from in (?) and b.created_on BETWEEN ? and ?
-  GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
+  GROUP BY b.conversation_category ,b.from, b.message_country`
 }
 
 const groupByIssue = () => {
   return "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));"
+}
+
+const getWabaNameByPhoneNumber = () => {
+  return 'select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information wi where CONCAT(phone_code ,phone_number) in (?)'
 }
 
 module.exports = {
@@ -440,5 +444,6 @@ module.exports = {
   getTemplateCategoryId,
   getTemplateIdandTemplateNameAgainstUser,
   getConversationDataBasedOnWabaNumberAllData,
-  groupByIssue
+  groupByIssue,
+  getWabaNameByPhoneNumber
 }
