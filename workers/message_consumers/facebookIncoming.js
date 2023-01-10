@@ -104,6 +104,12 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
     // creates body for interactive button_reply title
+    // to send chat api
+    messageData.content = {
+      text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
+    // to send chat api
     messageData.contentType = __constants.FACEBOOK_CONTENT_TYPE.button_reply
     messageData.interactive = {
       button_reply: {
