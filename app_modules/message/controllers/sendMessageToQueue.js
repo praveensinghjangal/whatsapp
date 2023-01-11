@@ -64,6 +64,8 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            payloadButtonCount: singleObj.button_type && singleObj.button_type === 'quick reply' ? singleObj.button_data.quickReply.length : 0,
+            urlButtonCount: singleObj.button_type && singleObj.button_type === 'call to action' ? singleObj.button_data.websiteTextVarExample.length : 0,
             phoneNumber: singleObj.phone_number
           }
           dataObject.approvedLanguages = []
@@ -253,8 +255,18 @@ const checkTemplateWithPayload = (templateData, reqBody) => {
     }
     buttonArrayCheck.resolve({ ...templateData })
     return buttonArrayCheck.promise
+  } else {
+    // Remove object from components if template button type is not "Quick Reply"
+    // First check if req body component includes type button with payload
+    if (reqBody.whatsapp && reqBody.whatsapp.template && reqBody.whatsapp.template.components && reqBody.whatsapp.template.components.length >= 1) {
+      _.each(reqBody.whatsapp.template.components, (component, i) => {
+        if (component.type && component.type === 'button' && component.parameters && component.parameters.length === 1 && component.parameters[0].type && component.parameters[0].type === 'payload') {
+          reqBody.whatsapp.template.components = reqBody.whatsapp.template.components.slice(i, 1)
+        }
+      })
+    }
   }
-  return templateData
+  return { templateData, reqBody }
 }
 
 /**
@@ -301,7 +313,7 @@ const controller = (req, res) => {
     })
     .then(async data => {
       // Check if template type quick reply & components include parameters
-      if (data.buttonType === 'quick reply') { return checkTemplateWithPayload(data, req.body[0]) }
+      if (data & data.categoryId) { return checkTemplateWithPayload(data, req.body[0]) }
       return data
     })
     .then(data => {
@@ -427,7 +439,7 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):', err)
+      __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):', err.stack ? err.stack : err)
       const telegramErrorMessage = 'sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):'
       errorToTelegram.send(err, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {

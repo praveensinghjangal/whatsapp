@@ -183,10 +183,11 @@ const addMessageHistoryDataInBulk = (date) => {
 }
 
 const setTemplatesInRedisForWabaPhoneNumber = () => {
-  return `select mt.message_template_id , mt.header_text,mt.header_type ,mt.body_text ,
-  mt.footer_text,CONCAT(wi.phone_code, wi.phone_number) as phone_number,
+  return `select mt.message_template_id, mt.header_text,mt.header_type ,mt.body_text,
+  mt.footer_text, CONCAT(wi.phone_code, wi.phone_number) as phone_number,
   mt.first_localization_status,mt.second_localization_status,
-  mtl.language_code as "first_language_code",mtl2.language_code as "second_language_code"
+  mtl.language_code as "first_language_code",mtl2.language_code as "second_language_code",
+  mt.button_type, mt.button_data
   from message_template mt
   join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
   join message_template_language mtl on mt.message_template_language_id = mtl.message_template_language_id and mtl.is_active = true

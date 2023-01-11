@@ -648,6 +648,7 @@ class validate {
                                 type: 'string',
                                 required: true,
                                 minLength: 1,
+                                maxLength: 8,
                                 enum: ['text', 'media', 'location', 'payload']
                               },
                               index: {
@@ -665,7 +666,7 @@ class validate {
                                 type: 'string',
                                 required: false,
                                 minLength: 2,
-                                maxLength: 50
+                                maxLength: 500
                                 // pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
