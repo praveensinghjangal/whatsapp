@@ -36,7 +36,7 @@ const sendToUser = (payload) => {
   delete payload.wabaNumber
   delete payload.heloCampaign
   delete payload.webhookPostUrl
-  __logger.info('redirectService: sendToUser():', payload, webhookPostUrl)
+  __logger.info('redirectService: sendToUser(' + payload.to + '):', payload, webhookPostUrl)
   if (payload && webhookPostUrl && url.isValid(webhookPostUrl)) {
     if (payload.state) {
       if (__constants.SEND_WEBHOOK_ON.includes(payload.state)) {
@@ -58,7 +58,7 @@ const sendToUser = (payload) => {
 
 const queueCall = (payload, userId) => {
   const defer = q.defer()
-  __logger.info('redirectservice: queueCall():', payload)
+  __logger.info('redirectservice: queueCall(' + payload.to + '):', payload)
   initial()
     .then(() => {
       return [sendToHeloCampaign({ ...payload, userId }), sendToUser({ ...payload, userId })]
@@ -68,7 +68,7 @@ const queueCall = (payload, userId) => {
     })
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
-      __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '):', err)
+      __logger.error('redirectService: queueCall(' + payload.from + '):', err)
       const telegramErrorMessage = 'redirectService: queueCall(): catch:: sendToHeloCampaign/sendToUser function'
       errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
