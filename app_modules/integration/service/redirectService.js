@@ -161,7 +161,6 @@ class RedirectService {
         })
         .catch(err => {
           const telegramErrorMessage = 'redirectService: callMessageFlow(): error while sending message to chat api'
-          console.log(telegramErrorMessage, err)
           errorToTelegram.send(err, telegramErrorMessage)
         })
     } else {

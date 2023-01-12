@@ -82,11 +82,11 @@ class AudienceService {
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
-        __logger.info('dbData: checkAndReturnWabaNumber::>>>>>>>>>>>>>>...', data)
+        __logger.info('dbData: checkAndReturnWabaNumber(): then 1', data)
         return this.getWabaPhoneNumber(data)
       })
       .then(data => {
-        __logger.info('dbData: WabaNum>>>>>>>>>>>>>>>>>>>>>>>> then 1', { data })
+        __logger.info('dbData: checkAndReturnWabaNumber(): then 2', { data })
         if (data && data.audMappingId) {
           audienceData.wabaPhoneNumber = data.audMappingId
         }
@@ -151,7 +151,7 @@ class AudienceService {
 
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
-        __logger.info('dbData: checkAndReturnWabaNumber::>>>>>>>>>>>>>>...', data)
+        __logger.info('dbData: checkAndReturnWabaNumber(): ', data)
         return this.getWabaPhoneNumber(data)
       })
       .then(data => {
@@ -413,11 +413,9 @@ class AudienceService {
   }
 
   getAudienceVerified (audienceNumber, wabaNumber) {
-    console.log('getAudienceVerified (audienceNumber, wabaNumber) ---', audienceNumber, wabaNumber)
     const promises = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFacebookVerifiedUser(), [audienceNumber, wabaNumber])
       .then(data => {
-        console.log('db response -----', data)
         if (data && data.length > 0) {
           promises.resolve(data)
         } else {
@@ -489,7 +487,7 @@ class AudienceService {
     _.each(audienceData, (val) => queryParam.push(val))
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceDataToDb(), queryParam)
       .then(result => {
-        __logger.info('dbData: added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
+        __logger.info('dbData: added result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           audienceDataAdded.resolve(true)
         } else {
@@ -506,7 +504,7 @@ class AudienceService {
     // __db.mysql.batch(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), addAudiencesBody)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), [addAudiencesBody])
       .then(result => {
-        __logger.info('dbData: added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
+        __logger.info('dbData: added result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           audienceDataAdded.resolve(true)
         } else {

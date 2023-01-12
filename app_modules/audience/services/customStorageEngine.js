@@ -42,7 +42,6 @@ function getTransformObject () {
     transform (chunk, encoding, callback) {
       // to check current memory usage
       // const used = process.memoryUsage().heapUsed / 1024 / 1024
-      // console.log(`The script uses approximately ${Math.round(used * 100) / 100} MB`)
       // records is blank array decalred below
       if (!chunk.email) {
         delete chunk.email
@@ -58,7 +57,6 @@ function getTransformObject () {
       if (chunk.phoneNumber) {
         this.records.push(chunk)
       }
-      // console.log(chunk)
       // batch processing of records
       if (this.records.length === __constants.STREAM_OPTIN_BATCH_SIZE) {
         saveDataToDB(this.records)
@@ -67,8 +65,6 @@ function getTransformObject () {
             // data.forEach((record) => {
             //   this.push([...Object.values(record)])
             // })
-            // console.log('this.records', this.records)
-            console.log('saved to db')
             // reset records for batch processing
             this.records = []
             callback()

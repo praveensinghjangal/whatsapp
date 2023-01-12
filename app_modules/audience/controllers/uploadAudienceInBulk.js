@@ -247,7 +247,7 @@ const uploadAudienceDataUsingStreams = (req, res) => {
       */
     })
   } catch (err) {
-    console.log(err)
+    __logger.error('uploadAudienceInBulk: uploadAudienceData():', err);
     res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err }))
   }
 }
