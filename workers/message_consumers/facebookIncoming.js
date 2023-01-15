@@ -100,19 +100,38 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     // creates body for button
     messageData.content = {
       text: messageDataFromFacebook.messages[0].button.text || null,
-      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.text,
+      payload: messageDataFromFacebook.messages[0].button.payload || null
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
     // creates body for interactive button_reply title
+    // to send chat api
     messageData.content = {
       text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
+    // to send chat api
+    messageData.contentType = __constants.FACEBOOK_CONTENT_TYPE.button_reply
+    messageData.interactive = {
+      button_reply: {
+        id: messageDataFromFacebook.messages[0].interactive.button_reply.id,
+        text: messageDataFromFacebook.messages[0].interactive.button_reply.title,
+        payload: messageDataFromFacebook.messages[0].interactive.button_reply.payload
+      }
     }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.list_reply && messageDataFromFacebook.messages[0].interactive.list_reply.id) {
     // for interactive list
     messageData.content = {
       text: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
+  } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].type === __constants.FACEBOOK_CONTENT_TYPE.audio) {
+    // for interactive list
+    messageData.content = {
+      media: {
+        mediaId: messageDataFromFacebook.messages[0].audio.id || null
+      },
+      contentType: messageDataFromFacebook.messages[0].type
     }
   }
   messageData.retryCount = messageDataFromFacebook.retryCount ? messageDataFromFacebook.retryCount : 0

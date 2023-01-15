@@ -123,7 +123,16 @@ class InternalService {
     if (!components || components.length <= 0) {
       return []
     }
-    _.each(components, (component) => {
+    _.each(components, (component, index) => {
+      if (component && component.type && component.type === 'button' && component.parameters && component.parameters[0].type === 'text' && component.parameters.length === 1) {
+        component.sub_type = 'url'
+        component.index = '0'
+      }
+      if (component && component.type && component.type === 'button' && component.parameters && component.parameters[0].type === 'payload' && component.parameters.length >= 1) {
+        component.sub_type = 'quick_reply'
+        component.index = component.parameters[0].index
+      }
+
       _.each(component.parameters, (parameter) => {
         if (parameter.media) {
           parameter.type = parameter.media.type
@@ -177,6 +186,39 @@ class InternalService {
     return components
   }
 
+  mapContacts (components) {
+    if (!components || components.length <= 0) {
+      return []
+    }
+    _.each(components, (component) => {
+      _.each(component.addresses, (parameter) => {
+        if (parameter.countryCode) {
+          parameter.country_code = parameter.countryCode
+          delete parameter.countryCode
+        }
+      })
+      _.each(component.name, (parameter, key) => {
+        if (key === 'firstName') {
+          component.name.first_name = component.name.firstName
+          delete component.name.firstName
+        }
+        if (component.name.lastName) {
+          component.name.last_name = component.name.lastName
+          delete component.name.lastName
+        }
+        if (component.name.formattedName) {
+          component.name.formatted_name = component.name.formattedName
+          delete component.name.formattedName
+        }
+        if (component.name.middleName) {
+          component.name.middle_name = component.name.middleName
+          delete component.name.middleName
+        }
+      })
+    })
+    return components
+  }
+
   async sendMessageFbBody (td, maxTpsToProvider) {
     const body = {
       to: td.to,
@@ -188,6 +230,9 @@ class InternalService {
       body.text = {
         body: td.whatsapp.text
       }
+    } else if (td.whatsapp.contentType === 'contact') {
+      body.type = 'contacts'
+      body.contacts = this.mapContacts(td.whatsapp.contact)
     } else if (td.whatsapp.contentType === 'contact') {
       body.type = 'contacts'
       body.contacts = this.mapContacts(td.whatsapp.contact)
@@ -286,7 +331,8 @@ class InternalService {
   addCallToActionButton (body, td) {
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.buttonType && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
       const pushData = { type: 'BUTTONS', buttons: [] }
-      if (td.buttonData.websiteButtontext && td.buttonData.webAddress) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
+      if (td.buttonData && td.buttonData.websiteButtontext && td.buttonData.webAddress && td.buttonData.websiteTextVarExample && isArray(td.buttonData.websiteTextVarExample) && td.buttonData.websiteTextVarExample.length > 0) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress, example: td.buttonData.websiteTextVarExample })
+      else pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
       if (td.buttonData.phoneButtonText && td.buttonData.phoneNumber) pushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.phoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
       if (pushData.buttons.length > 0) body[0].components.push(pushData)
 

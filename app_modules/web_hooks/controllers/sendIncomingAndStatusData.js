@@ -8,6 +8,7 @@ const sendToQueue = (data, wabaNumber) => {
   __logger.info('sendIncomingAndStatusData: sendToQueue(' + wabaNumber + '): Fb incoming data:', data)
   const messageRouted = q.defer()
   data.wabaNumber = wabaNumber || 0
+  __logger.info('sendIncomingAndStatusData: sendToQueue(' + wabaNumber + '): Msg-from-fb: sending to:', data && data.contacts && data.messages ? __constants.MQ.fbIncoming.q_name : __constants.MQ.fbMessageStatus.q_name)
   __db.rabbitmqHeloWhatsapp.sendToQueue(data && data.contacts && data.messages ? __constants.MQ.fbIncoming : __constants.MQ.fbMessageStatus, JSON.stringify(data)) // todo : add check for status and if not status data then push to 3rd arbitrary queue
     .then(queueResponse => {
       __logger.info('sendIncomingAndStatusData: sendToQueue(' + wabaNumber + '): Pushed data to queue: ', data && data.contacts && data.messages ? __constants.MQ.fbIncoming : __constants.MQ.fbMessageStatus)

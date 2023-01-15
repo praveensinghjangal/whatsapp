@@ -65,6 +65,7 @@ class Authentication {
           const internalFunctions = new InternalFunctions()
           return internalFunctions.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, null, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaData.userAccountIdByProvider, wabaNumber, this.userId, true)
         } else {
+          console.log('else')
           return { baseUrl: wabaData.wabizBaseUrl, apiKey: wabaData.apiKey, graphApiKey: wabaData.graphApiKey, userAccountIdByProvider: wabaData.userAccountIdByProvider, timeLeftToExpire }
         }
       })

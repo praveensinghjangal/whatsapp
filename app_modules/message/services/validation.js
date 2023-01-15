@@ -71,7 +71,8 @@ class validate {
           to: {
             type: 'string',
             required: true,
-            minLength: 1
+            minLength: 7,
+            maxLength: 15
           },
           isOptin: {
             type: 'boolean',
@@ -108,31 +109,32 @@ class validate {
               from: {
                 type: 'string',
                 required: true,
-                minLength: 1
+                minLength: 7,
+                maxLength: 15
               },
               customOne: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customTwo: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customThree: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customFour: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               campName: {
                 type: 'string',
@@ -383,7 +385,9 @@ class validate {
                 properties: {
                   type: {
                     type: 'string',
-                    required: false
+                    required: false,
+                    minLength: 4,
+                    maxLength: 20
                   },
                   header: {
                     type: 'object',
@@ -391,7 +395,9 @@ class validate {
                     properties: {
                       type: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        minLength: 4,
+                        maxLength: 20
                       },
                       text: {
                         type: 'string',
@@ -406,7 +412,8 @@ class validate {
                     properties: {
                       text: {
                         type: 'string',
-                        required: false
+                        required: false,
+                        maxLength: 1049
                       }
                     }
                   },
@@ -433,7 +440,9 @@ class validate {
                           properties: {
                             type: {
                               type: 'string',
-                              required: true
+                              required: true,
+                              minLength: 4,
+                              maxLength: 20
                             },
                             reply: {
                               type: 'object',
@@ -445,7 +454,9 @@ class validate {
                                 },
                                 title: {
                                   type: 'string',
-                                  required: true
+                                  required: true,
+                                  minLength: 1,
+                                  maxLength: 20
                                 }
                               }
 
@@ -541,7 +552,8 @@ class validate {
                   filename: {
                     type: 'string',
                     required: false,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 20
                   }
                 },
                 anyOf: [
@@ -561,16 +573,19 @@ class validate {
                   longitude: {
                     type: 'number',
                     required: true,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 20
                   },
                   latitude: {
                     type: 'number',
                     required: true,
-                    minLength: 1
+                    minLength: 1,
+                    maxLength: 20
                   },
                   name: {
                     type: 'string',
-                    required: false
+                    required: false,
+                    maxLength: 20
                   },
                   address: {
                     type: 'string',
@@ -586,7 +601,8 @@ class validate {
                   templateId: {
                     type: 'string',
                     required: true,
-                    minLength: 1
+                    minLength: 36,
+                    maxLength: 36
                   },
                   language: {
                     type: 'object',
@@ -602,7 +618,8 @@ class validate {
                       code: {
                         type: 'string',
                         required: true,
-                        minLength: 1
+                        minLength: 2,
+                        maxLength: 5
                       }
                     }
                   },
@@ -618,7 +635,7 @@ class validate {
                           type: 'string',
                           required: true,
                           minLength: 1,
-                          enum: ['header', 'body', 'footer']
+                          enum: ['header', 'body', 'footer', 'button']
                         },
                         parameters: {
                           type: 'array',
@@ -631,12 +648,25 @@ class validate {
                                 type: 'string',
                                 required: true,
                                 minLength: 1,
-                                enum: ['text', 'media', 'location']
+                                maxLength: 8,
+                                enum: ['text', 'media', 'location', 'payload']
+                              },
+                              index: {
+                                type: 'string',
+                                required: false,
+                                maxLength: 1,
+                                pattern: __constants.VALIDATOR.payload
+                              },
+                              payload: {
+                                type: 'string',
+                                required: false,
+                                maxLength: 128
                               },
                               text: {
                                 type: 'string',
                                 required: false,
-                                minLength: 1
+                                minLength: 2,
+                                maxLength: 500
                                 // pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
@@ -653,7 +683,8 @@ class validate {
                                   url: {
                                     type: 'string',
                                     required: true,
-                                    minLength: 1
+                                    minLength: 3,
+                                    maxLength: 2000
                                   },
                                   caption: {
                                     type: 'string',
@@ -663,7 +694,8 @@ class validate {
                                   filename: {
                                     type: 'string',
                                     required: false,
-                                    minLength: 1
+                                    minLength: 1,
+                                    maxLength: 20
                                   }
                                 }
                               },
@@ -675,12 +707,14 @@ class validate {
                                   longitude: {
                                     type: 'number',
                                     required: true,
-                                    minLength: 1
+                                    minLength: 1,
+                                    maxLength: 20
                                   },
                                   latitude: {
                                     type: 'number',
                                     required: true,
-                                    minLength: 1
+                                    minLength: 1,
+                                    maxLength: 20
                                   }
                                 }
                               }
@@ -697,11 +731,18 @@ class validate {
                                   type: { const: 'media' }
                                 },
                                 required: ['media']
-                              }, {
+                              },
+                              {
                                 properties: {
                                   type: { const: 'location' }
                                 },
                                 required: ['location']
+                              },
+                              {
+                                properties: {
+                                  type: { const: 'payload' }
+                                },
+                                required: ['payload']
                               }
                             ]
                           }
@@ -801,8 +842,10 @@ class validate {
           formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern') && formatedErr[formatedErr.length - 1].includes('^[a-zA-Z\\t\\\\s]*$')) {
           formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should not contain special characters')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern')) {
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes(__constants.VALIDATOR.alphanumericWithMinSpecialChar.toString())) {
           formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain special characters -() only')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes(__constants.VALIDATOR.payload.toString())) {
+          formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain value between 0-2')
         } else {
           formatedError.push(formatedErr[formatedErr.length - 1])
         }
@@ -810,37 +853,37 @@ class validate {
     })
 
     // check validation for similar fromNumber
-    const fromNumber = request[0].whatsapp.from
-    const fromNumberIsValid = request.every((obj) => obj.whatsapp.from === fromNumber)
+    const fromNumber = request && request[0] && request[0].whatsapp && request[0].whatsapp.from ? request[0].whatsapp.from : undefined
+    const fromNumberIsValid = request.every((obj) => (obj && obj.whatsapp && obj.whatsapp.from) === fromNumber)
     if (!fromNumberIsValid) {
       formatedError.push('From number should be same across the entire request body')
     }
 
     // check validation for similar value of isCampaign
-    const isCampaign = request[0].isCampaign
-    const isCampaignIsValid = request.every((obj) => obj.isCampaign === isCampaign)
+    const isCampaign = request && request[0] && request[0].isCampaign ? request[0].isCampaign : undefined
+    const isCampaignIsValid = request.every((obj) => (obj && obj.isCampaign) === isCampaign)
     if (!isCampaignIsValid) {
       formatedError.push('isCampaign value should be same across the entire request body')
     }
 
     // check validation for similar value of isChatBot
-    const isChatBot = request[0].isChatBot
-    const isChatBotIsValid = request.every((obj) => obj.isChatBot === isChatBot)
+    const isChatBot = request && request[0] && request[0].isChatBot ? request[0].isChatBot : undefined
+    const isChatBotIsValid = request.every((obj) => (obj && obj.isChatBot) === isChatBot)
     if (!isChatBotIsValid) {
       formatedError.push('isChatBot value should be same across the entire request body')
     }
 
     // all json's contentType should be same
-    const contentType = request[0].whatsapp.contentType
-    const contentTypeIsValid = request.every((obj) => obj.whatsapp.contentType === contentType)
+    const contentType = request && request[0] && request[0].whatsapp && request[0].whatsapp.contentType ? request[0].whatsapp.contentType : undefined
+    const contentTypeIsValid = request.every((obj) => (obj && obj.whatsapp && obj.whatsapp.contentType) === contentType)
     if (!contentTypeIsValid) {
       formatedError.push('contentType value should be same across the entire request body')
     }
 
     // all templates should be of same template
     if (contentTypeIsValid && request[0] && request[0].whatsapp && request[0].whatsapp.contentType === 'template') {
-      const templateId = request[0].whatsapp.template.templateId
-      const templateIdIsValid = request.every((obj) => obj.whatsapp.template.templateId === templateId)
+      const templateId = request && request[0] && request[0].whatsapp && request[0].whatsapp.template && request[0].whatsapp.template.templateId ? request[0].whatsapp.template.templateId : undefined
+      const templateIdIsValid = request.every((obj) => (obj && obj.whatsapp && obj.whatsapp.template && obj.whatsapp.template.templateId) === templateId)
       if (!templateIdIsValid) {
         formatedError.push('templateId value should be same across the entire request body')
       }
@@ -955,8 +998,11 @@ class validate {
         businessNumber: {
           type: 'string',
           required: false
+        },
+        errorMsg: {
+          type: 'string',
+          required: false
         }
-
       }
     }
 

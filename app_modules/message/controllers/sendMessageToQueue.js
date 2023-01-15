@@ -228,12 +228,12 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
       if (data.length > 0) {
         messageSent.resolve({ categoryId: data[0].message_template_category_id, buttonType: data[0].button_type, buttonData: data[0].button_data })
       } else {
-        __logger.error('sendMessageToQueue: getTemplateCategory(' + wabaPhoneNumber + '): DB Query :- Template Category not found', ['Invalid template id'])
+        __logger.error('sendMessageToQueue: getTemplateCategory(): DB Query :- No Data Found', ['Invalid template id'])
         messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
       }
     })
     .catch((err) => {
-      __logger.error('sendMessageToQueue: getTemplateCategory(' + wabaPhoneNumber + '): DB Query:', err.stack ? err.stack : err)
+      __logger.error('sendMessageToQueue: getTemplateCategory(' + wabaPhoneNumber + '): DB Query:', err)
       messageSent.reject(err)
     })
   return messageSent.promise
@@ -439,10 +439,9 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      const error = err.stack ? err.stack.split('\n', 2).join('\n') : err
-      __logger.error('send message ctrl error : ', error)
-      const telegramErrorMessage = '\nsendMessageToQueue: controller(): '
-      errorToTelegram.send(error, telegramErrorMessage)
+      __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):', err.stack ? err.stack : err)
+      const telegramErrorMessage = 'sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):'
+      errorToTelegram.send(err, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {
         delete err.type.status_code
         __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [err.type] })

@@ -263,7 +263,8 @@ class validate {
             webAddress: {
               type: 'string',
               required: false,
-              minLength: 1
+              pattern: __constants.VALIDATOR.url,
+              maxLength: 2083
             },
             secondLanguageWebsiteButtontext: {
               type: 'string',
@@ -274,6 +275,24 @@ class validate {
               type: 'string',
               required: false,
               minLength: 1
+            },
+            websiteTextVarExample: {
+              type: 'array',
+              required: !!(request.buttonData && request.buttonData.webAddress && (request.buttonData.webAddress.match(/{{\d{1}}}/g) || []).length),
+              minItems: 1,
+              maxItems: 1,
+              items: {
+                type: 'string',
+                minLength: 2,
+                maxLength: 50
+              }
+            },
+            websiteButtonType: {
+              type: 'string',
+              required: false,
+              minItems: 1,
+              maxItems: 1,
+              enum: ['static', 'dynamic']
             }
           }
         }
@@ -315,6 +334,10 @@ class validate {
     if (request.secondLanguageHeaderTextVarExample.length > 0) {
       const textVariablesArr = request.secondLanguageHeaderText.match(/{{\d{1,3}}}/g)
       if (!textVariablesArr || !textVariablesArr[0] || textVariablesArr[0] !== '{{1}}') formatedError.push('variables inside secondLanguageHeaderText does not start with {{1}}')
+    }
+    if (request.buttonData && request.buttonData.websiteTextVarExample && (request.buttonData.websiteTextVarExample.length > 0)) {
+      const textVariablesArr = request.buttonData.webAddress.match(/{{\d{1}}}/g)
+      if (!textVariablesArr || !textVariablesArr[0] || textVariablesArr[0] !== '{{1}}') formatedError.push('variables inside webAddress does not start with {{1}}')
     }
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })

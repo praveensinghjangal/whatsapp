@@ -68,7 +68,7 @@ const queueCall = (payload, userId) => {
     })
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
-      __logger.error('redirectService: queueCall(' + payload.from + '):', err)
+      __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '):', err)
       const telegramErrorMessage = 'redirectService: queueCall(): catch:: sendToHeloCampaign/sendToUser function'
       errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
