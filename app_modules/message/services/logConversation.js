@@ -12,7 +12,7 @@ class LogConversationInternalService {
     const logAdded = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addConversationLog(), [uniqueId.uuid(), conversationId, from, to, countryName, type, expiresOn, from])
       .then(result => {
-        __logger.info('Add Result then 4', { result })
+        __logger.info('logConversation: insertConversation(): Add Result then 1:', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           logAdded.resolve(true)
         } else {
@@ -20,7 +20,7 @@ class LogConversationInternalService {
         }
       })
       .catch(err => {
-        __logger.error('error in insertConversation: ', err, err ? err.toString() : '')
+        __logger.error('logConversation: insertConversation(): catch: ', err, err ? err.toString() : '')
         logAdded.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return logAdded.promise

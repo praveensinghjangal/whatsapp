@@ -18,7 +18,6 @@ var numCPUs = __config.clusterNumber || 0
 class httpApiWorker {
   constructor () {
     this.app = {}
-    // __logger.info("welcome http_api");
   }
 
   async startServer () {
@@ -26,9 +25,8 @@ class httpApiWorker {
     await __db.init().then((result) => {
       __logger.info(result)
       vm.runExpressServer()
-    }).catch((error) => {
-      console.log('11111111111111111111111111111111111111111111111111111111', error)
-      __logger.info(error)
+    }).catch((err) => {
+      __logger.error('http_api: startServer(): ', err)
       process.exit(1)
     })
   }
@@ -44,18 +42,18 @@ class httpApiWorker {
       maxAge: sixtyDaysInSeconds
     }))
     vm.app.use(helmet.frameguard({ action: 'deny' }))
-    // vm.app.use(helmet.featurePolicy({
-    //     features: {
-    //         fullscreen: ["'self'"],
-    //         vibrate: ["'none'"],
-    //         payment: ['none'],
-    //         syncXhr: ["'none'"]
-    //     }
-    // }))
-    // vm.app.use(helmet.noCache())
-    // vm.app.disable('x-powered-by');
-    // vm.app.disable(helmet.frameguard());
-    // vm.app.disable(helmet.xssFilter());
+    /* vm.app.use(helmet.featurePolicy({
+        features: {
+            fullscreen: ["'self'"],
+            vibrate: ["'none'"],
+            payment: ['none'],
+            syncXhr: ["'none'"]
+        }
+    }))
+    vm.app.use(helmet.noCache())
+    vm.app.disable('x-powered-by');
+    vm.app.disable(helmet.frameguard());
+    vm.app.disable(helmet.xssFilter()); */
     // view engine setup
     vm.app.set('views', path.join(__dirname, 'views'))
     vm.app.set('view engine', 'pug')
@@ -64,14 +62,14 @@ class httpApiWorker {
       if (!req.timedout) {
         next()
       } else {
-        __logger.error('haltOnTimedout, request timedout', { req_uuid: req.id })
+        __logger.error('http_api: haltOnTimedout, request timedout', { req_uuid: req.id })
         __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SERVER_TIMEOUT,
           data: { message: 'request from client timedout' }
         })
       }
       req.on('timeout', (time, next) => {
-        __logger.error('haltOnTimedout, server response timedout', { req_uuid: req.id })
+        __logger.error('http_api: haltOnTimedout, server response timedout', { req_uuid: req.id })
         __util.send(res, {
           type: __constants.RESPONSE_MESSAGES.SERVER_TIMEOUT,
           data: { message: 'server timed out after ' + time + ' milliseconds' }
@@ -88,6 +86,7 @@ class httpApiWorker {
     vm.app.use((req, res, next) => {
       bodyParser.json({ limit: '50mb' })(req, res, err => {
         if (err) {
+          __logger.error('http_api: bodyParser limit cross', err)
           return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: {}, data: {} })
         }
         next()
@@ -124,8 +123,8 @@ class httpApiWorker {
       vm.stopExpressServer()
       __db.close().then((result) => {
         __logger.info('success', result)
-      }).catch((error) => {
-        __logger.info('error', error)
+      }).catch((err) => {
+        __logger.error('http_api: stopGraceFully(): ', err.stack)
         process.exit(0)
       })
     }

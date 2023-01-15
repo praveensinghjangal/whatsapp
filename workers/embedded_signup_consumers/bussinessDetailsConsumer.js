@@ -32,6 +32,7 @@ const markManagerVerified = (authTokenOfWhatsapp) => {
       }
     })
     .catch(err => {
+      __logger.error('businessDetailsConsumer: markManagerVerified(): catch:', err)
       markedVerified.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return markedVerified.promise
@@ -58,6 +59,7 @@ const sendBusinessForApproval = (authTokenOfWhatsapp, serviceProviderId) => {
       }
     })
     .catch(err => {
+      __logger.error('businessDetailsConsumer: sendBusinessForApproval(): catch:', err)
       sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return sentForApproval.promise
@@ -81,6 +83,7 @@ const setProfileStatus = (authTokenOfWhatsapp, userId, serviceProviderId, wabaPr
       sentForApproval.resolve(data)
     })
     .catch(err => {
+      __logger.error('businessDetailsConsumer: setProfileStatus(): catch:', err)
       sentForApproval.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
   return sentForApproval.promise
@@ -97,26 +100,25 @@ class BussinessDetailsConsumer {
             const bussinessDetailsConsumerData = JSON.parse(mqData.content.toString())
             // userId, providerId, phoneCode, phoneNumber, phoneCertificate, systemUserToken, wabaIdOfClient, authTokenOfWhatsapp
             const { authTokenOfWhatsapp, providerId, userId } = bussinessDetailsConsumerData
-            console.log('bussinessDetailsConsumerData-data', authTokenOfWhatsapp, providerId, userId)
             const retryCount = bussinessDetailsConsumerData.retryCount || 0
             markManagerVerified(authTokenOfWhatsapp)
               .then(data => {
-                console.log('markManagerVerified-data', data)
+                __logger.info('businessDetailsConsumer: markManagerVerified(): then 1:', data)
                 return sendBusinessForApproval(authTokenOfWhatsapp, providerId)
               })
               .then(data => {
-                console.log('sendBusinessForApproval-data', data)
+                __logger.info('businessDetailsConsumer: markManagerVerified(): then 2:', data)
                 // put status "pending for approval"
                 return setProfileStatus(authTokenOfWhatsapp, userId, providerId, __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode)
               })
               .then(response => {
-                console.log('setProfileStatus-data', response)
+                __logger.info('businessDetailsConsumer: markManagerVerified(): then 3:', response)
                 // after this worker now in which worker we have send data
                 rmqObject.sendToQueue(__constants.MQ.spawningContainerConsumerQueue, JSON.stringify(bussinessDetailsConsumerData))
                 rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr', err, bussinessDetailsConsumerData)
+                __logger.error('businessDetailsConsumer: markManagerVerified(): catch:', err)
                 if (err) {
                   if (retryCount < 2) {
                     const oldObj = JSON.parse(mqData.content.toString())
@@ -129,13 +131,13 @@ class BussinessDetailsConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            console.log('err')
+            __logger.error('businessDetailsConsumer: startServer(): try/catch:', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        __logger.error('facebook incoming message QueueConsumer::error: ', err)
+        __logger.error('businessDetailsConsumer: startServer(): catch:', err)
         process.exit(1)
       })
 
@@ -151,7 +153,7 @@ class BussinessDetailsConsumer {
 }
 class Worker extends BussinessDetailsConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('businessDetailsConsumer: ' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

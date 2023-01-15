@@ -30,7 +30,7 @@ const ValidatonService = require('../services/validation')
  */
 
 const getMessageTransactionstatusList = (req, res) => {
-  __logger.info('Get Message Transaction List API Called', req.query, req.user)
+  __logger.info('GetMessageTransactionList: API Called: req:', { reqQuery: req.query, reqUser: req.user })
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -46,12 +46,12 @@ const getMessageTransactionstatusList = (req, res) => {
   validate.transactionValidator(req.query)
     .then(invalid => dbServices.getMessageTransactionList(userId, req.query.startDate, req.query.endDate, flag, ItemsPerPage, offset, sort, wabaPhoneNumber))
     .then(data => {
-      __logger.info('Data------> then 2')
+      __logger.info('GetMessageTransactionList: validate: then 2:', data)
       const pagination = { totalPage: Math.ceil(data[1][0].totalCount / ItemsPerPage), currentPage: requiredPage }
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })
     .catch(err => {
-      __logger.error('error::getMessageTransactionList : ', err)
+      __logger.info('GetMessageTransactionList: API Called: catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }

@@ -89,7 +89,7 @@ const getTemplateInfo = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: finalResult })
     })
     .catch(err => {
-      __logger.error('error in create get template info: ', err.toString())
+      __logger.error('error in create get template info: ', err)
       if (err && err.type && err.type.code && err.type.code === __constants.RESPONSE_MESSAGES.ALL_STATUS_NOT_UPDATED.code) {
         err = { type: err.err[0], data: {} }
       }

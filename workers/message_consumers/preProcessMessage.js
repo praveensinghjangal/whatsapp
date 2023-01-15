@@ -14,7 +14,7 @@ const rejectionHandler = require('../../lib/util/rejectionHandler')
 const _ = require('lodash')
 const qalllib = require('qalllib')
 const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
-/// only for single or for multiple ???????
+/// only for single or for multiple message ???????
 const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, statusName = null) => {
   const statusSent = q.defer()
   const messageHistoryService = new MessageHistoryService()
@@ -45,7 +45,10 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
       return redirectService.webhookPost(statusData.to, statusData)
     })
     .then(data => statusSent.resolve(data))
-    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => {
+      __logger.error('preProcessMessage: saveAndSendMessageStatus(): addMessageHistoryDataService():', err)
+      statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
   return statusSent.promise
 }
 
@@ -76,7 +79,8 @@ const sendToQueue = (data, config, currentQueueName) => {
     .then(queueResponse => saveAndSendMessageStatus(data))
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: data.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour }))
     .catch(err => {
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueue function ~ error in sendToQueue and saveAndSendMessageStatus '
+      __logger.error('preProcessMessage: sendToQueue(): sendToQueue():', err, queueObj)
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): error in sendToQueue and saveAndSendMessageStatus '
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
     })
@@ -88,7 +92,8 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
   qalllib.qASyncWithBatch(sendToQueue, data, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, config, currentQueueName)
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (error) {
-      const telegramErrorMessage = 'sendMessageToQueue ~ sendToQueueBulk function ~ error in sendToQueueBulk'
+      __logger.error('preProcessMessage: sendToQueueBulk(): qASyncWithBatch(): Error while sending in bulk')
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk(): error in sendToQueueBulk'
       errorToTelegram.send(error, telegramErrorMessage)
       return sendSingleMessage.reject(error)
     })
@@ -96,177 +101,177 @@ const sendToQueueBulk = (data, config, currentQueueName) => { // function to pus
   return sendSingleMessage.promise
 }
 // insert not veridfied with rejetced status
-// const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersThatNeedsToBeChecked) => {
-//   const messageStatus = q.defer()
-//   const audienceService = new AudienceService()
-//   const notVerifiedAudiencesPhoneNumbersInDB = {} // without "+"
-//   const notVerifiedAudiencesPhoneNumbersNotInDb = {} // without "+"
-//   const updateAudiencesBody = []
-//   const addAudiencesBody = []
-//   let verifiedNumbers = []
-//   let audMappingId
-//   const notVerifiedPhoneNumber = []
-//   let audienceData
-//   if (!toNumbersThatNeedsToBeChecked.length) {
-//     messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
-//     return messageStatus.promise
-//   }
-//   audienceService.getWabaPhoneNumber(fromNumber)
-//     .then(data => {
-//       if (data && data.audMappingId) {
-//         audMappingId = data.audMappingId
-//         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
-//       } else {
-//         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
-//       }
-//     })
-//     .then(data => {
-//       // notVerifiedAudiences = (audiences not present in payloadsToBeCheckedForVerified + audiences not verified in data)
-//       const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
-//       const phoneNumbersPresentInDB = []
-//       const phoneNumbersToBeCheckedWithFb = []
-//       const numbersFromDataBase = []
-//       for (let i = 0; i < data.length; i++) {
-//         phoneNumbersPresentInDB.push(data[i].phoneNumber)
-//         if (!data[i].isFacebookVerified) {
-//           notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
-//           phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
-//         } else {
-//           alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
-//         }
-//         verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-//         // get all the audiences not present in db's audiences table
-//         for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-//           const toNumber = toNumbersThatNeedsToBeChecked[i]
-//           if (!phoneNumbersPresentInDB.includes(toNumber)) {
-//             phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
-//             notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
-//           }
-//         }
-//       }
-//       // remove dublicate from array
-//       const afterRemoveDublicate = [...new Set(toNumbersThatNeedsToBeChecked)]
-//       if (data.length !== afterRemoveDublicate.length) {
-//         for (let i = 0; i < data.length; i++) {
-//           if (data[i].phoneNumber) {
-//             numbersFromDataBase.push(data[i].phoneNumber)
-//           }
-//         }
-//         const notVerifiedAudiencesNumbers = _.differenceBy(toNumbersThatNeedsToBeChecked, numbersFromDataBase)
-//         if (notVerifiedAudiencesNumbers.length && notVerifiedAudiencesNumbers) {
-//           notVerifiedPhoneNumber.push(...notVerifiedAudiencesNumbers)
-//         }
-//         // console.log('data.length is not equal to', data)
-//         // for(let i = 0; )
-//         // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-//         //   console.log('inside for loop', toNumbersThatNeedsToBeChecked[i])
-//         //   if (!data.includes(toNumbersThatNeedsToBeChecked[i])) {
-//         //     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', toNumbersThatNeedsToBeChecked[i])
-//         //     notVerifiedPhoneNumber.push(toNumbersThatNeedsToBeChecked[i])
-//         //     console.log('notVerifiedPhoneNumber 1111111111111111111111', notVerifiedPhoneNumber)
-//         //   }
-//         // }
-//         // const numberNotInAudience = _.differenceBy(toNumbersThatNeedsToBeChecked, data)
-//         // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', numberNotInAudience)
-//         // notVerifiedPhoneNumber.push(numberNotInAudience)
-//       }
-//       // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
-//       // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
-//       // // get all the audiences not present in db's audiences table
-//       // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
-//       //   const toNumber = toNumbersThatNeedsToBeChecked[i]
-//       //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
-//       //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
-//       //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
-//       //   }
-//       // }
-//       // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
-//       // changes  write now
-//       const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
-//       return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
+/* const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersThatNeedsToBeChecked) => {
+  const messageStatus = q.defer()
+  const audienceService = new AudienceService()
+  const notVerifiedAudiencesPhoneNumbersInDB = {} // without "+"
+  const notVerifiedAudiencesPhoneNumbersNotInDb = {} // without "+"
+  const updateAudiencesBody = []
+  const addAudiencesBody = []
+  let verifiedNumbers = []
+  let audMappingId
+  const notVerifiedPhoneNumber = []
+  let audienceData
+  if (!toNumbersThatNeedsToBeChecked.length) {
+    messageStatus.resolve({ verifiedNumbers: toNumbersThatNeedsToBeChecked, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
+    return messageStatus.promise
+  }
+  audienceService.getWabaPhoneNumber(fromNumber)
+    .then(data => {
+      if (data && data.audMappingId) {
+        audMappingId = data.audMappingId
+        return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
+      } else {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
+      }
+    })
+    .then(data => {
+      // notVerifiedAudiences = (audiences not present in payloadsToBeCheckedForVerified + audiences not verified in data)
+      const alreadyVerifiedAudiencesPhoneNumbersInDB = [] // without "+"
+      const phoneNumbersPresentInDB = []
+      const phoneNumbersToBeCheckedWithFb = []
+      const numbersFromDataBase = []
+      for (let i = 0; i < data.length; i++) {
+        phoneNumbersPresentInDB.push(data[i].phoneNumber)
+        if (!data[i].isFacebookVerified) {
+          notVerifiedAudiencesPhoneNumbersInDB[data[i].phoneNumber] = 1
+          phoneNumbersToBeCheckedWithFb.push(`+${data[i].phoneNumber}`)
+        } else {
+          alreadyVerifiedAudiencesPhoneNumbersInDB.push(data[i].phoneNumber)
+        }
+        verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+        // get all the audiences not present in db's audiences table
+        for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+          const toNumber = toNumbersThatNeedsToBeChecked[i]
+          if (!phoneNumbersPresentInDB.includes(toNumber)) {
+            phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+            notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+          }
+        }
+      }
+      // remove dublicate from array
+      const afterRemoveDublicate = [...new Set(toNumbersThatNeedsToBeChecked)]
+      if (data.length !== afterRemoveDublicate.length) {
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].phoneNumber) {
+            numbersFromDataBase.push(data[i].phoneNumber)
+          }
+        }
+        const notVerifiedAudiencesNumbers = _.differenceBy(toNumbersThatNeedsToBeChecked, numbersFromDataBase)
+        if (notVerifiedAudiencesNumbers.length && notVerifiedAudiencesNumbers) {
+          notVerifiedPhoneNumber.push(...notVerifiedAudiencesNumbers)
+        }
+        // console.log('data.length is not equal to', data)
+        // for(let i = 0; )
+        // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+        //   console.log('inside for loop', toNumbersThatNeedsToBeChecked[i])
+        //   if (!data.includes(toNumbersThatNeedsToBeChecked[i])) {
+        //     console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', toNumbersThatNeedsToBeChecked[i])
+        //     notVerifiedPhoneNumber.push(toNumbersThatNeedsToBeChecked[i])
+        //     console.log('notVerifiedPhoneNumber 1111111111111111111111', notVerifiedPhoneNumber)
+        //   }
+        // }
+        // const numberNotInAudience = _.differenceBy(toNumbersThatNeedsToBeChecked, data)
+        // console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', numberNotInAudience)
+        // notVerifiedPhoneNumber.push(numberNotInAudience)
+      }
+      // verifiedNumbers = [...verifiedNumbers, ...alreadyVerifiedAudiencesPhoneNumbersInDB]
+      // console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', phoneNumbersToBeCheckedWithFb)
+      // // get all the audiences not present in db's audiences table
+      // for (let i = 0; i < toNumbersThatNeedsToBeChecked.length; i++) {
+      //   const toNumber = toNumbersThatNeedsToBeChecked[i]
+      //   if (!phoneNumbersPresentInDB.includes(toNumber)) {
+      //     phoneNumbersToBeCheckedWithFb.push(`+${toNumber}`)
+      //     notVerifiedAudiencesPhoneNumbersNotInDb[toNumber] = 1
+      //   }
+      // }
+      // notVerifiedAudiencesPhoneNumbersInDB = [...notVerifiedAudiencesPhoneNumbersInDB, ...notVerifiedAudiencesPhoneNumbersNotInDb]
+      // changes  write now
+      const audienceService = new integrationService.Audience(messageData.config.servicProviderId, messageData.config.maxTpsToProvider, messageData.config.userId)
+      return audienceService.saveOptin(fromNumber, phoneNumbersToBeCheckedWithFb)
 
-//       // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
+      // todo: call facebook api to get the status of all the "not verified numbers". Check if status is valid or not
 
-//       // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
+      // todo: get the list of all the verified numbers (this list & alreadyVerifiedAudiencesPhoneNumbersInDB will be returned by this function, so that only these numbers will be passed further in the next step) and segregate them based on => present in db & not present in db
 
-//       // todo: for numbers already present in db =>  make their status isFacebookVerified to true in our db
-//       // todo: for numbers not present in db => create new entries in audiences table
-//     })
-//     .then((optinData) => {
-//       // optinData = [
-//       //   {
-//       //     input: '+918551834297',
-//       //     status: 'valid',
-//       //     wa_id: '918551834297'
-//       //   }]
-//       // optinData = [
-//       //   {
-//       //     input: '+917666220077',
-//       //     status: 'valid',
-//       //     wa_id: '917666220077'
-//       //   },
-//       //   {
-//       //     input: '+918097353703',
-//       //     status: 'valid',
-//       //     wa_id: '918097353703'
-//       //   }
-//       // ]
-//       const uniqueId = new UniqueId()
-//       for (let i = 0; i < optinData.length; i++) {
-//         const contactNumber = optinData[i].wa_id // without "+"
-//         if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
-//           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
-//             updateAudiencesBody.push(contactNumber)
-//             verifiedNumbers.push(contactNumber)
-//           } else {
-//             notVerifiedPhoneNumber.push(contactNumber)
-//           }
-//         } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
-//           audienceData = {
-//             audienceId: uniqueId.uuid(),
-//             phoneNumber: contactNumber,
-//             channel: __constants.DELIVERY_CHANNEL.whatsapp,
-//             createdBy: messageData.config.userId,
-//             isFacebookVerified: 1,
-//             countryCode: __constants.DEFAULT_COUNTRY_CODE,
-//             wabaPhoneNumber: audMappingId
-//           }
-//           if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
-//             audienceData.isFacebookVerified = 1
-//             verifiedNumbers.push(contactNumber)
-//           } else {
-//             audienceData.isFacebookVerified = 0
-//           }
-//           const queryParam = []
-//           _.each(audienceData, (val) => queryParam.push(val))
-//           addAudiencesBody.push(queryParam)
-//         }
-//       }
-//       if (updateAudiencesBody && updateAudiencesBody.length) {
-//         return audienceService.updateAudiencesAsFaceBookVerified(audMappingId, updateAudiencesBody, messageData.config.userId)
-//       }
-//       return true
-//     })
-//     .then(data => {
-//       // add new audiences
-//       if (addAudiencesBody && addAudiencesBody.length) {
-//         return audienceService.addAudineceToDbInBulk(addAudiencesBody, audMappingId)
-//       }
-//       return true
-//     })
-//     .then(data => {
-//       console.log('00000000000000000000000000000000000000000000000000000000000000000000000000000', notVerifiedPhoneNumber)
-//       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
-//     })
-//     .catch(err => {
-//       console.log('11111111111111111111111111111111111111111111111111', err)
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
-//       errorToTelegram.send(err, telegramErrorMessage)
-//       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
-//       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
-//     })
-//   return messageStatus.promise
-// }
+      // todo: for numbers already present in db =>  make their status isFacebookVerified to true in our db
+      // todo: for numbers not present in db => create new entries in audiences table
+    })
+    .then((optinData) => {
+      // optinData = [
+      //   {
+      //     input: '+918551834297',
+      //     status: 'valid',
+      //     wa_id: '918551834297'
+      //   }]
+      // optinData = [
+      //   {
+      //     input: '+917666220077',
+      //     status: 'valid',
+      //     wa_id: '917666220077'
+      //   },
+      //   {
+      //     input: '+918097353703',
+      //     status: 'valid',
+      //     wa_id: '918097353703'
+      //   }
+      // ]
+      const uniqueId = new UniqueId()
+      for (let i = 0; i < optinData.length; i++) {
+        const contactNumber = optinData[i].wa_id // without "+"
+        if (contactNumber in notVerifiedAudiencesPhoneNumbersInDB) {
+          if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
+            updateAudiencesBody.push(contactNumber)
+            verifiedNumbers.push(contactNumber)
+          } else {
+            notVerifiedPhoneNumber.push(contactNumber)
+          }
+        } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
+          audienceData = {
+            audienceId: uniqueId.uuid(),
+            phoneNumber: contactNumber,
+            channel: __constants.DELIVERY_CHANNEL.whatsapp,
+            createdBy: messageData.config.userId,
+            isFacebookVerified: 1,
+            countryCode: __constants.DEFAULT_COUNTRY_CODE,
+            wabaPhoneNumber: audMappingId
+          }
+          if (optinData[i].status === __constants.FACEBOOK_RESPONSES.valid.displayName) {
+            audienceData.isFacebookVerified = 1
+            verifiedNumbers.push(contactNumber)
+          } else {
+            audienceData.isFacebookVerified = 0
+          }
+          const queryParam = []
+          _.each(audienceData, (val) => queryParam.push(val))
+          addAudiencesBody.push(queryParam)
+        }
+      }
+      if (updateAudiencesBody && updateAudiencesBody.length) {
+        return audienceService.updateAudiencesAsFaceBookVerified(audMappingId, updateAudiencesBody, messageData.config.userId)
+      }
+      return true
+    })
+    .then(data => {
+      // add new audiences
+      if (addAudiencesBody && addAudiencesBody.length) {
+        return audienceService.addAudineceToDbInBulk(addAudiencesBody, audMappingId)
+      }
+      return true
+    })
+    .then(data => {
+      console.log('00000000000000000000000000000000000000000000000000000000000000000000000000000', notVerifiedPhoneNumber)
+      return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedAudeienceNumbers: notVerifiedPhoneNumber })
+    })
+    .catch(err => {
+      console.log('11111111111111111111111111111111111111111111111111', err)
+      const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+      errorToTelegram.send(err, telegramErrorMessage)
+      __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
+      messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
+  return messageStatus.promise
+} */
 
 const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersThatNeedsToBeChecked) => {
   const messageStatus = q.defer()
@@ -289,6 +294,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
         audMappingId = data.audMappingId
         return audienceService.getAudiencesVerified(toNumbersThatNeedsToBeChecked, fromNumber)
       } else {
+        __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): getWabaPhoneNumber(' + fromNumber + '): Waba phone number not found....')
         rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid waba phone number'] })
       }
     })
@@ -334,44 +340,44 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       // todo: for numbers not present in db => create new entries in audiences table
     })
     .then((optinData) => {
-      // optinData = [
-      //   {
-      //     input: '+910000000001',
-      //     status: 'valid',
-      //     wa_id: '910000000001'
-      //   },
-      //   {
-      //     input: '+910000000002',
-      //     status: 'valid',
-      //     wa_id: '910000000002'
-      //   },
-      //   {
-      //     input: '+910000000003',
-      //     status: 'invalid',
-      //     wa_id: '910000000003'
-      //   },
-      //   {
-      //     input: '+910000000004',
-      //     status: 'valid',
-      //     wa_id: '910000000004'
-      //   },
-      //   {
-      //     input: '+910000000005',
-      //     status: 'invalid',
-      //     wa_id: '910000000005'
-      //   },
-      //   {
-      //     input: '+910000000006',
-      //     status: 'valid',
-      //     wa_id: '910000000006'
-      //   },
-      //   {
-      //     input: '+910000000007',
-      //     status: 'invalid',
-      //     wa_id: '910000000007'
-      //   }
+      /* optinData = [
+        {
+          input: '+910000000001',
+          status: 'valid',
+          wa_id: '910000000001'
+        },
+        {
+          input: '+910000000002',
+          status: 'valid',
+          wa_id: '910000000002'
+        },
+        {
+          input: '+910000000003',
+          status: 'invalid',
+          wa_id: '910000000003'
+        },
+        {
+          input: '+910000000004',
+          status: 'valid',
+          wa_id: '910000000004'
+        },
+        {
+          input: '+910000000005',
+          status: 'invalid',
+          wa_id: '910000000005'
+        },
+        {
+          input: '+910000000006',
+          status: 'valid',
+          wa_id: '910000000006'
+        },
+        {
+          input: '+910000000007',
+          status: 'invalid',
+          wa_id: '910000000007'
+        }
+      ] */
 
-      // ]
       const uniqueId = new UniqueId()
       for (let i = 0; i < optinData.length; i++) {
         // const contactNumber = optinData[i].wa_id // without "+"
@@ -387,7 +393,7 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
             notVerifiedPhoneNumber.push(contactNumber)
           }
         } else if (contactNumber in notVerifiedAudiencesPhoneNumbersNotInDb) {
-          /// check facebook verified and not in database also
+          // check facebook verified and not in database also
           audienceData = {
             audienceId: uniqueId.uuid(),
             phoneNumber: contactNumber,
@@ -424,30 +430,27 @@ const checkIsVerifiedAudiencesTrueOrFalse = (messageData, fromNumber, toNumbersT
       return true
     })
     .then(data => {
-      // console.log('00000000000000000000000000000000000 verifiedNumbers', verifiedNumbers)
-      // console.log('1111111111111111111111111111111111 notVerifiedPhoneNumber', notVerifiedPhoneNumber)
       return messageStatus.resolve({ verifiedNumbers: verifiedNumbers, notVerifiedNumbers: notVerifiedPhoneNumber })
     })
     .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+      const telegramErrorMessage = 'preProcessMessage: checkIsVerifiedTrueOrFalse(): sendToRespectiveProviderQueue() catch: '
       errorToTelegram.send(err, telegramErrorMessage)
-      __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
+      __logger.error('preProcessMessage: checkIsVerifiedTrueOrFalse(): sendToRespectiveProviderQueue() catch: ', err)
       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return messageStatus.promise
 }
 
 const setStatusToRejectedForNonVerifiedNumbers = (notVerifiedPayloadArr, serviceProviderId) => {
-  // console.log('22222222222222222222222222222222222 ----------notVerifiedPayloadArr', notVerifiedPayloadArr)
   const setStatusToRejected = q.defer()
   qalllib.qASyncWithBatch(saveAndSendMessageStatusForNotVerfiedNumber, notVerifiedPayloadArr, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, serviceProviderId)
     .then(data => {
       setStatusToRejected.resolve([...data.resolve, ...data.reject])
     })
     .catch(function (error) {
+      __logger.error('preProcessMessage: setStatusToRejectedForNonVerifiedNumbers(): catcch:', error)
       const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
       errorToTelegram.send(error, telegramErrorMessage)
-      console.log('errror', error)
       return setStatusToRejected.reject(error)
     })
     .done()
@@ -561,7 +564,7 @@ class PreProcessQueueConsumer {
                 // console.log('finalPayloadArr', finalPayloadArr)
               })
               .then((sendToQueueRes) => {
-                __logger.info('sendMessageToQueue :: message sentt to queue then 3', { sendToQueueRes })
+                __logger.info('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): then 2:', { sendToQueueRes })
                 // console.warn('------------ notVerifiedNumbers :: ', notVerifiedNumbers)
                 if (notVerifiedNumbers && notVerifiedNumbers.length) {
                   // console.warn('------------------ in if condition')
@@ -581,7 +584,7 @@ class PreProcessQueueConsumer {
                 }
               })
               .then((data) => {
-                __logger.info('sendMessageToQueue :: message sentt to queue then 3', { data })
+                __logger.info('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): then 4', { data })
                 rmqObject.channel[queue].ack(mqData)
                 // if ((!sendToQueueRes || sendToQueueRes.length === 0)) {
                 //   __util.send(res, { type: __constants.RESPONSE_MESSAGES.FAILED, data: [] })
@@ -590,7 +593,7 @@ class PreProcessQueueConsumer {
                 // }
               })
               .catch(err => {
-                console.log('send message ctrl error : ', err)
+                __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): main catch:', err)
                 const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
                 errorToTelegram.send(err, telegramErrorMessage)
                 // if (err && err.type && err.type.code && err.type.code === 3021) {
@@ -610,7 +613,7 @@ class PreProcessQueueConsumer {
             const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ preProcessQueueConsumer::error while parsing:'
             errorToTelegram.send(err, telegramErrorMessage)
 
-            __logger.error('preProcessQueueConsumer::error while parsing: ', err)
+            __logger.error('preProcessMessage: error while parsing: try/catch:', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, {
@@ -618,14 +621,14 @@ class PreProcessQueueConsumer {
         })
       })
       .catch(err => {
-        const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
+        __logger.error('preProcessMessage: db.init(): catch:', err)
+        const telegramErrorMessage = 'preProcessMessage: db.init(): catch:'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('preProcessQueueConsumer::error: ', err)
         process.exit(1)
       })
     // } else {
     //   errorToTelegram.send({}, 'ProcessMessageConsumer error: no such queue object exists with name')
-    //   __logger.error('preProcessQueueConsumer::error: no such queue object exists with name', __config.mqObjectKey)
+    //   __logger.error('preProcessMessage: error: no such queue object exists with name', __config.mqObjectKey)
     //   process.exit(1)
     // }
 
@@ -642,7 +645,7 @@ class PreProcessQueueConsumer {
 
 class Worker extends PreProcessQueueConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('preProcessMessage: ' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

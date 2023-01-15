@@ -14,11 +14,11 @@ class WabDataService {
   }
 
   checkWabaIdExist (wabaInformationId) {
-    __logger.info('checkWabaIdExist::>>>>>>>>>>...', wabaInformationId)
+    __logger.info('wabaDataService: checkWabaIdExist(): ', wabaInformationId)
     const doesWabaIdExist = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaIdFromWabaNoMapping(), [wabaInformationId])
       .then(result => {
-        __logger.info('result then 2', result)
+        __logger.info('wabaDataService: checkWabaIdExist(): then 1:', result)
         if (result && result.length > 0) {
           doesWabaIdExist.resolve({ record: result[0], exists: true })
         } else {
@@ -26,7 +26,7 @@ class WabDataService {
         }
       })
       .catch(err => {
-        __logger.error('error in checkWabaIdExist function: ', err)
+        __logger.error('wabaDataService: checkWabaIdExist(): catch:', err)
         doesWabaIdExist.reject(false)
       })
     return doesWabaIdExist.promise
@@ -34,9 +34,8 @@ class WabDataService {
 
   /* Service to add the waba mapping data  */
   addWabaNoMappingData (wabaInformationId, wabaNoMappingData, wabaNoMappingOldData, userId) {
-    __logger.info('addWabaNoMappingData::>>>>>>>>>>...', wabaNoMappingOldData)
+    __logger.info('wabaDataService: addWabaNoMappingData(): ', wabaNoMappingOldData)
     const dataInserted = q.defer()
-    __logger.info('Inputs addWabaNoMappingData userId', wabaInformationId)
     const wabaNoMappingObj = {
       wabaInformationId: wabaNoMappingData && wabaNoMappingData.wabaInformationId ? wabaNoMappingData.wabaInformationId : wabaNoMappingOldData.wabaInformationId,
       wabaPhoneNumber: wabaNoMappingData && wabaNoMappingData.wabaPhoneNumber ? wabaNoMappingData.wabaPhoneNumber : wabaNoMappingOldData.wabaPhoneNumber,
@@ -45,7 +44,7 @@ class WabDataService {
     saveHistoryData(wabaNoMappingOldData, __constants.ENTITY_NAME.AUD_WABA_NO_MAPPING, wabaNoMappingOldData.wabaInformationId, userId)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaNoMappingData(), [wabaNoMappingObj.audMappingId, wabaNoMappingObj.wabaPhoneNumber, wabaNoMappingObj.wabaInformationId, userId])
       .then(result => {
-        __logger.info('Insert Result', { result })
+        __logger.info('wabaDataService: addWabaNoMappingData(): then 1:', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(wabaNoMappingObj)
         } else {
@@ -53,7 +52,7 @@ class WabDataService {
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('wabaDataService: addWabaNoMappingData(): catch:', err)
         dataInserted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return dataInserted.promise
@@ -62,7 +61,7 @@ class WabDataService {
   /* Service to update the waba mapping data  */
   updateWabaNoMappingData (userId, wabaNoMappingData, wabaNoMappingOldData) {
     const dataUpdated = q.defer()
-    __logger.info('Inputs updateWabaNoMappingData userId', userId, wabaNoMappingData, wabaNoMappingOldData)
+    __logger.info('wabaDataService: updateWabaNoMappingData():', userId, wabaNoMappingData, wabaNoMappingOldData)
     saveHistoryData(wabaNoMappingOldData, __constants.ENTITY_NAME.AUD_WABA_NO_MAPPING, wabaNoMappingOldData.wabaInformationId, userId)
     const wabaNoMappingObj = {
       wabaInformationId: wabaNoMappingData && wabaNoMappingData.wabaInformationId ? wabaNoMappingData.wabaInformationId : wabaNoMappingOldData.wabaInformationId,
@@ -77,7 +76,7 @@ class WabDataService {
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('wabaDataService: updateWabaNoMappingData(): catch:', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise

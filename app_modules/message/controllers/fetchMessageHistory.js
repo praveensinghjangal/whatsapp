@@ -24,13 +24,13 @@ const ValidatonService = require('../services/validation')
  */
 
 const getMessageHistoryRecordById = (req, res) => {
-  __logger.info('Get Message History Info API Called', req.params)
+  __logger.info('fetchMessageHistory: API Called: req.body: ', { req: req.params })
   const messageHistoryService = new MessageHistoryService()
   const validate = new ValidatonService()
   validate.checkMessageIdExistService(req.params)
     .then(data => messageHistoryService.getMessageHistoryTableDataWithId(req.params.messageId, req.params.date))
     .then(result => {
-      __logger.info('then 1', { result })
+      __logger.info('fetchMessageHistory: checkMessageIdExistService(): then 2:', { result })
       if (result) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       } else {
@@ -38,7 +38,7 @@ const getMessageHistoryRecordById = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('error in create user function: ', err)
+      __logger.error('fetchMessageHistory: checkMessageIdExistService(): catch:', err)
       __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
 }

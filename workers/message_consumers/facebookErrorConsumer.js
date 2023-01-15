@@ -52,9 +52,8 @@ const saveAndSendMessageStatusformFacebookerrorQueue = (payload, servicProviderI
       return saveAndSendMessageStatusformFacebookerrorQueue.resolve(data)
     })
     .catch(function (error) {
-      const telegramErrorMessage = 'facebookErrorConsumer ~ saveAndSendMessageStatusformFacebookerrorQueue function ~ error in saveAndSendMessageStatusformFacebookerrorQueue'
+      const telegramErrorMessage = 'facebookErrorConsumer: saveAndSendMessageStatusformFacebookerrorQueue(): error in saveAndSendMessageStatusformFacebookerrorQueue'
       errorToTelegram.send(error, telegramErrorMessage)
-      console.log('errror', error)
       return saveAndSendMessageStatusformFacebookerrorQueue.reject(error)
     })
     .done()
@@ -78,13 +77,13 @@ class facebookErrorConsumer {
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
               .catch(err => {
-                const telegramErrorMessage = 'sendAfterToFacebookerrorQueue ~ facebook error queue consumer::error:'
+                const telegramErrorMessage = 'sendAfterToFacebookerrorQueue: facebook error queue consumer::error:'
                 __logger.error('facebook error queue consumer::error: ', err)
                 errorToTelegram.send(err, telegramErrorMessage)
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
           } catch (err) {
-            const telegramErrorMessage = 'sendToFacebookerrorQueue ~ facebook queue::error while parsing: '
+            const telegramErrorMessage = 'sendToFacebookerrorQueue: facebook queue::error while parsing: '
             errorToTelegram.send(err, telegramErrorMessage)
             __logger.error('facebook queue consumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
@@ -92,7 +91,7 @@ class facebookErrorConsumer {
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'sendToFacebookerrorQueue ~ facebook queue::Main error in catch block'
+        const telegramErrorMessage = 'sendToFacebookerrorQueue: facebook queue::Main error in catch block'
         errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook error queue consumer::error: ', err)
         process.exit(1)

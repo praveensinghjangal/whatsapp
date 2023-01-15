@@ -29,7 +29,7 @@ const DbServices = require('../services/dbData')
  */
 
 const getMessageStatusList = (req, res) => {
-  __logger.info('Get Message Status List API Called', req.params, req.query)
+  __logger.info('GetMessageStatusList: API Called: req:', { req: req.params, reqQuery: req.query })
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   if (isNaN(req.query.page)) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: 'Page value is required and it should be number' })
@@ -38,7 +38,7 @@ const getMessageStatusList = (req, res) => {
   const requiredPage = req.query.page ? +req.query.page : 1
   const ItemsPerPage = +req.query.ItemsPerPage
   const offset = ItemsPerPage * (requiredPage - 1)
-  __logger.info('Get Offset value', offset)
+  __logger.info('GetMessageStatusList: Get Offset value', offset)
   validate.checkstartDateAndendDate(req.query)
     .then(invalid => dbServices.getMessageStatusList(req.params.status, req.query.startDate, req.query.endDate, ItemsPerPage, offset, wabaPhoneNumber))
     .then(data => {
@@ -47,7 +47,7 @@ const getMessageStatusList = (req, res) => {
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: data[0], pagination } })
     })
     .catch(err => {
-      __logger.error('error::getMessageStatusList : ', err)
+      __logger.error('GetMessageStatusList: validate: catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
