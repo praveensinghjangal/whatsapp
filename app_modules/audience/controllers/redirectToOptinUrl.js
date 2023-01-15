@@ -25,7 +25,11 @@ const redirectToOptinUrl = (req, res) => {
   const redisService = new RedisService()
   redisService.getWabaDataByPhoneNumber(req.params.wabaNumber)
     .then((data) => {
-      __logger.info('redirectToOptinUrl: redirectToOptinUrl(): got optin text', data.optinText)
+      __logger.info('got Optin text----', data.optinText)
+      if (req.params.wabaNumber === '917666118800') {
+        res.redirect('http://onetouchupgrades.in/one_touch/one_touch.html')
+        return
+      }
       res.redirect(`${__constants.WA_ME_URL}/${req.params.wabaNumber}?text=${data.optinText}`)
     })
     .catch(err => {

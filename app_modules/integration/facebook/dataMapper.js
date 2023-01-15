@@ -413,7 +413,7 @@ class DataMapper {
     const internalService = new InternalService()
     internalService.sendMessageFbBody(data, maxTpsToProvider)
       .then(body => {
-        __logger.info('dataMapper: sendMessage(): fb req body:', JSON.stringify(body))
+        __logger.info('dataMapper: sendMessage(): fb req body:', body)
         deferred.resolve(body)
       })
       .catch(err => {

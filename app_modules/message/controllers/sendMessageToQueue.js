@@ -51,7 +51,6 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
     }
   }
   if (uniqueTemplateIdAndNotInGlobal.length === 0) {
-    __logger.info('sendMessageToQueue: getBulkTemplates(' + wabaPhoneNumber + '): Unique template found: Set data in Redis:', templateDataObj)
     bulkTemplateCheck.resolve(templateDataObj)
     return bulkTemplateCheck.promise
   }
@@ -65,6 +64,8 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            payloadButtonCount: singleObj.button_type && singleObj.button_type === 'quick reply' ? singleObj.button_data.quickReply.length : 0,
+            urlButtonCount: singleObj.button_type && singleObj.button_type === 'call to action' ? singleObj.button_data.websiteTextVarExample.length : 0,
             phoneNumber: singleObj.phone_number
           }
           dataObject.approvedLanguages = []
@@ -78,7 +79,7 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
       return bulkTemplateCheck.resolve(templateDataObj)
     })
     .catch(err => {
-      __logger.error('sendMessageToQueue: getBulkTemplate(): setTemplatesInRedisForWabaPhoneNumber DB Query:', err.stack)
+      __logger.error('sendMessageToQueue: getBulkTemplates(' + wabaPhoneNumber + '): Err in DB Query:', err)
       if (err && err.type) {
         if (err.type.status_code) delete err.type.status_code
         return bulkTemplateCheck.resolve(err.type)
@@ -225,7 +226,7 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
     .then((data) => {
       if (data.length > 0) {
-        messageSent.resolve({ categoryId: data[0].message_template_category_id })
+        messageSent.resolve({ categoryId: data[0].message_template_category_id, buttonType: data[0].button_type, buttonData: data[0].button_data })
       } else {
         __logger.error('sendMessageToQueue: getTemplateCategory(' + wabaPhoneNumber + '): DB Query :- Template Category not found', ['Invalid template id'])
         messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
@@ -236,6 +237,36 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
       messageSent.reject(err)
     })
   return messageSent.promise
+}
+
+const checkTemplateWithPayload = (templateData, reqBody) => {
+  const buttonArrayCheck = q.defer()
+
+  if (templateData.buttonType === 'quick reply') {
+    let buttonArrayCount = 0
+    if (templateData.buttonData.quickReply.length >= 1 && reqBody.whatsapp && reqBody.whatsapp.template && reqBody.whatsapp.template.components && reqBody.whatsapp.template.components.length >= 1) {
+      _.each(reqBody.whatsapp.template.components, (component, index) => {
+        if (component.type === 'button' && component.parameters && component.parameters.length === 1 && component.parameters[0].type === 'payload' && component.parameters[0].index && component.parameters[0].payload) { buttonArrayCount++ }
+      })
+      if (buttonArrayCount > templateData.buttonData.quickReply.length) {
+        __logger.error('sendMessageToQueue: checkTemplateWithPayload: buttonArrayCount: ', buttonArrayCount)
+        buttonArrayCheck.reject({ type: __constants.RESPONSE_MESSAGES.BUTTON_PARAM_MISMATCH, err: ['Invalid parameters in template type buttons'] })
+      }
+    }
+    buttonArrayCheck.resolve({ ...templateData })
+    return buttonArrayCheck.promise
+  } else {
+    // Remove object from components if template button type is not "Quick Reply"
+    // First check if req body component includes type button with payload
+    if (reqBody.whatsapp && reqBody.whatsapp.template && reqBody.whatsapp.template.components && reqBody.whatsapp.template.components.length >= 1) {
+      _.each(reqBody.whatsapp.template.components, (component, i) => {
+        if (component.type && component.type === 'button' && component.parameters && component.parameters.length === 1 && component.parameters[0].type && component.parameters[0].type === 'payload') {
+          reqBody.whatsapp.template.components = reqBody.whatsapp.template.components.slice(i, 1)
+        }
+      })
+    }
+  }
+  return { templateData, reqBody }
 }
 
 /**
@@ -264,7 +295,6 @@ const controller = (req, res) => {
   // block where we check if req is coming from /single url then data type should be json obj & not arr
   if (req.userConfig.routeUrl[req.userConfig.routeUrl.length - 1] === __constants.SINGLE) {
     if (Array.isArray(req.body)) {
-      __logger.error('sendMEssageToQueue: Request body must be OBJECT', {})
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {}, err: ['instance is not of a type(s) object'] })
     } else if (typeof req.body === 'object' && !Array.isArray(req.body) && req.body !== null) {
       req.body = [req.body]
@@ -281,8 +311,14 @@ const controller = (req, res) => {
       }
       return true
     })
+    .then(async data => {
+      // Check if template type quick reply & components include parameters
+      if (data & data.categoryId) { return checkTemplateWithPayload(data, req.body[0]) }
+      return data
+    })
     .then(data => {
       if (data && data.categoryId) {
+        // data.categoryId = '37f8ac07-a370-4163-b713-854db656cd1b' // promotional
         // message is a template
         switch (data.categoryId) {
           case __constants.FB_CATEGORY_TO_VIVA_CATEGORY.OTP:
@@ -318,6 +354,7 @@ const controller = (req, res) => {
         const msgInsertData = []
         const mongoBulkObject = []
         _.each(processedMessages.resolve, (singleMessage, i) => { // creating status arr for bulk insert
+          singleMessage.to = singleMessage.to.length === 10 && singleMessage.countryCode === 'IN' ? '91' + singleMessage.to : singleMessage.to
           msgInsertData.push([singleMessage.messageId, null, req.user.providerId, __constants.DELIVERY_CHANNEL.whatsapp, moment.utc().format('YYYY-MM-DDTHH:mm:ss'), __constants.MESSAGE_STATUS.preProcess, singleMessage.to, phoneCodeAndPhoneSeprator(singleMessage.to).countryName, singleMessage.whatsapp.from, '[]', singleMessage.whatsapp.customOne || null, singleMessage.whatsapp.customTwo || null, singleMessage.whatsapp.customThree || null, singleMessage.whatsapp.customFour || null, singleMessage.whatsapp.campName || null])
           mongoBulkObject.push({
             messageId: singleMessage.messageId,
@@ -360,7 +397,7 @@ const controller = (req, res) => {
     })
     .then(res => {
       sendToQueueRes = res
-      __logger.info('sendMessageToQueue :: message sent to queue then 3', { sendToQueueRes })
+      __logger.info('sendMessageToQueue: message sent to queue bulk then:', { response: res })
       if (rejected && rejected.length > 0 && (!sendToQueueRes || sendToQueueRes.length === 0)) {
         return false
       } else {

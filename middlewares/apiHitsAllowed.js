@@ -38,7 +38,7 @@ const rateLimit = (req, res, next) => {
         __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: err })
       })
   } else {
-    __logger.error('apiHitsAllowed: ratelimitter(): !req.userConfig.tps else condition:', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
+    __logger.error('apiHitsAllowed: rateLimit(): !req.userConfig.tps else condition', __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED)
     __util.send(res, { type: __constants.RESPONSE_MESSAGES.LIMIT_EXCEEDED, data: {}, err: {} })
   }
 }

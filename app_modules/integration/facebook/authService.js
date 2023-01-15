@@ -32,7 +32,6 @@ class InternalFunctions {
             return resolveObj
           }
         } else {
-          __logger.error('fb: AuthService: WabaLoginApi(' + wabaNumber + '): Reject :: ')
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.ACCESS_DENIED, err: data.errors })
         }
       })
@@ -49,7 +48,6 @@ class InternalFunctions {
 
 class Authentication {
   constructor (userId) {
-    __logger.warn('fb: AuthService: Authentication: Class Initiated ...')
     this.userId = userId
   }
 
@@ -59,8 +57,11 @@ class Authentication {
     redisService.getWabaDataByPhoneNumber(wabaNumber)
       .then(wabaData => {
         __logger.info('fb: authService: checking FB token expiry .....')
+        __logger.info('wabaData----> ', wabaData, new Date().getTime())
+        // wabaData.wabizBaseUrl = 'https://10.40.13.240:9090'
         const timeLeftToExpire = wabaData.wabizApiKeyExpiresOn ? +moment(wabaData.wabizApiKeyExpiresOn).format('x') - new Date().getTime() : 0
-        if (timeLeftToExpire < __constants.FB_REDIS_KEY_BUFFER_TIME) {
+        console.log('timeLeftToExpire', timeLeftToExpire)
+        if (__constants.FB_REDIS_KEY_BUFFER_TIME) {
           const internalFunctions = new InternalFunctions()
           return internalFunctions.WabaLoginApi(wabaData.wabizUsername, wabaData.wabizPassword, null, wabaData.wabizBaseUrl, wabaData.graphApiKey, wabaData.userAccountIdByProvider, wabaNumber, this.userId, true)
         } else {
@@ -86,7 +87,6 @@ class Authentication {
           __logger.info('fb: authService: getFaceBookTokensByWabaNumber(' + wabaNumber + '): Setting new data')
           return this.setFaceBookTokensByWabaNumber(wabaNumber, this.userId)
         } else {
-          __logger.info('fb: authService: getFaceBookTokensByWabaNumber(' + wabaNumber + '): redis data found', data)
           return data
         }
       })

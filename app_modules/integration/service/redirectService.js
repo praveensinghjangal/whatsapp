@@ -77,6 +77,7 @@ const queueCall = (payload, userId) => {
 }
 class RedirectService {
   webhookPost (wabaNumber, payload) {
+    __logger.info('inside webhook post service', payload)
     const redirected = q.defer()
     const redisService = new RedisService()
     const validPayload = { ...payload }
@@ -103,11 +104,11 @@ class RedirectService {
         }
         payload.heloCampaign = data.isHeloCampaign
         payload.webhookPostUrl = data.webhookPostUrl
-        __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then: Waba Data Found .....')
+        __logger.info('~ data and webhook before sending queue', data, payload)
         return queueCall(payload, data.userId)
       })
       .then(result => {
-        __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): then:', result)
+        __logger.info('~ response after the queue functionality in redirect Service ', result)
         if (result.notRedirected) {
           __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): reject:', { result: result.notRedirected })
           return redirected.reject({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
@@ -152,11 +153,11 @@ class RedirectService {
       http.Post(payload, 'body', apiUrl, headers, redisData.serviceProviderId)
         .then(apiRes => {
           if (apiRes.statusCode >= 200 && apiRes.statusCode < 300) {
-            __logger.info('redirectService: callMessageFlow(): POST API Res:', __constants.RESPONSE_MESSAGES.SUCCESS, JSON.stringify(apiRes.body))
+            __logger.info('redirectService: callMessageFlow(): POST API Res:', __constants.RESPONSE_MESSAGES.SUCCESS, apiRes.body)
           } else {
             const telegramErrorMessage = 'redirectService: callMessageFlow(): Error Not Redirected'
             errorToTelegram.send({ err: telegramErrorMessage }, telegramErrorMessage)
-            __logger.info('redirectService: callMessageFlow(): POST API Res: Not redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, JSON.stringify(apiRes.body))
+            __logger.info('redirectService: callMessageFlow(): POST API Res: Not redirected', __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, apiRes.body)
           }
         })
         .catch(err => {
@@ -173,12 +174,13 @@ class RedirectService {
     __logger.info('redirectService: sendToRetryMessageSendQueue():', retryCount, message)
     message.retryCount = retryCount.count === 0 ? 1 : ++retryCount.count
     const delayQueue = __constants.MQ[`delay_failed_to_redirect_${message.retryCount * 10}_sec`]
+    __logger.info('Delay Queue Status', delayQueue)
     const messageRouted = q.defer()
     if (message.retryCount && message.retryCount >= 1 && message.retryCount < 6) {
       rabbitmqHeloWhatsapp.sendToQueue(delayQueue, JSON.stringify(message), 0)
         .then(() => messageRouted.resolve(true))
         .catch(err => {
-          const telegramErrorMessage = 'redirectService: sendToRetryMessageSendQueue(): sendToQueue(): catch:: Error in delay_failed_to_redirect_ sendToQueue'
+          const telegramErrorMessage = 'redirectService ~ sendToRetryMessageSendQueue function ~ Error in delay_failed_to_redirect_ sendToQueue'
           errorToTelegram.send(err, telegramErrorMessage)
           messageRouted.reject(err)
         })
