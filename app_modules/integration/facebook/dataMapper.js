@@ -186,39 +186,6 @@ class InternalService {
     return components
   }
 
-  mapContacts (components) {
-    if (!components || components.length <= 0) {
-      return []
-    }
-    _.each(components, (component) => {
-      _.each(component.addresses, (parameter) => {
-        if (parameter.countryCode) {
-          parameter.country_code = parameter.countryCode
-          delete parameter.countryCode
-        }
-      })
-      _.each(component.name, (parameter, key) => {
-        if (key === 'firstName') {
-          component.name.first_name = component.name.firstName
-          delete component.name.firstName
-        }
-        if (component.name.lastName) {
-          component.name.last_name = component.name.lastName
-          delete component.name.lastName
-        }
-        if (component.name.formattedName) {
-          component.name.formatted_name = component.name.formattedName
-          delete component.name.formattedName
-        }
-        if (component.name.middleName) {
-          component.name.middle_name = component.name.middleName
-          delete component.name.middleName
-        }
-      })
-    })
-    return components
-  }
-
   async sendMessageFbBody (td, maxTpsToProvider) {
     const body = {
       to: td.to,
