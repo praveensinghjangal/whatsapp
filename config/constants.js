@@ -510,6 +510,7 @@ const FACEBOOK_CONTENT_TYPE = {
   contacts: 'contacts',
   location: 'location',
   button_reply: 'button_reply',
+  list_reply: 'list_reply',
   audio: 'audio'
 }
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
