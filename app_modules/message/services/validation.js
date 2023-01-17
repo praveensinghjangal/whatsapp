@@ -92,6 +92,7 @@ class validate {
             minItems: 1,
             items: {
               type: 'string',
+              minLength: 8,
               enum: ['whatsapp']
             }
           },
@@ -100,7 +101,6 @@ class validate {
             required: true,
             enum: __constants.COUNTRY_LIST_ALPHA_TWO
           },
-
           whatsapp: {
             type: 'object',
             required: true,
@@ -110,7 +110,8 @@ class validate {
                 type: 'string',
                 required: true,
                 minLength: 7,
-                maxLength: 15
+                maxLength: 15,
+                pattern: __constants.VALIDATOR.number
               },
               customOne: {
                 type: 'string',
@@ -515,7 +516,8 @@ class validate {
               contentType: {
                 type: 'string',
                 required: true,
-                minLength: 1,
+                minLength: 4,
+                maxLength: 20,
                 enum: ['text', 'media', 'template', 'location', 'interactive', 'contact']
               },
               text: {
@@ -634,7 +636,8 @@ class validate {
                         type: {
                           type: 'string',
                           required: true,
-                          minLength: 1,
+                          minLength: 4,
+                          maxLength: 6,
                           enum: ['header', 'body', 'footer', 'button']
                         },
                         parameters: {
@@ -647,7 +650,7 @@ class validate {
                               type: {
                                 type: 'string',
                                 required: true,
-                                minLength: 1,
+                                minLength: 4,
                                 maxLength: 8,
                                 enum: ['text', 'media', 'location', 'payload']
                               },
