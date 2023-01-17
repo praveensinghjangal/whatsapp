@@ -6,11 +6,34 @@ const interactions = (req, res) => {
   __logger.info('add interactions API called', req.body)
   const messageHistoryService = new MessageHistoryService()
   req.body.createdAt = new Date()
-  req.body.score = 10
-  req.body.audience = '98xxxxxxxxx29'
+  req.body.score = 0
+  if (req.body.Question_1 && req.body.Question_1.toLowerCase() === '28 m x 15 m') {
+    req.body.score += 1
+  }
+  if (req.body.Question_2 && req.body.Question_2.toLowerCase() === 'tibet') {
+    req.body.score += 1
+  }
+  if (req.body.Question_3 && req.body.Question_3.toLowerCase() === 'may 18') {
+    req.body.score += 1
+  }
+  if (req.body.Question_4 && req.body.Question_4.toLowerCase() === '1957') {
+    req.body.score += 1
+  }
+  if (req.body.Question_5 && req.body.Question_5.toLowerCase() === 'football') {
+    req.body.score += 1
+  }
   messageHistoryService.interactionDump(req.body)
     .then(data => {
-      res.send({ text: 'success' })
+      let text = null
+      console.log('eq.body.score', req.body.score)
+      if (req.body.score < 3) {
+        text = 'Do you wish to re-do the quiz.|_|YES|_|NO'
+      } else if (req.body.score >= 3) {
+        text = `Congratulations on high score of ${req.body.score}/5`
+      } else {
+        text = 'Thank you for the response.'
+      }
+      res.send({ text })
     })
     .catch(err => {
       __logger.error('Error in interactions API called: ', err)
