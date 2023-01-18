@@ -64,8 +64,8 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d{1,2}}}/g) || []).length : 0,
-            payloadButtonCount: singleObj.button_type && singleObj.button_type === 'quick reply' ? singleObj.button_data.quickReply.length : 0,
-            urlButtonCount: singleObj.button_type && singleObj.button_type === 'call to action' ? singleObj.button_data.websiteTextVarExample.length : 0,
+            payloadButtonCount: singleObj.button_type && singleObj.button_type === 'quick reply' && singleObj.button_data.quickReply ? singleObj.button_data.quickReply.length : 0,
+            urlButtonCount: singleObj.button_type && singleObj.button_type === 'call to action' && singleObj.button_data.websiteTextVarExample ? singleObj.button_data.websiteTextVarExample.length : 0,
             phoneNumber: singleObj.phone_number
           }
           dataObject.approvedLanguages = []
