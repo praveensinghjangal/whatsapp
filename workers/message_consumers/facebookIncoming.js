@@ -125,6 +125,15 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       text: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
+    // to send chat api
+    messageData.contentType = __constants.FACEBOOK_CONTENT_TYPE.list_reply
+    messageData.interactive = {
+      list_reply: {
+        id: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
+        text: messageDataFromFacebook.messages[0].interactive.list_reply.title || null,
+        description: messageDataFromFacebook.messages[0].interactive.list_reply.description || null
+      }
+    }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].type === __constants.FACEBOOK_CONTENT_TYPE.audio) {
     // for interactive list
     messageData.content = {
