@@ -152,7 +152,7 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, campName: data.whatsapp.campName || null, queueData }))
     .catch(err => {
       __logger.error('sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus(' + data.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus()'
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus(' + data.whatsapp.from + ')'
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
     })
@@ -165,7 +165,7 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (err) {
       __logger.error('sendMessageToQueue: sendToQueueBulk(' + data.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk():'
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk(' + data.whatsapp.from + '):'
       errorToTelegram.send(err, telegramErrorMessage)
       return sendSingleMessage.reject(err)
     })
