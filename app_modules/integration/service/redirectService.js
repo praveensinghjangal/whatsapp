@@ -68,8 +68,8 @@ const queueCall = (payload, userId) => {
     })
     .then(responseData => defer.resolve(responseData))
     .catch(err => {
-      __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'redirectService: queueCall(): catch:: sendToHeloCampaign/sendToUser function'
+      __logger.error('redirectService: queueCall(' + payload.whatsapp.from + '): catch:', err)
+      const telegramErrorMessage = 'redirectService: queueCall(' + payload.whatsapp.from + '): catch:: sendToHeloCampaign/sendToUser(): catch:'
       errorToTelegram.send(err, telegramErrorMessage)
       defer.reject(err)
     })
@@ -108,9 +108,8 @@ class RedirectService {
         return queueCall(payload, data.userId)
       })
       .then(result => {
-        __logger.info('~ response after the queue functionality in redirect Service ', result)
         if (result.notRedirected) {
-          __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): reject:', { result: result.notRedirected })
+          __logger.error('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): reject:', result)
           return redirected.reject({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: 'invalid url or no url found' })
         } else {
           return redirected.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
@@ -118,7 +117,7 @@ class RedirectService {
       })
       .catch(err => {
         __logger.error('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
-        const telegramErrorMessage = 'redirectService: webhookPost(' + wabaNumber + '): Error While callMessage flow or queueCall function'
+        const telegramErrorMessage = 'redirectService: webhookPost(' + wabaNumber + '): Error While callMessage flow or queueCall function: catch:'
         errorToTelegram.send(err, telegramErrorMessage)
         redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
