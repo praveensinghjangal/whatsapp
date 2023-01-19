@@ -36,7 +36,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
   } else if (messageDataFromFacebook.messages[0].image || messageDataFromFacebook.messages[0].voice || messageDataFromFacebook.messages[0].video || messageDataFromFacebook.messages[0].sticker) {
-    // image, voice, video, sticker, interactive-list
+    // image, voice, video, sticker,interactive-list
     messageData.content = {
       media: {
         url: '',
@@ -126,6 +126,15 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       text: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
+    // to send chat api
+    messageData.contentType = __constants.FACEBOOK_CONTENT_TYPE.list_reply
+    messageData.interactive = {
+      list_reply: {
+        id: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
+        text: messageDataFromFacebook.messages[0].interactive.list_reply.title || null,
+        description: messageDataFromFacebook.messages[0].interactive.list_reply.description || null
+      }
+    }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].type === __constants.FACEBOOK_CONTENT_TYPE.audio) {
     // for interactive list
     messageData.content = {
@@ -145,18 +154,20 @@ class FacebookConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('facebook incoming message QueueConsumer :: Waiting for message ...')
+        __logger.info('facebook incoming message QueueConsumer::Waiting for message...')
+        __logger.info('facebook insoming queue consumer started')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageDataFromFacebook = JSON.parse(mqData.content.toString())
-            __logger.info('facebookIncoming: startServer(' + queue + '): Msg-From-Fb: ', messageDataFromFacebook)
+            __logger.info('incoming!!!!!!!!!!!!!!!!!! messageDataFromFacebook', messageDataFromFacebook)
             // change the mapping
             const messageData = setTheMappingOfMessageData(messageDataFromFacebook)
             const uniqueId = new UniqueId()
             const redirectService = new RedirectService()
             messageData.vivaMessageId = uniqueId.uuid()
             const retryCount = messageData.retryCount || 0
-            __logger.info('facebookincoming: messageData after mapping ::', messageData)
+            // __logger.info('Alteredddddddddddddddddddddddd------', messageData, retryCount)
+            __logger.info('facebook incoming message QueueConsumer:: messageData received:', messageData)
             saveIncomingMessagePayloadService(messageData.vivaMessageId, messageData.messageId, messageData, messageData.from)
               .then(payloadSaved => {
                 messageData.messageId = messageData.vivaMessageId
@@ -166,35 +177,38 @@ class FacebookConsumer {
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
-                const telegramErrorMessage = 'fbIncoming: startServer(): saveIncomingMessagePayloadService(): catch:'
+                const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in facebook incoming message'
                 errorToTelegram.send(err, telegramErrorMessage)
-                __logger.error('fbIncoming: saveIncomingMessagePayloadService(' + messageData.to + '): catch:', err, retryCount)
+                __logger.error('ppperrrrrrrrrr', err, retryCount)
+                // __logger.info('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
+                  // __logger.info('time to check retry count', retryCount, __constants.INCOMING_MESSAGE_RETRY.tyntec, retryCount < __constants.INCOMING_MESSAGE_RETRY.tyntec)
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.facebook) {
                     const oldObj = JSON.parse(mqData.content.toString())
                     oldObj.retryCount = retryCount + 1
+                    // __logger.info('requeing --->', oldObj)
                     sendToFacebookIncomingQueue(oldObj, rmqObject)
                   }
                 }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            __logger.error('fbIncoming: catch: ', err)
-            const telegramErrorMessage = 'fbIncoming: startServer(): '
+            const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in try/catch function'
             errorToTelegram.send(err, telegramErrorMessage)
+            __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        __logger.error('fbIncoming: db.init(): catch:', err)
-        const telegramErrorMessage = 'fbIncoming: db.init(): :: catch'
+        const telegramErrorMessage = 'FacebookConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
         errorToTelegram.send(err, telegramErrorMessage)
+        __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })
 
     this.stop_gracefully = function () {
-      __logger.info('|||||||||||| fbIncoming: Stopping all resources gracefully ||||||||||||')
+      __logger.info('stopping all resources gracefully')
       __db.close(function () {
         process.exit(0)
       })
@@ -206,7 +220,7 @@ class FacebookConsumer {
 
 class Worker extends FacebookConsumer {
   start () {
-    __logger.info('fbIncoming: start(): ' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }
