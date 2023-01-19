@@ -167,7 +167,7 @@ class FacebookConsumer {
               .catch(err => {
                 const telegramErrorMessage = 'fbIncoming: startServer(): saveIncomingMessagePayloadService(): catch:'
                 errorToTelegram.send(err, telegramErrorMessage)
-                __logger.error('fbIncoming: saveIncomingMessagePayloadService(): catch:', err, retryCount)
+                __logger.error('fbIncoming: saveIncomingMessagePayloadService(' + messageData.to + '): catch:', err, retryCount)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.facebook) {
                     const oldObj = JSON.parse(mqData.content.toString())

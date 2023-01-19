@@ -104,7 +104,7 @@ class RedirectService {
         }
         payload.heloCampaign = data.isHeloCampaign
         payload.webhookPostUrl = data.webhookPostUrl
-        __logger.info('~ data and webhook before sending queue', data, payload)
+        __logger.info('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber():', data, payload)
         return queueCall(payload, data.userId)
       })
       .then(result => {
@@ -118,7 +118,7 @@ class RedirectService {
       })
       .catch(err => {
         __logger.error('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
-        const telegramErrorMessage = 'redirectService: webhookPost(): Error While callMessage flow or queueCall function'
+        const telegramErrorMessage = 'redirectService: webhookPost(' + wabaNumber + '): Error While callMessage flow or queueCall function'
         errorToTelegram.send(err, telegramErrorMessage)
         redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
