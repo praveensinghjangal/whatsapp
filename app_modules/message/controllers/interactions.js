@@ -27,9 +27,9 @@ const interactions = (req, res) => {
       let text = null
       console.log('eq.body.score', req.body.score)
       if (req.body.score < 3) {
-        text = 'Do you wish to re-do the quiz.|_|YES|_|NO'
+        text = 'You have not got enough responses correct. Would you like to re-attempt the questions?|_|YES|_|NO'
       } else if (req.body.score >= 3) {
-        text = `Congratulations on high score of ${req.body.score}/5`
+        text = `Congratulations on the high score of ${req.body.score}/5 correct responses. You are eligible for exciting rewards. Please connect with your salesman for more details.`
       } else {
         text = 'Thank you for the response.'
       }
