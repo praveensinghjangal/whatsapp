@@ -511,7 +511,8 @@ const FACEBOOK_CONTENT_TYPE = {
   location: 'location',
   button_reply: 'button_reply',
   list_reply: 'list_reply',
-  audio: 'audio'
+  audio: 'audio',
+  button: 'button'
 }
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
