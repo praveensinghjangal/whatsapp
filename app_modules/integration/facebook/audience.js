@@ -9,7 +9,7 @@ const AuthService = require('./authService').Authentication
 
 const apiCallFn = (body, url, headers, http) => {
   const apiCall = q.defer()
-  __logger.info('fb: audience: apiCallFn():', { body, url })
+  __logger.info('fb: audience: apiCallFn():', body, url)
   http.Post(body, 'body', url, headers, __config.service_provider_id.facebook)
     .then(data => {
       if (data && data.statusCode === __constants.RESPONSE_MESSAGES.SUCCESS.status_code) {
@@ -18,16 +18,16 @@ const apiCallFn = (body, url, headers, http) => {
           // returns all the list of numbers (valid + all types of invalid)
           return apiCall.resolve({ data: data.body.contacts })
         } else {
-          __logger.error('fb: Audience: apiCallFn(): HTTP POST: Response :: Reject ::')
+          __logger.error('fb: Audience: apiCallFn(): HTTP POST: Response :: Reject :: inside if/else')
           return apiCall.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
         }
       } else {
-        __logger.error('fb: Audience: apiCallFn(): HTTP POST: Response Reject ::')
+        __logger.error('fb: Audience: apiCallFn(): HTTP POST: Response Reject :: if/else')
         return apiCall.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: data.body })
       }
     })
     .catch(err => {
-      __logger.error('fb: Audience: apiCallFn(): HTTP POST: catch:')
+      __logger.error('fb: Audience: apiCallFn(): HTTP POST: catch:', err)
       apiCall.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return apiCall.promise

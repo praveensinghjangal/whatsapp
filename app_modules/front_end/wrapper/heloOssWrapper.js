@@ -41,9 +41,9 @@ const uploadFile = (req, res) => {
       http.Post({ object: fs.createReadStream(req.files[0].path) }, 'formData', url, headers)
         .then(response => {
           fs.unlink(req.files[0].path, err => {
-            if (err) console.log(err)
+            if (err) __logger.error(err)
             else {
-              console.log('\nDeleted file:', req.files[0].path)
+              __logger.info('Deleted file:', req.files[0].path)
             }
           })
           if (response && response.body && response.body.data && response.body.data.url) {

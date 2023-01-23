@@ -648,7 +648,7 @@ class UserData {
             __constants.MQ['pre_process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.pre_process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
             __constants.MQ['process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
           })
-          __logger.info('dbData: <<<<<<<<<<<<< created per user Queue success ():')
+          __logger.info('dbData: <<<<<<<<<<<<< created per user Queue success >>>>>>>>>>>>>>')
           userDetails.resolve(result)
         }
       })
@@ -702,7 +702,7 @@ class UserData {
         // const supportEmail = emails[0].email.split(',')
         // const supportEmail = ['8097@yopmail.com']
         const supportEmail = emails[0].email.split(',')
-        console.log('support emails to be send ', supportEmail)
+        __logger.info('dbData: sendMessageToSupport(): supportEmail:', supportEmail)
         return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
       })
       .then(result => {
@@ -765,7 +765,7 @@ class UserData {
 
   addEmbbeddedSingupErrorData (query, paramsArray) {
     const addEmbbeddedSingupErrorData = q.defer()
-    console.log('query to be inserted into the ', query)
+    __logger.info('dbData: addEmbbeddedSignUpErrorData:', query)
     __db.mysql.query(__constants.HW_MYSQL_NAME, query, paramsArray)
       .then(result => {
         __logger.info('dbData: getWabaProfileSetupStatusFromUserId():', { result })

@@ -77,7 +77,6 @@ const queueCall = (payload, userId) => {
 }
 class RedirectService {
   webhookPost (wabaNumber, payload) {
-    __logger.info('inside webhook post service', payload)
     const redirected = q.defer()
     const redisService = new RedisService()
     const validPayload = { ...payload }

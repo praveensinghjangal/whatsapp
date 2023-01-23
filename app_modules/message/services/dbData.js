@@ -1085,11 +1085,11 @@ class MessgaeHistoryService {
   }
 
   interactionDump (instanceInsert) {
-    __logger.info('inside ~function=interactionDump ', instanceInsert)
+    __logger.info('dbData: interactionDump(): ', instanceInsert)
     const promises = q.defer()
     __db.mongo.__insertMany(__constants.DB_NAME, __constants.ENTITY_NAME.INTERACTIONS, [instanceInsert])
       .then(data => {
-        __logger.info('inside ~function=After inserting interactionDump ', data)
+        __logger.info('dbData: interactionDump(): Interaction Count:', data)
         if (data && data.insertedCount > 0) {
           promises.resolve(true)
         } else {
@@ -1097,8 +1097,7 @@ class MessgaeHistoryService {
         }
       })
       .catch(err => {
-        console.log('errrrorr::', err)
-        __logger.error('error in get function=interactionDump function: ', err)
+        __logger.error('dbData: interactionDump(): ', err)
         promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return promises.promise
