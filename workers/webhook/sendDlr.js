@@ -22,6 +22,10 @@ const sendDlr = (message, queueObj, queue, mqData) => {
       event: message.event || null,
       whatsapp: message.whatsapp || null
     }
+    if (message.contentType && (message.contentType === 'button_reply' || message.contentType === 'list_reply') && message.interactive && (message.interactive.button_reply || message.interactive.list_reply)) {
+      webhookPayload.contentType = message.contentType
+      webhookPayload.interactive = message.interactive
+    }
   } else {
     // message status
     webhookPayload = {
