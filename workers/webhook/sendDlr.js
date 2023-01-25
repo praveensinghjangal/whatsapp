@@ -59,6 +59,7 @@ const sendDlr = (message, queueObj, queue, mqData) => {
             queueObj.channel[queue].ack(mqData)
           })
       } else {
+        __logger.warn('sendDlr: HTTP POST :: Res :: Webhook URL is not set in DB')
         queueObj.channel[queue].ack(mqData)
       }
     })
