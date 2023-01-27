@@ -165,7 +165,7 @@ class FacebookConsumer {
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
-                const telegramErrorMessage = 'fbIncoming: startServer(): saveIncomingMessagePayloadService(): catch:'
+                const telegramErrorMessage = 'fbIncoming: startServer(): saveIncomingMessagePayloadService(' + messageData.to + '): catch:'
                 errorToTelegram.send(err, telegramErrorMessage)
                 __logger.error('fbIncoming: saveIncomingMessagePayloadService(' + messageData.to + '): catch:', err, retryCount)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {

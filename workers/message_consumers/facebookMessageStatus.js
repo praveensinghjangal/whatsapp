@@ -61,7 +61,7 @@ class FacebookConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('FacebookMessageStatus QueueConsumer::Waiting for message...')
+        __logger.info('FacebookMessageStatus QueueConsumer :: Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageDataFromFacebook = JSON.parse(mqData.content.toString())
@@ -117,7 +117,7 @@ class FacebookConsumer {
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
                 __logger.error('fbMessageStatus: addMessageHistoryDataService(): catch:', err, retryCount)
-                const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(): facebook incoming status QueueConsumer::error'
+                const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(' + queue + '): facebook incoming status QueueConsumer::error'
                 errorToTelegram.send(err, telegramErrorMessage)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.facebook) {
@@ -130,15 +130,15 @@ class FacebookConsumer {
               })
           } catch (err) {
             __logger.error('facebookMessageStatus: try/catch:', err)
-            const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(): error while parsing: try/catch'
+            const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(' + queue + '): error while parsing: try/catch'
             errorToTelegram.send(err, telegramErrorMessage)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        __logger.error('facebookMessageStatus: catch:', err)
-        const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue main function: catch:'
+        __logger.error('facebookMessageStatus: catch(' + queue + '):', err)
+        const telegramErrorMessage = 'fbMessageStatus: fetchFromQueue(' + queue + '): main function: catch:'
         errorToTelegram.send(err, telegramErrorMessage)
         process.exit(1)
       })

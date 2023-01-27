@@ -178,7 +178,7 @@ class RedirectService {
       rabbitmqHeloWhatsapp.sendToQueue(delayQueue, JSON.stringify(message), 0)
         .then(() => messageRouted.resolve(true))
         .catch(err => {
-          const telegramErrorMessage = 'redirectService ~ sendToRetryMessageSendQueue function ~ Error in delay_failed_to_redirect_ sendToQueue'
+          const telegramErrorMessage = 'redirectService: sendToRetryMessageSendQueue(): Error in delay_failed_to_redirect_ sendToQueue'
           errorToTelegram.send(err, telegramErrorMessage)
           messageRouted.reject(err)
         })

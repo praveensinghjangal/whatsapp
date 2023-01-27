@@ -449,7 +449,7 @@ const setStatusToRejectedForNonVerifiedNumbers = (notVerifiedPayloadArr, service
     })
     .catch(function (error) {
       __logger.error('preProcessMessage: setStatusToRejectedForNonVerifiedNumbers(): catcch:', error)
-      const telegramErrorMessage = 'preProcessMessage ~ setStatusToRejectedForNonVerifiedNumbers function ~ error in setStatusToRejectedForNonVerifiedNumbers'
+      const telegramErrorMessage = 'preProcessMessage: setStatusToRejectedForNonVerifiedNumbers(): error in setStatusToRejectedForNonVerifiedNumbers'
       errorToTelegram.send(error, telegramErrorMessage)
       return setStatusToRejected.reject(error)
     })
@@ -593,8 +593,8 @@ class PreProcessQueueConsumer {
                 // }
               })
               .catch(err => {
-                __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(): main catch:', err)
-                const telegramErrorMessage = 'sendMessageToQueue ~ controller function ~ error in main function'
+                __logger.error('preProcessMessage: checkIsVerifiedAudiencesTrueOrFalse(' + queue + '): main catch:', err)
+                const telegramErrorMessage = 'sendMessageToQueue: controller(' + queue + '): error in main function'
                 errorToTelegram.send(err, telegramErrorMessage)
                 // if (err && err.type && err.type.code && err.type.code === 3021) {
                 //   delete err.type.status_code
@@ -610,10 +610,10 @@ class PreProcessQueueConsumer {
             // sendToRespectiveProviderQueue => send to processMessageQueue
             // saveAndSendMessageStatus (in bulk)
           } catch (err) {
-            const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ preProcessQueueConsumer::error while parsing:'
+            const telegramErrorMessage = 'ProcessMessageConsumer: startServer(' + queue + ') :: error while parsing:'
             errorToTelegram.send(err, telegramErrorMessage)
 
-            __logger.error('preProcessMessage: error while parsing: try/catch:', err)
+            __logger.error('preProcessMessage: error while parsing: try/catch: (' + queue + ')', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, {

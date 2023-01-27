@@ -35,7 +35,7 @@ class HttpRequestOg {
     }
     __logger.info('httpService: ::: POST ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('httpService: ::: POST ::: Req:', { response, body })
+      __logger.info('httpService: ::: POST ::: After Req:', { response, body })
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
