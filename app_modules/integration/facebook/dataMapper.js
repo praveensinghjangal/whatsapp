@@ -108,12 +108,12 @@ class InternalService {
 
   getFbTemplateName (wabaPhoneNumber, templateid) {
     const fbTemplateName = q.defer()
-    __logger.info('getFbTemplateName ------------>', { wabaPhoneNumber, templateid })
+    __logger.info('fb: dataMapper: getFbTemplateName(): ', { wabaPhoneNumber, templateid })
     const redisService = new RedisService()
     redisService.getFbTemplateName(templateid)
       .then(templateName => fbTemplateName.resolve(templateName))
       .catch(err => {
-        console.log('getFbTemplateName err -->', err)
+        __logger.error('fb: dataMapper: getFbTemplateName(): catch:', err)
         fbTemplateName.reject(err)
       })
     return fbTemplateName.promise
@@ -197,6 +197,9 @@ class InternalService {
       body.text = {
         body: td.whatsapp.text
       }
+    } else if (td.whatsapp.contentType === 'contact') {
+      body.type = 'contacts'
+      body.contacts = this.mapContacts(td.whatsapp.contact)
     } else if (td.whatsapp.contentType === 'contact') {
       body.type = 'contacts'
       body.contacts = this.mapContacts(td.whatsapp.contact)
@@ -423,7 +426,7 @@ class DataMapper {
     const internalService = new InternalService()
     internalService.sendMessageFbBody(data, maxTpsToProvider)
       .then(body => {
-        __logger.info('dataMapper: sendMessage(): fb req body:', JSON.stringify(body))
+        __logger.info('dataMapper: sendMessage(): fb req body:', body)
         deferred.resolve(body)
       })
       .catch(err => {

@@ -64,31 +64,28 @@ const addUpdateTemplates = (req, res) => {
       }
     })
     .then(wabaAndTemplateData => {
-      console.log('111111111111111111111111111111111111111111111111111111111111111', wabaAndTemplateData)
-      __logger.info('add update template:: dbData then 2', { wabaAndTemplateData })
+      __logger.info('addUpdateTemplates: addUpdateTemplate(): then 2: ', wabaAndTemplateData)
       wabaPhoneNumber = wabaAndTemplateData.wabaPhoneNumber
       if (req.body.messageTemplateId) {
         if (!wabaAndTemplateData || !wabaAndTemplateData.messageTemplateId) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_NOT_FOUND, data: {}, err: {} })
         }
         const testing = statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)
-        console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', testing)
+        __logger.info('addUpdateTemplates: addUpdateTemplate(): then 3: ', testing)
         if (wabaAndTemplateData.messageTemplateId && !statusService.canUpdateStatus(__constants.TEMPLATE_STATUS.complete.statusCode, wabaAndTemplateData.messageTemplateStatusId)) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_EDITED, data: {}, err: {} })
         }
-        __logger.info('add update template:: will update')
         return templateService.updateTemplateData(req.body, wabaAndTemplateData, userId)
       } else {
         if (req.body.templateName && wabaAndTemplateData && wabaAndTemplateData.templateName && req.body.templateName.toLowerCase() === wabaAndTemplateData.templateName.toLowerCase()) {
           return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.TEMPLATE_CANNOT_BE_ADDED, data: {}, err: {} })
         } else {
-          __logger.info('add update template:: will insert')
           return templateService.addTemplateData(req.body, wabaAndTemplateData, userId)
         }
       }
     })
     .then(data => {
-      __logger.info('add update template:: insert or update done then 3', { data })
+      __logger.info('addUpdateTemplate: then 3:', { data })
       const ruleEngine = new RuleEngine()
       messageTemplateId = data.messageTemplateId
       wabaInformationId = data.wabaInformationId
@@ -97,7 +94,7 @@ const addUpdateTemplates = (req, res) => {
       return ruleEngine.checkAddTemplateRulesByTemplateId(data.messageTemplateId, userId)
     })
     .then(validationData => {
-      __logger.info('add update template:: rule checked then 4', { validationData })
+      __logger.info('addUpdateTemplate: then 4:', { validationData })
       ruleResponse = validationData
       if (!validationData.complete) {
         return statusService.changeStatusToIncomplete(messageTemplateId, oldStatus, userId, wabaInformationId, secondLangRequired)
@@ -106,14 +103,14 @@ const addUpdateTemplates = (req, res) => {
       }
     })
     .then(statusChanged => {
-      __logger.info('add update template:: status marked as completed then 5', { statusChanged })
+      __logger.info('addUpdateTemplate: then 5:', { statusChanged })
       const redisService = new RedisService()
       redisService.setTemplatesInRedisForWabaPhoneNumber(wabaPhoneNumber)
       // __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { mediaTemplateComplete: statusChanged } })
       __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { isTemplateValid: ruleResponse.complete, messageTemplateId, messageTemplateStatusId: statusChanged.statusCode, statusName: statusChanged.displayName, invalidRemark: ruleResponse.err && ruleResponse.err.err ? ruleResponse.err.err : null } })
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('addUpdateTemplate: error: ', err.stack ? err.stack : err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }

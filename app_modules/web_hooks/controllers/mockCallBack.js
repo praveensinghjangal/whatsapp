@@ -4,7 +4,7 @@ const request = require('request')
 const __logger = require('../../../lib/logger')
 
 const controller = (req, res) => {
-  // __logger.info('Input', req.body)
+  __logger.info('mockCallback: controller(): ::::: Sending DLR to Client :::::', { request: req.body })
   if (req.body && req.body.event && (req.body.event.toLowerCase() === 'momessage' || req.body.event.toLowerCase() === 'momessage::postback')) {
     const inputData = []
     __config.mockWebHook.receiverNumber.forEach(number => {
@@ -22,7 +22,6 @@ const controller = (req, res) => {
     })
 
     const url = __config.base_url + __constants.INTERNAL_END_POINTS.sendMessageToQueue
-    // __logger.info('Url>>>>>>>>>>>>>>>>>>>>>>>>', typeof url)
     const options = {
       url,
       body: inputData,
@@ -30,11 +29,10 @@ const controller = (req, res) => {
       json: true
     }
     // Calling another api for sending messages
+    __logger.info('mockCallback: controller(): POST req', options)
     request.post(options, (err, httpResponse, body) => {
-      __logger.info('responseeeeeeeeeeeeeeeeeee', err, { body })
-      if (err) {
-        return res.send(err)
-      }
+      __logger.info('mockCallback: controller(): POST req res:', err, { body })
+      if (err) { return res.send(err) }
       return res.send(body)
     })
   } else {

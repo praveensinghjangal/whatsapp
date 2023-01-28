@@ -15,7 +15,7 @@ const integrationService = require('../../integration/')
 const TemplateService = require('../services/dbData')
 
 const createInsertParam = (fbTemplate, wabaId, userId) => {
-  console.log('i will create insert param', fbTemplate)
+  __logger.info('syncTemplate: createInsertParam():', fbTemplate)
   const uniqueId = new UniqueId()
   const insertJson = {
     templateId: uniqueId.uuid(),
@@ -50,7 +50,6 @@ const createInsertParam = (fbTemplate, wabaId, userId) => {
       if (singleComponent.example) insertJson.bodyTextVarExample = singleComponent.example.body_text[0]
     }
     if (singleComponent.type.toLowerCase() === 'header') {
-      // console.log('=============,', singleComponent.format.toLowerCase(), __constants.FB_HEADER_TO_VIVA_HEADER[singleComponent.format.toLowerCase()], singleComponent.example)
       insertJson.headerType = __constants.FB_HEADER_TO_VIVA_HEADER[singleComponent.format.toLowerCase()] || null
       if (singleComponent.format.toLowerCase() === 'text') insertJson.headerText = singleComponent.text
       if (singleComponent.example && singleComponent.example.header_text) insertJson.headerTextVarExample = singleComponent.example.header_text
@@ -91,7 +90,6 @@ const createInsertParam = (fbTemplate, wabaId, userId) => {
   insertJson.headerTextVarExample = JSON.stringify(insertJson.headerTextVarExample)
   const insertArr = []
   _.each(insertJson, val => insertArr.push(val))
-  // console.log('--------------->', insertArr)
   return insertArr
 }
 
@@ -124,7 +122,6 @@ class SyncTemplates {
     let fbTemplates = []
     this.templateIntegrationService.getTemplateList(this.wabaNumber, false)
       .then(facebookTemplateData => {
-        // console.log('-----', facebookTemplateData)
         if (facebookTemplateData && facebookTemplateData.data && facebookTemplateData.data.data && _.isArray(facebookTemplateData.data.data)) {
           fbTemplates = _.filter(facebookTemplateData.data.data, { status: 'APPROVED' })
           const facebookTemplateIdArr = fbTemplates.reduce((filtered, singleTemplate) => { // todo change to map as already filtering above
@@ -139,17 +136,14 @@ class SyncTemplates {
         }
       })
       .then(dbData => {
-        // console.log('dbDatadbDatadbDatadbDatadbData', dbData)
         const insertQueryData = []
         _.each(fbTemplates, singleTemplate => {
           const matched = _.filter(dbData, { facebookMessageTemplateId: singleTemplate.name })
-          // console.log('matched ---->', matched)
           const languageArr = []
           _.each(matched, oneRow => { if (oneRow.firstLanguage) languageArr.push(oneRow.firstLanguage); if (oneRow.secondLanguage)languageArr.push(oneRow.secondLanguage) })
-          // console.log('==============>', languageArr)
           if (!languageArr.includes(singleTemplate.language.slice(0, 2).toLowerCase())) insertQueryData.push(createInsertParam(singleTemplate, this.wabaId, this.userId))
         })
-        console.log('insertQueryData ---', insertQueryData.length, fbTemplates.length)
+        __logger.info('syncTemplate: insertQueryData:', insertQueryData.length, fbTemplates.length)
         if (insertQueryData.length > 0) {
           return templateService.insertTemplateBulk(insertQueryData)
         } else {
@@ -158,7 +152,7 @@ class SyncTemplates {
       })
       .then(data => templateSyncd.resolve(data))
       .catch(err => {
-        console.log('errrrrrrrrr SyncTemplates', err)
+        __logger.error('syncTemplate:  SyncTemplates', err)
         __logger.error('error: SyncTemplates', err)
         templateSyncd.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })

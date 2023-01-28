@@ -9,25 +9,24 @@ class MessageConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        // __logger.info('mock queue consumeeeeeeeer::Waiting for message...')
+        __logger.info('retrySendingconsumer :: Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const redirectService = new RedirectService()
             const mqDataReceived = mqData
             const messageData = JSON.parse(mqData.content.toString())
-            // __logger.info('retry sending payload queue consumeeeeeeeer::received:', { mqData })
-            __logger.info('retry sending payload queue consumeeeeeeeer:: messageData received:', messageData)
+            __logger.info('retrySendingPayload: consumer:: messageData received:', messageData)
             redirectService.webhookPost(messageData.wabaNumber, messageData)
             rmqObject.channel[queue].ack(mqDataReceived)
             // process.exit(1)
           } catch (err) {
-            __logger.error('retry sending payload consumeeeeeeeer::error while parsing: ', err)
+            __logger.error('retrySendingPayload: try/catch: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        __logger.error('retry sending payload queue consumeeeeeeeer::error: ', err)
+        __logger.error('retrySendingPayload: main catch: ', err)
         process.exit(1)
       })
 
@@ -44,7 +43,7 @@ class MessageConsumer {
 
 class Worker extends MessageConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('retrySendingPayload: ' + (new Date()).toLocaleString() + '--->> Worker PID:', process.pid)
     super.startServer()
   }
 }

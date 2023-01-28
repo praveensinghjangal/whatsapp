@@ -267,7 +267,6 @@ class validate {
     const error = _.map(v.validate(request, schema).errors, 'stack')
     _.each(error, function (err) {
       const formatedErr = err.split('.')
-      console.log('formatedErr', formatedErr)
       if (err.includes('instance is not any of')) {
         formatedError.push('Please provide atleast one field resourceId, systemId')
       } else if (err.includes('instance is not exactly one from [subschema 0],[subschema 1]')) {

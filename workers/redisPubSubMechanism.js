@@ -14,7 +14,7 @@ class redisPubSubMechanismWorker {
         __logger.info(result)
       })
       .catch((error) => {
-        __logger.info(error)
+        __logger.error('redisPubsubMechanism: main catch:' + error)
         process.exit(1)
       })
 
@@ -22,7 +22,7 @@ class redisPubSubMechanismWorker {
       .then((result) => {
         __logger.info(result)
       }).catch((error) => {
-        __logger.info(error)
+        __logger.error('redisPubsubMechanism: db.init: catch:' + error)
         process.exit(1)
       })
   }
@@ -30,7 +30,7 @@ class redisPubSubMechanismWorker {
 
 class Worker extends redisPubSubMechanismWorker {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('redisPubsubMechanism:' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     // call initialization function of extended worker class
     super.startServer()
   }

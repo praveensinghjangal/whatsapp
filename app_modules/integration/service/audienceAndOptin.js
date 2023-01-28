@@ -43,7 +43,7 @@ let isOptinMessage = () => {
 }
 
 function addAudienceAndOptin (inputPayload, redisData) {
-  __logger.info('addAudienceAndOptin::>>>>>>>>>>>>>..')
+  __logger.info('audienceAndOptin: addAudienceAndOptin():')
   const audienceData = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
   const audienceDataToBePosted = [{
@@ -77,9 +77,9 @@ function addAudienceAndOptin (inputPayload, redisData) {
         headers: { Authorization: apiToken, 'User-Agent': __constants.INTERNAL_CALL_USER_AGENT },
         json: true
       }
-      __logger.info('addAudienceAndOptin::optionssssssssssssssssssssss', options)
+      __logger.info('AudienceAndOptin: isOptinMessage: then 2:', options)
       request.post(options, (err, httpResponse, body) => {
-        __logger.info('addAudienceAndOptin::response from api', 'endUserNumber ->', inputPayload.from, 'waba number ->', redisData.id, 'response ->', body, 'error ->', err)
+        __logger.info('audienceAndOptin: :response from api', 'endUserNumber ->', inputPayload.from, 'waba number ->', redisData.id, 'response ->', body, 'error ->', err)
         if (err) {
           audienceData.reject(err)
         } else {

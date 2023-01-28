@@ -27,15 +27,14 @@ const DbServices = require('../services/dbData')
  */
 
 const getMessageStatusCount = (req, res) => {
-  __logger.info('Get Message Status Count API Called', req.query)
-  __logger.info('startDate and endDate----->', req.query.startDate, req.query.endDate)
+  __logger.info('GetMessageStatusCount: API Called', { req: req.query })
   const validate = new ValidatonService()
   const dbServices = new DbServices()
   const wabaPhoneNumber = req.user && req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   validate.checkstartDateAndendDate(req.query)
     .then(isvalid => dbServices.getMessageCount(wabaPhoneNumber, req.query.startDate, req.query.endDate))
     .then(data => {
-      __logger.info('db count data ----->then 2', { data })
+      __logger.info('GetMessageStatusCount: validate.checkStartDateAndEndDate: then 1:', { data })
       const dataOut = []
       let dataPresent = false
       _.each(__constants.MESSAGE_STATUS_FOR_DISPLAY, singleStatus => {
@@ -50,7 +49,7 @@ const getMessageStatusCount = (req, res) => {
       __util.send(res, { type: dataPresent ? __constants.RESPONSE_MESSAGES.SUCCESS : __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: dataPresent ? dataOut : null, err: dataPresent ? null : {} })
     })
     .catch(err => {
-      __logger.error('error::getMessageStatusCount : ', err)
+      __logger.info('GetMessageStatusCount: validate.checkStartDateAndEndDate: catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }

@@ -53,8 +53,7 @@ const getInteractions = (req, res) => {
       res.status(200).send(csvString)
     })
     .catch(err => {
-      console.log('sssssss', err)
-      __logger.error('Error in getInteractions API called: ', err)
+      __logger.error('interaction: getInteractions():', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
