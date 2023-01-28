@@ -248,9 +248,9 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
+      __logger.error('audience: Validation: formatedError:', formatedError)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
-      __logger.info('Error', formatedError)
       trimInput.singleInputTrim(request)
         .then(data => isvalid.resolve(data))
     }

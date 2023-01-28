@@ -574,7 +574,7 @@ const MIMETYPE = {
 
 }
 const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
-const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
+const SEND_WEBHOOK_ON = ['accepted', 'delivered', 'seen', 'failed', 'rejected']
 const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'

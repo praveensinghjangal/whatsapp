@@ -17,11 +17,11 @@ class UserData {
   }
 
   getUSerDataByEmail (email) {
-    __logger.info('getUSerDataByEmail>>>')
+    __logger.info('dbData: getUSerDataByEmail(): ', email)
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserDetailsByEmail(), [email])
       .then(result => {
-        __logger.info('Qquery Result', result[0])
+        __logger.info('dbData: getUSerDataByEmail(): then 1:', result)
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
         } else {
@@ -29,14 +29,14 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get user function: ', err)
+        __logger.error('dbData: error in get user function: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
 
   doesUserExists (email) {
-    __logger.info('doesUserExists>>>')
+    __logger.info('dbData: doesUserExists():', email)
     const doesExist = q.defer()
     this.getUSerDataByEmail(email)
       .then(data => doesExist.resolve(true))
@@ -45,13 +45,13 @@ class UserData {
   }
 
   createUser (email, password, tncAccepted, source) {
-    __logger.info('createUser>>>')
+    __logger.info('dbData: createUser():', email)
     const userCreated = q.defer()
     let userId = 0
     this.validate.signupService({ email, password, tncAccepted, source })
       .then(valResponse => this.doesUserExists(email))
       .then(exists => {
-        __logger.info('exists>>> then 2')
+        __logger.info('dbData: createUser(): exists: then 2:', exists)
         if (!exists) {
           userId = this.uniqueId.uuid()
           const passwordSalt = passMgmt.genRandomString(16)
@@ -64,7 +64,7 @@ class UserData {
         }
       })
       .then(result => {
-        __logger.info('Qquery Result sign up then 3', { result })
+        __logger.info('dbData: createUser(): exists: then 3:', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           userCreated.resolve({ userId })
         } else {
@@ -72,7 +72,7 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in create user function: ', err)
+        __logger.info('dbData: createUser(): catch:', err)
         if (err.type) return userCreated.reject({ type: err.type, err: err.err })
         userCreated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
@@ -80,18 +80,18 @@ class UserData {
   }
 
   checkUserIdExistsForAccountProfile (userId) {
-    __logger.info('Check UserId Exists For Account Profile>>>')
+    __logger.info('dbData: Check UserId Exists For Account Profile: ', userId)
     // declare a prmoise
     const doesUserIdExist = q.defer()
     // checking using service whether the userId is  provided or not
     this.validate.checkUserIdService({ userId })
-    // then using a query to check that a record exist or not in table
+      // then using a query to check that a record exist or not in table
       .then(valResponse => {
-        __logger.info('Response then 1', { valResponse })
+        __logger.info('dbData: Response then 1:', { valResponse })
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
       })
       .then(result => {
-        __logger.info('then 2', { result })
+        __logger.info('dbData: then 2', { result })
         // if exist throw return true exist
         if (result && result.length > 0) {
           doesUserIdExist.resolve({ rows: result, exists: true })
@@ -101,25 +101,25 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in check User Exist By UserId: ', err)
+        __logger.error('dbData: error in check User Exist By UserId: ', err)
         doesUserIdExist.reject(false)
       })
     return doesUserIdExist.promise
   }
 
   checkUserIdExistForBusiness (userId) {
-    __logger.info('checkUserIdExistForBusiness>>>')
+    __logger.info('dbData: checkUserIdExistForBusiness():', userId)
     // declare a prmoise
     const doesUserIdExist = q.defer()
     // checking using service whether the userId is  provided or not
     this.validate.checkUserIdService({ userId })
-    // then using a query to check that a record exist or not in table
+      // then using a query to check that a record exist or not in table
       .then(valResponse => {
-        __logger.info('Response then 1', { valResponse })
+        __logger.info('dbData: Response then 1', { valResponse })
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBillingProfileWithBusinessInfoId(), [userId])
       })
       .then(result => {
-        __logger.info('result then 2', { result })
+        __logger.info('dbData: result then 2', { result })
         // if exist throw return true exist
         if (result && result.length === 0) {
           doesUserIdExist.resolve({ record: {}, exists: false })
@@ -129,14 +129,14 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in checkUserExistByUserId function: ', err)
+        __logger.error('dbData: error in checkUserExistByUserId function: ', err)
         doesUserIdExist.reject(false)
       })
     return doesUserIdExist.promise
   }
 
   checkIfApiKeyExists (apiKey, supportUser) {
-    __logger.info('checkIfApiKeyExists>>>>>>>>>>>>>')
+    __logger.info('dbData: checkIfApiKeyExists():', supportUser)
     const userDetails = q.defer()
     let queries
     if (supportUser) {
@@ -146,7 +146,7 @@ class UserData {
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queries, [apiKey])
       .then(result => {
-        __logger.info('result>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: result then 1:', { result })
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
         } else {
@@ -154,14 +154,14 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get user function: ', err)
+        __logger.error('dbData: error in get user function: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
 
   getPasswordTokenByEmail (email) {
-    __logger.info('getPasswordTokenByEmail>>>>>>>>>>>>>')
+    __logger.info('dbData: getPasswordTokenByEmail():')
     const passwordTokenData = q.defer()
     if (!email || typeof email !== 'string') {
       passwordTokenData.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide email id of type string' })
@@ -169,7 +169,7 @@ class UserData {
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPasswordTokenByEmail(), [email])
       .then(result => {
-        __logger.info('result then 1', { result })
+        __logger.info('dbData: result then 1', { result })
         if (result && result.length === 0) {
           passwordTokenData.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, data: {} })
         } else {
@@ -181,7 +181,7 @@ class UserData {
   }
 
   updateExistingPasswordTokens (userId) {
-    __logger.info('updateExistingPasswordTokens>>>>>>>>>>>>>')
+    __logger.info('dbData: updateExistingPasswordTokens():')
     const existingPasswordTokenUpdated = q.defer()
     if (!userId || typeof userId !== 'string') {
       existingPasswordTokenUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -189,7 +189,7 @@ class UserData {
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateExistingPasswordTokens(), [userId, userId])
       .then(result => {
-        __logger.info('result then 1', { result })
+        __logger.info('dbData: result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           existingPasswordTokenUpdated.resolve({ user_id: userId })
         } else {
@@ -201,7 +201,7 @@ class UserData {
   }
 
   addPasswordToken (userId, expiresIn) {
-    __logger.info('addPasswordToken>>>>>>>>>>>>>')
+    __logger.info('dbData: addPasswordToken():')
     const passwordTokenAdded = q.defer()
     if (!userId || typeof userId !== 'string') {
       passwordTokenAdded.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -214,7 +214,7 @@ class UserData {
     const token = this.uniqueId.uuid()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addPasswordToken(), [userId, token, expiresIn, userId])
       .then(result => {
-        __logger.info('result then 1', { result })
+        __logger.info('dbData: result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           passwordTokenAdded.resolve({ userId, token })
         } else {
@@ -226,7 +226,7 @@ class UserData {
   }
 
   getTokenDetailsFromToken (token) {
-    __logger.info('getTokenDetailsFromToken>>>>>>>>>>>>>')
+    __logger.info('dbData: getTokenDetailsFromToken():')
     const tokenDetails = q.defer()
     if (!token || typeof token !== 'string') {
       tokenDetails.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide token of type string' })
@@ -234,7 +234,7 @@ class UserData {
     }
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTokenDetailsFromToken(), [token])
       .then(result => {
-        __logger.info('result then 1', { result })
+        __logger.info('dbData: result then 1', { result })
         if (result && result.length === 0) {
           tokenDetails.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_PASS_TOKEN, data: {} })
         } else {
@@ -246,7 +246,7 @@ class UserData {
   }
 
   updatePassword (userId, newPassword) {
-    __logger.info('updatePassword>>>>>>>>>>>>>')
+    __logger.info('dbData: updatePassword():')
     const passwordUpdated = q.defer()
     if (!userId || typeof userId !== 'string') {
       passwordUpdated.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
@@ -260,7 +260,7 @@ class UserData {
     const hashPassword = passMgmt.create_hash_of_password(newPassword, passwordSalt).passwordHash
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updatePassword(), [hashPassword, passwordSalt, userId, userId])
       .then(result => {
-        __logger.info('result then 1', { result })
+        __logger.info('dbData: result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           passwordUpdated.resolve({ userId })
         } else {
@@ -272,7 +272,7 @@ class UserData {
   }
 
   setPasswordTokeConsumed (token, userId) {
-    __logger.info('setPasswordTokeConsumed>>>>>>>>>>>>>')
+    __logger.info('dbData: setPasswordTokeConsumed():')
     const passwordTokenConsumed = q.defer()
     if (!token || typeof token !== 'string') {
       passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide token of type string' })
@@ -282,10 +282,10 @@ class UserData {
       passwordTokenConsumed.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide userId of type string' })
       return passwordTokenConsumed.promise
     }
-    __logger.info('here to update ---------->', token, userId)
+    __logger.info('dbData: here to update ---------->', token, userId)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setPasswordTokeConsumed(), [userId, userId, token])
       .then(result => {
-        __logger.info('updated ------------->', { result })
+        __logger.info('dbData: updated ------------->', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           passwordTokenConsumed.resolve({ token })
         } else {
@@ -315,11 +315,11 @@ class UserData {
   }
 
   getPasswordByUserId (userId) {
-    __logger.info('getUSerDataByUserId>>>')
+    __logger.info('dbData: getUSerDataByUserId():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPasswordByUserId(), [userId])
       .then(result => {
-        __logger.info('Qquery Result', result[0])
+        __logger.info('dbData: Qquery Result', result[0])
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
         } else {
@@ -327,18 +327,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get user function: ', err)
+        __logger.error('dbData: error in get user function: ', err)
         userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return userDetails.promise
   }
 
   getAccountProfileByUserId (userId) {
-    __logger.info('getUSerDataByUserId>>>')
+    __logger.info('dbData: getUSerDataByUserId():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
       .then(result => {
-        __logger.info('Qquery Result', result[0])
+        __logger.info('dbData: Qquery Result', result[0])
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -346,18 +346,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get user details by userId function: ', err)
+        __logger.error('dbData: error in get user details by userId function: ', err)
         userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return userDetails.promise
   }
 
   getAccountProfileList (ItemsPerPage, offset) {
-    __logger.info('getAccountProfileList>>>')
+    __logger.info('dbData: getAccountProfileList():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAccountProfileList(), [ItemsPerPage, offset])
       .then(result => {
-        __logger.info('Qquery Result')
+        __logger.info('dbData: Qquery Result')
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -365,18 +365,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get account profile list function: ', err)
+        __logger.error('dbData: error in get account profile list function: ', err)
         userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return userDetails.promise
   }
 
   updateAccountManagerName (accountManagerName, userId) {
-    __logger.info('updateAccountManagerName>>>')
+    __logger.info('dbData: updateAccountManagerName():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAccountManagerName(), [accountManagerName, userId])
       .then(result => {
-        __logger.info('Qquery Result', result)
+        __logger.info('dbData: Qquery Result', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           userDetails.resolve(result)
         } else {
@@ -384,18 +384,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in updateAccountManagerName function: ', err)
+        __logger.error('dbData: error in updateAccountManagerName function: ', err)
         userDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return userDetails.promise
   }
 
   getAgreementByStatusId (agreementStatus, ItemsPerPage, offset) {
-    __logger.info('getAgreementByStatusId>>>')
+    __logger.info('dbData: getAgreementByStatusId():')
     const userAgreement = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementByStatusId(), [agreementStatus, ItemsPerPage, offset, agreementStatus])
       .then(result => {
-        __logger.info('Qquery Result')
+        __logger.info('dbData: Qquery Result')
         if (result && result[0] && result[0].length === 0) {
           userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -403,18 +403,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in getAgreementByStatusId function: ', err)
+        __logger.error('dbData: error in getAgreementByStatusId function: ', err)
         userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return userAgreement.promise
   }
 
   getAgreementInfoById (agreementId) {
-    __logger.info('getAgreementInfoById>>>', agreementId)
+    __logger.info('dbData: getAgreementInfoById():', agreementId)
     const userAgreement = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoById(), [agreementId])
       .then(result => {
-        __logger.info('getAgreementInfoById Query Result', result)
+        __logger.info('dbData: getAgreementInfoById Query Result', result)
         if (result && result.length === 0) {
           userAgreement.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -422,18 +422,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in getAgreementInfoById function: ', err)
+        __logger.error('dbData: error in getAgreementInfoById function: ', err)
         userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
       })
     return userAgreement.promise
   }
 
   getAgreementInfoByUserId (userId) {
-    __logger.info('getAgreementInfoByUserId>>>')
+    __logger.info('dbData: getAgreementInfoByUserId():')
     const userAgreement = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementInfoByUserId(), [userId])
       .then(result => {
-        __logger.info('Query Result')
+        __logger.info('dbData: Query Result')
         if (result && result.length === 0) {
           userAgreement.resolve()
         } else {
@@ -441,14 +441,14 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in getAgreementInfoByUserId function: ', err)
+        __logger.error('dbData: error in getAgreementInfoByUserId function: ', err)
         userAgreement.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
       })
     return userAgreement.promise
   }
 
   insertAgreement (newData, userId, callerUserId) {
-    __logger.info('Inserting agreement')
+    __logger.info('dbData: Inserting agreement')
     const dataInserted = q.defer()
     const uniqueId = new UniqueId()
     const agreementStatusEngine = new AgreementStatusEngine()
@@ -463,11 +463,11 @@ class UserData {
     }
     const queryParam = []
     _.each(agreementData, (val) => queryParam.push(val))
-    __logger.info('inserttttttttttttttttttttt->', agreementData, queryParam)
+    __logger.info('dbData: inserttttttttttttttttttttt->', agreementData, queryParam)
     if (agreementStatusEngine.canUpdateAgreementStatus(agreementData.agreementStatusId, __constants.AGREEMENT_STATUS.pendingForDownload.statusCode)) {
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.saveUserAgreement(), queryParam)
         .then(result => {
-          __logger.info('result', { result })
+          __logger.info('dbData: result', { result })
           if (result && result.affectedRows && result.affectedRows > 0) {
             dataInserted.resolve(agreementData)
           } else {
@@ -475,7 +475,7 @@ class UserData {
           }
         })
         .catch(err => {
-          __logger.error('error: ', err)
+          __logger.error('dbData: error: ', err)
           dataInserted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
         })
     } else {
@@ -485,7 +485,7 @@ class UserData {
   }
 
   updateAgreement (newData, oldData, userId, callerUserId) {
-    __logger.info('Updating agreement')
+    __logger.info('dbData: Updating agreement')
     const dataUpdated = q.defer()
     const agreementStatusEngine = new AgreementStatusEngine()
     const agreementData = {
@@ -501,11 +501,11 @@ class UserData {
     }
     const queryParam = []
     _.each(agreementData, (val) => queryParam.push(val))
-    __logger.info('update->', agreementData, queryParam)
+    __logger.info('dbData: update->', agreementData, queryParam)
     if (agreementStatusEngine.canUpdateAgreementStatus(newData.agreementStatusId, oldData.agreementStatusId)) {
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAgreement(), queryParam)
         .then(result => {
-          __logger.info('updateAgreement result', { result })
+          __logger.info('dbData: updateAgreement result', { result })
           if (result && result.affectedRows && result.affectedRows > 0) {
             dataUpdated.resolve(agreementData)
           } else {
@@ -513,7 +513,7 @@ class UserData {
           }
         })
         .catch(err => {
-          __logger.error('error: ', err)
+          __logger.error('dbData: error: ', err)
           dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
         })
     } else {
@@ -523,7 +523,7 @@ class UserData {
   }
 
   getAllAgreement (columnArray, offset, ItemsPerPage, valArray) {
-    __logger.info('Inside getAllAgreement')
+    __logger.info('dbData: Inside getAllAgreement')
     const fetchAgreement = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementList(columnArray), [...valArray, ItemsPerPage, offset])
       .then(result => {
@@ -540,7 +540,7 @@ class UserData {
   }
 
   updateAccountConfig (newData, oldData, userId, callerUserId) {
-    __logger.info('Updating account config')
+    __logger.info('dbData: Updating account config')
     const dataUpdated = q.defer()
     const accountConfigData = {
       tps: newData.tps ? newData.tps : oldData.tps,
@@ -549,10 +549,10 @@ class UserData {
     }
     const queryParam = []
     _.each(accountConfigData, (val) => queryParam.push(val))
-    __logger.info('account config data to be updated->', accountConfigData, queryParam)
+    __logger.info('dbData: account config data to be updated->', accountConfigData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAccountConfig(), queryParam)
       .then(result => {
-        __logger.info('result', { result })
+        __logger.info('dbData: result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataUpdated.resolve(accountConfigData)
         } else {
@@ -560,18 +560,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('dbData: error: ', err)
         dataUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err })
       })
     return dataUpdated.promise
   }
 
   getAgreementStatusList () {
-    __logger.info('inside getAgreementStatusList function')
+    __logger.info('dbData: inside getAgreementStatusList function')
     const agreementData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementStatusList(), [])
       .then(result => {
-        __logger.info('getAgreementStatusList Qquery Result', { result })
+        __logger.info('dbData: getAgreementStatusList Qquery Result', { result })
         if (result && result.length > 0) {
           agreementData.resolve(result)
         } else {
@@ -579,18 +579,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get template status list function: ', err)
+        __logger.error('dbData: error in get template status list function: ', err)
         agreementData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return agreementData.promise
   }
 
   getAccountCreatedTodayCount () {
-    __logger.info('get Account Created Today Count Service>>>>>>>>>>>>>')
+    __logger.info('dbData: get Account Created Today Count Service():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAccountCreatedTodayCount(), [])
       .then(result => {
-        __logger.info('get Account Created Today Count Service Result>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: get Account Created Today Count Service Result():', { result })
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -598,18 +598,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get Account Created Today Count function: ', err)
+        __logger.error('dbData: error in get Account Created Today Count function: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
 
   getAgreementStatusCount () {
-    __logger.info('get Agreement Status Count Service>>>>>>>>>>>>>')
+    __logger.info('dbData: get Agreement Status Count Service():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAgreementStatusCount(), [])
       .then(result => {
-        __logger.info('get Agreement Count Status Service Result>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: get Agreement Count Status Service Result():', { result })
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -617,18 +617,18 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in get Agreement Status Count function: ', err)
+        __logger.error('dbData: error in get Agreement Status Count function: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
 
   getUserData () {
-    __logger.info('get getUserData for dynamic per user queue >>>>>>>>>>>>>')
+    __logger.info('dbData: <<<<<<<<<<<<< user.services.dbData: getUserData(): create dynamic queue per User ():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserData())
       .then(result => {
-        __logger.info('response getUserData for dynamic per user queue >>>>>>>>>>>>>', { result })
+        __logger.info('dbData: response getUserData():', { result })
         if (result && result.length === 0) {
           userDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
         } else {
@@ -648,12 +648,12 @@ class UserData {
             __constants.MQ['pre_process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.pre_process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
             __constants.MQ['process_message_campaign_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber].q_name = __constants.MQ.process_message_campaign.q_name + '_' + singleObject.userId + '_' + singleObject.phoneCode + singleObject.phoneNumber
           })
-          __logger.info('created per user Queue success >>>>>>>>>>>>>')
+          __logger.info('dbData: <<<<<<<<<<<<< created per user Queue success >>>>>>>>>>>>>>')
           userDetails.resolve(result)
         }
       })
       .catch(err => {
-        __logger.error('error in  getUserData for dynamic per user queue :  ', err)
+        __logger.error('dbData: error in  getUserData for dynamic per user queue :  ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
@@ -661,26 +661,26 @@ class UserData {
 
   getPhoneNumbersFromWabaId (wabaIdOfClient) {
     // wabaIdOfClient="b6210d2f-acb3-4dfa-8b52-0972c8045706"
-    __logger.info('getPhoneNumbersFromWabaIde>>>>>>>>>>>>>')
+    __logger.info('dbData: getPhoneNumbersFromWabaIde():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getPhoneNumbersFromWabaId(), [wabaIdOfClient])
       .then(result => {
-        __logger.info('getPhoneNumbersFromWabaId>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: getPhoneNumbersFromWabaId():', { result })
         userDetails.resolve(result)
       })
       .catch(err => {
-        __logger.error('error in getPhoneNumbersFromWabaId: ', err)
+        __logger.error('dbData: error in getPhoneNumbersFromWabaId: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
 
   updateWabizInformation (wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber) {
-    __logger.info('updateWabizInformation>>>>>>>>>>>>>')
+    __logger.info('dbData: updateWabizInformation():')
     const apiCall = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateWabizInformation(), [wabizusername, wabizpassword, wabizurl, graphapikey, phoneCode, phoneNumber])
       .then(result => {
-        __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: updateWabizInformation():', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           apiCall.resolve(result)
         } else {
@@ -688,7 +688,7 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in updateWabizInformation: ', err)
+        __logger.error('dbData: error in updateWabizInformation: ', err)
         apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return apiCall.promise
@@ -702,7 +702,7 @@ class UserData {
         // const supportEmail = emails[0].email.split(',')
         // const supportEmail = ['8097@yopmail.com']
         const supportEmail = emails[0].email.split(',')
-        console.log('support emails to be send ', supportEmail)
+        __logger.info('dbData: sendMessageToSupport(): supportEmail:', supportEmail)
         return agreementStatusService.sendEmailsToSupports(supportEmail, url, errorMessage)
       })
       .then(result => {
@@ -715,11 +715,11 @@ class UserData {
   }
 
   updateTfaPinInformation (phoneCode, phoneNumber, tfaPin) {
-    __logger.info('updateWabizInformation>>>>>>>>>>>>>')
+    __logger.info('dbData: updateWabizInformation():')
     const apiCall = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateTfaPinInformation(), [tfaPin, phoneCode, phoneNumber])
       .then(result => {
-        __logger.info('updateWabizInformation>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: updateWabizInformation():', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           apiCall.resolve(result)
         } else {
@@ -727,37 +727,37 @@ class UserData {
         }
       })
       .catch(err => {
-        __logger.error('error in updateWabizInformation: ', err)
+        __logger.error('dbData: error in updateWabizInformation: ', err)
         apiCall.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return apiCall.promise
   }
 
   getWabaProfileSetupStatusFromUserId (userId) {
-    __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>')
+    __logger.info('dbData: getWabaProfileSetupStatusFromUserId():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaProfileSetupStatus(), [userId])
       .then(result => {
-        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: getWabaProfileSetupStatusFromUserId():', { result })
         userDetails.resolve(result)
       })
       .catch(err => {
-        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        __logger.error('dbData: error in getWabaProfileSetupStatusFromUserId: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
   }
 
   getEmbeddedSingupData (embeddedsingupid) {
-    __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>')
+    __logger.info('dbData: getWabaProfileSetupStatusFromUserId():')
     const userDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getEmbeddedSingupData(), [embeddedsingupid])
       .then(result => {
-        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: getWabaProfileSetupStatusFromUserId():', { result })
         userDetails.resolve(result)
       })
       .catch(err => {
-        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        __logger.error('dbData: error in getWabaProfileSetupStatusFromUserId: ', err)
         userDetails.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return userDetails.promise
@@ -765,14 +765,14 @@ class UserData {
 
   addEmbbeddedSingupErrorData (query, paramsArray) {
     const addEmbbeddedSingupErrorData = q.defer()
-    console.log('query to be inserted into the ', query)
+    __logger.info('dbData: addEmbbeddedSignUpErrorData:', query)
     __db.mysql.query(__constants.HW_MYSQL_NAME, query, paramsArray)
       .then(result => {
-        __logger.info('getWabaProfileSetupStatusFromUserId>>>>>>>>>>>>>', { result })
+        __logger.info('dbData: getWabaProfileSetupStatusFromUserId():', { result })
         addEmbbeddedSingupErrorData.resolve(result)
       })
       .catch(err => {
-        __logger.error('error in getWabaProfileSetupStatusFromUserId: ', err)
+        __logger.error('dbData: error in getWabaProfileSetupStatusFromUserId: ', err)
         addEmbbeddedSingupErrorData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return addEmbbeddedSingupErrorData.promise

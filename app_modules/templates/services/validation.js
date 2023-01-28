@@ -505,7 +505,7 @@ class validate {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
-    __logger.info('errrrrrrrrrrrrrrrrrrrrr', formatedError)
+    __logger.info('templates/service/validation: formatedError: ', formatedError)
     if (formatedError.length > 0) {
       isvalid.resolve(false)
     } else {

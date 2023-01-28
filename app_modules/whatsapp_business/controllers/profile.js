@@ -85,7 +85,7 @@ const getBusinessProfile = (req, res) => {
   const businessAccountService = new BusinessAccountService()
   businessAccountService.getBusinessProfileInfo(userId)
     .then(results => {
-      __logger.info('Then 1', results)
+      // __logger.info('Then 1', results)
       queryResult = results[0]
       if (results && results.length > 0) {
         results[0].canReceiveSms = results[0].canReceiveSms === 1
