@@ -288,6 +288,7 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
+  const vivaReqId = req && req.headers && req.headers.vivaReqId
   let sendToQueueRes
   let finalObjToBeSent
   let userRedisData
@@ -301,6 +302,7 @@ const controller = (req, res) => {
     }
   }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+  __logger.error('message send API HIT : controller: { wabaNumber' + req.user.wabaPhoneNumber + ', reqId :' + vivaReqId + '}')
   validate.sendMessageToQueue(req.body)
     .then(data => {
       if (data && data[0] && !data[0].isCampaign && !data[0].isChatBot && data[0].whatsapp && data[0].whatsapp.contentType === 'template') {
@@ -374,6 +376,7 @@ const controller = (req, res) => {
             templateId: singleMessage.whatsapp && singleMessage.whatsapp.template && singleMessage.whatsapp.template.templateId ? singleMessage.whatsapp.template.templateId : null,
             currentStatusTime: new Date(),
             createdOn: new Date(),
+            requestId: vivaReqId,
             status: [
               {
                 senderPhoneNumber: singleMessage.to,
