@@ -86,7 +86,7 @@ module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, ap
       } else {
         messageType = __constants.MESSAGE_TYPE[0]
       }
-      __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo, messageType, fromNumber])
+      return __db.mysql.query(__constants.HW_MYSQL_NAME, query, [vivaMessageId, serviceProviderMessageId, serviceProviderId, apiName, JSON.stringify(request), JSON.stringify(response), toPhoneNo, messageType, fromNumber])
     })
     .then(result => {
       __logger.info('saveAPILog: result then 2:', { result })
