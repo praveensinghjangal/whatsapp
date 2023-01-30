@@ -44,9 +44,13 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
       .then(data => {
         return deferred.resolve(wabaDataFromRedis.namespace)
       })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: dataMapper: getWabaDetails: getFaceBookTokensByWabaNumber(' + wabaNumber + '): catch: ', err)
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   } else {
+    __logger.error('fb: dataMapper: getWabaDetails: getFaceBookTokensByWabaNumber(' + wabaNumber + '): Waba Number is missing')
     deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing' })
     return deferred.promise
   }
@@ -101,6 +105,7 @@ class InternalService {
         namespaceReceived.resolve(namespace)
       })
       .catch((err) => {
+        __logger.error('fb: dataMapper: getNamespaceForTheTemplate(' + wabaPhoneNumber + '): catch: ', err)
         namespaceReceived.reject(err)
       })
     return namespaceReceived.promise
@@ -364,7 +369,7 @@ class DataMapper {
         apiReqBody.resolve(body)
       })
       .catch(err => {
-        __logger.error('error inside addTemplate : ', err)
+        __logger.error('fb: dataMapper: addTemplate(): catch:', err)
         apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiReqBody.promise
@@ -385,7 +390,10 @@ class DataMapper {
         __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
-      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: dataMapper: updateProfileDetails(): catch:', err)
+        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return apiReqBody.promise
   }
 
@@ -403,7 +411,10 @@ class DataMapper {
         __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
-      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: dataMapper: updateBusinessProfileDetails(): catch:', err)
+        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return apiReqBody.promise
   }
 
@@ -426,10 +437,11 @@ class DataMapper {
     const internalService = new InternalService()
     internalService.sendMessageFbBody(data, maxTpsToProvider)
       .then(body => {
-        __logger.info('dataMapper: sendMessage(): fb req body:', body)
+        __logger.info('fb: dataMapper: sendMessage(): fb req body:', body)
         deferred.resolve(body)
       })
       .catch(err => {
+        __logger.error('fb: dataMapper: sendMessage(): fb req body: catch:', err)
         deferred.reject(err)
       })
     return deferred.promise
