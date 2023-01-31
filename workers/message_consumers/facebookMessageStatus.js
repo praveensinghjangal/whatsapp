@@ -19,7 +19,7 @@ const sendToFacebookMessageStatusQueue = (message, queueObj) => {
 
 const pendingMessageToSendMechanism = (queueDataobject, queueObj) => {
   const messageHistoryService = new MessageHistoryService()
-  __logger.info('fbMessageStatus: pendingMessageToSendMechanism(): ', queueObj)
+  __logger.info('fbMessageStatus: pendingMessageToSendMechanism(): ')
   let messageId
   messageHistoryService.getVivaMsgIdByserviceProviderMsgId(queueDataobject)
     .then(messageData => {
