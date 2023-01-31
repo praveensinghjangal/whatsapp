@@ -93,7 +93,7 @@ module.exports = (vivaMessageId, serviceProviderMessageId, serviceProviderId, ap
       if (result && result.affectedRows && result.affectedRows > 0) {
         historyStored.resolve(true)
       } else {
-        __logger.error('saveAPILog: then 2:')
+        __logger.error('saveAPILog: then 2: Rows ')
         historyStored.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
       }
     })
