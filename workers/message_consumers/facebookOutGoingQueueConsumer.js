@@ -115,7 +115,7 @@ class MessageConsumer {
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
           } catch (err) {
-            __logger.error('fbOutgoing: sendMessage(' + queue + '): try/catch:', err)
+            __logger.error('fbOutgoing: sendMessage(' + queue + '): try/catch:', err.stack ? err.stack : err)
             const telegramErrorMessage = 'fbOutgoing: sendMessage(' + queue + '): try/catch:'
             errorToTelegram.send(err, telegramErrorMessage)
             rmqObject.channel[queue].ack(mqData)

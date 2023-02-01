@@ -116,7 +116,7 @@ class RedirectService {
       })
       .catch(err => {
         __logger.error('redirectService: webhookPost(' + wabaNumber + '): getWabaDataByPhoneNumber(): catch:', err.stack ? err.stack : err)
-        const telegramErrorMessage = 'redirectService: webhookPost(' + wabaNumber + '): Error While callMessage flow or queueCall function: catch:'
+        const telegramErrorMessage = 'redirectService: webhookPost(' + wabaNumber + '): Error While callMessage flow or queueCall(): catch:'
         errorToTelegram.send(err, telegramErrorMessage)
         redirected.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })

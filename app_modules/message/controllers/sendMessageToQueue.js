@@ -302,7 +302,7 @@ const controller = (req, res) => {
     }
   }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
-  __logger.error('message send API HIT : controller: { wabaNumber' + req.user.wabaPhoneNumber + ', reqId :' + vivaReqId + '}')
+  __logger.info('message send API HIT : controller: { wabaNumber: ' + req.user.wabaPhoneNumber + ', reqId :' + vivaReqId + '}')
   validate.sendMessageToQueue(req.body)
     .then(data => {
       if (data && data[0] && !data[0].isCampaign && !data[0].isChatBot && data[0].whatsapp && data[0].whatsapp.contentType === 'template') {

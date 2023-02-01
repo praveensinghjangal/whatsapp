@@ -93,7 +93,7 @@ const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
 const sendToRespectiveProviderQueue = (message, queueObj, queue, mqData) => {
   const messageRouted = q.defer()
   __logger.info('processMessage: sendToRespectiveProviderQueue(): ', { message, queue })
-  queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoing', message.config.userId, message.payload.whatsapp.from), JSON.stringify(message))
+  queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoing', ((message.payload && message.payload.redisData && message.payload.redisData.userId) ? message.payload.redisData.userId : message.config.userId), ((message.payload && message.payload.redisData && message.payload.redisData.id) ? message.payload.redisData.id : message.payload.whatsapp.from)), JSON.stringify(message))
     .then(queueResponse => saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false))
     .then(statusResponse => queueObj.channel[queue].ack(mqData))
     .then(statusResponse => messageRouted.resolve('done!'))
