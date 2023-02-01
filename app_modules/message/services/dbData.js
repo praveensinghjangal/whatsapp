@@ -281,6 +281,7 @@ class MessgaeHistoryService {
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
+        console.log('--------result----------', result)
         if (result && result.length > 0) {
           const dataCount = { outgoingMessageCount: { session: 0, template: 0, total: 0 }, incomingMessageCount: 0 }
           if (flag === __constants.MESSAGE_TRANSACTION_TYPE[0]) {

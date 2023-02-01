@@ -3,7 +3,7 @@ const q = require('q')
 const __constants = require('../../config/constants')
 const DbService = require('../../app_modules/message/services/dbData')
 const moment = require('moment')
-// const _ = require('lodash')
+const _ = require('lodash')
 const EmailService = require('../../lib/sendNotifications/email')
 const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 const errorToTelegram = require('../../lib/errorHandlingMechanism/sendToTelegram')
@@ -50,7 +50,7 @@ const messageStatusOnMailForConversation = () => {
     })
     .then((dbResponse) => {
       allUserData = bodyCreator(dbResponse)
-      return dbService.getWabaNameByWabaNumber(arrayofWabanumber)
+      return dbService.getWabaNameByPhoneNumber(arrayofWabanumber)
     })
     .then(dbresponse => {
       for (let i = 0; i < dbresponse.length; i++) {
@@ -59,54 +59,19 @@ const messageStatusOnMailForConversation = () => {
       console.log('userIdToUserName', userIdToUserName)
     })
     .then(() => {
+      allUserData = _.chain(allUserData).groupBy('wabaPhoneNumber').map((value, key) => ({ wabaPhoneNumber: key, messageCountry: value })).value()
       console.log('length', allUserData, allUserData.length)
       for (let i = 0; i < allUserData.length; i++) {
-        const data = allUserData[i]
-        if (data.wabaPhoneNumber) {
-          data.businessName = userIdToUserName[data.wabaPhoneNumber]
+        if (allUserData[i].wabaPhoneNumber) {
+          allUserData[i].businessName = userIdToUserName[allUserData[i].wabaPhoneNumber]
         }
       }
+      allUserData = _.chain(allUserData).groupBy('businessName').map((value, key) => ({ businessName: key, wabaPhoneNumber: value })).value()
       console.log('data......', allUserData)
       const emailService = new EmailService(__config.emailProvider)
       const subject = `MIS Report for ${preMonth}`
       return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMisMonth(allUserData))
     })
-  // dbService.getMisRelatedData(startOfMonth, endOfMonth)
-    // .then(responseFromDb => {
-    //   const arrayofWabanumber = []
-    //   const allUserData = bodyCreator(responseFromDb)
-    //   console.log("allUserData", allUserData)
-    //   const allUserGrouped = _.groupBy(allUserData, item => item.wabaPhoneNumber)
-    //   __logger.info('data fetched from DB ~function=messageStatusOnMail---- allUserGrouped', allUserGrouped)
-    //   _.each(allUserGrouped, (singleUserData, key) => {
-    //     const UserAllDayDataArr = [key, [0, 0], [0, 0], [0, 0], [0, 0], 0]
-    //     singleUserData.forEach(userCountData => {
-    //       const removePhoneCodeFromWaba = phoneCodeAndPhoneSeprator(userCountData.wabaPhoneNumber).phoneNumber
-    //       if (arrayofWabanumber.indexOf(removePhoneCodeFromWaba) === -1) arrayofWabanumber.push(removePhoneCodeFromWaba)
-
-    //     })
-    //   })
-    //   console.log('allUserGrouped', allUserGrouped)
-    //   return dbService.getWabaNameByWabaNumber(arrayofWabanumber)
-    // })
-    // .then(dbresponse => {
-    //   const userIdToUserName = {}
-    //   for (let i = 0; i < dbresponse.length; i++) {
-    //     userIdToUserName[dbresponse[i].wabaPhoneNumber] = dbresponse[i].businessName
-    //   }
-    //   console.log("dbresponse", dbresponse)
-    //   //console.log('objects using ',mtdAllUserCount,mtdTotalStatusCount,mtdTotalMessageCount)
-    //   return conversationMis.resolve({
-    //     // mtdStatusCount: passingObjectToMailer.mtdAllUserCount,
-    //     // mtdTotalStatusCount: passingObjectToMailer.mtdTotalStatusCount,
-    //     // mtdTotalMessageCount: passingObjectToMailer.mtdTotalMessageCount,
-    //     userIdToUserNameConvo: userIdToUserName
-    //   })
-    // })
-    // .catch((error) => {
-    //   console.log('error in sending mis ~function=messageStatusOnMailForConversation', error)
-    //   __logger.error('error in sending mis ~function=messageStatusOnMailForConversation', { err: typeof error === 'object' ? error : { error: error.toString() } })
-    //   conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
     .catch((error) => {
       const telegramErrorMessage = 'Monthy MIS report err ||(): error in Sending monthly MIS'
       errorToTelegram.send(error, telegramErrorMessage)
