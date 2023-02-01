@@ -1123,6 +1123,25 @@ class MessgaeHistoryService {
       })
     return promises.promise
   }
+
+  getWabaNameByPhoneNumber (arrayofWabaNumber) {
+    const promises = q.defer()
+    __logger.info('inside getWabaNameByPhoneNumber', arrayofWabaNumber)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByPhoneNumber(), [arrayofWabaNumber])
+      .then(result => {
+        if (result && result.length > 0) {
+          promises.resolve(result)
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getWabaNameByPhoneNumber db call')
+          promises.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getWabaNameByPhoneNumber db call:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
 }
 
 module.exports = MessgaeHistoryService
