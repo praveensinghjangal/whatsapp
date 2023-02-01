@@ -37,7 +37,7 @@ const checkFile = require('./zipFileExists')
  */
 
 const deliveryReport = (req, res) => {
-  __logger.info('Get delivered message journey record based on consumer mobile number, campaign name, date, message id', req.body)
+  __logger.info('messageReports: deliveryReport(): req:', req.body)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
@@ -64,13 +64,13 @@ const deliveryReport = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.info('messageReports: deliveryReport(): validation: catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
 const campaignSummaryReport = (req, res) => {
-  __logger.info('Get campaign summary record based on campaign name, date', req.body)
+  __logger.info('messageReports: campaignSummaryReport(): req:', req.body)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
@@ -101,7 +101,7 @@ const campaignSummaryReport = (req, res) => {
 }
 
 const templateSummaryReport = (req, res) => {
-  __logger.info('Get template summary record based on template name, template id, date', req.query)
+  __logger.info('messageReports: templateSummaryReport(): req:', req.query)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
 
   let limit = ''
@@ -135,12 +135,12 @@ const templateSummaryReport = (req, res) => {
 
 const userConversationReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: userConversationReport(): req:', req.body, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const validate = new ValidatonService()
   let limit = ''
   let page = ''
-  __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
       limit = req.body.limit ? +req.body.limit : 10
@@ -168,6 +168,7 @@ const userConversationReport = (req, res) => {
 
 const downloadCampaignSummary = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: downloadCampaignSummary(): req:', req.query, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
@@ -177,7 +178,6 @@ const downloadCampaignSummary = (req, res) => {
   var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
   var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
   const validate = new ValidatonService()
-  __logger.info('Get download CampaignSummary date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
       return messageReportsServices.downloadCampaignSummary(wabaPhoneNumber, startDate, endDate)
@@ -209,6 +209,7 @@ const downloadCampaignSummary = (req, res) => {
 
 const downloadTemplateSummary = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: downloadTemplateSummary(): req:', req.query, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
@@ -218,7 +219,6 @@ const downloadTemplateSummary = (req, res) => {
   const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
   const validate = new ValidatonService()
-  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
       return messageReportsServices.downloadTemplateSummary(wabaPhoneNumber, startDate, endDate)
@@ -249,6 +249,7 @@ const downloadTemplateSummary = (req, res) => {
 
 const downloadUserConversationReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: downloadUserConversationReport(): req:', req.query, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
@@ -258,7 +259,6 @@ const downloadUserConversationReport = (req, res) => {
   const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
   const validate = new ValidatonService()
-  __logger.info('download User conversation report by date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
       return messageReportsServices.downloadUserConversationSummary(wabaPhoneNumber, startDate, endDate)
@@ -318,6 +318,7 @@ const downloadUserConversationReport = (req, res) => {
 // }
 
 const downloadDlrRequest = (req, res) => {
+  __logger.info('messageReports: downloadDlrRequest(): req:', req.query)
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const dbService = new DbService()
@@ -375,10 +376,9 @@ const filesPresent = (pathName) => {
   //    path_name = __dirname, `../public/reports/smpp/${system_id}/${year}/${month}/${day}`
   const filesPresentInPath = q.defer()
   if (fs.existsSync(pathName)) {
-    console.log('44444444444444444444444444444444444444444')
     filesPresentInPath.resolve(true)
   } else {
-    console.log('filesPresent existsSync')
+    __logger.info('messageReports: filePresent(): file exists...')
     filesPresentInPath.resolve(false)
   }
   return filesPresentInPath.promise

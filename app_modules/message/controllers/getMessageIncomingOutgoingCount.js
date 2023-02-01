@@ -29,7 +29,7 @@ const ValidatonService = require('../services/validation')
  */
 
 const getIncomingOutgoingMessageCount = (req, res) => {
-  __logger.info('Get Incoming and Outgoing Message Count API Called', req.query)
+  __logger.info('GetIncomingAndOutgoingCount: Message Count API Called: req:', { req: req.query })
   const dbServices = new DbServices()
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
@@ -41,7 +41,7 @@ const getIncomingOutgoingMessageCount = (req, res) => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data })
     })
     .catch(err => {
-      __logger.error('error::getIncomingAndOutgoingMessage count : ', err)
+      __logger.error('getIncomingAndOutgoingcount: validate.transactionValidator: catch: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }

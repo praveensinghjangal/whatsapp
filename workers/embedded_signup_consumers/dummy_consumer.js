@@ -40,7 +40,7 @@ class FacebookConsumer {
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            // const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in try/catch function'
+            // const telegramErrorMessage = 'FacebookConsumer: startServer(): error in try/catch function'
             // errorToTelegram.send(err, telegramErrorMessage)
             // __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
@@ -48,7 +48,7 @@ class FacebookConsumer {
         }, { noAck: false })
       })
       .catch(err => {
-        // const telegramErrorMessage = 'FacebookConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
+        // const telegramErrorMessage = 'FacebookConsumer: fetchFromQueue(): facebook incoming message QueueConsumer::error'
         // errorToTelegram.send(err, telegramErrorMessage)
         __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)

@@ -30,13 +30,13 @@ const moment = require('moment')
  * *** Last-Updated :- Arjun Bhole 29th July, 2020 2020 ***
  */
 const getAudienceRecordById = (req, res) => {
-  __logger.info('Get Audience Info API Called', req.params)
+  __logger.info('fetchAudienceData: getAudienceRecordById(): req:', req.params)
   const audienceService = new AudienceService()
   const validate = new ValidatonService()
   validate.checkAudienceIdExistService(req.params)
     .then(data => audienceService.getAudienceTableDataWithId(req.user.user_id, req.params.audienceId))
     .then(result => {
-      __logger.info('then 1', result)
+      __logger.info('fetchAudienceData: getAudienceRecordById(): then 1:', result)
       if (result) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
       } else {
@@ -44,7 +44,7 @@ const getAudienceRecordById = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('error in create user function: ', err)
+      __logger.info('fetchAudienceData: getAudienceRecordById(): catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
@@ -53,7 +53,7 @@ const getAudienceRecordById = (req, res) => {
 Not much clarity on veiwALl filter
 */
 const getAudienceRecordList = (req, res) => {
-  __logger.info('Get Audience Record List API Called', req.query, req.user)
+  __logger.info('fetchAudienceData: getAudienceRecordList(): req:', req.query, req.user)
   const validate = new ValidatonService()
 
   // if page then int , ItemsPerPage mandatory with type int
@@ -63,7 +63,7 @@ const getAudienceRecordList = (req, res) => {
   const requiredPage = req.query.page ? +req.query.page : 1
   const ItemsPerPage = req.query ? +req.query.ItemsPerPage : 5
   const offset = ItemsPerPage * (requiredPage - 1)
-  __logger.info('Get Offset value', offset)
+  __logger.info('fetchAudienceData: getAudienceRecordList(): Offset:', offset)
   // if (req.query && req.query.startDate && req.query.endDate) inputArray.push({ colName: 'aud.first_message', value: [req.query.startDate, req.query.endDate], type: 'between' })
   validate.audienceFilterParamCheck(req.query)
     .then(validRes => {
@@ -87,7 +87,7 @@ const getAudienceRecordList = (req, res) => {
       return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceRecordList(columnArray), valArray.flat())
     })
     .then(result => {
-      __logger.info('Got audience list from db -->', { result })
+      __logger.info('fetchAudienceData: getAudienceRecordList(): audience list from db: then 2:', result)
       if ((result && result.length === 0) || result[0].length === 0) {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
       } else {
@@ -97,22 +97,22 @@ const getAudienceRecordList = (req, res) => {
           singleObj.tempOptin = singleObj.tempOptin === 1
           delete singleObj.totalFilteredRecord
         })
-        __logger.info('pagination       ----->', pagination)
+        __logger.info('fetchAudienceData: getAudienceRecordList(): audience list from db: then 2: pagination:', pagination)
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: { rows: result[0], pagination } })
       }
     })
     .catch(err => {
-      __logger.error('error in create user function: ', err)
+      __logger.error('fetchAudienceData: getAudienceRecordList(): catch:', err)
       return __util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || err })
     })
 }
 
 function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
   const dataFetched = q.defer()
-  __logger.info('inside getOptinStatusByPhoneNumber', { phoneNumber, wabaNumber })
+  __logger.info('fetchAudienceData: getOptinStatusByPhoneNumber(): ', { phoneNumber, wabaNumber })
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinByPhoneNumber(), [phoneNumber, wabaNumber])
     .then(result => {
-      __logger.info('optin sssssssssssssssssssssssssss-> then 1', { result }, phoneNumber, wabaNumber)
+      __logger.info('fetchAudienceData: getOptinStatusByPhoneNumber(): Then 1:', { result })
       if (result && result.length === 0) {
         dataFetched.resolve({ optin: false, tempOptin: false })
       } else {
@@ -123,12 +123,11 @@ function getOptinStatusByPhoneNumber (phoneNumber, wabaNumber) {
         result[0].tempOptin = moment(currentTime).isBefore(expireyTime)
 
         // result[0].tempOptin = moment().diff(moment(result[0].lastMessage), 'hours') <= 24
-        // __logger.info('Result>>>>>>>>>>>>>>>>>.....', result[0])
         dataFetched.resolve({ optin: result[0].optin, tempOptin: result[0].tempOptin, isFacebookVerified: result[0].isFacebookVerified })
       }
     })
     .catch(err => {
-      __logger.error('error in get audience by phone number function: ', err)
+      __logger.error('fetchAudienceData: getOptinStatusByPhoneNumber(): catch:', err)
       dataFetched.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     })
 

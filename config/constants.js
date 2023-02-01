@@ -106,7 +106,8 @@ const ENTITY_NAME = {
   MESSAGE_STATUS_ERROR: 'message_status_error',
   CAMPAIGNAME_SUMMARY_REPORT: 'campaignname_summary_report',
   CONVERSATION_SUMMARY: 'conversation_summary',
-  TEMEPLATE_SUMMARY: 'template_summary'
+  TEMEPLATE_SUMMARY: 'template_summary',
+  INTERACTIONS: 'interaction'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -286,7 +287,8 @@ const VALIDATOR = {
   pan: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i,
   noTabLinebreakSpace: /^(?:(.)(?!\s\s\s\s)(?!\n)(?!\t))*$/g,
   empty: /^''$/g,
-  dateFormat: /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/g
+  dateFormat: /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/g,
+  payload: /^[0-2]{1}/g
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
@@ -508,7 +510,9 @@ const FACEBOOK_CONTENT_TYPE = {
   contacts: 'contacts',
   location: 'location',
   button_reply: 'button_reply',
-  audio: 'audio'
+  list_reply: 'list_reply',
+  audio: 'audio',
+  button: 'button'
 }
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
@@ -570,7 +574,7 @@ const MIMETYPE = {
 
 }
 const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
-const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
+const SEND_WEBHOOK_ON = ['accepted', 'delivered', 'seen', 'failed', 'rejected']
 const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'

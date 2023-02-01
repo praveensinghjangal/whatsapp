@@ -45,7 +45,10 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, serviceProviderMes
       return redirectService.webhookPost(statusData.to, statusData)
     })
     .then(data => statusSent.resolve(data))
-    .catch(err => statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+    .catch(err => {
+      __logger.error('fbOutgoing: saveAndSendMessageStatus(): addMessageIdMappingData(): catch: ', err)
+      statusSent.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+    })
   return statusSent.promise
 }
 
@@ -54,7 +57,8 @@ const sendToErrorQueue = (message, queueObj) => {
   queueObj.sendToQueue(__constants.MQ.fbSendmessageError, JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => {
-      const telegramErrorMessage = 'FaceBookOutGoingQueue ~ saveAndSendMessageStatus function'
+      __logger.error('fbOutgoing: sendToErrorQueue(): catch: ', err)
+      const telegramErrorMessage = 'FaceBookOutGoingQueue: saveAndSendMessageStatus():'
       errorToTelegram.send(err, telegramErrorMessage)
       messageRouted.reject(err)
     })
@@ -66,7 +70,8 @@ const sendToFacebookOutgoingQueue = (message, queueObj) => {
   queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoing', message.config.userId, message.payload.whatsapp.from), JSON.stringify(message))
     .then(queueResponse => messageRouted.resolve('done!'))
     .catch(err => {
-      const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ sendToQueue function error while sending'
+      __logger.error('fbOutgoing: sendToFacebookOutgoingQueue(): catch: ', err)
+      const telegramErrorMessage = 'sendToFacebookOutgoingQueue: sendToQueue(' + message.payload.whatsapp.from + '): error while sending'
       errorToTelegram.send(err, telegramErrorMessage)
       messageRouted.reject(err)
     })
@@ -80,13 +85,12 @@ class MessageConsumer {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         const queue = queueObj.q_name
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('facebook outgoing queue consumer::Waiting for message...')
+        __logger.info('facebook outgoing queue consumer :: Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const mqDataReceived = mqData
             const messageData = JSON.parse(mqData.content.toString())
-            __logger.info('facebook outgoing queue consumer::received:', { mqData })
-            __logger.info('facebook outgoing queue consumer:: messageData received:', messageData)
+            __logger.info('fbOutgoing: sendToFacebookOutgoingQueue(' + queue + '): Data Received', { mqData: mqData.content.toString() })
             if (!messageData.payload.retryCount && messageData.payload.retryCount !== 0) {
               messageData.payload.retryCount = __constants.OUTGOING_MESSAGE_RETRY.facebook
             }
@@ -98,8 +102,8 @@ class MessageConsumer {
               })
               .then(data => rmqObject.channel[queue].ack(mqDataReceived))
               .catch(err => {
-                const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook outgoing queue consumer::error:'
-                __logger.error('facebook outgoing queue consumer::error: ', err)
+                __logger.error('fbOutgoing: sendMessage(' + queue + '): catch:', { mqData: mqData.content.toString() })
+                const telegramErrorMessage = 'sendToFacebookOutgoingQueue: sendMessage(' + queue + '):: catch:'
                 errorToTelegram.send(err, telegramErrorMessage)
                 if (messageData.payload.retryCount && messageData.payload.retryCount >= 1) {
                   messageData.payload.retryCount--
@@ -111,21 +115,21 @@ class MessageConsumer {
                 rmqObject.channel[queue].ack(mqDataReceived)
               })
           } catch (err) {
-            const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook queue::error while parsing: '
+            __logger.error('fbOutgoing: sendMessage(' + queue + '): try/catch:', err.stack ? err.stack : err)
+            const telegramErrorMessage = 'fbOutgoing: sendMessage(' + queue + '): try/catch:'
             errorToTelegram.send(err, telegramErrorMessage)
-            __logger.error('facebook queue consumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'sendToFacebookOutgoingQueue ~ facebook queue::Main error in catch block'
+        __logger.error('fbOutgoing: main catch:', err)
+        const telegramErrorMessage = 'fbOutgoing: Main error in catch():'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('facebook outgoing queue consumer::error: ', err)
         process.exit(1)
       })
     this.stop_gracefully = function () {
-      __logger.info('stopping all resources gracefully')
+      __logger.warn('stopping all resources gracefully')
       __db.close(function () {
         process.exit(0)
       })
@@ -137,7 +141,7 @@ class MessageConsumer {
 
 class Worker extends MessageConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('fbOutgoing' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

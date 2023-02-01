@@ -36,7 +36,7 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
     }
   } else if (messageDataFromFacebook.messages[0].image || messageDataFromFacebook.messages[0].voice || messageDataFromFacebook.messages[0].video || messageDataFromFacebook.messages[0].sticker) {
-    // image, voice, video, sticker,interactive-list
+    // image, voice, video, sticker, interactive-list
     messageData.content = {
       media: {
         url: '',
@@ -100,15 +100,24 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     // creates body for button
     messageData.content = {
       text: messageDataFromFacebook.messages[0].button.text || null,
-      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.text,
+      payload: messageDataFromFacebook.messages[0].button.payload || null,
+      type: __constants.FACEBOOK_CONTENT_TYPE.button
     }
   } else if (messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.button_reply && messageDataFromFacebook.messages[0].interactive.button_reply.title) {
     // creates body for interactive button_reply title
+    // to send chat api
+    messageData.content = {
+      text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
+      contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
+    // to send chat api
     messageData.contentType = __constants.FACEBOOK_CONTENT_TYPE.button_reply
     messageData.interactive = {
       button_reply: {
-        id: messageDataFromFacebook.messages[0].interactive.button_reply.id,
-        text: messageDataFromFacebook.messages[0].interactive.button_reply.title
+        id: messageDataFromFacebook.messages[0].interactive.button_reply.id || null,
+        text: messageDataFromFacebook.messages[0].interactive.button_reply.title || null,
+        payload: messageDataFromFacebook.messages[0].interactive.button_reply.payload || null
       }
     }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].interactive && messageDataFromFacebook.messages[0].interactive.list_reply && messageDataFromFacebook.messages[0].interactive.list_reply.id) {
@@ -116,6 +125,15 @@ const setTheMappingOfMessageData = (messageDataFromFacebook) => {
     messageData.content = {
       text: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
       contentType: __constants.FACEBOOK_CONTENT_TYPE.text
+    }
+    // to send chat api
+    messageData.contentType = __constants.FACEBOOK_CONTENT_TYPE.list_reply
+    messageData.interactive = {
+      list_reply: {
+        id: messageDataFromFacebook.messages[0].interactive.list_reply.id || null,
+        text: messageDataFromFacebook.messages[0].interactive.list_reply.title || null,
+        description: messageDataFromFacebook.messages[0].interactive.list_reply.description || null
+      }
     }
   } else if (messageDataFromFacebook && messageDataFromFacebook.messages[0] && messageDataFromFacebook.messages[0].type === __constants.FACEBOOK_CONTENT_TYPE.audio) {
     // for interactive list
@@ -136,20 +154,18 @@ class FacebookConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('facebook incoming message QueueConsumer::Waiting for message...')
-        __logger.info('facebook insoming queue consumer started')
+        __logger.info('facebook incoming message QueueConsumer :: Waiting for message ...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageDataFromFacebook = JSON.parse(mqData.content.toString())
-            __logger.info('incoming!!!!!!!!!!!!!!!!!! messageDataFromFacebook', messageDataFromFacebook)
+            __logger.info('facebookIncoming: startServer(' + queue + '): Msg-From-Fb: ', messageDataFromFacebook)
             // change the mapping
             const messageData = setTheMappingOfMessageData(messageDataFromFacebook)
             const uniqueId = new UniqueId()
             const redirectService = new RedirectService()
             messageData.vivaMessageId = uniqueId.uuid()
             const retryCount = messageData.retryCount || 0
-            // __logger.info('Alteredddddddddddddddddddddddd------', messageData, retryCount)
-            __logger.info('facebook incoming message QueueConsumer:: messageData received:', messageData)
+            __logger.info('facebookincoming: messageData after mapping ::', messageData)
             saveIncomingMessagePayloadService(messageData.vivaMessageId, messageData.messageId, messageData, messageData.from)
               .then(payloadSaved => {
                 messageData.messageId = messageData.vivaMessageId
@@ -159,38 +175,35 @@ class FacebookConsumer {
               })
               .then(response => rmqObject.channel[queue].ack(mqData))
               .catch(err => {
-                const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in facebook incoming message'
+                const telegramErrorMessage = 'fbIncoming: startServer(): saveIncomingMessagePayloadService(' + messageData.to + '): catch:'
                 errorToTelegram.send(err, telegramErrorMessage)
-                __logger.error('ppperrrrrrrrrr', err, retryCount)
-                // __logger.info('condition --->', err.type, __constants.RESPONSE_MESSAGES.NOT_REDIRECTED, err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED)
+                __logger.error('fbIncoming: saveIncomingMessagePayloadService(' + messageData.to + '): catch:', err, retryCount)
                 if (err && err.type === __constants.RESPONSE_MESSAGES.NOT_REDIRECTED) {
-                  // __logger.info('time to check retry count', retryCount, __constants.INCOMING_MESSAGE_RETRY.tyntec, retryCount < __constants.INCOMING_MESSAGE_RETRY.tyntec)
                   if (retryCount < __constants.INCOMING_MESSAGE_RETRY.facebook) {
                     const oldObj = JSON.parse(mqData.content.toString())
                     oldObj.retryCount = retryCount + 1
-                    // __logger.info('requeing --->', oldObj)
                     sendToFacebookIncomingQueue(oldObj, rmqObject)
                   }
                 }
                 rmqObject.channel[queue].ack(mqData)
               })
           } catch (err) {
-            const telegramErrorMessage = 'FacebookConsumer ~ startServer function ~ error in try/catch function'
+            __logger.error('fbIncoming: catch: ', err)
+            const telegramErrorMessage = 'fbIncoming: startServer(): '
             errorToTelegram.send(err, telegramErrorMessage)
-            __logger.error('facebook incoming message QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'FacebookConsumer ~ fetchFromQueue function ~ facebook incoming message QueueConsumer::error'
+        __logger.error('fbIncoming: db.init(): catch:', err)
+        const telegramErrorMessage = 'fbIncoming: db.init(): :: catch'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('facebook incoming message QueueConsumer::error: ', err)
         process.exit(1)
       })
 
     this.stop_gracefully = function () {
-      __logger.info('stopping all resources gracefully')
+      __logger.info('|||||||||||| fbIncoming: Stopping all resources gracefully ||||||||||||')
       __db.close(function () {
         process.exit(0)
       })
@@ -202,7 +215,7 @@ class FacebookConsumer {
 
 class Worker extends FacebookConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('fbIncoming: start(): ' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

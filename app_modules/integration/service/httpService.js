@@ -2,11 +2,13 @@ const request = require('request')
 const q = require('q')
 const __logger = require('../../../lib/logger')
 const saveApiLog = require('../../integration/service/saveApiLog')
+const errorToTelegram = require('../../../lib/errorHandlingMechanism/sendToTelegram')
 // const Bottleneck = require('bottleneck/es5')
 // const __config = require('../../../config')
 
 class HttpRequestOg {
   constructor (timeout, maxConcurrent, userId) {
+    __logger.warn('httpService: :: HttpRequestOg Class Initiated...')
     this.timeInSeconds = timeout || 3 * 60 * 60 * 1000 // hour * minutes * seconds * miliseconds
     // this.rateLimitter = new Bottleneck({
     //   maxConcurrent: maxConcurrent || 10,
@@ -32,13 +34,15 @@ class HttpRequestOg {
       json: (isJson === null) ? true : isJson,
       rejectUnauthorized: false
     }
-    __logger.info('request for HTTP post ', options)
+    __logger.info('httpService: ::: POST ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: POST ::: After Req:', { response, body })
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: POST ::: error:', error)
+        const telegramErrorMessage = 'HTTP: POST Api Err: (' + apiLogUrl + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -58,12 +62,15 @@ class HttpRequestOg {
       rejectUnauthorized: false
     }
     if (encoding === null) options.encoding = null
+    __logger.info('httpService: ::: GET ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: GET ::: Res:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: GET ::: error:', error)
+        const telegramErrorMessage = 'HTTP: GET Api Err: (' + url + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.reject(error)
       } else {
         deferred.resolve(body)
@@ -82,12 +89,15 @@ class HttpRequestOg {
       rejectUnauthorized: false,
       encoding: 'binary'
     }
+    __logger.info('httpService: ::: GET MEDIA ::: Req:', options)
     request(options, (error, response, body) => {
-      // __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: GET MEDIA ::: Res:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: GET MEDIA ::: error:', error)
+        const telegramErrorMessage = 'HTTP: GET Media Api Err: (' + url + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -107,13 +117,15 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
-    __logger.info('Integration Patch::OPTIONS', options)
+    __logger.info('httpService: ::: PATCH ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: PATCH ::: Res:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: PATCH ::: error:', error)
+        const telegramErrorMessage = 'HTTP: PATCH Api Err: (' + url + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -133,12 +145,15 @@ class HttpRequestOg {
       json: isJson,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: PUT ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: PUT ::: Res:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: PUT ::: error:', error)
+        const telegramErrorMessage = 'HTTP: PUT Api Err: (' + url + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -157,12 +172,15 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
+    __logger.info('httpService: ::: DELETE ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: DELETE ::: Res:', { response, body })
       const url = options.url.split('/').slice(3).join('/')
       saveApiLog(serviceProviderId, url, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: DELETE ::: error:', error)
+        const telegramErrorMessage = 'HTTP: DELETE Api Err: (' + url + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.reject(error)
       } else {
         deferred.resolve(response)
@@ -182,13 +200,15 @@ class HttpRequestOg {
       json: true,
       rejectUnauthorized: false
     }
-    __logger.info('request for HTTP post ', options)
+    __logger.info('httpService: ::: RESOLVE POST ::: Req:', options)
     request(options, (error, response, body) => {
-      __logger.info('response from api ', error, response, body)
+      __logger.info('httpService: ::: RESOLVE POST ::: Res:', { response, body })
       const apiLogUrl = options.url.split('/').slice(3).join('/') || options.url
       saveApiLog(serviceProviderId, apiLogUrl, options, response)
       if (error) {
-        __logger.error('errrrrrrrrrrrrr', error)
+        __logger.error('httpService: ::: RESOLVE POST ::: error:', error)
+        const telegramErrorMessage = 'HTTP: Resolve Api Err: (' + url + '): ' + JSON.stringify(options)
+        errorToTelegram.send(error, telegramErrorMessage)
         deferred.resolve({ err: true, error })
       } else {
         deferred.resolve(response)

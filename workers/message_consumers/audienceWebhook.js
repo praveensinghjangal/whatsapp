@@ -11,8 +11,7 @@ class AudienceWebookConsumer {
     __db.init()
       .then(result => {
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
-        __logger.info('Audience webhook worker QueueConsumer::Waiting for message...')
-        __logger.info('Audience webhook worker QueueConsumerr started')
+        __logger.info('Audience webhook worker QueueConsumer :: Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const dataConsumedFromQueue = JSON.parse(mqData.content.toString())
@@ -40,22 +39,22 @@ class AudienceWebookConsumer {
                 return rmqObject.channel[queue].ack(mqData)
               })
               .catch(err => {
-                const telegramErrorMessage = '~ Audience webhook  QueueConsumer::error while parsing: try/catch'
+                __logger.error('audienceWebhook: HTTP POST error:', err)
+                const telegramErrorMessage = 'audienceWebhook: HTTP POST error:'
                 errorToTelegram.send(err, telegramErrorMessage)
-                __logger.error('Audience webhook QueueConsumer::error : ', err.toString())
               })
           } catch (err) {
-            const telegramErrorMessage = 'Audience webhook ~ fetchFromQueue function ~ Audience webhook  QueueConsumer::error while parsing: try/catch'
+            __logger.error('audienceWebhook: try/catch:', err)
+            const telegramErrorMessage = 'audienceWebhook: fetchFromQueue(): error while parsing: try/catch'
             errorToTelegram.send(err, telegramErrorMessage)
-            __logger.error('Audience webhook QueueConsumer::error while parsing: ', err.toString())
             rmqObject.channel[queue].ack(mqData)
           }
         }, { noAck: false })
       })
       .catch(err => {
-        const telegramErrorMessage = 'FacebookMessageStatus ~ fetchFromQueue main function ~ facebook message status QueueConsumer::error:'
+        __logger.error('audienceWebhook: db.init: catch: ', err)
+        const telegramErrorMessage = 'audienceWebhook: db.init: catch: '
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('facebook message status QueueConsumer::error: ', err)
         process.exit(1)
       })
 
@@ -72,7 +71,7 @@ class AudienceWebookConsumer {
 
 class Worker extends AudienceWebookConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('audienceWebhook:' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

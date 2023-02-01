@@ -64,6 +64,8 @@ const getBulkTemplates = async (messages, wabaPhoneNumber) => {
             headerParamCount: singleObj.header_text ? (singleObj.header_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             bodyParamCount: singleObj.body_text ? (singleObj.body_text.match(/{{\d{1,2}}}/g) || []).length : 0,
             footerParamCount: singleObj.footer_text ? (singleObj.footer_text.match(/{{\d{1,2}}}/g) || []).length : 0,
+            payloadButtonCount: singleObj.button_type && singleObj.button_type === 'quick reply' && singleObj.button_data.quickReply ? singleObj.button_data.quickReply.length : 0,
+            urlButtonCount: singleObj.button_type && singleObj.button_type === 'call to action' && singleObj.button_data.websiteTextVarExample ? singleObj.button_data.websiteTextVarExample.length : 0,
             phoneNumber: singleObj.phone_number
           }
           dataObject.approvedLanguages = []
@@ -150,7 +152,7 @@ const sendToQueue = (data, providerId, userId, maxTpsToProvider, headers) => {
     .then(messagStatusResponse => messageSent.resolve({ messageId: data.messageId, to: data.to, acceptedAt: new Date(), apiReqId: headers.vivaReqId, customOne: data.whatsapp.customOne, customTwo: data.whatsapp.customTwo, customThree: data.whatsapp.customThree, customFour: data.whatsapp.customFour, campName: data.whatsapp.campName || null, queueData }))
     .catch(err => {
       __logger.error('sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus(' + data.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus()'
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueue(): saveAndSendMessageStatus(' + data.whatsapp.from + ')'
       errorToTelegram.send(err, telegramErrorMessage)
       messageSent.reject(err)
     })
@@ -163,7 +165,7 @@ const sendToQueueBulk = (data, providerId, userId, maxTpsToProvider, headers) =>
     .then(data => sendSingleMessage.resolve([...data.resolve, ...data.reject]))
     .catch(function (err) {
       __logger.error('sendMessageToQueue: sendToQueueBulk(' + data.whatsapp.from + '):', err)
-      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk():'
+      const telegramErrorMessage = 'sendMessageToQueue: sendToQueueBulk(' + data.whatsapp.from + '):'
       errorToTelegram.send(err, telegramErrorMessage)
       return sendSingleMessage.reject(err)
     })
@@ -224,7 +226,7 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateCategoryId(), [phoneCodeAndPhoneSeprator(wabaPhoneNumber).phoneNumber, templateId])
     .then((data) => {
       if (data.length > 0) {
-        messageSent.resolve({ categoryId: data[0].message_template_category_id })
+        messageSent.resolve({ categoryId: data[0].message_template_category_id, buttonType: data[0].button_type, buttonData: data[0].button_data })
       } else {
         __logger.error('sendMessageToQueue: getTemplateCategory(): DB Query :- No Data Found', ['Invalid template id'])
         messageSent.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: ['Invalid template id'] })
@@ -235,6 +237,36 @@ const getTemplateCategory = (wabaPhoneNumber, templateId) => {
       messageSent.reject(err)
     })
   return messageSent.promise
+}
+
+const checkTemplateWithPayload = (templateData, reqBody) => {
+  const buttonArrayCheck = q.defer()
+
+  if (templateData.buttonType === 'quick reply') {
+    let buttonArrayCount = 0
+    if (templateData.buttonData.quickReply.length >= 1 && reqBody.whatsapp && reqBody.whatsapp.template && reqBody.whatsapp.template.components && reqBody.whatsapp.template.components.length >= 1) {
+      _.each(reqBody.whatsapp.template.components, (component, index) => {
+        if (component.type === 'button' && component.parameters && component.parameters.length === 1 && component.parameters[0].type === 'payload' && component.parameters[0].index && component.parameters[0].payload) { buttonArrayCount++ }
+      })
+      if (buttonArrayCount > templateData.buttonData.quickReply.length) {
+        __logger.error('sendMessageToQueue: checkTemplateWithPayload: buttonArrayCount: ', buttonArrayCount)
+        buttonArrayCheck.reject({ type: __constants.RESPONSE_MESSAGES.BUTTON_PARAM_MISMATCH, err: ['Invalid parameters in template type buttons'] })
+      }
+    }
+    buttonArrayCheck.resolve({ ...templateData })
+    return buttonArrayCheck.promise
+  } else {
+    // Remove object from components if template button type is not "Quick Reply"
+    // First check if req body component includes type button with payload
+    if (reqBody.whatsapp && reqBody.whatsapp.template && reqBody.whatsapp.template.components && reqBody.whatsapp.template.components.length >= 1) {
+      _.each(reqBody.whatsapp.template.components, (component, i) => {
+        if (component.type && component.type === 'button' && component.parameters && component.parameters.length === 1 && component.parameters[0].type && component.parameters[0].type === 'payload') {
+          reqBody.whatsapp.template.components = reqBody.whatsapp.template.components.slice(i, 1)
+        }
+      })
+    }
+  }
+  return { templateData, reqBody }
 }
 
 /**
@@ -256,6 +288,7 @@ const controller = (req, res) => {
   const validate = new ValidatonService()
   const messageHistoryService = new MessageHistoryService()
   const rejected = []
+  const vivaReqId = req && req.headers && req.headers.vivaReqId
   let sendToQueueRes
   let finalObjToBeSent
   let userRedisData
@@ -269,6 +302,7 @@ const controller = (req, res) => {
     }
   }
   if (!req.user.providerId || !req.user.wabaPhoneNumber) return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NOT_AUTHORIZED, data: {} })
+  __logger.info('message send API HIT : controller: { wabaNumber: ' + req.user.wabaPhoneNumber + ', reqId :' + vivaReqId + '}')
   validate.sendMessageToQueue(req.body)
     .then(data => {
       if (data && data[0] && !data[0].isCampaign && !data[0].isChatBot && data[0].whatsapp && data[0].whatsapp.contentType === 'template') {
@@ -278,6 +312,11 @@ const controller = (req, res) => {
         return getTemplateCategory(data[0].whatsapp.from, data[0].whatsapp.template.templateId)
       }
       return true
+    })
+    .then(async data => {
+      // Check if template type quick reply & components include parameters
+      if (data & data.categoryId) { return checkTemplateWithPayload(data, req.body[0]) }
+      return data
     })
     .then(data => {
       if (data && data.categoryId) {
@@ -337,6 +376,7 @@ const controller = (req, res) => {
             templateId: singleMessage.whatsapp && singleMessage.whatsapp.template && singleMessage.whatsapp.template.templateId ? singleMessage.whatsapp.template.templateId : null,
             currentStatusTime: new Date(),
             createdOn: new Date(),
+            requestId: vivaReqId,
             status: [
               {
                 senderPhoneNumber: singleMessage.to,
@@ -402,7 +442,7 @@ const controller = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):', err)
+      __logger.error('sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):', err.stack ? err.stack : err)
       const telegramErrorMessage = 'sendMessageToQueue: controller(' + req.user.wabaPhoneNumber + '):'
       errorToTelegram.send(err, telegramErrorMessage)
       if (err && err.type && err.type.code && err.type.code === 3021) {

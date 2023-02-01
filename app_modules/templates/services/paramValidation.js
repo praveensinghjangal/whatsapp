@@ -86,9 +86,13 @@ class TemplateParamValidationService {
       let headerOccurenceCount = 0
       let bodyOccurenceCount = 0
       let footerOccurenceCount = 0
+      let payloadButtonOccurenceCount = 0
+      let urlButtonOccurenceCount = 0
       let headerParamCount = 0
       let bodyParamCount = 0
       let footerParamCount = 0
+      let singlePayloadButtonParamCount = 0
+      let singleUrlButtonParamCount = 0
       _.each(templateObject.components, compObj => {
         if (compObj.type.toLowerCase() === 'header') {
           headerOccurenceCount++
@@ -108,6 +112,25 @@ class TemplateParamValidationService {
             footerParamCount = compObj.parameters.length
           }
         }
+        if (compObj.type.toLowerCase() === 'button') {
+          if (compObj.parameters && compObj.parameters[0].type && compObj.parameters[0].type === 'payload') {
+            payloadButtonOccurenceCount++
+            singlePayloadButtonParamCount = compObj.parameters.length
+          }
+        }
+        if (compObj.type.toLowerCase() === 'button') {
+          if (compObj.parameters && compObj.parameters[0].type && compObj.parameters[0].type === 'text') {
+            urlButtonOccurenceCount++
+            singleUrlButtonParamCount = compObj.parameters.length
+          }
+        }
+
+        if (singlePayloadButtonParamCount > 1) {
+          dataStored.reject({ type: __constants.RESPONSE_MESSAGES.BUTTON_PARAM_MISMATCH, err: {}, data: {} })
+        }
+        if (singleUrlButtonParamCount > 1) {
+          dataStored.reject({ type: __constants.RESPONSE_MESSAGES.BUTTON_URL_PARAM_MISMATCH, err: {}, data: {} })
+        }
       })
       if (headerOccurenceCount > 1 || bodyOccurenceCount > 1 || footerOccurenceCount > 1) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.COMPONENTS_COUNT_MISMATCH, err: {}, data: {} })
@@ -120,6 +143,12 @@ class TemplateParamValidationService {
       }
       if (footerParamCount !== redisData[templateObject.templateId].footerParamCount) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.FOOTER_PARAM_MISMATCH, err: {}, data: {} })
+      }
+      if (payloadButtonOccurenceCount > redisData[templateObject.templateId].payloadButtonCount) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUTTON_PARAM_MISMATCH, err: {}, data: {} })
+      }
+      if (urlButtonOccurenceCount > redisData[templateObject.templateId].urlButtonCount) {
+        return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.BUTTON_URL_PARAM_MISMATCH, err: {}, data: {} })
       }
       if (!redisData[templateObject.templateId].approvedLanguages.some(lang => lang.toLowerCase() === templateObject.language.code.toLowerCase())) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.LANGUAGE_NOT_APPROVED, err: {}, data: {} })

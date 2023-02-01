@@ -9,6 +9,7 @@ const urlValidator = require('../../../lib/util/url')
 const AuthService = require('../facebook/authService').Authentication
 class WabaAccount {
   constructor (maxConcurrent, userId) {
+    __logger.warn('fb: WabaAccount: Class Initiated ...')
     this.userId = userId
     this.http = new HttpService(60000, maxConcurrent, userId)
     this.dataMapper = new DataMapper()
@@ -18,7 +19,7 @@ class WabaAccount {
     const deferred = q.defer()
     if (wabaData && wabaData.whatsappStatus) {
       const url = `${baseUrl}${__constants.FACEBOOK_ENDPOINTS.updateAboutProfile}`
-      __logger.info('URL====', url)
+      __logger.info('fb: wabaAccount: callFacebookApi(): updating profile:', url)
       const headers = {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`
@@ -43,12 +44,15 @@ class WabaAccount {
         return this.http.Get(url, headers, __config.service_provider_id.facebook)
       }).then(resp => {
         deferred.resolve(resp)
-      }).catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      }).catch(err => {
+        __logger.error('fb: WabaAccount: getProfilePic(' + wabaNumber + '):', err)
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   }
 
   updateProfilePic (wabaNumber, profilePicFile, contentType) {
-    __logger.info('wabaNumber & profilePic--', wabaNumber)
+    __logger.info('fb: WabaAccount: updateProfilePic(' + wabaNumber + '):')
     const deferred = q.defer()
     const authService = new AuthService(this.userId)
     authService.getFaceBookTokensByWabaNumber(wabaNumber)
@@ -64,16 +68,18 @@ class WabaAccount {
         return this.http.Post(profilePicFile, 'body', url, headers, __config.service_provider_id.facebook, false)
       })
       .then((accountData) => {
-        __logger.info('Dataaaaa then 2', { accountData })
+        __logger.info('fb: WabaAccount: updateProfilePic(' + wabaNumber + '): then 2:', { accountData })
         if (accountData && accountData.statusCode === 201) {
           deferred.resolve({ type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else if (accountData && accountData.statusCode === 400) {
           return deferred.resolve({ type: __constants.RESPONSE_MESSAGES.INVALID_FILE_SIZE, err: {} })
         } else {
+          __logger.error('fb: WabaAccount: updateProfilePic(' + wabaNumber + '): then 2: Account data not found.')
           return deferred.reject({ type: __constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: {} })
         }
       })
       .catch(err => {
+        __logger.error('fb: WabaAccount: updateProfilePic(' + wabaNumber + '): catch:', err)
         deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return deferred.promise
@@ -101,7 +107,6 @@ class WabaAccount {
   }
 
   updateProfile (wabaNumber, wabaData) {
-    // __logger.info('inside update profile', wabaNumber, wabaData)
     const deferred = q.defer()
     if (wabaNumber && wabaData) {
       const authService = new AuthService(this.userId)
@@ -124,7 +129,7 @@ class WabaAccount {
   }
 
   setWebhook (wabaNumber, incomingMessageUrl, statusUrl) {
-    __logger.info('inside setWebhook -->', wabaNumber, incomingMessageUrl, statusUrl)
+    __logger.info('fb: WabaAccount: setWebhook(' + wabaNumber + '): Setting Webhook ....', { incomingMessageUrl, statusUrl })
     const deferred = q.defer()
     if (!wabaNumber || (!incomingMessageUrl && !statusUrl)) {
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Please provide either incomingMessageUrl or statusUrl along with wabaNumber.' })
@@ -152,6 +157,7 @@ class WabaAccount {
         return this.http.Patch({ webhooks: { url: incomingMessageUrl } }, url, headers, __config.service_provider_id.facebook)
       })
       .then(defaultAccountUpdated => {
+        __logger.info('fb: WabaAccount: setWebhook(' + wabaNumber + '): Setting Webhook ....', { defaultAccountUpdated })
         if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 201) {
           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.SUCCESS, data: {} })
         } else if (defaultAccountUpdated && defaultAccountUpdated.statusCode === 404) {
@@ -159,23 +165,24 @@ class WabaAccount {
         } else if (defaultAccountUpdated && defaultAccountUpdated.body.status === 400) {
           return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.INVALID_REQUEST, data: {} })
         } else {
+          __logger.error('fb: WabaAccount: setWebhook(' + wabaNumber + '): if/else: Reject ::')
           return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: defaultAccountUpdated.statusCode, data: {} })
         }
       })
       .catch(err => {
+        __logger.error('fb: WabaAccount: setWebhook(' + wabaNumber + '): if/else: catch:', err)
         return deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return deferred.promise
   }
 
   getAccountPhoneNoList (wabaNumber) {
-    __logger.info('wabaNumber----', wabaNumber)
+    __logger.info('fb: WabaAccount: getAccountPhoneNoList(' + wabaNumber + '): ')
     const deferred = q.defer()
     if (wabaNumber) {
       const authService = new AuthService(this.userId)
       authService.getFaceBookTokensByWabaNumber(wabaNumber)
         .then(data => {
-          __logger.info('dataatatatat', data, typeof data)
           let url = __constants.FACEBOOK_GRAPHURL + __constants.FACEBOOK_ENDPOINTS.getPhoneNumbersByWabaid + data.graphApiKey
           url = url.split(':userAccountIdByProvider').join(data.userAccountIdByProvider || '')
           __logger.info('URL====', url)
@@ -194,16 +201,17 @@ class WabaAccount {
           } else if (phoneNumbersData && phoneNumbersData.status === 404) {
             return deferred.resolve({ ...__constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {} })
           } else {
+            __logger.error('fb: WabaAccount: getAccountPhoneNoList(' + wabaNumber + '): phoneNumberData not found')
             return deferred.reject({ ...__constants.RESPONSE_MESSAGES.ERROR_CALLING_PROVIDER, err: phoneNumbersData.phoneNumber || phoneNumbersData, data: {} })
           }
         })
         .catch(err => {
-          __logger.error('getAccountPhoneNoList error', err.toString())
-          console.log('getAccountPhoneNoList error', err)
+          __logger.error('fb: WabaAccount: getAccountPhoneNoList(' + wabaNumber + '): catch:', err)
           deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err.toString() })
         })
       return deferred.promise
     } else {
+      __logger.error('fb: WabaAccount: getAccountPhoneNoList(): if/else: WabaNumber Missing')
       deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing WabaNumber' })
       return deferred.promise
     }

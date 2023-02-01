@@ -92,6 +92,7 @@ class validate {
             minItems: 1,
             items: {
               type: 'string',
+              minLength: 8,
               enum: ['whatsapp']
             }
           },
@@ -100,7 +101,6 @@ class validate {
             required: true,
             enum: __constants.COUNTRY_LIST_ALPHA_TWO
           },
-
           whatsapp: {
             type: 'object',
             required: true,
@@ -110,31 +110,32 @@ class validate {
                 type: 'string',
                 required: true,
                 minLength: 7,
-                maxLength: 15
+                maxLength: 15,
+                pattern: __constants.VALIDATOR.number
               },
               customOne: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customTwo: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customThree: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               customFour: {
                 type: 'string',
                 required: false,
                 minLength: 1,
-                maxLength: 50
+                maxLength: 150
               },
               campName: {
                 type: 'string',
@@ -515,7 +516,8 @@ class validate {
               contentType: {
                 type: 'string',
                 required: true,
-                minLength: 1,
+                minLength: 4,
+                maxLength: 20,
                 enum: ['text', 'media', 'template', 'location', 'interactive', 'contact']
               },
               text: {
@@ -619,7 +621,7 @@ class validate {
                         type: 'string',
                         required: true,
                         minLength: 2,
-                        maxLength: 4
+                        maxLength: 5
                       }
                     }
                   },
@@ -634,7 +636,8 @@ class validate {
                         type: {
                           type: 'string',
                           required: true,
-                          minLength: 1,
+                          minLength: 4,
+                          maxLength: 6,
                           enum: ['header', 'body', 'footer', 'button']
                         },
                         parameters: {
@@ -647,14 +650,26 @@ class validate {
                               type: {
                                 type: 'string',
                                 required: true,
-                                minLength: 1,
-                                enum: ['text', 'media', 'location']
+                                minLength: 4,
+                                maxLength: 8,
+                                enum: ['text', 'media', 'location', 'payload']
+                              },
+                              index: {
+                                type: 'string',
+                                required: false,
+                                maxLength: 1,
+                                pattern: __constants.VALIDATOR.payload
+                              },
+                              payload: {
+                                type: 'string',
+                                required: false,
+                                maxLength: 128
                               },
                               text: {
                                 type: 'string',
                                 required: false,
                                 minLength: 2,
-                                maxLength: 50
+                                maxLength: 500
                                 // pattern: __constants.VALIDATOR.noTabLinebreakSpace
                               },
                               media: {
@@ -719,11 +734,18 @@ class validate {
                                   type: { const: 'media' }
                                 },
                                 required: ['media']
-                              }, {
+                              },
+                              {
                                 properties: {
                                   type: { const: 'location' }
                                 },
                                 required: ['location']
+                              },
+                              {
+                                properties: {
+                                  type: { const: 'payload' }
+                                },
+                                required: ['payload']
                               }
                             ]
                           }
@@ -823,8 +845,10 @@ class validate {
           formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
         } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern') && formatedErr[formatedErr.length - 1].includes('^[a-zA-Z\\t\\\\s]*$')) {
           formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should not contain special characters')
-        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes('does not match pattern')) {
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes(__constants.VALIDATOR.alphanumericWithMinSpecialChar.toString())) {
           formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain special characters -() only')
+        } else if (formatedErr[formatedErr.length - 1] && formatedErr[formatedErr.length - 1].includes(__constants.VALIDATOR.payload.toString())) {
+          formatedError.push(formatedErr[formatedErr.length - 1].split(' ')[0] + ' field should contain value between 0-2')
         } else {
           formatedError.push(formatedErr[formatedErr.length - 1])
         }
