@@ -7,19 +7,19 @@ const interactions = (req, res) => {
   const messageHistoryService = new MessageHistoryService()
   req.body.createdAt = new Date()
   req.body.score = 0
-  if (req.body.Question_1 && req.body.Question_1.toLowerCase() === '28 m x 15 m') {
+  if (req.body.Question_1 && req.body.Question_1.toLowerCase() === '3') {
     req.body.score += 1
   }
-  if (req.body.Question_2 && req.body.Question_2.toLowerCase() === 'tibet') {
+  if (req.body.Question_2 && req.body.Question_2.toLowerCase() === '3') {
     req.body.score += 1
   }
-  if (req.body.Question_3 && req.body.Question_3.toLowerCase() === 'may 18') {
+  if (req.body.Question_3 && req.body.Question_3.toLowerCase() === '2') {
     req.body.score += 1
   }
-  if (req.body.Question_4 && req.body.Question_4.toLowerCase() === '1957') {
+  if (req.body.Question_4 && req.body.Question_4.toLowerCase() === '3') {
     req.body.score += 1
   }
-  if (req.body.Question_5 && req.body.Question_5.toLowerCase() === 'football') {
+  if (req.body.Question_5 && req.body.Question_5.toLowerCase() === '2') {
     req.body.score += 1
   }
   messageHistoryService.interactionDump(req.body)
