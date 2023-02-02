@@ -1,6 +1,7 @@
 const MessageHistoryService = require('../services/dbData')
 const __util = require('../../../lib/util')
 const __logger = require('../../../lib/logger')
+const RedisService = require('../../../lib/redis_service/redisService')
 
 const interactions = (req, res) => {
   __logger.info('add interactions API called', req.body)
@@ -22,6 +23,10 @@ const interactions = (req, res) => {
   if (req.body.Question_5 && req.body.Question_5.toLowerCase() === '2') {
     req.body.score += 1
   }
+  const redisService = new RedisService()
+  const wabaNumber = req.body.wabaNumber
+  delete req.body.wabaNumber
+  redisService.setCountOfRetry(wabaNumber, req.body.audience)
   messageHistoryService.interactionDump(req.body)
     .then(data => {
       let text = null
