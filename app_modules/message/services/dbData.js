@@ -281,6 +281,7 @@ class MessgaeHistoryService {
     const messageStatus = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getIncomingOutgoingMessageCount(flag), [userId, startDate, endDate, userId, startDate, endDate])
       .then(result => {
+        console.log('--------result----------', result)
         if (result && result.length > 0) {
           const dataCount = { outgoingMessageCount: { session: 0, template: 0, total: 0 }, incomingMessageCount: 0 }
           if (flag === __constants.MESSAGE_TRANSACTION_TYPE[0]) {
@@ -1119,6 +1120,25 @@ class MessgaeHistoryService {
       .catch(err => {
         __logger.error('error in get function=getInteractions function: ', err)
         promises.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return promises.promise
+  }
+
+  getWabaNameByPhoneNumber (arrayofWabaNumber) {
+    const promises = q.defer()
+    __logger.info('inside getWabaNameByPhoneNumber', arrayofWabaNumber)
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNameByPhoneNumber(), [arrayofWabaNumber])
+      .then(result => {
+        if (result && result.length > 0) {
+          promises.resolve(result)
+        } else {
+          __logger.info('NO_RECORDS_FOUND >>>>>>>>> getWabaNameByPhoneNumber db call')
+          promises.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('error in getWabaNameByPhoneNumber db call:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return promises.promise
   }
