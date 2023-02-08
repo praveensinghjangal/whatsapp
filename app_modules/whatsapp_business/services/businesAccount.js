@@ -806,6 +806,23 @@ class businesAccountService {
       })
     return deferred.promise
   }
+
+  getWabizInfo () {
+    const wabizDetails = q.defer()
+    __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabizDetails(), [])
+      .then(result => {
+        if (result && result.length === 0) {
+          __logger.error('businessAccount: getWabizInfo: Db Query :: Reject ::', result)
+          wabizDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        } else {
+          wabizDetails.resolve(result)
+        }
+      }).catch(err => {
+        __logger.error('businessAccount: getWabizInfo: catch:', err)
+        wabizDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
+    return wabizDetails.promise
+  }
 }
 
 module.exports = businesAccountService

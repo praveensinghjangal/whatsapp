@@ -60,6 +60,7 @@
     "develop-dlrZipFileDelete": "NODE_ENV=development WORKER_TYPE=dlrZipFileDelete node server.js",
     "develop-dailyWorker": "NODE_ENV=development WORKER_TYPE=dailyWorker node server.js",
     "develop-monthlyMailConversation": "NODE_ENV=development WORKER_TYPE=monthlyMailConversation node server.js",
+    "develop-s-wabizUrlConfig": "NODE_ENV=development WORKER_TYPE=wabizUrlConfig node server.js",
     "v8Profile": "node --prof server.js",
     "standard": "standard --fix"
   },

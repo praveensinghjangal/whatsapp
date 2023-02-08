@@ -40,7 +40,8 @@ const SERVER_SCRIPTS = {
   reportsDownloadConsumer: './workers/reports_download/dlrReports.js',
   dlrZipFileDelete: './workers/reports_download/dlrDeleteCron.js',
   dailyWorker: './workers/schedulers/dailyWorker.js',
-  monthlyMailConversation: './workers/schedulers/monthMailConversation.js'
+  monthlyMailConversation: './workers/schedulers/monthMailConversation.js',
+  wabizUrlConfig: './workers/schedulers/wabizCron.js'
 }
 const WORKER_TYPE = process.env.WORKER_TYPE || null
 if (_.isEmpty(WORKER_TYPE) && _.isEmpty(SERVER_SCRIPTS[WORKER_TYPE])) {
