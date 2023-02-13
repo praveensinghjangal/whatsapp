@@ -310,10 +310,6 @@ const getTotalUser = () => {
   where is_active = true and user_role_id != '${__constants.SUPPORT_ROLE_ID}'`
 }
 
-const getWabizDetails = () => {
-  return 'select wabiz_base_url as wabizBaseUrl, concat(phone_code, phone_number) as wabaPhoneNumber, business_name as businessName, api_key as apiKey from waba_information wi  where is_active = true order by created_on DESC'
-}
-
 module.exports = {
   getBusinessCategory,
   getBusinessProfile,
@@ -347,6 +343,5 @@ module.exports = {
   updateServiceProviderData,
   getServiceTotalProviderCount,
   updateWabizApiKeyAndExpireyTime,
-  getTotalUser,
-  getWabizDetails
+  getTotalUser
 }
