@@ -215,7 +215,7 @@ class validate {
                     },
                     birthday: {
                       type: 'string',
-                      required: true,
+                      required: false,
                       pattern: __constants.VALIDATOR.dateFormat
                     },
                     emails: {
@@ -251,30 +251,35 @@ class validate {
                           type: 'string',
                           minLength: 3,
                           maxLength: 20,
+                          required: false,
                           pattern: __constants.VALIDATOR.textWithSpace
                         },
                         lastName: {
                           type: 'string',
                           minLength: 3,
                           maxLength: 20,
+                          required: false,
                           pattern: __constants.VALIDATOR.textWithSpace
                         },
                         middleName: {
                           type: 'string',
                           minLength: 3,
                           maxLength: 20,
+                          required: false,
                           pattern: __constants.VALIDATOR.textWithSpace
                         },
                         suffix: {
                           type: 'string',
                           minLength: 2,
                           maxLength: 5,
+                          required: false,
                           pattern: __constants.VALIDATOR.text
                         },
                         prefix: {
                           type: 'string',
                           minLength: 2,
                           maxLength: 5,
+                          required: false,
                           pattern: __constants.VALIDATOR.text
                         },
                         formattedName: {
@@ -284,24 +289,7 @@ class validate {
                           required: true,
                           pattern: __constants.VALIDATOR.textWithSpace
                         }
-                      },
-                      anyOf: [
-                        {
-                          required: ['firstName']
-                        },
-                        {
-                          required: ['lastName']
-                        },
-                        {
-                          required: ['middleName']
-                        },
-                        {
-                          required: ['prefix']
-                        },
-                        {
-                          required: ['suffix']
-                        }
-                      ]
+                      }
                     },
                     org: {
                       type: 'object',
@@ -894,13 +882,15 @@ class validate {
 
     // all contacts's birthday date format should be same
     if ('contact' in request[0].whatsapp) {
-      const birthdayIsValid = request.every((obj) => {
-        return obj.whatsapp.contact.every(d => {
-          return __constants.VALIDATOR.dateFormat.test(d.birthday)
+      if (request[0].whatsapp.contact.birthday !== undefined) {
+        const birthdayIsValid = request.every((obj) => {
+          return obj.whatsapp.contact.every(d => {
+            return __constants.VALIDATOR.dateFormat.test(d.birthday)
+          })
         })
-      })
-      if (!birthdayIsValid) {
-        formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
+        if (!birthdayIsValid) {
+          formatedError.push('birthday value should be in YYYY-MM-DD format eg: 1970-01-01')
+        }
       }
     }
 
