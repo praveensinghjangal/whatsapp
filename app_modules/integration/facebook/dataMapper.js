@@ -304,17 +304,19 @@ class InternalService {
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.buttonType && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
       const pushData = { type: 'BUTTONS', buttons: [] }
       if (td.buttonData && td.buttonData.websiteButtontext && td.buttonData.webAddress && td.buttonData.websiteTextVarExample && isArray(td.buttonData.websiteTextVarExample) && td.buttonData.websiteTextVarExample.length > 0) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress, example: td.buttonData.websiteTextVarExample })
-      else pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
+      else if (td.buttonData && td.buttonData.websiteButtontext && td.buttonData.webAddress) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
       if (td.buttonData.phoneButtonText && td.buttonData.phoneNumber) pushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.phoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
       if (pushData.buttons.length > 0) body[0].components.push(pushData)
 
       if (td.secondLanguageRequired) {
         const secondLangPushData = { type: 'BUTTONS', buttons: [] }
-        if (td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.secondLanguageWebsiteButtontext, url: td.buttonData.webAddress })
+        if (td.buttonData && td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress && td.buttonData.websiteTextVarExample && isArray(td.buttonData.websiteTextVarExample) && td.buttonData.websiteTextVarExample.length > 0) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress, example: td.buttonData.websiteTextVarExample })
+        else if (td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.secondLanguageWebsiteButtontext, url: td.buttonData.webAddress })
         if (td.buttonData.secondLanguagePhoneButtonText && td.buttonData.phoneNumber) secondLangPushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.secondLanguagePhoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
         if (secondLangPushData.buttons.length > 0) body[1].components.push(secondLangPushData)
       }
     }
+
     return body
   }
 
