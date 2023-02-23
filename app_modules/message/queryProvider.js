@@ -416,6 +416,18 @@ const getWabaNameByPhoneNumber = () => {
   return 'select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information wi where CONCAT(phone_code ,phone_number) in (?)'
 }
 
+const getMisRelatedIncomingData = () => {
+  return `SELECT count(*) as "incomingMessageCount",  payload ->"$.to" as wabaPhoneNumber,DATE_FORMAT(created_on, '%Y-%m-%d') as date
+  FROM incoming_message_payload
+  where created_on BETWEEN  ? and ?
+  group by payload ->"$.to",DATE(created_on);`
+}
+
+const getWabaName = () => {
+  return `select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information
+  where is_active = true`
+}
+
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -445,5 +457,7 @@ module.exports = {
   getTemplateIdandTemplateNameAgainstUser,
   getConversationDataBasedOnWabaNumberAllData,
   groupByIssue,
-  getWabaNameByPhoneNumber
+  getWabaNameByPhoneNumber,
+  getMisRelatedIncomingData,
+  getWabaName
 }

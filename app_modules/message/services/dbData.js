@@ -1142,6 +1142,46 @@ class MessgaeHistoryService {
       })
     return promises.promise
   }
+
+  getMisRelatedIncomingData (startOfMonth, endOfMonth) {
+    const promises = q.defer()
+    __logger.info('dbData: getMisRelatedIncomingData(): ', startOfMonth, endOfMonth)
+    __db.mysqlMis.query(__constants.HW_MYSQL_NAME, queryProvider.getMisRelatedIncomingData(), [startOfMonth + ' 00:00:00', endOfMonth + ' 23:59:59'])
+      .then(result => {
+        if (result && result.length > 0) {
+          __logger.info('dbData: getMisRelatedIncomingData():', result)
+          promises.resolve(result)
+        } else {
+          __logger.error('dbData: getMisRelatedIncomingData(): NO_RECORDS_FOUND')
+          promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('dbData: getMisRelatedIncomingData(): catch:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
+
+  getWabaName () {
+    const promises = q.defer()
+    __logger.info('dbData: getWabaName(): ')
+    __db.mysqlMis.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaName(), [])
+      .then(result => {
+        if (result && result.length > 0) {
+          __logger.info('dbData: getWabaName():', result)
+          promises.resolve(result)
+        } else {
+          __logger.error('dbData: getWabaName(): NO_RECORDS_FOUND')
+          promises.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
+        }
+      })
+      .catch(err => {
+        __logger.error('dbData: getWabaName(): catch:', err)
+        promises.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
+      })
+    return promises.promise
+  }
 }
 
 module.exports = MessgaeHistoryService
