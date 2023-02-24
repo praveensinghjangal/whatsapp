@@ -7,7 +7,7 @@ const _ = require('lodash')
 const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
 
 const messageStatusOnMailForBilling = () => {
-  const conversationMis = q.defer()
+  const billingMis = q.defer()
   const dbService = new DbService()
   const date = moment().utc().subtract(1, 'days').format('YYYY-MM-DD')
   const dateWithTime = moment().utc().subtract(1, 'days').format('YYYY-MM-DD HH:mm:ssZ')
@@ -55,7 +55,6 @@ const messageStatusOnMailForBilling = () => {
       })
       mtdTotalStatusCount.incomingPercent = Math.round(((mtdTotalStatusCount.incoming / mtdTotalMessageCount) * 100 + Number.EPSILON) * 100) / 100
       passingObjectToMailer = { lastDayAllUserCount, lastDayTotalStatusCount, lastDayTotalMessageCount, mtdAllUserCount, mtdTotalStatusCount, mtdTotalMessageCount }
-      console.log('-------------lastDayAllUserCount--------------------+', lastDayAllUserCount)
       return dbService.getWabaNameByWabaNumber(arrayofWabanumber)
     })
     .then(dbresponse => {
@@ -63,7 +62,7 @@ const messageStatusOnMailForBilling = () => {
       for (let i = 0; i < dbresponse.length; i++) {
         userIdToUserName[dbresponse[i].wabaPhoneNumber] = dbresponse[i].businessName
       }
-      return conversationMis.resolve({
+      return billingMis.resolve({
         billingStatusData: passingObjectToMailer.lastDayAllUserCount,
         totalBillingStatusCount: passingObjectToMailer.lastDayTotalStatusCount,
         totalBillingMessageCount: passingObjectToMailer.lastDayTotalMessageCount,
@@ -77,8 +76,8 @@ const messageStatusOnMailForBilling = () => {
     .catch((error) => {
       console.log('error in sending mis ~function=messageStatusOnMailForBilling', error)
       __logger.error('error in sending mis ~function=messageStatusOnMailForBilling', { err: typeof error === 'object' ? error : { error: error.toString() } })
-      conversationMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
+      billingMis.reject({ type: error.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: error.err || error })
     })
-  return conversationMis.promise
+  return billingMis.promise
 }
 module.exports = messageStatusOnMailForBilling

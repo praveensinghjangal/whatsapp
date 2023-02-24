@@ -423,11 +423,6 @@ const getMisRelatedIncomingData = () => {
   group by payload ->"$.to",DATE(created_on);`
 }
 
-const getWabaName = () => {
-  return `select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information
-  where is_active = true`
-}
-
 module.exports = {
   getDataOnBasisOfWabaNumberFromBillingCoversation,
   getMessageTableDataWithId,
@@ -458,6 +453,5 @@ module.exports = {
   getConversationDataBasedOnWabaNumberAllData,
   groupByIssue,
   getWabaNameByPhoneNumber,
-  getMisRelatedIncomingData,
-  getWabaName
+  getMisRelatedIncomingData
 }
