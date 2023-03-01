@@ -137,7 +137,7 @@ class validate {
           type: 'string',
           required: request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase(),
           minLength: 1,
-          maxLength: 500
+          maxLength: 60
         },
         headerTextVarExample: {
           type: 'array',
@@ -152,7 +152,7 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 500
+          maxLength: 60
         },
         mediaType: {
           type: 'string',
@@ -202,7 +202,7 @@ class validate {
         secondLanguageHeaderText: {
           type: 'string',
           required: request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && request.secondLanguageRequired === true,
-          maxLength: 500
+          maxLength: 60
         },
         secondLanguageHeaderTextVarExample: {
           type: 'array',
@@ -231,7 +231,9 @@ class validate {
               minItems: 1,
               maxItems: 3,
               items: {
-                type: 'string'
+                type: 'string',
+                minLength: 1,
+                maxLength: 20
               }
             },
             secondLanguageQuickReply: {
@@ -246,7 +248,8 @@ class validate {
             phoneButtonText: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             phoneNumber: {
               type: 'string',
@@ -258,7 +261,8 @@ class validate {
             websiteButtontext: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             webAddress: {
               type: 'string',
@@ -269,12 +273,14 @@ class validate {
             secondLanguageWebsiteButtontext: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             secondLanguagePhoneButtonText: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             websiteTextVarExample: {
               type: 'array',
