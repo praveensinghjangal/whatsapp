@@ -11,13 +11,13 @@ const interactions = (req, res) => {
   if (req.body.Question_1 && req.body.Question_1.toLowerCase() === '3') {
     req.body.score += 1
   }
-  if (req.body.Question_2 && req.body.Question_2.toLowerCase() === '3') {
+  if (req.body.Question_2 && req.body.Question_2.toLowerCase() === '2') {
     req.body.score += 1
   }
-  if (req.body.Question_3 && req.body.Question_3.toLowerCase() === '2') {
+  if (req.body.Question_3 && req.body.Question_3.toLowerCase() === '3') {
     req.body.score += 1
   }
-  if (req.body.Question_4 && req.body.Question_4.toLowerCase() === '3') {
+  if (req.body.Question_4 && req.body.Question_4.toLowerCase() === '2') {
     req.body.score += 1
   }
   if (req.body.Question_5 && req.body.Question_5.toLowerCase() === '2') {
