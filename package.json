@@ -105,7 +105,6 @@
     "e164": "0.0.5",
     "encrypy-decrypt": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/encrypt-decrypt.git#3.1.0",
     "excel": "^1.0.1",
-    "excel-stream": "https://github.com/riddheshganatra/excel-stream.git",
     "express": "4.17.1",
     "express-request-id": "1.4.1",
     "express-validator": "6.1.1",
@@ -158,7 +157,6 @@
     "viva-logger": "git+http://danish.galiyara:NHaBKpsXVkrkQKmUxest@git.vivaconnect.co/helo-whatsapp/viva-logger.git#2.2.3",
     "winston": "3.1.0",
     "winston-daily-rotate-file": "3.10.0",
-    "xlsx-write-stream": "0.0.19",
     "yamljs": "0.3.0"
   },
   "devDependencies": {

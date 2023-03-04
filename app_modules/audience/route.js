@@ -55,7 +55,7 @@ router.get('/optin/segment', authMiddleware.authenticate(authstrategy.jwt.name, 
 router.post('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, addUpdateOptinController.addUpdateOptinSourceData)
 router.get('/optin/source', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchOptinController.getOptinSourceData)
 router.patch('/optin/excel', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, bulkAudienceDataUploadController.uploadAudienceData)
-router.patch('/optin/excel/streams', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, bulkAudienceDataUploadController.uploadAudienceDataUsingStreams)
+// router.patch('/optin/excel/streams', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, bulkAudienceDataUploadController.uploadAudienceDataUsingStreams)
 router.get('/optin/url', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, fetchOptinUrlController.getOptinUrl)
 router.get('/optin/url/redirect/:wabaNumber', redirectToOptinUrlController.redirectToOptinUrl)
 
