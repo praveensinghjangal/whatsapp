@@ -213,11 +213,10 @@ const generateEmailOtpCode = (req, res) => {
       }
     })
     .then(data => verificationService.addVerificationCode(userId, __constants.VERIFICATION_CHANNEL.emailTfa.name, __constants.VERIFICATION_CHANNEL.emailTfa.expiresIn, __constants.VERIFICATION_CHANNEL.emailTfa.codeLength))
-    .then(data =>{
-      
-      
+    .then(data => {
       __logger.info('data:: then 3', data)
-      verificationService.sendOtpByEmail(data.code, email, firstName)})
+      verificationService.sendOtpByEmail(data.code, email, firstName)
+    })
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.EMAIL_OTP, data: {} }))
     .catch(err => {
       __logger.error('error: ', err)

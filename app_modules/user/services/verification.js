@@ -100,7 +100,7 @@ class VerificationService {
     const query = queryProvider.updateVerificationCode()
     __db.mysql.query(__constants.HW_MYSQL_NAME, query, [userId, userId, verificationChannel])
       .then(result => {
-        __logger.info('yessssssssssssssss', result);
+        __logger.info('yessssssssssssssss', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           verificationDataUpdated.resolve({ userId })
         } else {
