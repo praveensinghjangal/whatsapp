@@ -57,6 +57,7 @@ const addUpdateTemplates = (req, res) => {
   const statusService = new StatusService()
   validate.addUpdateTemplate(req.body)
     .then(data => {
+      __logger.info('add update template:: dbData then 1', { data }) 
       if (!req.body.messageTemplateId && req.body.templateName) {
         return templateService.getTemplateTableDataByTemplateName(req.body.templateName, userId)
       } else {

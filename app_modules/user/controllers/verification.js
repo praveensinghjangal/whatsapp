@@ -213,7 +213,11 @@ const generateEmailOtpCode = (req, res) => {
       }
     })
     .then(data => verificationService.addVerificationCode(userId, __constants.VERIFICATION_CHANNEL.emailTfa.name, __constants.VERIFICATION_CHANNEL.emailTfa.expiresIn, __constants.VERIFICATION_CHANNEL.emailTfa.codeLength))
-    .then(data => verificationService.sendOtpByEmail(data.code, email, firstName))
+    .then(data =>{
+      
+      
+      __logger.info('data:: then 3', data)
+      verificationService.sendOtpByEmail(data.code, email, firstName)})
     .then(data => __util.send(res, { type: __constants.RESPONSE_MESSAGES.EMAIL_OTP, data: {} }))
     .catch(err => {
       __logger.error('error: ', err)
@@ -432,11 +436,13 @@ const validateTFa = (req, res) => {
       }
     })
     .then(data => {
+      __logger.info('ooyyyyyyyyyyyyyyyyyy', { data })
       backupData = data
       const userService = new UserService()
       return userService.checkUserIdExistsForAccountProfile(userId)
     })
     .then(userData => {
+      __logger.info('heyyyyyyyyyyyyyyyyyy', { userData })
       const payload = {
         user_id: userId,
         providerId: userData && userData.rows && userData.rows[0] && userData.rows[0].serviceProviderId ? userData.rows[0].serviceProviderId : '',
@@ -705,7 +711,7 @@ const validateBackupCodeAndResetTfa = (req, res) => {
   }
   verificationService.getTfaData(userId)
     .then(data => {
-      __logger.info('data::>>>>>>.. then 1')
+      __logger.info('data::>>>>>>.. then 1', data)
       if (!data[0].backupCodes.includes(req.body.backupCode)) {
         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_BACKUP_CODE, err: {} })
       }
