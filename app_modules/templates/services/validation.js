@@ -231,9 +231,7 @@ class validate {
               minItems: 1,
               maxItems: 3,
               items: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 20
+                type: 'string'
               }
             },
             secondLanguageQuickReply: {
