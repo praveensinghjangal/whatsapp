@@ -232,8 +232,7 @@ class validate {
               maxItems: 3,
               items: {
                 type: 'string',
-                minLength: 1,
-                maxLength: 20
+                maxLength: 25
               }
             },
             secondLanguageQuickReply: {
@@ -242,7 +241,8 @@ class validate {
               minItems: 1,
               maxItems: 3,
               items: {
-                type: 'string'
+                type: 'string',
+                maxLength: 25
               }
             },
             phoneButtonText: {
