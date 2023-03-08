@@ -207,11 +207,11 @@ class MessgaeHistoryService {
     __logger.info('dbData: addMessageHistoryDataInBulk():', dataObj.length)
     const messageHistoryDataAdded = q.defer()
     if (!isSecondAttemp) {
-      __logger.info('dbData: addMessageHistoryDataInBulk(' + mongoBulkObject[0].campName ? mongoBulkObject[0].campName : '' + '): First Attempt....')
+      __logger.info('dbData: addMessageHistoryDataInBulk(' + (mongoBulkObject[0].campName ? mongoBulkObject[0].campName : '') + '): First Attempt....')
       __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.addMessageHistoryDataInBulkInMis(), [msgInsertData])
       this.addBulkMessageStatusData(mongoBulkObject)
     }
-    __logger.info('dbData: addMessageHistoryDataInBulk(' + mongoBulkObject[0].campName ? mongoBulkObject[0].campName : '' + '): First Attempt Followed....')
+    __logger.info('dbData: addMessageHistoryDataInBulk(' + (mongoBulkObject[0].campName ? mongoBulkObject[0].campName : '') + '): First Attempt Followed....')
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addMessageHistoryDataInBulk(dataObj[0].date), [msgInsertData])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
