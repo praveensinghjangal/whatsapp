@@ -230,6 +230,7 @@ class Template {
 
   // when this service will be called we will call waba to get phone number to use here in redis
   addTemplate (templateData, wabaNumber) {
+    console.log('found th answer', templateData, wabaNumber);
     __logger.info('fb: template: addTemplate(' + wabaNumber + '): Adding template')
     const deferred = q.defer()
     let url = __constants.FACEBOOK_GRAPHURL + __constants.FACEBOOK_GRAPHURL_VERSION + '/'
