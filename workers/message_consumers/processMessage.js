@@ -31,7 +31,8 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
     customThree: payload.whatsapp.customThree || null,
     customFour: payload.whatsapp.customFour || null,
     date: payload.date,
-    campName: payload.whatsapp.campName || null
+    campName: payload.whatsapp.campName || null,
+    errorMsg: payload.errorMessage || ''
   }
   messageHistoryService.addMessageHistoryDataService(statusData)
     .then(statusDataAdded => {
@@ -49,7 +50,7 @@ const saveAndSendMessageStatus = (payload, serviceProviderId, isSyncstatus, stat
 
 const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
   const messageRouted = q.defer()
-  __logger.info('inside callApiAndSendToQueue', { messageData, queue })
+  __logger.info('processMessage: callApiAndSendToQueue():', { messageData, queue })
   const http = new HttpService(60000)
   const headers = {
     Authorization: __config.authTokens[0],
@@ -81,23 +82,24 @@ const callApiAndSendToQueue = (messageData, rmqObject, queue, mqData) => {
     })
     .then(ackRes => messageRouted.resolve('done!'))
     .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ callApiAndSendToQueue function ~ eror while calling api and sending to queue'
+      const telegramErrorMessage = 'ProcessMessageConsumer: callApiAndSendToQueue(): catch:'
       errorToTelegram.send(err, telegramErrorMessage)
       rmqObject.channel[queue].ack(mqData)
-      __logger.error('callApiAndSendToQueue Async::error: ', err)
+      __logger.error('processMessage: callApiAndSendToQueue(): catch:', err)
     })
   return messageRouted.promise
 }
 
 const sendToRespectiveProviderQueue = (message, queueObj, queue, mqData) => {
   const messageRouted = q.defer()
-  __logger.info('inside sendToRespectiveProviderQueue', { message, queue })
-  queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoing', message.config.userId, message.payload.whatsapp.from), JSON.stringify(message))
+  __logger.info('processMessage: sendToRespectiveProviderQueue(): ', { message, queue })
+  queueObj.sendToQueue(require('./../../lib/util/rabbitmqHelper')('fbOutgoing', ((message.payload && message.payload.redisData && message.payload.redisData.userId) ? message.payload.redisData.userId : message.config.userId), ((message.payload && message.payload.redisData && message.payload.redisData.id) ? message.payload.redisData.id : message.payload.whatsapp.from)), JSON.stringify(message))
     .then(queueResponse => saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false))
     .then(statusResponse => queueObj.channel[queue].ack(mqData))
     .then(statusResponse => messageRouted.resolve('done!'))
     .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ sendToRespectiveProviderQueue function '
+      __logger.error('processMessage: sendToRespectiveProviderQueue(' + message.payload.whatsapp.from + '): catch:', err)
+      const telegramErrorMessage = 'ProcessMessageConsumer: sendToRespectiveProviderQueue(' + message.payload.whatsapp.from + '): catch:'
       errorToTelegram.send(err, telegramErrorMessage)
       __logger.error('sendToRespectiveProviderQueue ::error: ', err)
       queueObj.channel[queue].ack(mqData)
@@ -127,7 +129,8 @@ const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
       }
     })
     .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ updateAudience function ~ error while calling the api'
+      __logger.error('processMessage: updateAudience(' + wabaNumber + '): catch:', err)
+      const telegramErrorMessage = 'ProcessMessageConsumer: updateAudience(' + wabaNumber + '): catch:'
       errorToTelegram.send(err, telegramErrorMessage)
       audUpdated.reject(err)
     })
@@ -135,7 +138,7 @@ const updateAudience = (audienceNumber, audOptin, wabaNumber, authToken) => {
 }
 
 const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, authToken) => {
-  __logger.info('checkOptinStaus::>>>>>>>>>>>', endUserPhoneNumber, templateObj, isOptin)
+  __logger.info('processMessage: checkOptinStaus(' + wabaNumber + '): checking Optin Status', endUserPhoneNumber, templateObj, isOptin)
   const canSendMessage = q.defer()
   if (isOptin && templateObj) {
     updateAudience(endUserPhoneNumber, true, wabaNumber, authToken)
@@ -146,14 +149,15 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
           canSendMessage.resolve(false)
         }
       }).catch(err => {
-        const telegramErrorMessage = 'ProcessMessageConsumer ~ checkOptinStaus function ~ error while updateAudience functionality'
+        __logger.error('processMessage: checkOptinStaus(' + wabaNumber + '): catch:', err)
+        const telegramErrorMessage = 'ProcessMessageConsumer: checkOptinStaus(' + wabaNumber + '): catch:'
         errorToTelegram.send(err, telegramErrorMessage)
         canSendMessage.reject(err)
       })
   } else {
     audienceFetchController.getOptinStatusByPhoneNumber(endUserPhoneNumber, wabaNumber)
       .then(data => {
-        if (data.tempOptin && data.isFacebookVerified) {
+        if (data.tempOptin) {
           canSendMessage.resolve(true)
         } else if (data.optin && templateObj && data.isFacebookVerified) {
           canSendMessage.resolve(true)
@@ -161,20 +165,24 @@ const checkOptinStaus = (endUserPhoneNumber, templateObj, isOptin, wabaNumber, a
           canSendMessage.resolve(false)
         }
       })
-      .catch(err => canSendMessage.reject(err))
+      .catch(err => {
+        __logger.error('processMessage: checkOptinStaus(' + wabaNumber + '): getOptinStatusByPhoneNumber(): catch:', err)
+        canSendMessage.reject(err)
+      })
   }
   return canSendMessage.promise
 }
 
 const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
   const messageStatus = q.defer()
+  message.payload.errorMessage = __constants.RESPONSE_MESSAGES.CANNOT_SEND_MESSAGE.message
   saveAndSendMessageStatus(message.payload, message.config.servicProviderId, false, __constants.MESSAGE_STATUS.rejected)
     .then(statusResponse => queueObj.channel[queue].ack(mqData))
     .then(statusResponse => messageStatus.resolve('done!'))
     .catch(err => {
-      const telegramErrorMessage = 'ProcessMessageConsumer ~ updateMessageStatusToRejected function ~ error while updateAudience functionality'
+      const telegramErrorMessage = 'ProcessMessageConsumer: updateMessageStatusToRejected(): catch:'
       errorToTelegram.send(err, telegramErrorMessage)
-      __logger.error('sendToRespectiveProviderQueue ::error: ', err)
+      __logger.error('processMessage: sendToRespectiveProviderQueue(): catch:', err)
       queueObj.channel[queue].ack(mqData)
     })
   return messageStatus.promise
@@ -195,7 +203,7 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 //       messageStatus.resolve(true)
 //     })
 //     .catch(err => {
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ getWabaPhoneNumberAndAdd function ~ error while getWabaPhoneNumberAndAdd functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: getWabaPhoneNumberAndAdd(): error while getWabaPhoneNumberAndAdd functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('getWabaPhoneNumberAndAdd sendToRespectiveProviderQueue ::error: ', err)
 //       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
@@ -220,7 +228,7 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 //       return messageStatus.resolve(true)
 //     })
 //     .catch(err => {
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ callFbApiAndAddUpdateInDb function ~ error while callFbApiAndAddUpdateInDb functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: callFbApiAndAddUpdateInDb(): error while callFbApiAndAddUpdateInDb functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('callFbApiAndAddUpdateInDb sendToRespectiveProviderQueue ::error: ', err)
 //       if (err && err.err && err.err.errors && err.err.errors.length && err.err.errors[0].code === 1015) {
@@ -247,7 +255,7 @@ const updateMessageStatusToRejected = (message, queueObj, queue, mqData) => {
 //       return messageStatus.resolve(true)
 //     })
 //     .catch(err => {
-//       const telegramErrorMessage = 'ProcessMessageConsumer ~ checkIsVerifiedTrueOrFalse function ~ error while checkIsVerifiedTrueOrFalse functionality'
+//       const telegramErrorMessage = 'ProcessMessageConsumer: checkIsVerifiedTrueOrFalse(): error while checkIsVerifiedTrueOrFalse functionality'
 //       errorToTelegram.send(err, telegramErrorMessage)
 //       __logger.error('checkIsVerifiedTrueOrFalse sendToRespectiveProviderQueue ::error: ', err)
 //       messageStatus.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
@@ -263,7 +271,7 @@ class ProcessQueueConsumer {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
         const queue = queueObj.q_name
-        __logger.info('processQueueConsumer::Waiting for message...')
+        __logger.info('processQueueConsumer :: Waiting for message...')
         rmqObject.channel[queue].consume(queue, mqData => {
           try {
             const messageData = JSON.parse(mqData.content.toString())
@@ -278,7 +286,7 @@ class ProcessQueueConsumer {
               }
               // })
               // .catch(err => {
-              //   const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
+              //   const telegramErrorMessage = 'ProcessMessageConsumer: startServer(): error in process message main functionality'
               //   errorToTelegram.send(err, telegramErrorMessage)
               //   __logger.error('processQueueConsumer::error while parsing: ', err)
               //   rmqObject.channel[queue].ack(mqData)
@@ -297,17 +305,16 @@ class ProcessQueueConsumer {
                   }
                 })
                 .catch(err => {
-                  const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ error in process message main functionality'
+                  __logger.error('processQueueConsumer:  startServer(' + queue + '): checkOptinStaus(): catch:', err)
+                  const telegramErrorMessage = 'ProcessMessageConsumer: startServer(' + queue + '): checkOptinStaus(): catch:'
                   errorToTelegram.send(err, telegramErrorMessage)
-                  __logger.error('processQueueConsumer::error while parsing: ', err)
                   rmqObject.channel[queue].ack(mqData)
                 })
             }
           } catch (err) {
-            const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~ processQueueConsumer::error while parsing:'
+            __logger.error('processQueueConsumer:  startServer(' + queue + '): try/catch:', err)
+            const telegramErrorMessage = 'ProcessMessageConsumer: startServer(): processQueueConsumer::error while parsing:'
             errorToTelegram.send(err, telegramErrorMessage)
-
-            __logger.error('processQueueConsumer::error while parsing: ', err)
             rmqObject.channel[queue].ack(mqData)
           }
         }, {
@@ -315,9 +322,9 @@ class ProcessQueueConsumer {
         })
       })
       .catch(err => {
-        const telegramErrorMessage = 'ProcessMessageConsumer ~ startServer function ~'
+        __logger.error('processQueueConsumer:  startServer(): main catch:', err)
+        const telegramErrorMessage = 'ProcessMessageConsumer: startServer(): Main Catch:'
         errorToTelegram.send(err, telegramErrorMessage)
-        __logger.error('processQueueConsumer::error: ', err)
         process.exit(1)
       })
     // } else {
@@ -339,7 +346,7 @@ class ProcessQueueConsumer {
 
 class Worker extends ProcessQueueConsumer {
   start () {
-    __logger.info((new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
+    __logger.info('processMessasge' + (new Date()).toLocaleString() + '   >> Worker PID:', process.pid)
     super.startServer()
   }
 }

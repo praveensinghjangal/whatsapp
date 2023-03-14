@@ -8,7 +8,6 @@ const moment = require('moment')
 const upsertCounts = async (singleUserDayStatusData, currentDate) => {
   const dataUpserted = q.defer()
   const dbService = new DbService()
-  console.log('upsertCounts parameters ', singleUserDayStatusData)
   const dataObject = {
     wabaPhoneNumber: singleUserDayStatusData._id.wabaPhoneNumber,
     summaryDate: currentDate,
@@ -30,7 +29,6 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
     deliveredPercentage: 0,
     templateName: null
   }
-  console.log('dataobject valueeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', dataObject)
   singleUserDayStatusData.status.forEach(singleStatus => {
     switch (singleStatus.name) {
       case __constants.MESSAGE_STATUS.preProcess:
@@ -69,46 +67,45 @@ const upsertCounts = async (singleUserDayStatusData, currentDate) => {
     }
   })
   dataObject.totalMessageSent = dataObject.total
-  dataObject.deliveredPercentage = Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2) === 'Infinity' ? '0' : Math.round(dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted + Number.EPSILON * 100 / dataObject.totalMessageSent).toFixed(2)
+  // doubt
+  dataObject.deliveredPercentage = Math.round((((dataObject.totalMessageSeen + dataObject.totalMessageDelivered + dataObject.totalMessageDeleted) / dataObject.totalMessageSent) * 100 + Number.EPSILON) * 100) / 100
   // dataObject.templateName = getTemplateNameAgainstId(dataObject.templateId)
-  console.log('222222222222222222222222222222222222222222222222222222222222222', dataObject)
   dataObject.templateName = await tempaletName(dataObject.templateId)
-  console.log('+++++++++++++++++++++++++++++++++++++++++++', dataObject)
   dbService.addUpdateCountsAgainst(dataObject)
     .then(upserted => {
-      console.log('upserted ++++++++++++++++++++++++++++++++++++++++++', upserted)
       return dataUpserted.resolve(upserted)
     })
     .catch((error) => {
-      console.log('!@#$%^&*()!@#$%^&*(!@#$%^&*(!@#$%^&*()!@#$%^&*(', error)
+      __logger.error('addUpdateCountsAgainst  error', error)
       dataUpserted.reject(error)
     })
   return dataUpserted.promise
 }
 
-const InsertDataIntoSumarryReports = () => {
+const InsertDataIntoSumarryReports = (currentDate) => {
   const dbService = new DbService()
-  const currentDate = moment().format('YYYY-MM-DD')
-  // const currentDate = '2022-08-01'
-  console.log('InsertDataIntoSumarryReports parameters', currentDate)
-  dbService.getNewTemplateDetailsAgainstAllUser(currentDate)
+  // var currentDate = '2022-09-23'
+  // var currentDate = moment().format('YYYY-MM-DD')
+  const InsertDataIntoTemplateSumarryReports = q.defer()
+  const currentFromDate = moment(currentDate).subtract(1, 'days').format('YYYY-MM-DDT18:30:00.000[Z]')
+  const currentEndDate = moment(currentDate).subtract(0, 'days').format('YYYY-MM-DDT18:29:59.999[Z]')
+  dbService.getNewTemplateDetailsAgainstAllUser(currentFromDate, currentEndDate)
     .then(allUserData => {
-      console.log('getNewTemplateDetailsAgainstAllUser  alluserData', allUserData)
       return qalllib.qASyncWithBatch(upsertCounts, allUserData, __constants.BATCH_SIZE_FOR_SEND_TO_QUEUE, currentDate)
     })
     .then(processed => {
-      console.log('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$', processed)
       if (processed && processed.reject && processed.reject.length === 0) {
-        __logger.info('successfully processed data ~function=processCounts', processed)
+        __logger.info('successfully processed data ~function=upsertCounts')
+        InsertDataIntoTemplateSumarryReports.resolve(true)
       } else {
-        __logger.info('processed data with errors ~function=processCounts', processed)
+        __logger.info('unsuccessfull yprocessed data with errors ~function=upsertCounts')
+        InsertDataIntoTemplateSumarryReports.resolve(false)
       }
     })
     .catch((error) => {
-      console.log('-------------------------------', error)
-      console.log('error in while inserting template summary ~function=InsertDataIntoSumarryReports', error)
       __logger.error('error in while inserting template summary ~function=InsertDataIntoSumarryReports', { err: typeof error === 'object' ? error : { error: error.toString() } })
+      InsertDataIntoTemplateSumarryReports.resolve(false)
     })
-    .done()
+  return InsertDataIntoTemplateSumarryReports.promise
 }
 module.exports = InsertDataIntoSumarryReports

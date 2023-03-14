@@ -61,7 +61,7 @@ module.exports = {
       pass: process.env.MONGO_OPTIONS_PASS
     },
     name: process.env.MONGO_NAME,
-    uri: 'mongodb://' + process.env.MONGO_OPTIONS_USER + ':' + process.env.MONGO_OPTIONS_PASS + '@' + process.env.MONGO_HOST + '/' + (process.env.MONGO_OPTIONS_DB_NAME || dbName) + '?authSource=' + process.env.MONGO_OPTIONS_AUTH_SOURCE
+    uri: 'mongodb://' + ((process.env.MONGO_OPTIONS_USER.length !== 0 && process.env.MONGO_OPTIONS_PASS.length !== 0) ? (process.env.MONGO_OPTIONS_USER + ':' + process.env.MONGO_OPTIONS_PASS + '@') : '') + process.env.MONGO_HOST + '/' + (process.env.MONGO_OPTIONS_DB_NAME || dbName) + '?authSource=' + process.env.MONGO_OPTIONS_AUTH_SOURCE
   },
   dynamodb: {
     init: process.env.DYNAMO_DB_INIT === 'true',

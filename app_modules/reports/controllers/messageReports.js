@@ -4,6 +4,7 @@ const __constants = require('../../../config/constants')
 const __logger = require('../../../lib/logger')
 const util = require('util')
 const q = require('q')
+const moment = require('moment')
 // const rejectionHandler = require('../../../lib/util/rejectionHandler')
 // const HttpService = require('../../../lib/http_service')
 // const __config = require('../../../config')
@@ -11,13 +12,14 @@ const q = require('q')
 const MessageReportsServices = require('../services/dbData')
 var rimraf = require('rimraf')
 const fs = require('fs')
-const writeFile = util.promisify(fs.writeFile)
 const rimRaf = util.promisify(rimraf)
 var uuid4 = require('uuid4')
 const json2csv = require('json2csv').parse
+const path = require('path')
 // const __config = require('../../../config')
 const rabbitmqHeloWhatsapp = require('../../../lib/db').rabbitmqHeloWhatsapp
 const DbService = require('../../message/services/dbData')
+const checkFile = require('./zipFileExists')
 
 /**
  * @memberof -GET-SET-OPTIN-&-Template-Controller-
@@ -35,7 +37,7 @@ const DbService = require('../../message/services/dbData')
  */
 
 const deliveryReport = (req, res) => {
-  __logger.info('Get delivered message journey record based on consumer mobile number, campaign name, date, message id', req.body)
+  __logger.info('messageReports: deliveryReport(): req:', req.body)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
@@ -48,9 +50,10 @@ const deliveryReport = (req, res) => {
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
       if (req.query.messageId) return messageReportsServices.getDeliveryReportByMessageId(req.query.messageId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else if (req.query.status) return messageReportsServices.getDeliveryReportByStatus(req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.consumerNumber) return messageReportsServices.getDeliveryReportByConsumerNumber(req.query.consumerNumber, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.status) return messageReportsServices.getDeliveryReportByStatus(req.query.status, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.campaignName) return messageReportsServices.getDeliveryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      if (!req.query.messageId && !req.query.consumerNumber && !req.query.status) return messageReportsServices.getDeliveryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -61,13 +64,13 @@ const deliveryReport = (req, res) => {
       }
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.info('messageReports: deliveryReport(): validation: catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
 
 const campaignSummaryReport = (req, res) => {
-  __logger.info('Get campaign summary record based on campaign name, date', req.body)
+  __logger.info('messageReports: campaignSummaryReport(): req:', req.body)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   let limit = ''
   let page = ''
@@ -78,8 +81,10 @@ const campaignSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      if (!req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+      var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+      if (req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByCampaignName(req.query.campaignName, startDate, endDate, wabaPhoneNumber, limit, offset)
+      if (!req.query.campaignName) return messageReportsServices.getCampaignSummaryReportByDate(startDate, endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -96,7 +101,7 @@ const campaignSummaryReport = (req, res) => {
 }
 
 const templateSummaryReport = (req, res) => {
-  __logger.info('Get template summary record based on template name, template id, date', req.query)
+  __logger.info('messageReports: templateSummaryReport(): req:', req.query)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
 
   let limit = ''
@@ -108,9 +113,11 @@ const templateSummaryReport = (req, res) => {
       limit = req.query.limit ? +req.query.limit : 10
       page = req.query.page ? +req.query.page : 1
       const offset = limit * (page - 1)
-      if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
-      else return messageReportsServices.getTemplateSummaryReportByDate(req.query.startDate, req.query.endDate, wabaPhoneNumber, limit, offset)
+      var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+      var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+      if (req.query.templateId) return messageReportsServices.getTemplateSummaryReportByTemplateId(req.query.templateId, startDate, endDate, wabaPhoneNumber, limit, offset)
+      if (req.query.templateName) return messageReportsServices.getTemplateSummaryReportByTemplateName(req.query.templateName, startDate, endDate, wabaPhoneNumber, limit, offset)
+      if (!req.query.templateId && !req.query.templateName) return messageReportsServices.getTemplateSummaryReportByDate(startDate, endDate, wabaPhoneNumber, limit, offset)
     })
     .then(data => {
       if (data) {
@@ -128,19 +135,21 @@ const templateSummaryReport = (req, res) => {
 
 const userConversationReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: userConversationReport(): req:', req.body, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const validate = new ValidatonService()
   let limit = ''
   let page = ''
-  __logger.info('Get template summary record based on template name, template id, date', userId, req.body)
   validate.userConversationReport(req.body)
     .then(() => {
       limit = req.body.limit ? +req.body.limit : 10
       page = req.body.page ? +req.body.page : 1
       const offset = limit * (page - 1)
-      if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, req.body.startDate, req.body.endDate, limit, offset)
-      else return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, req.body.startDate, req.body.endDate)
+      var startDate = moment(req.body.startDate).format('YYYY-MM-DD')
+      var endDate = moment(req.body.endDate).format('YYYY-MM-DD')
+      if (req.body.countryName && req.body.countryName.length > 0) return messageReportsServices.getuserConversationReportCountBasedOncountryName(wabaPhoneNumber, req.body.countryName, startDate, endDate, limit, offset)
+      else return messageReportsServices.getuserConversationReportCountBasedOnDate(wabaPhoneNumber, limit, offset, startDate, endDate)
     })
     .then((data) => {
       if (data) {
@@ -159,29 +168,32 @@ const userConversationReport = (req, res) => {
 
 const downloadCampaignSummary = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: downloadCampaignSummary(): req:', req.query, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
-  let filePath = __constants.FILEPATH + `/${uuid}`
+  let fullFilePath
+  const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
+  var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+  var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
   const validate = new ValidatonService()
-  __logger.info('Get download CampaignSummary date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
-      return messageReportsServices.downloadCampaignSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+      return messageReportsServices.downloadCampaignSummary(wabaPhoneNumber, startDate, endDate)
     })
     .then((data) => {
       if (data) {
-        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.campaignSummary.csv`
+        fullFilePath = filePath + `/${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.campaignSummary.csv`
         const result = json2csv(data, { header: true })
 
-        return writeFile(filePath, result)
+        return fs.writeFileSync(fullFilePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
     })
     .then(() => {
-      return res.download(filePath)
+      return res.download(fullFilePath)
     })
     .then(() => {
       return rimRaf(filePath)
@@ -197,28 +209,31 @@ const downloadCampaignSummary = (req, res) => {
 
 const downloadTemplateSummary = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: downloadTemplateSummary(): req:', req.query, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
-  let filePath = __constants.FILEPATH + `/${uuid}`
+  var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+  var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+  let fullFilePath
+  const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
   const validate = new ValidatonService()
-  __logger.info('Get template summary record based on template name, template id, date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
-      return messageReportsServices.downloadTemplateSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+      return messageReportsServices.downloadTemplateSummary(wabaPhoneNumber, startDate, endDate)
     })
-    .then(async (data) => {
+    .then((data) => {
       if (data) {
-        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.templateSummary.csv`
+        fullFilePath = filePath + `/${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.templateSummary.csv`
         const result = json2csv(data, { header: true })
-        return writeFile(filePath, result)
+        return fs.writeFileSync(fullFilePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
     })
     .then(() => {
-      return res.download(filePath)
+      return res.download(fullFilePath)
     })
     .then(() => {
       return rimRaf(filePath)
@@ -234,28 +249,31 @@ const downloadTemplateSummary = (req, res) => {
 
 const downloadUserConversationReport = (req, res) => {
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+  __logger.info('messageReports: downloadUserConversationReport(): req:', req.query, userId)
   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
   const messageReportsServices = new MessageReportsServices()
   const uuid = uuid4()
-  let filePath = __constants.FILEPATH + `/${uuid}`
+  var startDate = moment(req.query.startDate).format('YYYY-MM-DD')
+  var endDate = moment(req.query.endDate).format('YYYY-MM-DD')
+  let fullFilePath
+  const filePath = __constants.FILEPATH + `/${uuid}`
   fs.mkdirSync(filePath)
   const validate = new ValidatonService()
-  __logger.info('download User conversation report by date', userId, req.query)
   validate.downloadSummary(req.query)
     .then(() => {
-      return messageReportsServices.downloadUserConversationSummary(wabaPhoneNumber, req.query.startDate, req.query.endDate)
+      return messageReportsServices.downloadUserConversationSummary(wabaPhoneNumber, startDate, endDate)
     })
-    .then(async (data) => {
+    .then((data) => {
       if (data) {
-        filePath = filePath + `/${req.query.startDate.slice(0, 10)}_${req.query.endDate.slice(0, 10)}.userConversationSummary.csv`
+        fullFilePath = filePath + `/${startDate.slice(0, 10)}_${endDate.slice(0, 10)}.userConversationSummary.csv`
         const result = json2csv(data, { header: true })
-        return writeFile(filePath, result)
+        return fs.writeFileSync(fullFilePath, result)
       } else {
         return __util.send(res, { type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: [] })
       }
     })
     .then(() => {
-      return res.download(filePath)
+      return res.download(fullFilePath)
     })
     .then(() => {
       return rimRaf(filePath)
@@ -268,7 +286,39 @@ const downloadUserConversationReport = (req, res) => {
     })
 }
 
+// const downloadDlrRequest = (req, res) => {
+//   const validate = new ValidatonService()
+//   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
+//   const dbService = new DbService()
+//   const uuid = uuid4()
+//   const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+//   let sendToQueueData
+//   // const wabaPhoneNumber = req.user.wabaPhoneNumber ? req.user.wabaPhoneNumber : '0'
+//   validate.downloadDlrRequest(req.query)
+//     .then(validateData => {
+//       validateData.userId = userId
+//       validateData.wabaPhoneNumber = wabaPhoneNumber
+//       const startDate = validateData.startDate.slice(0, 10)
+//       const endDate = validateData.endDate.slice(0, 10)
+//       // validateData.wabaPhoneNumber = '918080800808'
+//       validateData.uniqueId = uuid
+//       validateData.filename = `${startDate}_${endDate}_${validateData.wabaPhoneNumber}`
+//       sendToQueueData = validateData
+//       return dbService.updateDownloadFileAgainstWabaIdandUserId(validateData)
+//     })
+//     .then((data) => {
+//       return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(sendToQueueData))
+//     })
+//     .then(data => {
+//       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.DOWNLOAD_STATUS.inProcess })
+//     })
+//     .catch(err => {
+//       return __util.send(res, { type: err.type, err: err.err })
+//     })
+// }
+
 const downloadDlrRequest = (req, res) => {
+  __logger.info('messageReports: downloadDlrRequest(): req:', req.query)
   const validate = new ValidatonService()
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   const dbService = new DbService()
@@ -282,22 +332,24 @@ const downloadDlrRequest = (req, res) => {
       validateData.wabaPhoneNumber = wabaPhoneNumber
       const startDate = validateData.startDate.slice(0, 10)
       const endDate = validateData.endDate.slice(0, 10)
-      // validateData.wabaPhoneNumber = '917666118833'
+      // validateData.wabaPhoneNumber = '918080800808'
       validateData.uniqueId = uuid
       validateData.filename = `${startDate}_${endDate}_${validateData.wabaPhoneNumber}`
-      validateData.DownloadStatus = __constants.DOWNLOAD_STATUS.inProcess
       sendToQueueData = validateData
-
-      return dbService.updateDownloadFileAgainstWabaIdandUserId(validateData)
+      return checkFile.zipFileExixts(validateData)
     })
-    .then((data) => {
+    .then(data => {
+      if (sendToQueueData.changeZipFile) return fs.unlinkSync(path.resolve(__dirname, `../../../app_modules/download/${sendToQueueData.filename}.zip`))
+      else return dbService.updateDownloadFileAgainstWabaIdandUserId(sendToQueueData)
+    })
+    .then(data => {
       return rabbitmqHeloWhatsapp.sendToQueue(__constants.MQ.reportsDownloadConsumer, JSON.stringify(sendToQueueData))
     })
     .then(data => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: __constants.DOWNLOAD_STATUS.inProcess })
     })
     .catch(err => {
-      return __util.send(res, { type: err.type, err: err.err })
+      return __util.send(res, { type: err.type, data: err.data, err: err.err })
     })
 }
 
@@ -324,10 +376,9 @@ const filesPresent = (pathName) => {
   //    path_name = __dirname, `../public/reports/smpp/${system_id}/${year}/${month}/${day}`
   const filesPresentInPath = q.defer()
   if (fs.existsSync(pathName)) {
-    console.log('44444444444444444444444444444444444444444')
     filesPresentInPath.resolve(true)
   } else {
-    console.log('filesPresent existsSync')
+    __logger.info('messageReports: filePresent(): file exists...')
     filesPresentInPath.resolve(false)
   }
   return filesPresentInPath.promise
@@ -339,8 +390,7 @@ const downloadDlr = (req, res) => {
   let download
   validate.downloadDlr(req.query)
     .then((validate) => {
-      download = `${validate.path}/${validate.fileNameInServer}`
-      console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@', download)
+      download = `${validate.path}.zip`
       return filesPresent(download)
     })
     .then((data) => {

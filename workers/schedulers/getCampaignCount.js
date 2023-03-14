@@ -6,13 +6,11 @@ const __logger = require('../../lib/logger')
 const moment = require('moment')
 const MessageReportsServices = require('../../app_modules/reports/services/dbData')
 
-const createCampaignSummaryReport = () => {
+const createCampaignSummaryReport = (date) => {
   let campaignName
   const arrOfCamaignName = []
   const messageReportsServices = new MessageReportsServices()
   const statusUpdated = q.defer()
-  const date = moment().format('YYYY-MM-DD')
-  const campaignSummaryDate = moment().format('YYYYMMDD')
   messageReportsServices.getCampaignName(date)
     .then(result => {
       result.forEach(element => {
@@ -48,7 +46,7 @@ const createCampaignSummaryReport = () => {
           finalRecord.campaignName = campaignName._id.campaignName
           finalRecord.wabaPhoneNumber = campaignName._id.wabaPhoneNumber
           finalRecord.totalSent = campaignName.totalMessageSent
-          finalRecord.totalPreprocess = campaignName[__constants.MESSAGE_STATUS.preProcess] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.preProcess]
+          finalRecord.totalPreProcess = campaignName[__constants.MESSAGE_STATUS.preProcess] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.preProcess]
           finalRecord.totalInprocess = campaignName[__constants.MESSAGE_STATUS.inProcess] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.inProcess]
           finalRecord.totalResourceAllocated = campaignName[__constants.MESSAGE_STATUS.resourceAllocated] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.resourceAllocated]
           finalRecord.totalForwarded = campaignName[__constants.MESSAGE_STATUS.forwarded] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.forwarded]
@@ -61,8 +59,8 @@ const createCampaignSummaryReport = () => {
           finalRecord.totalRateLimit = campaignName[__constants.MESSAGE_STATUS.rateLimit] === undefined ? 0 : campaignName[__constants.MESSAGE_STATUS.rateLimit]
           finalRecord.deliveredMessage = deliveredMessage
           finalRecord.delivereyPercentage = totalDelivered
-          finalRecord.campaignSummaryDate = campaignSummaryDate
-          finalRecord.createdOn = new Date(campaignName._id.day)
+          finalRecord.summaryDate = moment(campaignName.day).format('YYYY-MM-DD')
+          finalRecord.createdOn = new Date(campaignName.day)
           finalRecord.updatedOn = new Date()
           arrOfCamaignName.push(finalRecord)
         }
@@ -70,14 +68,19 @@ const createCampaignSummaryReport = () => {
     })
     .then(result => {
       if (arrOfCamaignName.length > 0) return messageReportsServices.updateCampaignCount(arrOfCamaignName)
-      else return statusUpdated.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
+      else {
+        statusUpdated.resolve(false)
+        // return statusUpdated.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: 'SCHEDULER::getCampaignName::Inside scheduler fuction get campaign name' })
+      }
     })
     .then(() => {
-      return __logger.info('SCHEDULER::Campaign Name worker run successfully')
+      __logger.info('SCHEDULER::Campaign Name worker run successfully', date)
+      statusUpdated.resolve(true)
     })
     .catch(err => {
       __logger.error('SCHEDULER::added campaign record using cron function::error: ', err)
-      statusUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      statusUpdated.resolve(false)
+      // statusUpdated.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
     })
   return statusUpdated.promise
 }

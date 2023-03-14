@@ -19,41 +19,41 @@ const csc = require('country-state-city').default
 
 class businesAccountService {
   constructor () {
+    __logger.warn('businessAccount: businessAccountService class inititated ...')
     this.validate = new ValidatonService()
     this.uniqueId = new UniqueId()
   }
 
   deactivateWabaRecord (wabaInformationId, userId) {
     const recordDeactivated = q.defer()
-    __logger.info('Setting is active false to waba record', wabaInformationId)
+    __logger.info('businessAccount: deactivateWabaRecord(): Setting is active false to waba record: ', wabaInformationId)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.setIsActiveFalseByWabaId(), [wabaInformationId, userId])
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
           recordDeactivated.resolve(true)
         } else {
+          __logger.info('businessAccount: deactivateWabaRecord(): if/else: DB Query :: Reject ::', wabaInformationId, userId)
           recordDeactivated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: deactivateWabaRecord(): catch:', err)
         recordDeactivated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return recordDeactivated.promise
   }
 
   checkUserIdExist (userId) {
-    __logger.info('checkUserIdExist::>>>>>>>>>>...')
     // declare a prmoise
     const doesUserIdExist = q.defer()
-    // checking using service whether the userId is  provided or not
+    // checking using service whether the userId is provided or not
     this.validate.checkUserIdService({ userId })
-    // then using a query to check that a record exist or not in table
+      // then using a query to check that a record exist or not in table
       .then(valResponse => {
-        __logger.info('valRespons then 1')
+        __logger.info('businessAccount: checkUserIdExist(): checkUserIdService: then 1: Validated Successfully.')
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaTableDataByUserId(), [userId])
       })
       .then(result => {
-        __logger.info('result then 2')
         // if exist throw return true exist
         if (result && result.length > 0) {
           result[0].canReceiveSms = result[0].canReceiveSms === 1
@@ -67,7 +67,7 @@ class businesAccountService {
         }
       })
       .catch(err => {
-        __logger.error('error in checkUserExistByUserId function: ', err)
+        __logger.info('businessAccount: checkUserIdExist(): catch:', err)
         doesUserIdExist.reject(false)
       })
     return doesUserIdExist.promise
@@ -85,9 +85,7 @@ class businesAccountService {
      *  * *** Last-Updated :- Arjun Bhole 8th December, 2020 ***
      */
   insertBusinessData (userId, businessData, businessOldData) {
-    __logger.info('insertBusinessData::>>>>>>>>>>...', businessOldData)
     const dataInserted = q.defer()
-    __logger.info('Inputs insertBusinessData userId', userId)
     const businessAccountObj = {
       facebookManagerId: businessData.facebookManagerId ? businessData.facebookManagerId : businessOldData.facebookManagerId,
       phoneCode: businessData.phoneCode ? businessData.phoneCode : businessOldData.phoneCode,
@@ -122,20 +120,19 @@ class businesAccountService {
     }
     this.checkWabaNumberAlreadyExist(businessData.phoneCode, businessData.phoneNumber, businessOldData.userId, __constants.TAG.insert)
       .then((data) => {
-        __logger.info('checkWabaNumberAlreadyExist Result', { data })
         saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, userId)
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addWabaTableData(), [businessAccountObj.facebookManagerId, businessAccountObj.phoneCode, businessAccountObj.phoneNumber, businessAccountObj.canReceiveSms, businessAccountObj.canReceiveVoiceCall, businessAccountObj.associatedWithIvr, businessAccountObj.businessName, businessAccountObj.state, businessAccountObj.whatsappStatus, businessAccountObj.description, businessAccountObj.address, businessAccountObj.country, businessAccountObj.email, businessAccountObj.businessCategoryId, businessAccountObj.wabaProfileSetupStatusId, businessAccountObj.businessManagerVerified, businessAccountObj.phoneVerified, businessAccountObj.wabaInformationId, userId, userId, businessAccountObj.city, businessAccountObj.postalCode, businessAccountObj.serviceProviderId, businessAccountObj.apiKey, businessAccountObj.webhookPostUrl, businessAccountObj.audienceWebhookUrl, businessAccountObj.optinText, businessAccountObj.optoutText, businessAccountObj.chatBotActivated, businessAccountObj.serviceProviderUserAccountId, JSON.stringify(businessAccountObj.websites), businessAccountObj.accessInfoRejectionReason, userId])
       })
       .then(result => {
-        __logger.info('Insert Result', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           dataInserted.resolve(businessAccountObj)
         } else {
+          __logger.error('businessAccount: insertBusinessData(): checkWabaNumberAlreadyExist(): if/else :: Reject ::', result)
           dataInserted.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: insertBusinessData(): checkWabaNumberAlreadyExist(): catch:', err)
         dataInserted.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return dataInserted.promise
@@ -155,9 +152,6 @@ class businesAccountService {
   /* To do the handling of facebook manager id when null  */
   updateBusinessInfo (userId, businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
     const dataUpdated = q.defer()
-    __logger.info('Inputs updateBusinessInfo userId', userId)
-    // __logger.info('Inputs insertBusinessData facebook manager id old', businessOldData.facebookManagerId)
-    // __logger.info('Inputs insertBusinessData facebook manager id new', businessData.facebookManagerId)
     saveHistoryData(businessOldData, __constants.ENTITY_NAME.WABA_INFORMATION, businessOldData.wabaInformationId, recordUpdatingUserId)
     const businessAccountObj = {
       facebookManagerId: typeof businessData.facebookManagerId === 'string' ? businessData.facebookManagerId : businessOldData.facebookManagerId,
@@ -201,18 +195,18 @@ class businesAccountService {
           if (businessAccountObj.phoneNumber) redisService.setDataInRedis(businessAccountObj.phoneNumber)
           dataUpdated.resolve(businessAccountObj)
         } else {
+          __logger.error('businessAccount: updateBusinessInfo(): DB Query: if/else :: Reject ::', result)
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: updateBusinessInfo(): DB Query :: catch ::', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
   }
 
   updateBusinessData (businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
-    __logger.info('Inputs updateBusinessData userId', recordUpdatingUserId)
     const businessDataUpdated = q.defer()
     if (businessData && businessData.wabaProfileSetupStatusId && businessData.wabaProfileSetupStatusId !== __constants.WABA_PROFILE_STATUS.rejected.statusCode) {
       businessData.accessInfoRejectionReason = null
@@ -231,44 +225,47 @@ class businesAccountService {
           __db.redis.key_delete(businessOldData.userId)
           businessDataUpdated.resolve(data)
         })
-        .catch(err => businessDataUpdated.reject(err))
+        .catch(err => {
+          __logger.error('businessAccount: updateBusinessData(): checkWabaNumberAlreadyExist(): catch:', err)
+          businessDataUpdated.reject(err)
+        })
     } else {
       this.processWabaDataUpdation(businessOldData.userId, businessData, businessOldData, recordUpdatingUserId)
         .then(data => {
           __db.redis.key_delete(businessOldData.userId)
           return businessDataUpdated.resolve(data)
         })
-        .catch(err => businessDataUpdated.reject(err))
+        .catch(err => {
+          __logger.error('businessAccount: updateBusinessData(): checkWabaNumberAlreadyExist(): if/else: catch:', err)
+          businessDataUpdated.reject(err)
+        })
     }
     return businessDataUpdated.promise
   }
 
   processWabaDataUpdation (userId, businessData, businessOldData, recordUpdatingUserId = businessOldData.userId) {
-    __logger.info('processWabaDataUpdation')
     const processed = q.defer()
     this.updateBusinessInfo(userId, businessData, businessOldData, recordUpdatingUserId)
       .then(insertedData => processed.resolve(insertedData))
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: processWabaDataUpdation(): updateBusinessInfo(): catch:', err)
         processed.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return processed.promise
   }
 
   getBusinessProfileInfo (userId) {
-    __logger.info('getBusinessProfileInfo')
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfile(), [userId])
       .then(businessData => businessDataFetched.resolve(businessData))
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: getBusinessProfileInfo(): DB Query: catch:', err)
         businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return businessDataFetched.promise
   }
 
   updateServiceProviderDetails (userId, callerUserId, serviceProviderOldData, serviceProviderNewData) {
-    __logger.info('updateServiceProviderDetails', userId, callerUserId, serviceProviderOldData, serviceProviderNewData)
     const dataUpdated = q.defer()
     const serviceProviderData = {
       serviceProviderId: serviceProviderNewData.serviceProviderId ? serviceProviderNewData.serviceProviderId : serviceProviderOldData.serviceProviderId,
@@ -287,18 +284,18 @@ class businesAccountService {
           delete serviceProviderData.updatedBy
           dataUpdated.resolve(serviceProviderData)
         } else {
+          __logger.error('businessAccount: updateServiceProviderDetails(): DB Query: if/else :: Reject :: ', userId, callerUserId, serviceProviderOldData, serviceProviderNewData)
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: updateServiceProviderDetails(): catch: ', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
   }
 
   getUserIdFromWabaNumber (wabaNumber) {
-    __logger.info('getUserIdFromWabaNumber')
     const countryNumDetails = e164.lookup(wabaNumber)
     const countryDetails = countryNumDetails && countryNumDetails.code ? csc.getCountryByCode(countryNumDetails.code.toUpperCase()) : {}
     const phoneCode = wabaNumber.includes('+') ? '+' + countryDetails.phonecode : countryDetails.phonecode
@@ -306,49 +303,49 @@ class businesAccountService {
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdFromWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
-        __logger.info('BusinessData', { businessData })
         if (businessData.length > 0) {
           businessDataFetched.resolve(businessData[0].userId)
         } else {
+          __logger.error('businessAccount: getUserIdFromWabaNumber(): if/else :: Reject ::', businessData)
           businessDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: getUserIdFromWabaNumber(): Qb Query: catch:', err)
         businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return businessDataFetched.promise
   }
 
   getWabaDataFromDb (wabaNumber) {
-    __logger.info('Inside getWabaDataFromDb :: ', wabaNumber)
+    __logger.info('businesAccount: getWabaDataFromDb(' + wabaNumber + '): called')
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaData(), [wabaNumber])
       .then(result => {
-        // __logger.info('resulttttttttttttttttttttttttttt', result)
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getWabaDataFromDb(' + wabaNumber + '): Qb Query: if/else :: Reject ::', { result })
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PHONE_NUM_NOT_EXISTS, err: {} })
         } else {
           dbData.resolve(result[0])
         }
       })
       .catch(err => {
-        __logger.error('error in get getDataFromDb: ', err)
+        __logger.error('businessAccount: getWabaDataFromDb(' + wabaNumber + '): Qb Query: catch:', err)
         dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
   }
 
   checkWabaNumberAlreadyExist (phoneCode, phoneNumber, userId, tag) {
-    __logger.info('Inside checkWabaNumberAlreadyExist :: ')
+    __logger.info('businesAccount: checkWabaNumberAlreadyExist(): called')
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.checkWabaNumberAlreadyExist(), [phoneCode, phoneNumber, userId])
       .then(result => {
-        __logger.info('Inside checkWabaNumberAlreadyExist result :: ')
         if (result && result.length === 0 && tag === __constants.TAG.insert) {
           dbData.resolve(true)
         }
         if (result && result.length === 0 && tag === __constants.TAG.update) {
+          __logger.error('businessAccount: checkWabaNumberAlreadyExist(): Qb Query: if/else :: Reject ::', result)
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, data: {}, err: {} })
         } else {
           const userIdArr = result.map(el => el.userId)
@@ -362,7 +359,7 @@ class businesAccountService {
         }
       })
       .catch(err => {
-        __logger.error('error in get getDataFromDb: ', err)
+        __logger.error('businessAccount: checkWabaNumberAlreadyExist(): Qb Query: catch:', err)
         dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
@@ -371,11 +368,12 @@ class businesAccountService {
   updateWabaNumberAndPhoneCode (userId, phoneCode, phoneNumber, wabaProfileSetupStatusId, wabaInformationId) {
     __logger.info('updateWabaNumberAndPhoneCode::>>>>>>>>>>>>>.')
     /* To do
-                Update all the tables with waba Number
-                currently updating only waba info table
-             */
+      Update all the tables with waba Number
+      currently updating only waba info table
+    */
     const dataUpdated = q.defer()
     if (wabaProfileSetupStatusId && (wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.submitted.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.pendingForApproval.statusCode || wabaProfileSetupStatusId === __constants.WABA_PROFILE_STATUS.accepted.statusCode)) {
+      __logger.error('businessAccount: checkWabaNumberAlreadyExist(): wabaProfileSetupStatus is either in submitted, pendingForApproval, accepted:', wabaProfileSetupStatusId)
       dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.WABA_PROFILE_STATUS_CANNOT_BE_UPDATED, data: {}, err: {} })
     }
     const wabaData = {
@@ -396,35 +394,35 @@ class businesAccountService {
           delete wabaData.userId
           dataUpdated.resolve(wabaData)
         } else {
+          __logger.error('businessAccount: updateWabaNumberAndPhoneCode(): checkPhoneCodeAndPhoneNumberService(): if/else :: Reject ::', result)
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: updateWabaNumberAndPhoneCode(): checkPhoneCodeAndPhoneNumberService(): catch:', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
   }
 
   getWabaNumberFromUserId (userId) {
-    __logger.info('getWabaNumberFromUserId::>>>>>>>>>>>>>.')
     const wabaNumber = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberFromUserId(), [userId])
       .then(result => {
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getWabaNumberFromUserId(): Db Query: Reject:', result)
           wabaNumber.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
           wabaNumber.resolve(result[0])
         }
       }).catch(err => {
-        __logger.error('error::getWabaNumberFromUserId : ', err)
+        __logger.error('businessAccount: getWabaNumberFromUserId(): catch:', err)
         wabaNumber.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return wabaNumber.promise
   }
 
   getUserIdAndTokenKeyByWabaNumber (wabaNumber) {
-    __logger.info('getUserIdAndTokenKeyByWabaNumber::>>>>>>>>>>>>>.')
     // let phoneCode
     // if (wabaNumber.includes('91')) {
     //   phoneCode = wabaNumber.substring(0, 2)
@@ -441,22 +439,22 @@ class businesAccountService {
     const businessDataFetched = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserIdAndTokenKeyByWabaNumber(), [wabaNumber, phoneCode])
       .then(businessData => {
-        __logger.info('BusinessData', { businessData })
+        __logger.info('businessAccount: getUserIdAndTokenKeyByWabaNumber(' + wabaNumber + '): Db Query:', businessData)
         if (businessData.length > 0) {
           businessDataFetched.resolve(businessData[0])
         } else {
+          __logger.error('businessAccount: getUserIdAndTokenKeyByWabaNumber(' + wabaNumber + ') :: Reject ::', businessData)
           businessDataFetched.reject({ type: __constants.RESPONSE_MESSAGES.USER_ID_NOT_EXIST, err: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: getUserIdAndTokenKeyByWabaNumber(' + wabaNumber + '): catch:', err)
         businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return businessDataFetched.promise
   }
 
   getWabaNumberAndOptinTextFromUserId (userId) {
-    __logger.info('getWabaNumberAndOptinTextFromUserId::>>>>>..')
     const wabaNumberAndOptinTextFetched = q.defer()
     const validationService = new ValidatonService()
 
@@ -464,12 +462,13 @@ class businesAccountService {
       .then(() => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaNumberAndOptinTextFromUserId(), [userId]))
       .then(result => {
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getWabaNumberAndOptinTextFromUserId(' + userId + '): Db Query :: Reject ::', result)
           wabaNumberAndOptinTextFetched.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
           wabaNumberAndOptinTextFetched.resolve(result[0])
         }
       }).catch(err => {
-        __logger.error('error::getWabaNumberAndOptinTextFromUserId : ', err)
+        __logger.error('businessAccount: getWabaNumberAndOptinTextFromUserId(' + userId + '): catch:', err)
         wabaNumberAndOptinTextFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return wabaNumberAndOptinTextFetched.promise
@@ -480,22 +479,20 @@ class businesAccountService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWebsiteLimit(), [serviceProviderId])
       .then(businessData => businessDataFetched.resolve(businessData))
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: getWebsiteLimitByProviderId(' + serviceProviderId + '): catch:', err)
         businessDataFetched.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return businessDataFetched.promise
   }
 
   getServiceProviderDetailsByUserId (userId) {
-    __logger.info('getServiceProviderDetailsByUserId::>>>>>>>>>>...', userId)
     const serviceProviderData = q.defer()
     this.validate.checkUserIdService({ userId })
       .then(valResponse => {
-        __logger.info('valRespons then 1')
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProviderDetailsByUserId(), [userId])
       })
       .then(result => {
-        __logger.info('result then 2', result)
+        __logger.error('businessAccount: getServiceProviderDetailsByUserId(' + userId + '):  then 2: result:', result)
         if (result && result.length > 0) {
           return serviceProviderData.resolve({ record: result[0], exists: true })
         } else {
@@ -503,60 +500,59 @@ class businesAccountService {
         }
       })
       .catch(err => {
-        __logger.error('error in checkUserExistByUserId function: ', err)
+        __logger.error('businessAccount: getServiceProviderDetailsByUserId(' + userId + '):  catch:', err)
         serviceProviderData.reject(false)
       })
     return serviceProviderData.promise
   }
 
   getBusinessProfileListByStatusId (columnArray, offset, ItemsPerPage, valArray) {
-    __logger.info('get Business Profile List By Status Id::>>>>>>>>>>>>>.', valArray)
     const status = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getBusinessProfileListByStatusId(columnArray), [...valArray, ItemsPerPage, offset])
       .then(result => {
         if (result && result[0] && result[0].length && result[0].length > 0) {
           status.resolve(result)
         } else {
+          __logger.error('businessAccount: getBusinessProfileListByStatusId(): Db Query: Reject ::', result)
           status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         }
       }).catch(err => {
-        __logger.error('error::get Waba Profile By Status Id : ', err)
+        __logger.error('businessAccount: getBusinessProfileListByStatusId(): Db Query: catch:', err)
         status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return status.promise
   }
 
   getProfileDataByWabaId (wabaId) {
-    __logger.info('getBusinessProfileByWabaId::>>>>>>>.')
     const status = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getProfileByWabaId(), [wabaId])
       .then(result => {
         if (result && result.length === 0) {
           status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         } else {
-          __logger.info('db result', result[0])
+          __logger.error('businessAccount: getProfileDataByWabaId(' + wabaId + '): Db Query: Reject ::', result)
           status.resolve(result)
         }
       }).catch(err => {
-        __logger.error('error::getBusinessProfileByWabaId : ', err)
+        __logger.error('businessAccount: getProfileDataByWabaId(' + wabaId + '): Db Query: catch:', err)
         status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return status.promise
   }
 
   getWabaStatus () {
-    __logger.info('getWabaStatus::>>>>>>>.')
+    __logger.error('businessAccount: getWabaStatus()')
     const status = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaStatus(), [])
       .then(result => {
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getWabaStatus(): Reject ::', result)
           status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         } else {
-          __logger.info('db result', result)
           status.resolve(result)
         }
       }).catch(err => {
-        __logger.error('error::getWabaStatus : ', err)
+        __logger.error('businessAccount: getWabaStatus(): catch:', err)
         status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return status.promise
@@ -567,13 +563,13 @@ class businesAccountService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getTemplateAllocatedCount(), [userId])
       .then(result => {
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getCountTempAllocated(' + userId + '): Reject ::', result)
           status.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         } else {
-          __logger.info('db result', result[0])
           status.resolve(result[0])
         }
       }).catch(err => {
-        __logger.error('error::getBusinessProfileByWabaId : ', err)
+        __logger.error('businessAccount: getCountTempAllocated(' + userId + '): catch:', err)
         status.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return status.promise
@@ -584,20 +580,19 @@ class businesAccountService {
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProviderData(), [])
       .then(result => {
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getCountTempAllocated(): Reject ::', result)
           providerDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         } else {
-          __logger.info('db result', result)
           providerDetails.resolve(result)
         }
       }).catch(err => {
-        __logger.error('error::getBusinessProfileByWabaId : ', err)
+        __logger.error('businessAccount: getCountTempAllocated(): catch:', err)
         providerDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return providerDetails.promise
   }
 
   toggleChatbot (userId, callerUserId, wabaOldData, chatBotData) {
-    __logger.info('toggleChatbot service ->', userId, callerUserId, wabaOldData, chatBotData)
     const dataUpdated = q.defer()
     const serviceProviderData = {
       chatbotActivated: chatBotData.chatBotActivated !== undefined ? chatBotData.chatBotActivated : wabaOldData.chatBotActivated,
@@ -613,24 +608,26 @@ class businesAccountService {
           delete serviceProviderData.updatedBy
           dataUpdated.resolve(serviceProviderData)
         } else {
+          __logger.error('businessAccount: toggleChatbot(' + userId + '): Reject ::', result)
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('toggleChatbot error: ', err)
+        __logger.error('businessAccount: toggleChatbot(' + userId + '): catch:', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
   }
 
   getWabaAccountActiveInactiveCount () {
-    __logger.info('Inside Get Waba Account Active Inactive Count :: ')
+    __logger.info('businessAccount: getWabaAccountActiveInactiveCount():')
     const dbData = q.defer()
     let res
     __db.mysql.query(__constants.HW_MYSQL_MIS_NAME, queryProvider.getWabaAccountActiveInactiveCount(), [])
       .then(result => {
-        __logger.info(' Get Waba Account Active Inactive resulttttttttttttttttttttttttttt', { result })
+        __logger.info('businessAccount: getWabaAccountActiveInactiveCount(): Db Query: ', result)
         if (result && result.length === 0) {
+          __logger.error('businessAccount: getWabaAccountActiveInactiveCount(): Db Query: Reject ::', result)
           return dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
           res = result
@@ -644,59 +641,58 @@ class businesAccountService {
         dbData.resolve(res)
       })
       .catch(err => {
-        __logger.error('error in Get Waba Account Active Inactive Count: ', err)
+        __logger.error('businessAccount: getWabaAccountActiveInactiveCount(): catch:', err)
         dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
   }
 
   getWabaStatusCount () {
-    __logger.info('Inside Get Waba Status Count :: ')
+    __logger.info('businessAccount: getWabaStatusCount():')
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getWabaStatusCount(), [])
       .then(result => {
-        __logger.info('get Waba Status Count resulttttttttttttttttttttttttttt', { result })
+        __logger.info('businessAccount: getWabaStatusCount(): count:', result)
         if (result && result.length === 0) {
+          __logger.info('businessAccount: getWabaStatusCount(): Reject ::', result)
           dbData.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {} })
         } else {
           dbData.resolve(result)
         }
       })
       .catch(err => {
-        __logger.error('error in Waba Status Count: ', err)
+        __logger.error('businessAccount: getWabaStatusCount(): catch:', err)
         dbData.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
   }
 
   getServiceProvider (serviceProviderId, serviceProviderName) {
-    __logger.info('getServiceProvider>>>>>>>>>>>>>')
     const providerDetails = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceProvider(), [serviceProviderId, serviceProviderName])
       .then(result => {
         if (result && result.length === 0) {
-          providerDetails.resolve({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
+          providerDetails.reject({ type: __constants.RESPONSE_MESSAGES.NO_RECORDS_FOUND, err: {}, data: {} })
         } else {
-          __logger.info('getServiceProvider>>>>>>>>>>>>> after db response resolved', result)
           providerDetails.resolve(result)
         }
       }).catch(err => {
-        __logger.error('error::getServiceProvider : ', err)
+        __logger.error('businessAccount: serviceProviderId(): catch:', err)
         providerDetails.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return providerDetails.promise
   }
 
   addServiceProvider (requestBody, userId) {
-    __logger.info('addServiceProvider>>>>>>>>>>>>>', userId)
     const serviceProviderAdded = q.defer()
     const serviceProviderId = this.uniqueId.uuid()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.insertServiceProviderData(), [serviceProviderId, requestBody.serviceProviderName, userId, requestBody.maxWebsiteAllowed, userId])
       .then(result => {
-        __logger.info('addServiceProvider, result then 1', { result })
+        __logger.info('businessAccount: addServiceProvider(): then 1:', result)
         if (result && result.affectedRows && result.affectedRows > 0) {
           serviceProviderAdded.resolve({ serviceProvider: 'added', serviceProviderId })
         } else {
+          __logger.error('businessAccount: addServiceProvider(): catch:', result)
           serviceProviderAdded.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
@@ -705,7 +701,6 @@ class businesAccountService {
   }
 
   updateServiceProvider (serviceProviderId, checkForDeactivation, remainingValue) {
-    __logger.info('updateServiceProvider')
     const columnArray = []
     const queryParam = []
     const dataUpdated = q.defer()
@@ -733,18 +728,17 @@ class businesAccountService {
         }
       })
       .catch(err => {
-        __logger.error('error: ', err)
+        __logger.error('businessAccount: updateServiceProvider(): catch:', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
   }
 
   getServiceTotalProviderCount () {
-    __logger.info('Inside Get Total Service Provider Count :: ')
     const dbData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getServiceTotalProviderCount(), [])
       .then(result => {
-        __logger.info('get Total Service Provider Count resulttttttttttttttttttttttttttt', { result })
+        __logger.info('businessAccount: getServiceTotalProviderCount(): Db Query Result:', result)
         if (result && result.length && result.length === 0) {
           dbData.resolve(true)
         } else {
@@ -752,14 +746,14 @@ class businesAccountService {
         }
       })
       .catch(err => {
-        __logger.error('error in Total Service Provider Count: ', err)
+        __logger.error('businessAccount: getServiceTotalProviderCount(): catch:', err)
         dbData.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dbData.promise
   }
 
   updateWabizApiKeyAndExpireyTime (wabaNumber, apiKey, expireyTime, userId) {
-    __logger.info('updateServiceProviderDetails', wabaNumber, expireyTime)
+    __logger.info('businessAccount: updateWabizApiKeyAndExpireyTime(): ::::: Updating Wabiz API Key ::::: ', wabaNumber, expireyTime)
     const dataUpdated = q.defer()
     // let phoneCode = ''
     // if (wabaNumber.includes('91')) {
@@ -784,11 +778,12 @@ class businesAccountService {
           __db.redis.key_delete(phoneCode + wabaNumber)
           dataUpdated.resolve(true)
         } else {
+          __logger.error('businessAccount: updateWabizApiKeyAndExpireyTime(): ::::: Error while Updating Wabiz API Key ::::: ', result)
           dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error:bgdfgd ', err)
+        __logger.error('businessAccount: updateWabizApiKeyAndExpireyTime(): ::::: Error while Updating Wabiz API Key ::::: catch: ', err)
         dataUpdated.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return dataUpdated.promise
@@ -801,11 +796,12 @@ class businesAccountService {
         if (result && result.affectedRows && result.affectedRows > 0) {
           deferred.resolve(true)
         } else {
+          __logger.error('businessAccount: setNamespace(): Error while updating namespace: ', result)
           deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {} })
         }
       })
       .catch(err => {
-        __logger.error('error: while set namespace in waba_information db ', err)
+        __logger.error('businessAccount: setNamespace(): catch: ', err)
         deferred.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
       })
     return deferred.promise

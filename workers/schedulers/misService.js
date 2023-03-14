@@ -7,6 +7,7 @@ const AudienceService = require('../../app_modules/audience/services/dbData')
 const EmailService = require('../../lib/sendNotifications/email')
 const emailTemplates = require('../../lib/sendNotifications/emailTemplates')
 const conversationMisService = require('./misServiceOfConversation')
+const billingMisService = require('./misServiceOfBilling')
 const moment = require('moment')
 const _ = require('lodash')
 const phoneCodeAndPhoneSeprator = require('../../lib/util/phoneCodeAndPhoneSeprator')
@@ -23,6 +24,7 @@ const messageStatusOnMail = () => {
   const attachments = []
   let passingObjectToMailer = {}
   const userIdToUserName = {}
+  let conversatinData
 
   dbService.messageStatusCountByDate(startOfMonth, endOfMonth)
     .then(allUserData => {
@@ -188,11 +190,17 @@ const messageStatusOnMail = () => {
       })
       return conversationMisService()
     })
+    .then(data => {
+      conversatinData = data
+      return billingMisService()
+    })
     .then(messageConvoData => {
       __logger.info('messageConvoData got convo data~function=messageStatusOnMail', messageConvoData)
       const emailService = new EmailService(__config.emailProvider)
       const subject = __constants.WHATSAPP_SUMMARY_SUBJECT.split('(').join(passingObjectToMailer.lastDayTotalMessageCount).split(')').join(messageConvoData.lastDayCount).split('[').join(date).split(']').join(date)
-      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMis(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount, messageConvoData.statusData, messageConvoData.totalStatusCount, messageConvoData.totalMessageCount, messageConvoData.mtdStatusCount, messageConvoData.mtdTotalStatusCount, messageConvoData.mtdTotalMessageCount, userIdToUserName, messageConvoData.userIdToUserNameConvo), attachments)
+      return emailService.sendEmail(__config.misEmailList, subject, emailTemplates.messageAndConvoMis(passingObjectToMailer.lastDayAllUserCount, passingObjectToMailer.lastDayTotalStatusCount, passingObjectToMailer.lastDayTotalMessageCount, passingObjectToMailer.mtdAllUserCount, passingObjectToMailer.mtdTotalStatusCount, passingObjectToMailer.mtdTotalMessageCount,
+        conversatinData.statusData, conversatinData.totalStatusCount, conversatinData.totalMessageCount, conversatinData.mtdStatusCount, conversatinData.mtdTotalStatusCount, conversatinData.mtdTotalMessageCount, userIdToUserName, conversatinData.userIdToUserNameConvo,
+        messageConvoData.billingStatusData, messageConvoData.totalBillingStatusCount, messageConvoData.totalBillingMessageCount, messageConvoData.mtdBillingStatusCount, messageConvoData.mtdTotalBillingStatusCount, messageConvoData.mtdTotalBillingMessageCount, messageConvoData.userIdToUserNameBilling), attachments)
     })
     .then(isMailSent => {
       __logger.info('MIS mail sent ~function=messageStatusOnMail', isMailSent)

@@ -19,7 +19,6 @@ const createUser = () => {
 }
 
 // Account Profile Queries
-
 const getUserDetailsByUserIdForAccountProfile = () => {
   return `select user_id from users 
   where user_id = ? and is_active = true`
@@ -55,11 +54,10 @@ const updateTokenInAccountProfile = () => {
 }
 
 // Billing Profile
-
 const getBillingProfile = () => {
   return `select billing_name as "billingName",city, state, country, address_line_1 as "addressLine1"
   ,address_line_2 as "addressLine2",contact_number as "contactNumber",phone_code as  "phoneCode",
-  postal_code as  "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo", pd.plan_name as "planActivated",
+  postal_code as "postalCode", pan_card as "panCard", gst_or_tax_no as "gstOrTaxNo", pd.plan_name as "planActivated",
   date_format(bi.created_on,'%d/%m/%Y') as "accoutCreatedOn"
   from billing_information bi
   left join plan_details pd on
@@ -69,10 +67,8 @@ const getBillingProfile = () => {
 
 const createBusinessBillingProfile = () => {
   return `insert into billing_information
-  (user_id, billing_name, city, state, country, address_line_1, address_line_2,
-    contact_number, phone_code, postal_code, pan_card, gst_or_tax_no,billing_information_id,
-    created_by)
-    VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
+  (user_id, billing_name, city, state, country, address_line_1, address_line_2, contact_number, phone_code, postal_code, pan_card, gst_or_tax_no,billing_information_id, created_by)
+  VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)`
 }
 
 const updateBusinessBillingProfile = () => {
@@ -121,16 +117,17 @@ const updateVerificationCode = () => {
 }
 
 const getCodeData = () => {
-  return `select expires_in,created_on from user_verification_code
+  return `select expires_in,created_on 
+  from user_verification_code
   where user_id  = ? and code = ? and code_type = ? and is_consumed = false
   and is_active = true`
 }
 
 const getEmailAndFirstNameByUserId = () => {
   return `select u.email, u.first_name as "firstName" 
-    from users u 
-    where u.user_id = ?
-    and u.is_active = true`
+  from users u 
+  where u.user_id = ?
+  and u.is_active = true`
 }
 
 const setTokenConsumed = () => {
@@ -159,27 +156,27 @@ const markUserSmsVerified = () => {
 }
 
 const saveUserAgreement = () => {
-  return `insert into user_agreement_files (user_agreement_files_id ,user_id ,file_name ,file_path ,agreement_status_id ,created_by,updated_by,updated_on)
+  return `insert into user_agreement_files (user_agreement_files_id, user_id, file_name, file_path, agreement_status_id, created_by, updated_by, updated_on)
   values (?,?,?,?,?,?,?,now())`
 }
 
 const getLatestAgreementByUserId = () => {
   return `select file_path from user_agreement_files
-  where user_id = ? and is_active = true 
+  where user_id = ? and is_active = true
   order by created_on desc limit 1`
 }
 
 const getVerifiedAndCodeDataByUserIdForBusinessNumber = () => {
-  return `select uvc.id as user_verification_code_id , wi.phone_verified , wi.business_name ,
-  wi.phone_code, wi.phone_number
-    from waba_information wi 
-    left join user_verification_code uvc on wi.user_id = uvc.user_id and lower(uvc.code_type) = lower(?) and uvc.is_consumed = false and uvc.is_active = true
-    where wi.user_id = ?
-    and wi.is_active = true`
+  return `select uvc.id as user_verification_code_id , wi.phone_verified , wi.business_name, wi.phone_code, wi.phone_number 
+  from waba_information wi 
+  left join user_verification_code uvc on wi.user_id = uvc.user_id and lower(uvc.code_type) = lower(?) and uvc.is_consumed = false and uvc.is_active = true
+  where wi.user_id = ?
+  and wi.is_active = true`
 }
 
 const getUserIdFromKey = () => {
-  return `select user_id as "userId" from users
+  return `select user_id as "userId" 
+  from users
   where is_active  = 1 and token_key = ?`
 }
 
@@ -232,8 +229,7 @@ const setPasswordTokeConsumed = () => {
 
 const getTfaData = () => {
   return `select ut.users_tfa_id as "userTfaId", ut.user_id as "userId", ut.authenticator_secret as "authenticatorSecret",
-  ut.backup_codes as "backupCodes", ut.tfa_type as "tfaType",temp_authenticator_secret as "tempAuthenticatorSecret",
-  temp_tfa_type as "tempTfaType"
+  ut.backup_codes as "backupCodes", ut.tfa_type as "tfaType",temp_authenticator_secret as "tempAuthenticatorSecret", temp_tfa_type as "tempTfaType"
   from users_tfa ut
   where ut.user_id  = ? and ut.is_active = 1`
 }
@@ -274,7 +270,8 @@ const resetTfaData = () => {
 }
 
 const getPasswordByUserId = () => {
-  return `select hash_password as "hashPass", salt_key as "saltKey" from users
+  return `select hash_password as "hashPass", salt_key as "saltKey" 
+  from users
   where is_active = true and user_id = ?`
 }
 
@@ -287,7 +284,8 @@ const getAccountProfileList = () => {
 }
 
 const updateAccountManagerName = () => {
-  return `update users set account_manager_name = ?
+  return `update users 
+  set account_manager_name = ?
   where user_id = ? and is_active = true`
 }
 
@@ -324,14 +322,13 @@ const getAgreementInfoByUserId = () => {
 }
 
 const updateUserAgreementStatus = () => {
-  return `update user_agreement_files set 
-  agreement_status_id=? ,updated_by=?, updated_on=now() ,
-  rejection_reason = ?
+  return `update user_agreement_files 
+  set agreement_status_id=?, updated_by=?, updated_on=now(), rejection_reason=?
   where is_active=true and user_agreement_files_id =?`
 }
 const updateAgreement = () => {
-  return `update user_agreement_files set file_name=? ,file_path=? ,
-  agreement_status_id =?,updated_by=?,updated_on=now(),
+  return `update user_agreement_files 
+  set file_name=?, file_path=?, agreement_status_id =?, updated_by=?, updated_on=now(),
   rejection_reason = ?
   where user_id=? and is_active=true`
 }
@@ -359,12 +356,12 @@ const getAgreementList = (columnArray) => {
 }
 
 const updateAccountConfig = () => {
-  return `update users set tps=?,updated_by=?,updated_on=now()
+  return `update users 
+  set tps=?, updated_by=?, updated_on=now()
   where user_id=? and is_active=true`
 }
 const getAgreementStatusList = () => {
-  return `select agreement_status_id as "agreementStatusId",
-  status_name as "statusName"
+  return `select agreement_status_id as "agreementStatusId", status_name as "statusName"
   from agreement_status
   where is_active = true and agreement_status_id != '${__constants.AGREEMENT_STATUS.pendingForDownload.statusCode}'`
 }
@@ -385,29 +382,33 @@ const getAgreementStatusCount = () => {
 }
 
 const getUserData = () => {
-  return `select user_id as userId, phone_code as "phoneCode" ,phone_number as phoneNumber from waba_information where is_active = 1 and waba_profile_setup_status_id = '${__constants.WABA_PROFILE_STATUS.accepted.statusCode}'`
+  return `select user_id as userId, phone_code as "phoneCode", phone_number as phoneNumber 
+  from waba_information 
+  where is_active = 1 and waba_profile_setup_status_id = '${__constants.WABA_PROFILE_STATUS.accepted.statusCode}'`
 }
 
 const getUserRoleData = () => {
   return `select GROUP_CONCAT(email) as email
-from users u
-join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true
-where u.user_role_id = "9f88f381-c05d-453e-90ef-cfeff5e345ea"`
+  from users u
+  join user_role ur on ur.user_role_id = u.user_role_id and ur.is_active = true
+  where u.user_role_id = "9f88f381-c05d-453e-90ef-cfeff5e345ea"`
 }
 
 const getPhoneNumbersFromWabaId = () => {
-  return `SELECT CONCAT(phone_code,phone_number ) AS phoneNumber  from 
-  waba_information wi where 
+  return `SELECT CONCAT(phone_code,phone_number ) AS phoneNumber 
+  from waba_information wi where 
   user_account_id_by_provider = ?  and is_active=true`
 }
 
 const updateWabizInformation = () => {
-  return `update waba_information set wabiz_username=?,wabiz_password=?,wabiz_base_url=?,graph_api_key=?,updated_on=now()
+  return `update waba_information 
+  set wabiz_username=?, wabiz_password=?, wabiz_base_url=?, graph_api_key=?, updated_on=now()
   where phone_code = ? and phone_number=? and is_active=true`
 }
 const updateTfaPinInformation = () => {
-  return `update waba_information set tfa_pin=?,updated_on=now()
-  where phone_code = ? and phone_number=? and is_active=true`
+  return `update waba_information 
+  set tfa_pin=?, updated_on=now()
+  where phone_code=? and phone_number=? and is_active=true`
 }
 
 const getWabaProfileSetupStatus = () => {

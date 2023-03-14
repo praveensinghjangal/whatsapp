@@ -6,7 +6,7 @@ const __db = require('../../lib/db')
 const HttpService = require('../../lib/http_service')
 
 const sendDlr = (message, queueObj, queue, mqData) => {
-  __logger.info('inside ~function=sendDlr.', message)
+  __logger.info('sendDlr: sendDlr(' + message.from + '): ', message)
   const messageRouted = q.defer()
   const http = new HttpService(60000)
   let webhookPayload = {}
@@ -22,6 +22,10 @@ const sendDlr = (message, queueObj, queue, mqData) => {
       event: message.event || null,
       whatsapp: message.whatsapp || null
     }
+    if (message.contentType && (message.contentType === 'button_reply' || message.contentType === 'list_reply') && message.interactive && (message.interactive.button_reply || message.interactive.list_reply)) {
+      webhookPayload.contentType = message.contentType
+      webhookPayload.interactive = message.interactive
+    }
   } else {
     // message status
     webhookPayload = {
@@ -35,26 +39,31 @@ const sendDlr = (message, queueObj, queue, mqData) => {
       customTwo: message.customTwo,
       customThree: message.customThree,
       customFour: message.customFour,
-      campName: message.campName || null
+      campName: message.campName || null,
+      conversationId: message.conversationId || null,
+      conversationType: message.conversationType || null,
+      errors: message.errors || []
     }
   }
+  __logger.info('sendDlr: sendDlr(' + message.from + '): HTTP POST: req:', webhookPayload)
   http.Post(webhookPayload, 'body', message.url)
     .then(function (response) {
-      __logger.info('sent ~function=sendDlr', response)
+      __logger.info('sendDlr: sendDlr(' + message.from + '): HTTP POST: res:', response)
       queueObj.channel[queue].ack(mqData)
     })
     .catch(function (error) {
-      __logger.info('error', {}, { error: error.toString() }, 'error while sending dlr ~function=sendDlr.')
+      __logger.info('sendDlr: sendDlr(): HTTP POST: Catch: ', { error: error.toString() })
       if (!message.retry) message.retry = 1
       if (message.retry <= __constants.WEBHOOK_MAX_RETRY_COUNT) {
         message.retry++
         queueObj.sendToQueue(__constants.MQ['delay_failed_to_redirect_' + (message.retry - 1) + '0_sec'], JSON.stringify(message))
           .then(data => queueObj.channel[queue].ack(mqData))
           .catch(err => {
-            __logger.error('error', {}, { error: err.toString() }, 'error in redirect retry')
+            __logger.info('sendDlr: sendDlr(): redirect retry: Catch: ', { error: err.toString() })
             queueObj.channel[queue].ack(mqData)
           })
       } else {
+        __logger.warn('sendDlr: HTTP POST :: Res :: Webhook URL is not set in DB')
         queueObj.channel[queue].ack(mqData)
       }
     })
@@ -67,38 +76,37 @@ class UserQueue {
   }
 
   startServer () {
-    __logger.info('inside ~function=startServer. Starting DLR worker', __config.mqObjectKey)
+    __logger.warn('sendDlr: startServe():', __config.mqObjectKey)
     __db.init()
       .then(result => {
         const queueObj = __constants.MQ[__config.mqObjectKey]
         if (queueObj && queueObj.q_name) {
           const rmqObject = __db.rabbitmqHeloWhatsapp.fetchFromQueue()
           const queue = queueObj.q_name
-          __logger.info('user_queue::Waiting for message...')
+          __logger.info('user_queue ' + queue + ' ::Waiting for message...')
           rmqObject.channel[queue].consume(queue, mqData => {
             try {
               const messageData = JSON.parse(mqData.content.toString())
-              __logger.info('inside ~function=startServer. Calling sendDlr')
               return sendDlr(messageData, rmqObject, queue, mqData)
             } catch (err) {
-              __logger.error('~function=startServer. heloCampaign::error while parsing: ', err)
+              __logger.error('sendDlr: startServer(): error while parsing: try/catch:', err)
               rmqObject.channel[queue].ack(mqData)
             }
           }, {
             noAck: false
           })
         } else {
-          __logger.error('~function=startServer. heloCampaign::error: no such queue object exists')
+          __logger.error('sendDlr: startServer(): no such queue object exists: if/else')
           process.exit(1)
         }
       })
       .catch(err => {
-        __logger.error('user_queue::error: ', err && err !== 'object' ? err.toString() : '', err)
+        __logger.error('sendDlr: DB init(): catch:', err && err !== 'object' ? err.toString() : '', err)
         process.exit(1)
       })
 
     this.stop_gracefully = function () {
-      __logger.info('info', {}, {}, 'inside ~function=stop_gracefully. stopping all resources gracefully')
+      __logger.info('sendDlr: stop_gracefully(): stopping all resources gracefully')
       __db.close(function () {
         process.exit(0)
       })

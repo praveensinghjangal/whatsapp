@@ -12,6 +12,7 @@ const __config = require('../../../config')
 const _ = require('lodash')
 const { FileStream } = require('../../../lib/util/fileStream')
 const http = new HttpService(60000)
+// this file not in use
 /**
  * @namespace -Agreement-Controller-
  * @description In this Conroller, API’s related to agreement for using vivaconnect helo-whatsapp platform

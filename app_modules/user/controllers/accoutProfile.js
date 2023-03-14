@@ -34,15 +34,15 @@ const q = require('q')
 
 // Get Account Profile
 const getAcountProfile = (req, res) => {
-  __logger.info('Inside getAcountProfile', req.user.user_id)
+  __logger.info('acountProfile: getAcountProfile():', req.user.user_id)
   const userId = req.user && req.user.user_id ? req.user.user_id : '0'
   let queryResult = {}
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserAccountProfile(), [userId])
     .then(results => {
-      __logger.info('results Then 1')
-      // __logger.info('Then 1', results)
+      __logger.info('acountProfile: getAcountProfile(): then 1: ', results)
       if (results && results.length > 0) {
         queryResult = results[0]
+        // removed as there is no need for the agreement
         queryResult.isAgreementUploaded = !!((queryResult && queryResult.agreementStatusId && queryResult.agreementStatusId === __constants.AGREEMENT_STATUS.pendingForApproval))
         if (queryResult.tfaType) queryResult.tfaTypeDisplayName = __constants.TFA_TYPE_DISPLAYNAME[queryResult.tfaType]
         return checkAccountProfileCompletionStatus(queryResult)
@@ -51,17 +51,15 @@ const getAcountProfile = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('data then 2', data)
       queryResult.complete = data.complete
-      __logger.info('queryResult', queryResult)
-      __logger.info('data', data)
+      __logger.info('acountProfile: getAcountProfile(): then 2: ', data, queryResult)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: queryResult
       })
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('acountProfile: getAcountProfile(): catch: ', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
@@ -90,18 +88,18 @@ const getAcountProfile = (req, res) => {
 // Update Account Prfofile
 
 const updateAcountProfile = (req, res) => {
-  __logger.info('Inside updateAcountProfile', req.user.user_id)
+  __logger.info('acountProfile: updateAcountProfile():', req.user.user_id)
   const userService = new UserService()
   const validate = new ValidatonService()
   let accountProfileData
   if (req && req.body && req.body.addressLine2 === null) req.body.addressLine2 = ''
   validate.accountProfile(req.body)
     .then(data => {
-      __logger.info('data then 1', { data })
+      __logger.info('acountProfile: updateAcountProfile(): then 1:', data)
       return userService.checkUserIdExistsForAccountProfile(req.user.user_id)
     })
     .then(result => {
-      __logger.info('UserId exist check then 2', result.exists)
+      __logger.info('acountProfile: updateAcountProfile(): then 2:', result)
       if (result.exists) {
         saveHistoryData(result.rows[0], __constants.ENTITY_NAME.USER_ACCOUNT_PROFILE, req.user.user_id, req.user.user_id)
         accountProfileData = {
@@ -126,7 +124,7 @@ const updateAcountProfile = (req, res) => {
       }
     })
     .then(result => {
-      __logger.info('then 3')
+      __logger.info('acountProfile: updateAcountProfile(): then 3:', result)
       if (result && result.affectedRows && result.affectedRows > 0) {
         return checkAccountProfileCompletionStatus(accountProfileData)
       } else {
@@ -134,14 +132,14 @@ const updateAcountProfile = (req, res) => {
       }
     })
     .then(data => {
-      __logger.info('data')
+      __logger.info('acountProfile: updateAcountProfile(): then 4:', data)
       return __util.send(res, {
         type: __constants.RESPONSE_MESSAGES.SUCCESS,
         data: { complete: data.complete }
       })
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('acountProfile: updateAcountProfile(): catch:', err)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }
@@ -311,6 +309,7 @@ const updateAccountManagerName = (req, res) => {
 // api specific to get email id of support user
 const getUserRoleArrayDataForEmail = (req, res) => {
   const userDetails = q.defer()
+  // need to change here change the query
   __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getUserRoleData(), [__constants.SUPPORT_ROLE_ID])
     .then(results => {
       __logger.info('results Then 1')

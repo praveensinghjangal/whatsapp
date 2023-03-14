@@ -3,16 +3,13 @@ const __db = require('../../lib/db')
 const __logger = require('../../lib/logger')
 // const messageStatusOnMail = require('./misService')
 const __constants = require('../../config/constants')
-// const DbService = require('../../app_modules/message/services/dbData')
-const getCampaignCount = require('./getCampaignCount')
-const moment = require('moment')
+const dlrZipFileDelete = require('./dlrZipFileDelete')
 
 const task = {
-  one: cron.schedule(__constants.CAMP_REPORTS_SCHEDULER_TIME, () => {
-    const date = moment().format('YYYY-MM-DD')
-    getCampaignCount(date)
+  one: cron.schedule(__constants.DELETE_DLR_REPORT_ZIP_FILE, () => {
+    dlrZipFileDelete()
       .then(() => {
-        return __logger.info('sucessfully inserted data into the InsertDataIntoSumarryReports')
+        return __logger.info('sucessfully delete dlr report')
       })
       .catch((error) => {
         return __logger.error('inside ~function=', { err: typeof error === 'object' ? error : { error: error.toString() } })
@@ -20,16 +17,18 @@ const task = {
   }, {
   })
 }
+
 class reportsScheduler {
   startServer () {
-    __logger.info('inside ~function=startServer. Starting WORKER=reportsScheduler')
+    __logger.info('inside ~function=startServer. Starting WORKER=dlrZipFileDelete')
     __db.init()
       .then(async (start) => {
+        // messageStatusOnMail()
         task.one.start()
       })
       .catch(err => {
-        console.log('reportsScheduler main catch error ->', err)
-        __logger.error('ERROR ~function=reportsScheduler. reportsScheduler::error: ', { err: typeof err === 'object' ? err : { err } })
+        console.log('dlrZipFileDelete main catch error ->', err)
+        __logger.error('ERROR ~function=dlrZipFileDelete. dlrZipFileDelete::error: ', { err: typeof err === 'object' ? err : { err } })
         process.exit(1)
       })
     this.stop_gracefully = function () {

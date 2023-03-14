@@ -23,19 +23,18 @@ const getMessageIdByServiceProviderMsgId = () => {
 }
 
 const getMessageStatusCount = () => {
-  return `SELECT mh.state, COUNT(1) AS "stateCount"
-  FROM message_history mh
-  WHERE mh.id IN (
-    SELECT MAX(mh1.id)
-    FROM message_history mh1
-    where mh1.is_active = 1
-    and mh1.business_number = ?
-    and mh1.created_on BETWEEN  ? AND ?
-    GROUP BY mh1.message_id)
-  and mh.is_active = 1
-    and mh.business_number =  ?
-  and mh.created_on BETWEEN ? AND ?
-  GROUP BY mh.state`
+  return `SELECT state, COUNT(1) AS "stateCount"
+  FROM (
+    SELECT
+        mh.id AS idd,
+        mh.state AS state,
+        mh.created_on as DATE123,
+        ROW_NUMBER() OVER (PARTITION BY mh.message_id  ORDER BY mh.id desc) AS nc
+      FROM
+        message_history mh where  mh.business_number = ? and
+          mh.created_on BETWEEN ? AND ?
+  ) t
+  WHERE t.nc = 1 group by t.state`
 }
 
 const getMessageStatusList = () => {
@@ -184,10 +183,11 @@ const addMessageHistoryDataInBulk = (date) => {
 }
 
 const setTemplatesInRedisForWabaPhoneNumber = () => {
-  return `select mt.message_template_id , mt.header_text,mt.header_type ,mt.body_text ,
-  mt.footer_text,CONCAT(wi.phone_code, wi.phone_number) as phone_number,
+  return `select mt.message_template_id, mt.header_text,mt.header_type ,mt.body_text,
+  mt.footer_text, CONCAT(wi.phone_code, wi.phone_number) as phone_number,
   mt.first_localization_status,mt.second_localization_status,
-  mtl.language_code as "first_language_code",mtl2.language_code as "second_language_code"
+  mtl.language_code as "first_language_code",mtl2.language_code as "second_language_code",
+  mt.button_type, mt.button_data
   from message_template mt
   join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
   join message_template_language mtl on mt.message_template_language_id = mtl.message_template_language_id and mtl.is_active = true
@@ -212,10 +212,10 @@ const createMessageHistoryTable = (date) => {
     is_active  tinyint(1) DEFAULT '1',
     service_provider_message_id  varchar(250) DEFAULT NULL,
     errors  json DEFAULT NULL,
-    custom_one  varchar(50) DEFAULT NULL,
-    custom_two  varchar(50) DEFAULT NULL,
-    custom_three  varchar(50) DEFAULT NULL,
-    custom_four  varchar(50) DEFAULT NULL,
+    custom_one  varchar(150) DEFAULT NULL,
+    custom_two  varchar(150) DEFAULT NULL,
+    custom_three  varchar(150) DEFAULT NULL,
+    custom_four  varchar(150) DEFAULT NULL,
     conversation_id varchar(100) DEFAULT NULL NULL,
     camp_name  varchar(100) DEFAULT NULL,
     PRIMARY KEY (id)) `
@@ -369,10 +369,10 @@ const getTemplateNameAgainstId = () => {
 }
 const getconversationDataBasedOnWabaNumber = () => {
   return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory,
-  b.from as wabaPhoneNumber,b.message_country as "messageCountry"
-  FROM billing_conversation b
-  where b.from in (?) and b.created_on BETWEEN ? and ? 
-  GROUP BY b.conversation_category ,b.from, DATE(b.created_on), b.message_country`
+    b.from as wabaPhoneNumber,b.message_country as "messageCountry"
+    FROM billing_conversation b
+    where b.from in (?) and (b.created_on BETWEEN ? and ?) and b.is_active = TRUE
+    GROUP BY b.conversation_category ,b.from, b.message_country`
 }
 // const insertConversationDataAgainstWaba = () => {
 //   return `INSERT into conversation_summary (waba_number,country_name,user_initiated,business_initiated,referral_conversion,not_applicable,total_number)
@@ -387,18 +387,40 @@ const getconversationDataBasedOnWabaNumber = () => {
 // }
 
 const getTemplateCategoryId = () => {
-  return `select mt.message_template_id,mt.message_template_category_id
-  ,CONCAT(wi.phone_code, wi.phone_number) as phone_number
-   from message_template mt
+  return `select mt.message_template_id,mt.message_template_category_id, CONCAT(wi.phone_code, wi.phone_number) as phone_number, button_type, button_data
+  from message_template mt
   join waba_information wi on mt.waba_information_id = wi.waba_information_id and wi.is_active = true
   where mt.is_active = true and wi.phone_number = ?
-   and mt.message_template_id = ?`
+  and mt.message_template_id = ?`
 }
 const getTemplateIdandTemplateNameAgainstUser = () => {
   return `select DISTINCT message_template_id as "templateId", template_name as "templateName"  from message_template mt 
   left join waba_information wi on wi.waba_information_id = mt.message_template_id and wi.is_active = true
   left join users u on u.user_id = wi.user_id and u.user_id = ? and u.is_active = true
   where mt.is_active = true `
+}
+
+const getConversationDataBasedOnWabaNumberAllData = () => {
+  return `SELECT COUNT(b.conversation_category) as conversationCategoryCount, b.conversation_category as conversationCategory,
+  b.from as wabaPhoneNumber,b.message_country as "messageCountry"
+  FROM billing_conversation b
+  where b.from in (?) and b.created_on BETWEEN ? and ?
+  GROUP BY b.conversation_category ,b.from, b.message_country`
+}
+
+const groupByIssue = () => {
+  return "SET GLOBAL sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));"
+}
+
+const getWabaNameByPhoneNumber = () => {
+  return 'select CONCAT(phone_code ,phone_number) as wabaPhoneNumber , business_name as businessName from waba_information wi where CONCAT(phone_code ,phone_number) in (?)'
+}
+
+const getMisRelatedIncomingData = () => {
+  return `SELECT count(*) as "incomingMessageCount",  payload ->"$.to" as wabaPhoneNumber,DATE_FORMAT(created_on, '%Y-%m-%d') as date
+  FROM incoming_message_payload
+  where created_on BETWEEN  ? and ?
+  group by payload ->"$.to",DATE(created_on);`
 }
 
 module.exports = {
@@ -427,5 +449,9 @@ module.exports = {
   getTemplateNameAgainstId,
   getconversationDataBasedOnWabaNumber,
   getTemplateCategoryId,
-  getTemplateIdandTemplateNameAgainstUser
+  getTemplateIdandTemplateNameAgainstUser,
+  getConversationDataBasedOnWabaNumberAllData,
+  groupByIssue,
+  getWabaNameByPhoneNumber,
+  getMisRelatedIncomingData
 }

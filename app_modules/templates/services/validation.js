@@ -137,7 +137,7 @@ class validate {
           type: 'string',
           required: request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase(),
           minLength: 1,
-          maxLength: 500
+          maxLength: 60
         },
         headerTextVarExample: {
           type: 'array',
@@ -152,7 +152,7 @@ class validate {
           type: 'string',
           required: false,
           minLength: 1,
-          maxLength: 500
+          maxLength: 60
         },
         mediaType: {
           type: 'string',
@@ -202,7 +202,7 @@ class validate {
         secondLanguageHeaderText: {
           type: 'string',
           required: request.headerType === __constants.TEMPLATE_HEADER_TYPE[3].templateHeaderType.toLocaleLowerCase() && request.secondLanguageRequired === true,
-          maxLength: 500
+          maxLength: 60
         },
         secondLanguageHeaderTextVarExample: {
           type: 'array',
@@ -231,7 +231,8 @@ class validate {
               minItems: 1,
               maxItems: 3,
               items: {
-                type: 'string'
+                type: 'string',
+                maxLength: 25
               }
             },
             secondLanguageQuickReply: {
@@ -240,13 +241,15 @@ class validate {
               minItems: 1,
               maxItems: 3,
               items: {
-                type: 'string'
+                type: 'string',
+                maxLength: 25
               }
             },
             phoneButtonText: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             phoneNumber: {
               type: 'string',
@@ -258,22 +261,44 @@ class validate {
             websiteButtontext: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             webAddress: {
               type: 'string',
               required: false,
-              minLength: 1
+              pattern: __constants.VALIDATOR.url,
+              maxLength: 2083
             },
             secondLanguageWebsiteButtontext: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
             },
             secondLanguagePhoneButtonText: {
               type: 'string',
               required: false,
-              minLength: 1
+              minLength: 1,
+              maxLength: 20
+            },
+            websiteTextVarExample: {
+              type: 'array',
+              required: !!(request.buttonData && request.buttonData.webAddress && (request.buttonData.webAddress.match(/{{\d{1}}}/g) || []).length),
+              minItems: 1,
+              maxItems: 1,
+              items: {
+                type: 'string',
+                minLength: 2,
+                maxLength: 50
+              }
+            },
+            websiteButtonType: {
+              type: 'string',
+              required: false,
+              minItems: 1,
+              maxItems: 1,
+              enum: ['static', 'dynamic']
             }
           }
         }
@@ -315,6 +340,10 @@ class validate {
     if (request.secondLanguageHeaderTextVarExample.length > 0) {
       const textVariablesArr = request.secondLanguageHeaderText.match(/{{\d{1,3}}}/g)
       if (!textVariablesArr || !textVariablesArr[0] || textVariablesArr[0] !== '{{1}}') formatedError.push('variables inside secondLanguageHeaderText does not start with {{1}}')
+    }
+    if (request.buttonData && request.buttonData.websiteTextVarExample && (request.buttonData.websiteTextVarExample.length > 0)) {
+      const textVariablesArr = request.buttonData.webAddress.match(/{{\d{1}}}/g)
+      if (!textVariablesArr || !textVariablesArr[0] || textVariablesArr[0] !== '{{1}}') formatedError.push('variables inside webAddress does not start with {{1}}')
     }
     if (formatedError.length > 0) {
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
@@ -482,7 +511,7 @@ class validate {
       const formatedErr = err.split('.')
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
-    __logger.info('errrrrrrrrrrrrrrrrrrrrr', formatedError)
+    __logger.info('templates/service/validation: formatedError: ', formatedError)
     if (formatedError.length > 0) {
       isvalid.resolve(false)
     } else {

@@ -15,11 +15,11 @@ class AudienceService {
   }
 
   getAudienceTableDataWithId (userId, audienceId) {
-    __logger.info('inside get audience by id service', typeof audienceId)
+    __logger.info('dbData: inside get audience by id service', typeof audienceId)
     const audienceData = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataWithId(), [audienceId])
       .then(result => {
-        __logger.info('Query Result', { result })
+        __logger.info('dbData: Query Result', { result })
         if (result && result.length === 0) {
           audienceData.resolve(null)
         } else {
@@ -41,12 +41,12 @@ class AudienceService {
 
   // waba
   getAudienceTableDataByPhoneNumber (phoneNumbers, userId, wabaPhoneNumber) {
-    __logger.info('inside getAudienceTableDataByPhoneNumber', phoneNumbers)
+    __logger.info('dbData: inside getAudienceTableDataByPhoneNumber', phoneNumbers)
     const audienceData = q.defer()
     const queryFilter = wabaPhoneNumber || userId
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getAudienceTableDataByPhoneNumber(wabaPhoneNumber), [queryFilter, phoneNumbers])
       .then(result => {
-        __logger.info('getAudienceTableDataByPhoneNumber query Result', { result })
+        __logger.info('dbData: getAudienceTableDataByPhoneNumber query Result', { result })
         if (result && result.length === 0) {
           audienceData.resolve([])
         } else {
@@ -62,7 +62,7 @@ class AudienceService {
 
   // waba
   addAudienceDataService (newData, oldData) {
-    __logger.info('Add audience service called', newData, oldData)
+    __logger.info('dbData: Add audience service called', newData, oldData)
     const audienceDataAdded = q.defer()
     var audienceData = {
       audienceId: newData.audienceId || this.uniqueId.uuid(),
@@ -82,11 +82,11 @@ class AudienceService {
     }
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
-        __logger.info('checkAndReturnWabaNumber::>>>>>>>>>>>>>>...', data)
+        __logger.info('dbData: checkAndReturnWabaNumber(): then 1', data)
         return this.getWabaPhoneNumber(data)
       })
       .then(data => {
-        __logger.info('WabaNum>>>>>>>>>>>>>>>>>>>>>>>> then 1', { data })
+        __logger.info('dbData: checkAndReturnWabaNumber(): then 2', { data })
         if (data && data.audMappingId) {
           audienceData.wabaPhoneNumber = data.audMappingId
         }
@@ -97,16 +97,16 @@ class AudienceService {
           audienceData.firstMessageValue = oldData.firstMessage ? this.formatToTimeStamp(oldData.firstMessage) : null
           audienceData.lastMessageValue = oldData.lastMessage ? this.formatToTimeStamp(oldData.lastMessage) : null
         }
-        // __logger.info('audienceData', audienceData)
+        // __logger.info('dbData: audienceData', audienceData)
       })
       .then(() => {
-        __logger.info('Then 2')
+        __logger.info('dbData: Then 2')
         const queryParam = []
         _.each(audienceData, (val) => queryParam.push(val))
         return __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceData(), queryParam)
       })
       .then(result => {
-        __logger.info('Add Result then 3', { result })
+        __logger.info('dbData: Add Result then 3', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete audienceData.createdBy
           delete audienceData.wabaPhoneNumber
@@ -123,7 +123,7 @@ class AudienceService {
 
   // waba
   updateAudienceDataService (newData, oldData) {
-    __logger.info('update audience service called', newData)
+    __logger.info('dbData: update audience service called', newData)
     const audienceUpdated = q.defer()
     saveHistoryData(oldData, __constants.ENTITY_NAME.AUDIENCE, oldData.audienceId, newData.userId)
     // this.updateAudience(newData, oldData)
@@ -151,11 +151,11 @@ class AudienceService {
 
     this.checkAndReturnWabaNumber(newData.wabaPhoneNumber, newData.userId)
       .then(data => {
-        __logger.info('checkAndReturnWabaNumber::>>>>>>>>>>>>>>...', data)
+        __logger.info('dbData: checkAndReturnWabaNumber(): ', data)
         return this.getWabaPhoneNumber(data)
       })
       .then(data => {
-        __logger.info('data then 1', { data })
+        __logger.info('dbData: data then 1', { data })
         if (data && data.audMappingId) {
           audienceData.wabaPhoneNumber = data.audMappingId
         }
@@ -168,15 +168,15 @@ class AudienceService {
         }
       })
       .then(() => {
-        __logger.info('Then 2')
+        __logger.info('dbData: Then 2')
         _.each(audienceData, (val) => queryParam.push(val))
-        __logger.info('updateeeeee --->', audienceData, queryParam)
+        __logger.info('dbData: updateeeeee --->', audienceData, queryParam)
         const validate = new ValidatonService()
         validate.checkPhoneNumberExistService(audienceData)
       })
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudienceRecord(), queryParam))
       .then(result => {
-        __logger.info('result Then 4', { result })
+        __logger.info('dbData: result Then 4', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           delete audienceData.wabaPhoneNumber
           delete audienceData.firstMessageValue
@@ -200,7 +200,7 @@ class AudienceService {
   }
 
   checkAndReturnWabaNumber (wabaNumber, userId) {
-    __logger.info('WabaNumber', wabaNumber)
+    __logger.info('dbData: WabaNumber', wabaNumber)
     const wabaNumberData = q.defer()
     // if present in redis use it
 
@@ -217,7 +217,7 @@ class AudienceService {
         })
         .then(data => wabaNumberData.resolve(data.id || data[0].wabaPhoneNumber))
         .catch((err) => {
-          __logger.info('Error ', err)
+          __logger.info('dbData: Error ', err)
           // finalData = null
           // return finalData
           wabaNumberData.resolve(null)
@@ -232,7 +232,7 @@ class AudienceService {
           }
         })
         .catch((err) => {
-          __logger.info('Error ', err)
+          __logger.info('dbData: Error ', err)
           wabaNumberData.resolve(null)
         })
     }
@@ -241,7 +241,7 @@ class AudienceService {
 
   // segment
   getSegmentDataById (segmentId) {
-    // __logger.info('inside get segment data by id service', segmentId)
+    // __logger.info('dbData: inside get segment data by id service', segmentId)
     const segmentData = q.defer()
 
     if (segmentId) {
@@ -264,7 +264,7 @@ class AudienceService {
   }
 
   addSegmentData (newData, oldData, userId) {
-    // __logger.info('Add Segment service called', newData, oldData)
+    // __logger.info('dbData: Add Segment service called', newData, oldData)
     const segmenteDataAdded = q.defer()
     const segmentData = {
       segmentId: this.uniqueId.uuid(),
@@ -272,7 +272,7 @@ class AudienceService {
     }
     const queryParam = []
     _.each(segmentData, (val) => queryParam.push(val))
-    // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
+    // __logger.info('dbData: inserttttttttttttttttttttt->', audienceData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addSegmentData(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -298,7 +298,7 @@ class AudienceService {
     validate.checkUpdateSegmentData(segmentData)
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateSegmentData(), queryParam))
       .then(result => {
-        __logger.info('result then 2', { result })
+        __logger.info('dbData: result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           segmentUpdated.resolve(segmentData)
         } else {
@@ -311,13 +311,13 @@ class AudienceService {
   // Optin Master
 
   getOptinSourceDataById (optinSourceId) {
-    // __logger.info('inside get segment data by id service', segmentId)
+    // __logger.info('dbData: inside get segment data by id service', segmentId)
     const optinData = q.defer()
 
     if (optinSourceId) {
       __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getOptinSourceDataById(), [optinSourceId])
         .then(result => {
-          __logger.info('result then 1', { result })
+          __logger.info('dbData: result then 1', { result })
           if (result && result.length > 0) {
             optinData.resolve(result[0])
           } else {
@@ -335,7 +335,7 @@ class AudienceService {
   }
 
   addOptinSourceData (newData, oldData) {
-    // __logger.info('Add Segment service called', newData, oldData)
+    // __logger.info('dbData: Add Segment service called', newData, oldData)
     const optinDataAdded = q.defer()
     const segmentData = {
       optinSourceId: this.uniqueId.uuid(),
@@ -343,7 +343,7 @@ class AudienceService {
     }
     const queryParam = []
     _.each(segmentData, (val) => queryParam.push(val))
-    // __logger.info('inserttttttttttttttttttttt->', audienceData, queryParam)
+    // __logger.info('dbData: inserttttttttttttttttttttt->', audienceData, queryParam)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addOptinSourceData(), queryParam)
       .then(result => {
         if (result && result.affectedRows && result.affectedRows > 0) {
@@ -369,7 +369,7 @@ class AudienceService {
     validate.checkUpdateOptinSourceData(optinntData)
       .then(data => __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateOptinSourceData(), queryParam))
       .then(result => {
-        __logger.info('result then 2', { result })
+        __logger.info('dbData: result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           optinUpdated.resolve(optinntData)
         } else {
@@ -413,11 +413,9 @@ class AudienceService {
   }
 
   getAudienceVerified (audienceNumber, wabaNumber) {
-    console.log('getAudienceVerified (audienceNumber, wabaNumber) ---', audienceNumber, wabaNumber)
     const promises = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFacebookVerifiedUser(), [audienceNumber, wabaNumber])
       .then(data => {
-        console.log('db response -----', data)
         if (data && data.length > 0) {
           promises.resolve(data)
         } else {
@@ -431,11 +429,9 @@ class AudienceService {
   }
 
   getAudiencesVerified (audiencesNumbers, wabaNumber) {
-    console.log('getAudiencesVerified (audiencesNumbers, wabaNumber) ---', audiencesNumbers, wabaNumber)
     const promises = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.getFacebookVerifiedUsers(), [audiencesNumbers, wabaNumber])
       .then(data => {
-        console.log('getAudiencesVerified db response -----', data)
         promises.resolve(data)
       })
       .catch(err => {
@@ -448,7 +444,7 @@ class AudienceService {
     const isVefifiedUpdate = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAsFaceBookVerified(), [userId, wabaPhoneNumberId, phoneNumber])
       .then(result => {
-        __logger.info('updateAsFaceBookVerified result then 2', { result })
+        __logger.info('dbData: updateAsFaceBookVerified result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           isVefifiedUpdate.resolve(true)
         } else {
@@ -463,7 +459,7 @@ class AudienceService {
     const isVefifiedUpdate = q.defer()
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.updateAudiencesAsFaceBookVerified(), [userId, wabaPhoneNumberId, phoneNumber])
       .then(result => {
-        __logger.info('updateAudiencesAsFaceBookVerified result then 2', { result })
+        __logger.info('dbData: updateAudiencesAsFaceBookVerified result then 2', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           isVefifiedUpdate.resolve(true)
         } else {
@@ -475,7 +471,7 @@ class AudienceService {
   }
 
   addAudineceToDb (payload, audMappingId, userId) {
-    __logger.info('Add audience service called ~ payload, audMappingId', payload, audMappingId)
+    __logger.info('dbData: Add audience service called: payload, audMappingId', payload, audMappingId)
     const audienceDataAdded = q.defer()
     const audienceData = {
       audienceId: this.uniqueId.uuid(),
@@ -486,12 +482,12 @@ class AudienceService {
       countryCode: __constants.DEFAULT_COUNTRY_CODE,
       wabaPhoneNumber: audMappingId
     }
-    __logger.info('Then add into audience', audienceData)
+    __logger.info('dbData: Then add into audience', audienceData)
     const queryParam = []
     _.each(audienceData, (val) => queryParam.push(val))
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudienceDataToDb(), queryParam)
       .then(result => {
-        __logger.info('added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
+        __logger.info('dbData: added result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           audienceDataAdded.resolve(true)
         } else {
@@ -503,12 +499,12 @@ class AudienceService {
   }
 
   addAudineceToDbInBulk (addAudiencesBody, audMappingId) {
-    __logger.info('Add audience in bulk service called ~ payload, audMappingId', addAudiencesBody, audMappingId)
+    __logger.info('dbData: Add audience in bulk service called: payload, audMappingId', addAudiencesBody, audMappingId)
     const audienceDataAdded = q.defer()
     // __db.mysql.batch(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), addAudiencesBody)
     __db.mysql.query(__constants.HW_MYSQL_NAME, queryProvider.addAudineceToDbInBulk(), [addAudiencesBody])
       .then(result => {
-        __logger.info('added result>>>>>>>>>>>>>>>>>>>>>>>> then 1', { result })
+        __logger.info('dbData: added result then 1', { result })
         if (result && result.affectedRows && result.affectedRows > 0) {
           audienceDataAdded.resolve(true)
         } else {

@@ -27,7 +27,7 @@ const getBillingConversationDataOnBasisOfWabaNumber = (req, res) => {
       return __util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: result })
     })
     .catch(err => {
-      __logger.error('error: ', err)
+      __logger.error('messageConversation: getBillingConversationDataOnBasisOfWabaNumber():', err.stack)
       return __util.send(res, { type: err.type, err: err.err })
     })
 }

@@ -5,6 +5,7 @@ const v = new Validator()
 const __constants = require('../../../config/constants')
 const TrimService = require('../../../lib/trimService/trim')
 const trimInput = new TrimService()
+const __logger = require('../../../lib/logger')
 
 class validate {
   checkUserIdService (request) {
@@ -30,6 +31,7 @@ class validate {
       formatedError.push(formatedErr[formatedErr.length - 1])
     })
     if (formatedError.length > 0) {
+      __logger.error('whatsapp_business.serivces.validation: formatedErr:', formatedError)
       isvalid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: formatedError })
     } else {
       trimInput.singleInputTrim(request)

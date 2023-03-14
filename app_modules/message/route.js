@@ -6,6 +6,7 @@ const apiHitsAllowedMiddleware = require('../../middlewares/apiHitsAllowed')
 const internalSessionOrTokenAuth = require('../../middlewares/auth/internalSessionOrTokenAuth')
 const tokenBasedInternalPrivateAuth = require('../../middlewares/auth/tokenBasedInternalPrivateAuth')
 const messageConversationController = require('./controllers/messageConversation')
+const tokenBasedAuth = require('../../middlewares/auth/tokenBasedAuth')
 
 router.post('/', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
 router.post('/single', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/sendMessageToQueue'))
@@ -24,5 +25,7 @@ router.get('/media/:mediaId/:phoneNumber', tokenBasedInternalPrivateAuth, requir
 router.get('/conversation/count', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, messageConversationController.getBillingConversationDataOnBasisOfWabaNumber)
 // router.get('/getprofilepic', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/getProfilePic'))
 router.get('/transaction/outgoing/list', authMiddleware.authenticate(authstrategy.jwt.name, authstrategy.jwt.options), apiHitsAllowedMiddleware, require('./controllers/getOutgoingTransactionListBySearchFilters'))
+router.post('/interactions/post', tokenBasedAuth, require('./controllers/interactions').interactions)
+router.get('/interactions/get', require('./controllers/interactions').getInteractions)
 
 module.exports = router

@@ -8,8 +8,8 @@ const excelToJson = require('convert-excel-to-json')
 const request = require('request')
 const rejectionHandler = require('../../../lib/util/rejectionHandler')
 const _ = require('lodash')
-const storageCustom = require('../services/customStorageEngine')
-const XLSXWriteStream = require('xlsx-write-stream')
+// const storageCustom = require('../services/customStorageEngine')
+// const XLSXWriteStream = require('xlsx-write-stream')
 
 /**
  * @namespace -Whatsapp-Audience-Controller-Upload-excel-to-upload-audience-data-
@@ -19,7 +19,7 @@ const XLSXWriteStream = require('xlsx-write-stream')
 const callAddUpdateAudienceApi = (formattedBody, authToken) => {
   const apiCalled = q.defer()
   const url = __config.base_url + __constants.INTERNAL_END_POINTS.addupdateAudience
-  __logger.info('sendMessageToQueueExcel :: callSendToQueueApi formattedBody>>>>>>>>>>>>>>>>>>>>>>>>', formattedBody)
+  __logger.info('uploadAudienceBulk: callSendToQueueApi(): formattedBody:', formattedBody)
   const options = {
     url,
     body: formattedBody,
@@ -29,6 +29,7 @@ const callAddUpdateAudienceApi = (formattedBody, authToken) => {
   // Calling another api for sending messages
   request.post(options, (err, httpResponse, body) => {
     if (err) {
+      __logger.error('uploadAudienceBulk: callSendToQueueApi(): HTTP POST err:', err)
       return apiCalled.reject({ type: __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err })
     }
     return apiCalled.resolve(body)
@@ -92,19 +93,19 @@ const validateSingleReq = excelSingleData => {
     }
   })
 
-  // __logger.info('Error Data', errorData)
+  // __logger.info('uploadAudienceBulk: Error Data', errorData)
   if (errorData.length > 0) {
     isValid.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: errorData })
     // return isValid.promise
   } else {
     isValid.resolve(excelSingleData)
   }
-  __logger.info('safe to check ahead', errorData)
+  __logger.info('uploadAudienceBulk: safe to check ahead', errorData)
   return isValid.promise
 }
 
 const validateAndFormRequestBody = excelData => {
-  __logger.info('here to form reqbody and validate', { excelData })
+  __logger.info('uploadAudienceBulk: validateAndFormRequestBody(): ', { excelData })
   let p = q()
   const thePromises = []
   excelData.forEach(singleObject => {
@@ -140,7 +141,7 @@ const filter = function (req, file, cb) {
   let fileExt = file.originalname.split('.')
   fileExt = fileExt[fileExt.length - 1]
   var extname = filetypes.test(fileExt.toLowerCase())
-  // __logger.info('file mime type filter  -->', extname)
+  // __logger.info('uploadAudienceBulk: file mime type filter  -->', extname)
   if (extname) {
     return cb(null, true)
   } else {
@@ -154,13 +155,13 @@ const upload = multer({
   fileFilter: filter
 }).array('optinFile', 1)
 
-const uploadSingleFile = multer({
-  storage: storageCustom({
-    key: function (req, file, cb) {
-      cb(null, file.fieldname + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
-    }
-  })
-}).single('optinFile')
+// const uploadSingleFile = multer({
+//   storage: storageCustom({
+//     key: function (req, file, cb) {
+//       cb(null, file.fieldname + '.' + file.originalname.split('.')[file.originalname.split('.').length - 1])
+//     }
+//   })
+// }).single('optinFile')
 
 /**
  * @memberof -Whatsapp-Audience-Controller-Upload-excel-to-upload-audience-data-
@@ -178,7 +179,7 @@ const uploadSingleFile = multer({
  */
 
 const uploadAudienceData = (req, res) => {
-  __logger.info('inside uploadAudienceData::>>>>>>>>>>>>>>')
+  __logger.info('uploadAudienceBulk: uploadAudienceData(): ')
   upload(req, res, function (err, data) {
     if (err) {
       __logger.error('sendAudieneDataToExcel :: file upload API error', err)
@@ -187,11 +188,11 @@ const uploadAudienceData = (req, res) => {
     if (!req.files || (req.files && !req.files[0])) {
       return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
     } else {
-      __logger.info('sendAudieneDataToExcel :: file uploaded')
+      __logger.info('uploadAudienceBulk: sendAudieneDataToExcel :: file uploaded')
       convertToJson(req.files)
         .then(jsonData => validateAndFormRequestBody(jsonData))
         .then(reqBody => {
-          __logger.info('req body for api => then 2', { reqBody })
+          __logger.info('uploadAudienceBulk: req body for api => then 2', { reqBody })
           const invalidReq = _.filter(reqBody, { valid: false })
           if (invalidReq.length > 0) {
             return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
@@ -208,8 +209,9 @@ const uploadAudienceData = (req, res) => {
   })
 }
 
+/*
 const uploadAudienceDataUsingStreams = (req, res) => {
-  __logger.info('inside uploadAudienceDataUsingStreams::>>>>>>>>>>>>>>')
+  __logger.info('uploadAudienceBulk: uploadAudienceDataUsingStreams():')
   req.xlsxWriter = new XLSXWriteStream()
   try {
     uploadSingleFile(req, res, function (err, data) {
@@ -218,37 +220,38 @@ const uploadAudienceDataUsingStreams = (req, res) => {
         return res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, data: {}, err: err.err || {} }))
       }
       return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.SUCCESS, data: {} }))
-      /**
-      if (!req.files || (req.files && !req.files[0])) {
-        return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
-      } else {
-        __logger.info('sendAudieneDataToExcel :: file uploaded')
-        convertToJson(req.files)
-          .then(jsonData => {
-            // todo: divide the json into batches of 3500 and validate each batch and push it to queue
-            return validateAndFormRequestBody(jsonData)
-          })
-          .then(reqBody => {
-            __logger.info('req body for api => then 2', { reqBody })
-            const invalidReq = _.filter(reqBody, { valid: false })
-            if (invalidReq.length > 0) {
-              return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
-            } else {
-              // return callAddUpdateAudienceApi(reqBody, req.headers.authorization)
-            }
-          })
-          .then(data => res.send(data))
-          .catch(err => {
-            __logger.error('sendAudieneDataToExcel :: file upload API error', err)
-            res.send(__util.send(res, { type: err.type, err: err.err }))
-          })
-      }
-      */
+
+      // if (!req.files || (req.files && !req.files[0])) {
+      //   return res.send(__util.send(res, { type: __constants.RESPONSE_MESSAGES.PROVIDE_FILE, data: {} }))
+      // } else {
+      //   __logger.info('uploadAudienceBulk: sendAudieneDataToExcel :: file uploaded')
+      //   convertToJson(req.files)
+      //     .then(jsonData => {
+      //       // todo: divide the json into batches of 3500 and validate each batch and push it to queue
+      //       return validateAndFormRequestBody(jsonData)
+      //     })
+      //     .then(reqBody => {
+      //       __logger.info('uploadAudienceBulk: req body for api => then 2', { reqBody })
+      //       const invalidReq = _.filter(reqBody, { valid: false })
+      //       if (invalidReq.length > 0) {
+      //         return rejectionHandler({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: _.map(invalidReq, 'err') })
+      //       } else {
+      //         // return callAddUpdateAudienceApi(reqBody, req.headers.authorization)
+      //       }
+      //     })
+      //     .then(data => res.send(data))
+      //     .catch(err => {
+      //       __logger.error('sendAudieneDataToExcel :: file upload API error', err)
+      //       res.send(__util.send(res, { type: err.type, err: err.err }))
+      //     })
+      // }
+
     })
   } catch (err) {
-    console.log(err)
+    __logger.error('uploadAudienceInBulk: uploadAudienceData():', err)
     res.send(__util.send(res, { type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err }))
   }
 }
+*/
 
-module.exports = { uploadAudienceData, uploadAudienceDataUsingStreams }
+module.exports = { uploadAudienceData }

@@ -44,9 +44,13 @@ const getWabaDetails = (wabaNumber, userid, maxTpsToProvider, wabaInformationId,
       .then(data => {
         return deferred.resolve(wabaDataFromRedis.namespace)
       })
-      .catch(err => deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: dataMapper: getWabaDetails: getFaceBookTokensByWabaNumber(' + wabaNumber + '): catch: ', err)
+        deferred.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return deferred.promise
   } else {
+    __logger.error('fb: dataMapper: getWabaDetails: getFaceBookTokensByWabaNumber(' + wabaNumber + '): Waba Number is missing')
     deferred.reject({ type: __constants.RESPONSE_MESSAGES.INVALID_REQUEST, err: 'Missing' })
     return deferred.promise
   }
@@ -101,6 +105,7 @@ class InternalService {
         namespaceReceived.resolve(namespace)
       })
       .catch((err) => {
+        __logger.error('fb: dataMapper: getNamespaceForTheTemplate(' + wabaPhoneNumber + '): catch: ', err)
         namespaceReceived.reject(err)
       })
     return namespaceReceived.promise
@@ -108,12 +113,12 @@ class InternalService {
 
   getFbTemplateName (wabaPhoneNumber, templateid) {
     const fbTemplateName = q.defer()
-    __logger.info('getFbTemplateName ------------>', { wabaPhoneNumber, templateid })
+    __logger.info('fb: dataMapper: getFbTemplateName(): ', { wabaPhoneNumber, templateid })
     const redisService = new RedisService()
     redisService.getFbTemplateName(templateid)
       .then(templateName => fbTemplateName.resolve(templateName))
       .catch(err => {
-        console.log('getFbTemplateName err -->', err)
+        __logger.error('fb: dataMapper: getFbTemplateName(): catch:', err)
         fbTemplateName.reject(err)
       })
     return fbTemplateName.promise
@@ -123,17 +128,63 @@ class InternalService {
     if (!components || components.length <= 0) {
       return []
     }
-    _.each(components, (component) => {
+    _.each(components, (component, index) => {
+      if (component && component.type && component.type === 'button' && component.parameters && component.parameters[0].type === 'text' && component.parameters.length === 1) {
+        component.sub_type = 'url'
+        component.index = '0'
+      }
+      if (component && component.type && component.type === 'button' && component.parameters && component.parameters[0].type === 'payload' && component.parameters.length >= 1) {
+        component.sub_type = 'quick_reply'
+        component.index = component.parameters[0].index
+      }
+
       _.each(component.parameters, (parameter) => {
         if (parameter.media) {
           parameter.type = parameter.media.type
           parameter[parameter.media.type] = parameter.media
           delete parameter[parameter.media.type].caption
           if (parameter[parameter.media.type].url) {
+            if (parameter && parameter.media && parameter.media.type && parameter.media.type === 'document' && parameter.document && parameter.document.url) {
+              const fileNameExtArray = parameter.document.url.split('/')
+              if (fileNameExtArray && fileNameExtArray.length) parameter[parameter.media.type].filename = fileNameExtArray[fileNameExtArray.length - 1] || 'generic.pdf'
+            }
             parameter[parameter.media.type].link = parameter[parameter.media.type].url
             delete parameter[parameter.media.type].url
           }
           delete parameter.media
+        }
+      })
+    })
+    return components
+  }
+
+  mapContacts (components) {
+    if (!components || components.length <= 0) {
+      return []
+    }
+    _.each(components, (component) => {
+      _.each(component.addresses, (parameter) => {
+        if (parameter.countryCode) {
+          parameter.country_code = parameter.countryCode
+          delete parameter.countryCode
+        }
+      })
+      _.each(component.name, (parameter, key) => {
+        if (key === 'firstName') {
+          component.name.first_name = component.name.firstName
+          delete component.name.firstName
+        }
+        if (component.name.lastName) {
+          component.name.last_name = component.name.lastName
+          delete component.name.lastName
+        }
+        if (component.name.formattedName) {
+          component.name.formatted_name = component.name.formattedName
+          delete component.name.formattedName
+        }
+        if (component.name.middleName) {
+          component.name.middle_name = component.name.middleName
+          delete component.name.middleName
         }
       })
     })
@@ -151,6 +202,12 @@ class InternalService {
       body.text = {
         body: td.whatsapp.text
       }
+    } else if (td.whatsapp.contentType === 'contact') {
+      body.type = 'contacts'
+      body.contacts = this.mapContacts(td.whatsapp.contact)
+    } else if (td.whatsapp.contentType === 'contact') {
+      body.type = 'contacts'
+      body.contacts = this.mapContacts(td.whatsapp.contact)
     } else if (td.whatsapp.contentType === 'location') {
       body.location = {
         longitude: `${td.whatsapp.location.longitude}`,
@@ -246,17 +303,20 @@ class InternalService {
   addCallToActionButton (body, td) {
     if (td.type.toLowerCase() === __constants.TEMPLATE_TYPE[1].templateType.toLowerCase() && td.buttonType && td.buttonType.toLowerCase() === __constants.TEMPLATE_BUTTON_TYPE[0].buttonType.toLowerCase()) {
       const pushData = { type: 'BUTTONS', buttons: [] }
-      if (td.buttonData.websiteButtontext && td.buttonData.webAddress) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
+      if (td.buttonData && td.buttonData.websiteButtontext && td.buttonData.webAddress && td.buttonData.websiteTextVarExample && isArray(td.buttonData.websiteTextVarExample) && td.buttonData.websiteTextVarExample.length > 0) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress, example: td.buttonData.websiteTextVarExample })
+      else if (td.buttonData && td.buttonData.websiteButtontext && td.buttonData.webAddress) pushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress })
       if (td.buttonData.phoneButtonText && td.buttonData.phoneNumber) pushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.phoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
       if (pushData.buttons.length > 0) body[0].components.push(pushData)
 
       if (td.secondLanguageRequired) {
         const secondLangPushData = { type: 'BUTTONS', buttons: [] }
-        if (td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.secondLanguageWebsiteButtontext, url: td.buttonData.webAddress })
+        if (td.buttonData && td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress && td.buttonData.websiteTextVarExample && isArray(td.buttonData.websiteTextVarExample) && td.buttonData.websiteTextVarExample.length > 0) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.websiteButtontext, url: td.buttonData.webAddress, example: td.buttonData.websiteTextVarExample })
+        else if (td.buttonData.secondLanguageWebsiteButtontext && td.buttonData.webAddress) secondLangPushData.buttons.push({ type: 'URL', text: td.buttonData.secondLanguageWebsiteButtontext, url: td.buttonData.webAddress })
         if (td.buttonData.secondLanguagePhoneButtonText && td.buttonData.phoneNumber) secondLangPushData.buttons.push({ type: 'PHONE_NUMBER', text: td.buttonData.secondLanguagePhoneButtonText, phone_number: `+${td.buttonData.phoneNumber}` })
         if (secondLangPushData.buttons.length > 0) body[1].components.push(secondLangPushData)
       }
     }
+
     return body
   }
 
@@ -311,7 +371,7 @@ class DataMapper {
         apiReqBody.resolve(body)
       })
       .catch(err => {
-        __logger.error('error inside addTemplate : ', err)
+        __logger.error('fb: dataMapper: addTemplate(): catch:', err)
         apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
       })
     return apiReqBody.promise
@@ -332,7 +392,10 @@ class DataMapper {
         __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
-      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: dataMapper: updateProfileDetails(): catch:', err)
+        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return apiReqBody.promise
   }
 
@@ -350,7 +413,10 @@ class DataMapper {
         __logger.info('updateProfileDetails:: data', body)
         apiReqBody.resolve(body)
       })
-      .catch(err => apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err }))
+      .catch(err => {
+        __logger.error('fb: dataMapper: updateBusinessProfileDetails(): catch:', err)
+        apiReqBody.reject({ type: err.type || __constants.RESPONSE_MESSAGES.SERVER_ERROR, err: err.err || err })
+      })
     return apiReqBody.promise
   }
 
@@ -373,9 +439,11 @@ class DataMapper {
     const internalService = new InternalService()
     internalService.sendMessageFbBody(data, maxTpsToProvider)
       .then(body => {
+        __logger.info('fb: dataMapper: sendMessage(): fb req body:', body)
         deferred.resolve(body)
       })
       .catch(err => {
+        __logger.error('fb: dataMapper: sendMessage(): fb req body: catch:', err)
         deferred.reject(err)
       })
     return deferred.promise

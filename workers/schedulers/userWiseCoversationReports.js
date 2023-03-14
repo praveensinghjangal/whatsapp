@@ -4,23 +4,24 @@ const __logger = require('../../lib/logger')
 const conversationMisService = require('./userWiseConversationService')
 const __constants = require('../../config/constants')
 // const DbService = require('../../app_modules/message/services/dbData')
+const moment = require('moment')
 
 const task = {
   one: cron.schedule(__constants.CONVERSATION_REPORTS_SCHEDULER_TIME, () => {
-    conversationMisService()
+    var currentDate = moment().format('YYYY-MM-DD')
+    conversationMisService(currentDate)
   })
 }
 
 class conversationMisReports {
   startServer () {
-    __logger.info('inside ~function=startServer. Starting WORKER=conversationMisReports')
+    __logger.info('userwiseConversationReports: startServer(): Starting WORKER = conversationMisReports')
     __db.init()
       .then(async (start) => {
         // messageStatusOnMail()
         task.one.start()
       })
       .catch(err => {
-        console.log('conversationMisReports main catch error ->', err)
         __logger.error('ERROR ~function=conversationMisReports. conversationMisReports::error: ', { err: typeof err === 'object' ? err : { err } })
         process.exit(1)
       })

@@ -1,4 +1,3 @@
-
 const APP_NAME = 'helowhatsapp'
 const DB_NAME = 'helowhatsapp'
 // const DB_NAME = 'whatsapp1'
@@ -11,7 +10,8 @@ const UPDATE_PROFILE_CONFIGURE_DATA = {
 }
 const DOWNLOAD_STATUS = {
   inProcess: 'InProcess',
-  completed: 'Completed'
+  completed: 'Completed',
+  fileExists: 'FileExists'
 }
 const CUSTOM_CONSTANT = {
   DEV_ENV: 'development',
@@ -106,7 +106,8 @@ const ENTITY_NAME = {
   MESSAGE_STATUS_ERROR: 'message_status_error',
   CAMPAIGNAME_SUMMARY_REPORT: 'campaignname_summary_report',
   CONVERSATION_SUMMARY: 'conversation_summary',
-  TEMEPLATE_SUMMARY: 'template_summary'
+  TEMEPLATE_SUMMARY: 'template_summary',
+  INTERACTIONS: 'interaction'
 }
 const TEMPLATE_HEADER_TYPE = [{
   templateHeaderType: 'Video'
@@ -232,7 +233,8 @@ const INTERNAL_END_POINTS = {
   sendBusinessForApproval: '/helowhatsapp/api/business/profile/submit',
   setProfileStatus: '/helowhatsapp/api/business/profile/status',
   updateProfileConfigure: '/helowhatsapp/api/business/profile/configure',
-  embeddedSignupSupportApi: '/helowhatsapp/api/users/signup/embedded/continue'
+  embeddedSignupSupportApi: '/helowhatsapp/api/users/signup/embedded/continue',
+  sendTemplateApproval: '/helowhatsapp/api/templates/'
 }
 const HW_MYSQL_NAME = 'helo_whatsapp_mysql'
 const HW_MYSQL_MIS_NAME = 'helo_whatsapp_mis_mysql'
@@ -266,20 +268,27 @@ const VALIDATOR = {
   text: '^[a-zA-Z]+$',
   textWithSpace: '^[a-zA-Z\t\\s]*$',
   number: '^[0-9]+$',
-  aplphaNumeric: '^[a-zA-Z0-9]+$',
+  alphanumericWithSpace: '^[a-zA-Z0-9\t\\s]*$',
+  alphanumericWithSpecialChar: '^[a-zA-Z0-9\t\\s-@,_&()]*$',
+  alphanumericWithMinSpecialChar: '^[a-zA-Z0-9\t\\s-()]*$',
+  alphaNumeric: '^[a-zA-Z0-9]+$',
   phoneNumber: '^\\d{1,15}$',
-  phoneNumberWithPhoneCode: '^[\\d+]{1,4}\\s?[0-9]{15}$',
+  // phoneNumberWithPhoneCode: '^[\\d+]{1,4}\\s?[0-9]{15}$',
+  phoneNumberWithPhoneCode: '^[0-9]{6,15}$',
   postalCode: '^\\d{1,6}$',
   phoneCode: '^\\d{1,2}$',
   timeStamp: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$',
+  timeStampForDownload: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1]) (2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]Z$',
   timeStampSummary: '^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])T(2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9].[0-9][0-9][0-9]Z$',
-  aplphaNumericWithUnderscore: '^[a-z0-9_]+$',
+  alphaNumericWithUnderscore: '^[a-z0-9_]+$',
   fileExtType: /^(jpg|jpeg|png)$/,
   url: /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/,
   gst: /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/,
   pan: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i,
   noTabLinebreakSpace: /^(?:(.)(?!\s\s\s\s)(?!\n)(?!\t))*$/g,
-  empty: /^''$/g
+  empty: /^''$/g,
+  dateFormat: /^\d{4}-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])$/g,
+  payload: /^[0-2]{1}/g
 }
 const CHAT_APP_ENDPOINTS = {
   chatFlow: '/helowhatsappchat/api/flowmessage/chat',
@@ -408,6 +417,7 @@ const TEMPLATE_PARTIAL_APPROVE_STATUS = TEMPLATE_STATUS.partiallyApproved.status
 const TEMPLATE_DEFAULT_LANGUAGE_STATUS = TEMPLATE_STATUS.incomplete.statusCode
 const TEMPLATE_DEFAULT_STATUS = TEMPLATE_STATUS.incomplete.statusCode
 const TEMPLATE_EVALUATION_RESPONSE = ['approved', 'rejected']
+// Need to change here after complete directly goes for submit
 const TEMPLATE_ROLLBACK_STATUS_MAPPING = {
   [TEMPLATE_STATUS.complete.statusCode]: TEMPLATE_STATUS.incomplete.statusCode,
   [TEMPLATE_STATUS.requested.statusCode]: TEMPLATE_STATUS.complete.statusCode,
@@ -498,7 +508,11 @@ const FACEBOOK_CONTENT_TYPE = {
   text: 'text',
   media: 'media',
   contacts: 'contacts',
-  location: 'location'
+  location: 'location',
+  button_reply: 'button_reply',
+  list_reply: 'list_reply',
+  audio: 'audio',
+  button: 'button'
 }
 const SAMPLE_AGREEMENT_URL = 'https://stage-whatsapp.helo.ai/helowhatsapp/api/frontEnd/helo-oss/download/agreement_161459041944213.pdf'
 const STATIC = 'static'
@@ -560,7 +574,7 @@ const MIMETYPE = {
 
 }
 const BATCH_SIZE_FOR_SEND_TO_QUEUE = 250
-const SEND_WEBHOOK_ON = ['forwarded', 'accepted', 'delivered', 'seen', 'failed', 'rejected', 'waiting for pending delivery', 'in process']
+const SEND_WEBHOOK_ON = ['accepted', 'delivered', 'seen', 'failed', 'rejected']
 const SINGLE = 'single'
 const BULK = 'bulk'
 const MESSAGES = 'messages'
@@ -581,9 +595,11 @@ const LOG_CONVERSATION_ON_TYPE_MAPPING = {
 const WHATSAPP_SUMMARY_SUBJECT = 'DAILY Whatsapp MIS | Total Messages Sent: ( | Total Conversations Created: ) | From: [ to ]'
 const MIS_SCHEDULER_TIME = '00 30 08 * * *'
 const CAMP_REPORTS_SCHEDULER_TIME = '*/29 * * * *'
+const DELETE_DLR_REPORT_ZIP_FILE = '*/05 * * * *'
 const TEMPLATE_REPORTS_SCHEDULER_TIME = '*/30 * * * *'
 const CONVERSATION_REPORTS_SCHEDULER_TIME = '*/31 * * * *'
 const PROCESS_COUNT_SCHEDULER_TIME = '00 30 05 * * *'
+const MIS_MONTHLY_CONVERSATION = '0 30 09 1 * *'
 const MIS_SCHEDULER_TIME_CONVERSATION = '00 45 08 * * *'
 const PROCESS_COUNT_SCHEDULER = 'processCountScheduler'
 const WABIZ_USERNAME = 'admin'
@@ -684,7 +700,15 @@ const FB_TEMPLATE_REDIS_KEY_FOLDER = 'fb_viva_template_name_mapping:'
 const STREAM_OPTIN_BATCH_SIZE = 3500
 // const SEND_OPTIN_BATCH_ACK_IN_SECS = 180 // 3 minutes
 const SEND_OPTIN_BATCH_ACK_IN_SECS = 120 // 2 minutes
-const FILEPATH = 'public/createdFileCSV'
+const FILEPATH = 'public'
+const NUMBER_OF_DAYS = 30
+const DAILYUPDATECAMPAIGNSUMMARYWORKER = '00 00 18 * * *'
+const DAILYUPDATETEMPLATESUMMARY = '00 30 18 * * *'
+const DAILYUPDATECONVERSATIONSUMMARRY = '00 00 19 * * *'
+const FB_REDIS_KEY_STATIC_TEMPLATE_SET_TIME = 86400 // 24 hour
+const STATIC_TEMPLATE_FOR_INTERNAL_USED_FOLDER = 'static_internal_template'
+const STATIC_TEMPLATE_ID = '2c1b8abb_04ed_47b7_baad_4607660d8806'
+const RETRY_FOR_J_AND_J = 'retryForJandJ'
 
 module.exports.RESPONSE_MESSAGES = require('api-responses')
 module.exports.COUNTRY_LIST_ALPHA_TWO = require('./countries.json')
@@ -818,3 +842,13 @@ module.exports.TEMPLATE_REPORTS_SCHEDULER_TIME = TEMPLATE_REPORTS_SCHEDULER_TIME
 module.exports.CONVERSATION_REPORTS_SCHEDULER_TIME = CONVERSATION_REPORTS_SCHEDULER_TIME
 module.exports.FILEPATH = FILEPATH
 module.exports.DOWNLOAD_STATUS = DOWNLOAD_STATUS
+module.exports.DELETE_DLR_REPORT_ZIP_FILE = DELETE_DLR_REPORT_ZIP_FILE
+module.exports.NUMBER_OF_DAYS = NUMBER_OF_DAYS
+module.exports.DAILYUPDATECAMPAIGNSUMMARYWORKER = DAILYUPDATECAMPAIGNSUMMARYWORKER
+module.exports.DAILYUPDATETEMPLATESUMMARY = DAILYUPDATETEMPLATESUMMARY
+module.exports.DAILYUPDATECONVERSATIONSUMMARRY = DAILYUPDATECONVERSATIONSUMMARRY
+module.exports.MIS_MONTHLY_CONVERSATION = MIS_MONTHLY_CONVERSATION
+module.exports.STATIC_TEMPLATE_FOR_INTERNAL_USED_FOLDER = STATIC_TEMPLATE_FOR_INTERNAL_USED_FOLDER
+module.exports.FB_REDIS_KEY_STATIC_TEMPLATE_SET_TIME = FB_REDIS_KEY_STATIC_TEMPLATE_SET_TIME
+module.exports.STATIC_TEMPLATE_ID = STATIC_TEMPLATE_ID
+module.exports.RETRY_FOR_J_AND_J = RETRY_FOR_J_AND_J
